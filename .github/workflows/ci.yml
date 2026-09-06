@@ -1,0 +1,45 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  tests:
+    name: Code gates (lint / typecheck / build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
+
+  specs:
+    name: Spec structural gates (validate_spec / validate_state)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate feature specs and completion states
+        run: |
+          SKILL_DIR=.opencode/skills/tlc-spec-driven
+          features=()
+          for d in .specs/features/*/; do
+            [ -e "$d/spec.md" ] || continue
+            features+=("$(basename "$d")")
+          done
+          if [ ${#features[@]} -eq 0 ]; then
+            echo "no features found"
+            exit 0
+          fi
+          for f in "${features[@]}"; do
+            python3 "$SKILL_DIR/scripts/validate_spec.py" "$f"
+            if [ -e ".specs/features/$f/validation.md" ]; then
+              python3 "$SKILL_DIR/scripts/validate_state.py" "$f"
+            fi
+          done

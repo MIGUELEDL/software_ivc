@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# commit-msg hook: enforces Conventional Commits via the TLC Spec-Driven skill script.
+# No-op (exit 0) when the skill scripts are not present, so the hook never blocks a repo clone.
+#
+# git passes the path to .git/COMMIT_EDITMSG as $1; we read the subject from it.
+set -euo pipefail
+
+SKILL_DIR=".opencode/skills/tlc-spec-driven"
+CHECKER="$SKILL_DIR/scripts/check_commit.py"
+MSG_FILE="${1:-}"
+
+[ -f "$CHECKER" ] || exit 0
+
+if [ -n "$MSG_FILE" ] && [ -f "$MSG_FILE" ]; then
+  msg="$(sed -n '1p' "$MSG_FILE" | sed 's/\s*$//')"
+else
+  msg="${1:-}"
+fi
+
+python3 "$CHECKER" --message "$msg"
