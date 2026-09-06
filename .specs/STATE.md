@@ -68,11 +68,11 @@
 
 ## Handoff
 
-- **Feature**: (nenhuma em andamento — fundação)
-- **Phase / Task**: Fase 8 (Fundação) — kit SDD instalado, sub-agentes criados, Node 22 habilitado, `.specs/STATE.md` semeado
-- **Completed**: instalação skill tlc-spec-driven v3.3.0; `.opencode/agent/tlc-verifier.md` + `tlc-worker.md`; Node 22.23.2 via nvm (`.nvmrc`); `npm install` + script `typecheck`; `npm run lint`/`typecheck`/`build` verdes; ADR-001..008 registrados
+- **Feature**: (nenhuma em andamento — Fase 8 completa)
+- **Phase / Task**: Fase 8 (Fundação) — concluída: piloto PASS + elevações (CI, hook, docs)
+- **Completed**: skill tlc-spec-driven v3.3.0; sub-agentes tlc-verifier/tlc-worker; Node 22.23.2 (nvm, `.nvmrc`); `npm install` + `typecheck`; ADR-001..009; **piloto `sobre-dados-institucionais`** (9/9 ACs, validation PASS 20ebcc7..afb209e); CI dual-gate + `.githooks/commit-msg` (Conventional Commits, `core.hooksPath`) + `.nvmrc`; docs/README.md + ROADMAP.md + coverage-matrix.md; seção SDD/Node no AGENTS.md
 - **In-progress**: nenhum
-- **Next step**: executar o piloto SDD — feature "Sobre — dados institucionais" (substituir placeholders de `src/lib/constants.ts` pelos dados reais IVC) — loop spec→tasks→gate→verifier PASS
-- **Blockers**: número de WhatsApp da igreja (decisão D4) ainda em aberto — permanece placeholder "#" no piloto
-- **Uncommitted files**: `.opencode/`, `.nvmrc`, `package.json` (script typecheck), `.specs/` (ver git status)
-- **Branch**: main (worktree atual)
+- **Next step**: Fase 8 restante = docs detalhadas (PROJECT_OVERVIEW, REQUIREMENTS, ARCHITECTURE, DATABASE, SECURITY/LGPD, API, TESTING, OBSERVABILITY, DEPLOYMENT, COSTS) a partir dos checkpoints F0–F7; depois consolidar inventário RF/RNF na matriz antes da Fase 9 (MVP)
+- **Blockers**: número de WhatsApp (D4) em aberto; Mercado Pago (CNPJ) pendente de criação pelo usuário antes da F9; sub-agentes só ativos após RESTART do opencode
+- **Uncommitted files**: none (working tree limpo)
+- **Branch**: main
