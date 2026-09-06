@@ -1,3 +1,13 @@
+<!-- BEGIN:context -->
+# Contexto & retomada de sessão
+
+- Projeto: portal + painel da **Igreja Virtude Cristã (IVC)** (Santa Luzia-PB). Visão geral: `README.md`.
+- **SEMPRE que abrir/re­abrir uma sessão, leia `.specs/STATE.md`** (decisões AD-NNN + seção **Handoff**) para saber de onde continuar.
+- Roadmap e status: `docs/ROADMAP.md`; rastreabilidade RF/RNF: `docs/coverage-matrix.md`; índice: `docs/README.md`.
+- Git: commits com identidade do autor (`git -c user.name="MIGUELEDL" -c user.email="author@example.com"`) — identidade local ainda não configurada no repo; o hook `.githooks/commit-msg` (Conventional Commits) está ativo via `core.hooksPath`.
+- Nada pode ficar em aberto sem registo: spec/design/tasks/decisão pendente sempre aparecem no Handoff/STATE.md.
+<!-- END:context -->
+
 <!-- BEGIN:nextjs-agent-rules -->
 # This is NOT the Next.js you know
 
