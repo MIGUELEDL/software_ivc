@@ -4,8 +4,10 @@ export const CHURCH = {
   slogan:
     "Proclamando o evangelho de Cristo com fé e amor, e ensinando a Palavra que transforma vidas.",
   foundedDate: "Em breve",
-  foundedLocation: "R. Quiezinho Fernandes, próx. ao INSS",
-  city: "Sua Cidade",
+  foundedLocation:
+    "Rua Quiezinho Fernandes, 213 - Nossa Senhora de Fátima, Santa Luzia - PB",
+  city: "Santa Luzia - PB",
+  leader: "Pastor Ernandes Nogueira de Lucena",
   about: `Fundada com o propósito de levar a mensagem de esperança e salvação a todos os corações, a Igreja Virtude Cristã nasceu do mover de Deus no coração de seus líderes e membros. Localizada na R. Quiezinho Fernandes, próx. ao INSS, nossa comunidade tem se dedicado a proclamar o evangelho com fé, amor e compromisso com a Palavra que transforma vidas. Aqui, você encontra uma família acolhedora, pronta para caminhar junto com você em sua jornada de fé.`,
   mission:
     "Proclamar o evangelho de Cristo a toda criatura com fé e ousadia.",
@@ -39,11 +41,18 @@ export const CHURCH = {
 
 export const SOCIAL = {
   instagram: "https://instagram.com/igrejavirtudecrista",
-  youtube: "#",
+  youtube: "https://www.youtube.com/@IgrejaVirtudeCrista",
   whatsapp: "#",
-  email: "contato@igrejavirtudecrista.com",
-  address: "R. Quiezinho Fernandes, próx. ao INSS",
+  email: "ivcvirtudecrista@gmail.com",
+  address:
+    "Rua Quiezinho Fernandes, 213 - Nossa Senhora de Fátima, Santa Luzia - PB",
 } as const;
+
+export const SCHEDULE = [
+  { day: "TER", time: "19:30", title: "Oração e Ensino" },
+  { day: "QUI", time: "19:30", title: "Evangelismo" },
+  { day: "DOM", time: "19:00", title: "Culto" },
+] as const;
 
 export const NAV_ITEMS = [
   { label: "Início", href: "#hero" },
