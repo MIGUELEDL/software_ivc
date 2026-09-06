@@ -71,21 +71,21 @@ dificultam o consumo correto dos dados pelos componentes.
 
 | Requirement ID | Story       | Phase  | Status  |
 | -------------- | ----------- | ------ | ------- |
-| DADOS-01       | P1: Dados reais | Implementing | Implementing |
-| DADOS-02       | P1: Dados reais | Implementing | Implementing |
-| DADOS-03       | P1: Dados reais | Implementing | Implementing |
-| DADOS-04       | P1: Dados reais | Implementing | Implementing |
-| DADOS-05       | P1: Dados reais | Implementing | Implementing |
-| DADOS-06       | P1: Dados reais | Implementing | Implementing |
-| DADOS-07       | P1: Dados reais | Implementing | Implementing |
-| DADOS-08       | P1: Dados reais | Implementing | Implementing |
-| DADOS-09       | P1: Dados reais | Implementing | Implementing |
+| DADOS-01       | P1: Dados reais | Verified | Verified |
+| DADOS-02       | P1: Dados reais | Verified | Verified |
+| DADOS-03       | P1: Dados reais | Verified | Verified |
+| DADOS-04       | P1: Dados reais | Verified | Verified |
+| DADOS-05       | P1: Dados reais | Verified | Verified |
+| DADOS-06       | P1: Dados reais | Verified | Verified |
+| DADOS-07       | P1: Dados reais | Verified | Verified |
+| DADOS-08       | P1: Dados reais | Verified | Verified |
+| DADOS-09       | P1: Dados reais | Verified | Verified |
 
 **ID format:** `[CATEGORY]-[NUMBER]` — `DADOS-NN`.
 
 **Status values:** Pending → In Design → In Tasks → Implementing → Verified
 
-**Coverage:** 9 total, 0 mapped to tasks, 9 unmapped ⚠️
+**Coverage:** 9 total, 9 verified, 0 unmapped ✅
 
 ---
 
