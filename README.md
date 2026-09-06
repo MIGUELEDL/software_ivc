@@ -1,37 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Igreja Virtude Cristã (IVC) — Portal e Sistema
+
+Plataforma digital da Igreja Virtude Cristã (Santa Luzia-PB): portal público, painel do
+membro e painel administrativo (RBAC). Desenvolvimento dirigido por especificação
+(spec-driven) — ver "Workflow" abaixo.
+
+## Visão geral
+
+- **1 templo** · Santa Luzia-PB · ~30–50 membros · Pastor Ernandes Nogueira de Lucena
+- e-mail ivcvirtudecrista@gmail.com · YouTube @IgrejaVirtudeCrista · Instagram /igrejavirtudecrista
+- Cultos: Ter 19:30 (Oração e Ensino) · Qui 19:30 (Evangelismo) · Dom 19:00 (Culto)
+
+## Stack (aprovada)
+
+Next.js 16 (App Router, TS) · Tailwind CSS v4 · Supabase (PostgreSQL + Auth + Storage) ·
+Drizzle ORM · Auth.js · Resend · Vercel Hobby · GitHub Actions · Sentry (free) · Mercado Pago
+(TCO ~R$0 fixo/mês).
+
+## Documentação (leia antes de codificar)
+
+| Onde | O quê |
+| ---- | ----- |
+| `AGENTS.md` | Regras de agente: Next.js 16 (breaking changes) + **workflow spec-driven obrigatório** + ambiente Node |
+| `.specs/STATE.md` | Decisões (AD-NNN) + **Handoff** (snapshot de retomada de sessão) |
+| `.specs/features/*/` | Specs por feature (EARS), design, tasks, validação |
+| `docs/` | Índice, roadmap e matriz de cobertura (ver `docs/README.md`) |
+| `.opencode/` | Skill `tlc-spec-driven` + sub-agentes (verificador/worker) |
+
+## Ambiente
+
+- Node 22 LTS via nvm (`.nvmrc`). Fora do PATH por padrão:
+  `export PATH="$HOME/.nvm/versions/node/v$(cat .nvmrc).0/bin:$PATH"`
+- Gates locais: `npm run lint`, `npm run typecheck`, `npm run build`
+- CI dupla em `.github/workflows/ci.yml` (código + validação estrutural das specs)
+- Commits: Conventional Commits, atômicos, enforced por `.githooks/commit-msg`
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra http://localhost:3000. Edite em `src/app/` (rotas) e `src/components/`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Roadmap
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# software_ivc
+Fases 0–7 concluídas; **Fase 8 (Fundação) em andamento**; Fase 9 = MVP. Detalhes:
+`docs/ROADMAP.md`.
