@@ -72,7 +72,7 @@
 - **Phase / Task**: Fase 8 (Fundação) — concluída: piloto PASS + elevações (CI, hook, docs)
 - **Completed**: skill tlc-spec-driven v3.3.0; sub-agentes tlc-verifier/tlc-worker; Node 22.23.2 (nvm, `.nvmrc`); `npm install` + `typecheck`; ADR-001..009; **piloto `sobre-dados-institucionais`** (9/9 ACs, validation PASS 20ebcc7..afb209e); CI dual-gate + `.githooks/commit-msg` (Conventional Commits, `core.hooksPath`) + `.nvmrc`; docs/README.md + ROADMAP.md + coverage-matrix.md; seção SDD/Node + **Contexto & retomada** no AGENTS.md; **limpeza** de boilerplate (removidos `public/{file,globe,next,vercel,window}.svg` e `src/app/favicon.ico`) e README reescrito (480b43a) — assets únicos preservados (`img1..10.jpg`, `logo.png`); gates verdes
 - **In-progress**: nenhum
-- **Next step**: Fase 8 restante = docs detalhadas (PROJECT_OVERVIEW, REQUIREMENTS, ARCHITECTURE, DATABASE, SECURITY/LGPD, API, TESTING, OBSERVABILITY, DEPLOYMENT, COSTS) a partir dos checkpoints F0–F7; depois consolidar inventário RF/RNF na matriz antes da Fase 9 (MVP)
+- **Next step**: **REVISÃO do `docs/REQUIREMENTS.md` pelo administrador** (4 itens 🆕: RF-016, RF-032, RNF-001, RNF-012, RC-003, R-001) → confirmar status ✅; **decidir cartão-no-lançamento vs só PIX (RN-001.1) = novo ADR**; preencher D4/CNPJ/MVV; depois docs detalhadas restantes (ARCHITECTURE, DATABASE, SECURITY/LGPD, API, TESTING, OBSERVABILITY, DEPLOYMENT, COSTS) e Fase 9 (MVP)
 - **Blockers**: número de WhatsApp (D4) em aberto; Mercado Pago (CNPJ) pendente de criação pelo usuário antes da F9; sub-agentes só ativos após RESTART do opencode
 - **Uncommitted files**: none (working tree limpo)
 - **Branch**: main

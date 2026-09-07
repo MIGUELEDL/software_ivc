@@ -40,7 +40,7 @@ Roadmap em fases dirigido por especificação (processo `tlc-spec-driven`, ver `
 
 ## Fase 9 — MVP (visão)
 
-FRENTES do MVP: portal público multirrota (Sobre, Agenda/Eventos, Doação PIX/QR, Blog/Programações), portal do membro (login, perfil/foto, doações, ofertas), painel administrativo (conteúdo, membros, financeiro, eventos). Escopo priorizado quando a Fase 8 encerrar.
+FRENTES do MVP: portal público multirrota (Sobre/História/MV, Liderança, Localização, Cultos, Redes, Eventos→WhatsApp, Doação QR PIX), portal do membro (login+ID, avisos, QR dízimo, cartão de membro, perfil/foto 4x4), painel administrativo (dashboard, membros, igrejas/liderança, eventos, patrimônio, financeiro PIX+cartão/webhook, relatórios, RBAC, configurações, auditoria). Escopo priorizado quando a Fase 8 encerrar.
 
 ## Decisões & pendências transversais
 
