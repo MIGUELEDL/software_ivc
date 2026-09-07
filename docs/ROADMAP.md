@@ -34,7 +34,8 @@ Roadmap em fases dirigido por especificação (processo `tlc-spec-driven`, ver `
 - CI dual-gate, git hook `commit-msg` (Conventional Commits), matriz de cobertura, docs índice
 
 **Pendente (a partir daqui):**
-- Docs detalhadas (PROJECT_OVERVIEW, REQUIREMENTS, ARCHITECTURE, DATABASE, SECURITY/LGPD, API, TESTING, OBSERVABILITY, DEPLOYMENT, COSTS) a partir dos checkpoints F0–F7
+- Docs detalhadas (PROJECT_OVERVIEW, ARCHITECTURE, DATABASE, SECURITY/LGPD, API, TESTING, OBSERVABILITY, DEPLOYMENT, COSTS) a partir dos ADRs e do conhecimento consolidado
+- **Revisão do `docs/REQUIREMENTS.md` pelo administrador** (itens 🆕 → ✅) antes da Fase 9
 - Registrar o restante de ADRs pendentes (WhatsApp D4, MVV final, domínio)
 
 ## Fase 9 — MVP (visão)

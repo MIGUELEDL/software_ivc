@@ -10,8 +10,8 @@ contexto transversal (arquitetura, segurança, custos, roadmap).
 | --------- | -------- |
 | [ROADMAP.md](ROADMAP.md) | Fases 0–15 e status atual |
 | [coverage-matrix.md](coverage-matrix.md) | Matriz RF/RNF → spec → teste → status (rastreabilidade) |
-| *(a criar na Fase 8)* `PROJECT_OVERVIEW.md` | Visão geral, contexto e contatos institucionais |
-| *(a criar na Fase 8)* `REQUIREMENTS.md` | Requisitos RF-001..044 e RNF-001..012 consolidados da F1 |
+| [REQUIREMENTS.md](REQUIREMENTS.md) | Requisitos RF/RNF/RN/RC/QA/R — **fonte de verdade** (em consolidação com o administrador) |
+| *(a criar)* `PROJECT_OVERVIEW.md` | Visão geral, contexto e contatos institucionais |
 | *(a criar na Fase 8)* `ARCHITECTURE.md` | Decisões de arquitetura (monólito modular Next.js 16) |
 | *(a criar na Fase 8)* `DATABASE.md` | Modelo de dados (Supabase/PostgreSQL, Drizzle) |
 | *(a criar na Fase 8)* `SECURITY.md` / `LGPD.md` | Segurança, RBAC e adequação à LGPD |
