@@ -76,11 +76,11 @@
 
 ## Handoff
 
-- **Feature**: (nenhuma em andamento — revisão de requisitos concluída)
-- **Phase / Task**: Revisão de requisitos (REQUIREMENTS.md) + decisões aprovadas (2026-09-08)
-- **Completed** (adicionado nesta sessão): revisão do `docs/REQUIREMENTS.md` aprovada pelo administrador — RF-016 **removido** (painel membro = registro + dados pessoais, sem extrato); RF-032 ✅ (matriz de permissões a detalhar na spec de auth); RNF-001 ✅ (mobile-first, Lighthouse ≥ 90); RNF-012 ✅ (WCAG 2.1 AA); RC-003 ✅ (domínio temporário `*.vercel.app`); R-001 ✅ (garantia de continuidade via RBAC+auditoria); RN-001.1 decidido = **PIX apenas no lançamento** → **ADR-009** registrada; matriz de cobertura atualizada (inventário F9 como `pending`)
+- **Feature**: (nenhuma em andamento — Fase 8 concluída)
+- **Phase / Task**: Fase 8 (Fundação) — concluída: requisitos aprovados + ADR-009 + docs detalhadas
+- **Completed** (adicionado em 2026-09-08): revisão do `docs/REQUIREMENTS.md` aprovada (RF-016 removido; RF-032, RNF-001, RNF-012, RC-003, R-001 → ✅); ADR-009 (PIX apenas no lançamento, RN-001.1); `coverage-matrix.md` com inventário F9 `pending`; docs detalhadas escritas e commitadas: `PROJECT_OVERVIEW.md` (fc1946a), `ARCHITECTURE.md` (c94c34e), `DATABASE.md` (22f0cc8), `SECURITY.md` (b204061), `LGPD.md` (6fbb549), `API.md` (2fcb703), `TESTING.md` (7cd7a14), `OBSERVABILITY.md` (4b7d294), `DEPLOYMENT.md` (2651823), `COSTS.md` (a981284); índice e ROADMAP atualizados (1fc2188) — gates lint/typecheck/build verdes
 - **In-progress**: nenhum
-- **Next step**: escrever docs detalhadas da Fase 8 (ARCHITECTURE, DATABASE, SECURITY/LGPD, API, TESTING, OBSERVABILITY, DEPLOYMENT, COSTS) a partir dos ADRs + árvore; depois iniciar Fase 9 (MVP) com specs das features
-- **Blockers**: número de WhatsApp (D4) em aberto; Mercado Pago (CNPJ) pendente de criação pelo usuário antes da F9; MVV final ainda não definido; sub-agentes só ativos após RESTART do opencode
+- **Next step**: Fase 9 (MVP) — especificar features do portal público (Sobre/Liderança/Localização/Cultos/Redes), Eventos→WhatsApp, Doação QR PIX, painel do membro (login+ID, avisos, QR dízimo, cartão, perfil/foto) e painel admin (RBAC, membros, eventos, financeiro PIX, configurações, auditoria) com escopo priorizado; registrar AD Rs pendentes (WhatsApp D4, MVV final) quando o administrador fornecer os dados
+- **Blockers**: número de WhatsApp (D4) em aberto; CNPJ/credenciais Mercado Pago pendentes (bloqueiam apenas o financeiro da F9 — MVP é PIX, AD-009); MVV final a confirmar; sub-agentes só ativos após RESTART do opencode
 - **Uncommitted files**: none (working tree limpo)
 - **Branch**: main
