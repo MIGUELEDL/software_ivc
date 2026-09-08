@@ -66,6 +66,14 @@
 - **Date**: 2026-09-06
 - **Status**: active
 
+### AD-009
+- **Decision**: Financeiro do MVP (Fase 9) utiliza **apenas PIX** — QR PIX público no portal + webhook Mercado Pago para recebimentos; conciliação e fechamento de caixa obrigatórios. Cartão de crédito entra em iteração futura. (**RN-001.1**) A árvore oficial prevê PIX+cartão, mas a doação pública foi priorizada como PIX/QR e o cartão exige CNPJ + checkout Mercado Pago ainda indisponíveis.
+- **Reason**: Desbloqueia a Fase 9 imediatamente sem depender de CNPJ/checkout de cartão; reduz complexidade inicial; alinha com a prioridade da doação pública por PIX/QR.
+- **Trade-off**: Menos opções de pagamento no lançamento vs. lançamento mais rápido e simples; cartão fica para uma nova iteração (nova ADR quando o CNPJ estiver pronto).
+- **Scope**: Módulo financeiro; cardápio de meios de pagamento do MVP.
+- **Date**: 2026-09-08
+- **Status**: active
+
 ## Handoff
 
 - **Feature**: (nenhuma em andamento — Fase 8 completa)
