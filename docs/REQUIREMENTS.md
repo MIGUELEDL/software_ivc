@@ -1,6 +1,6 @@
 # Requisitos — Igreja Virtude Cristã (IVC)
 
-**Status:** 🟡 PROPOSTA em consolidação (revisão do administrador do projeto)
+**Status:** ✅ APROVADO pelo administrador (2026-09-08)
 
 Este documento é a **fonte de verdade de requisitos** do projeto. Sua base estrutural é a
 **árvore de navegação fornecida pelo administrador** (único artefato salvo das fases
@@ -80,7 +80,6 @@ cobertura (`docs/coverage-matrix.md`) e nas specs de features (coluna "Requisito
 | RF-013 | **QR code de dízimo** (pessoal do membro) | ✅ |
 | RF-014 | **Cartão de membro** | ✅ |
 | RF-015 | **Minhas informações**: editar dados + foto 4x4 | ✅ |
-| RF-016 | Histórico de doações do próprio membro (extrato) | 🆕 |
 
 ### C. Painel administrativo (árvore oficial)
 
@@ -102,7 +101,7 @@ cobertura (`docs/coverage-matrix.md`) e nas specs de features (coluna "Requisito
 | ID | Requisito | Status |
 | -- | --------- | ------ |
 | RF-031 | Papéis: MEMBRO, SECRETARIA, LIDER, FINANCEIRO, PATRIMONIAL, ADMIN, SUPER_ADMIN | ✅ |
-| RF-032 | Matriz de permissões por papel (ler/escrever/administrar por módulo) | 🆕 (detalhar) |
+| RF-032 | Matriz de permissões por papel (ler/escrever/administrar por módulo) | ✅ (detalhar na spec de auth) |
 
 ### E. Operação e conformidade
 
@@ -116,7 +115,7 @@ cobertura (`docs/coverage-matrix.md`) e nas specs de features (coluna "Requisito
 
 | ID | Requisito | Valor-alvo | Status |
 | -- | --------- | ---------- | ------ |
-| RNF-001 | Plataforma web responsiva (mobile-first) | Lighthouse ≥ 90 | 🆕 |
+| RNF-001 | Plataforma web responsiva (mobile-first) | Lighthouse ≥ 90 | ✅ |
 | RNF-002 | Identidade visual IVC | Design system definido | ✅ |
 | RNF-003 | Disponibilidade | ≥ 99% (Vercel Hobby) | ✅ |
 | RNF-004 | Segurança de autenticação | Auth.js + cookies seguros | ✅ |
@@ -127,7 +126,7 @@ cobertura (`docs/coverage-matrix.md`) e nas specs de features (coluna "Requisito
 | RNF-009 | Integração contínua | GitHub Actions dual-gate verde no `main` | ✅ |
 | RNF-010 | Deploy | Automático p/ Vercel após merge (com aprovação explícita) | ✅ |
 | RNF-011 | Conteúdo institucional fidedigno em fonte única | `src/lib/constants.ts` | ✅ |
-| RNF-012 | Acessibilidade | WCAG 2.1 AA | 🆕 |
+| RNF-012 | Acessibilidade | WCAG 2.1 AA | ✅ |
 
 ---
 
@@ -136,18 +135,18 @@ cobertura (`docs/coverage-matrix.md`) e nas specs de features (coluna "Requisito
 | ID | Regra | Status |
 | -- | ----- | ------ |
 | RN-001 | Portal público: doação/oferta é **QR PIX** (sem dados de cartão no portal) | ✅ |
-| RN-001.1 | Financeiro: recebimentos via **webhook (Mercado Pago)** — PIX e cartão; conciliação e fechamento de caixa são obrigatórios | ✅ (conforme árvore) |
+| RN-001.1 | Financeiro: recebimentos via **webhook (Mercado Pago)** — PIX e cartão; conciliação e fechamento de caixa são obrigatórios | ✅ (PIX apenas no lançamento — ADR-009) |
 | RN-002 | Senha-ID temporária expira após o primeiro acesso (troca obrigatória) | ✅ |
 | RN-003 | "Inscrever-se" em evento redireciona para **WhatsApp** | ✅ |
 | RN-004 | Toda ação administrativa sensível gera registro de auditoria | ✅ |
 | RN-005 | Um membro pertence a um templo (topologia hoje: 1 templo; evoluível) | ✅ |
 
-## Ponto de atrito a decidir (cartão no lançamento?)
+## Ponto de atrito decidido (cartão no lançamento?)
 
 A árvore prevê **PIX + cartão** no financeiro, mas o portal é **QR PIX apenas** e a
-doação pública foi priorizada como PIX/QR. **Pendência de decisão:** cartão deve estar
-ativo no lançamento da Fase 9 (exige CNPJ/Mercado Pago + checkout) ou apenas PIX no
-início, com cartão após? → registrará ADR.
+doação pública foi priorizada como PIX/QR. **Decisão registrada (ADR-009):** PIX
+apenas no lançamento da Fase 9. Cartão de crédito entra em iteração futura quando
+CNPJ e Mercado Pago estiverem prontos.
 
 ---
 
@@ -158,7 +157,7 @@ início, com cartão após? → registrará ADR.
 | -- | --------- | ------ |
 | RC-001 | Taxa de manutenção mensal ≈ R$ 0 (evangelização sem custo p/ a igreja) | ✅ |
 | RC-002 | Mercado Pago exige CNPJ — criado pelo administrador antes da Fase 9 | ✅ |
-| RC-003 | Domínio provavelmente `*.vercel.app` inicial (próprio somente se houver) | 🆕 |
+| RC-003 | Domínio inicialmente `*.vercel.app` (próprio quando houver recursos) | ✅ |
 
 ### QA
 | ID | Instrumento | Status |
@@ -170,7 +169,7 @@ início, com cartão após? → registrará ADR.
 ### R
 | ID | Risco | Mitigação | Status |
 | -- | ----- | --------- | ------ |
-| R-001 | Dependência de apenas 1 pessoa p/ conteúdo/operação | Docs + RBAC + auditoria | 🆕 |
+| R-001 | Dependência de apenas 1 pessoa p/ conteúdo/operação | Mitigação: RBAC + auditoria + docs | ✅ |
 | R-002 | WhatsApp (D4) em aberto | Placeholder `"#"` no código até decisão | ✅ registrado |
 | R-003 | CNPJ/Mercado Pago pendentes | Bloqueiam financeiro da Fase 9 | ✅ registrado |
 
@@ -183,8 +182,8 @@ início, com cartão após? → registrará ADR.
 | Número de WhatsApp oficial da igreja (**D4**) | 🔴 |
 | CNPJ + credenciais Mercado Pago | 🔴 (necessário p/ F9 – financeiro) |
 | Missão/Visão/Valores finais (MVV) | 🔴 |
-| Cartão no lançamento vs apenas PIX (RN-001.1) | 🔴 (ADR) |
-| Domínio próprio vs `*.vercel.app` | 🔴 (RC-003) |
+| Cartão no lançamento vs apenas PIX (RN-001.1) | ✅ decidido — PIX apenas (ADR-009) |
+| Domínio próprio vs `*.vercel.app` | ✅ temporário `*.vercel.app` (RC-003) |
 
 ---
 
