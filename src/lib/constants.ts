@@ -3,7 +3,8 @@ export const CHURCH = {
   shortName: "IVC",
   slogan:
     "Proclamando o evangelho de Cristo com fé e amor, e ensinando a Palavra que transforma vidas.",
-  foundedDate: "Em breve",
+  foundedDate: "07/09/2025",
+  cnpj: "68.683.917/0001-71",
   foundedLocation:
     "Rua Quiezinho Fernandes, 213 - Nossa Senhora de Fátima, Santa Luzia - PB",
   city: "Santa Luzia - PB",
@@ -42,7 +43,7 @@ export const CHURCH = {
 export const SOCIAL = {
   instagram: "https://instagram.com/igrejavirtudecrista",
   youtube: "https://www.youtube.com/@IgrejaVirtudeCrista",
-  whatsapp: "#",
+  whatsapp: "https://wa.me/5583999450781",
   email: "ivcvirtudecrista@gmail.com",
   address:
     "Rua Quiezinho Fernandes, 213 - Nossa Senhora de Fátima, Santa Luzia - PB",
