@@ -92,11 +92,11 @@
 
 ## Handoff
 
-- **Feature**: `sobre-dados-institucionais` (revalidada em 2026-09-08) — dados oficiais completos
-- **Phase / Task**: D4 resolvido + CNPJ + fundação (ADR-010/011) + push autorizado
-- **Completed** (adicionado em 2026-09-08): WhatsApp oficial **(83) 99945-0781** na `SOCIAL.whatsapp` (`https://wa.me/5583999450781`); CNPJ `68.683.917/0001-71` e fundação `07/09/2025` em `CHURCH` (`src/lib/constants.ts`); spec `sobre-dados-institucionais` reescrita (ACs 9–11 adicionadas; validate_spec PASS; gates verdes); ADR-010 (D4) e ADR-011 (fundação+CNPJ) registradas; MVV aprovado como está em `constants.ts`; docs da Fase 8 completas (PROJECT_OVERVIEW..COSTS) + requisitos aprovados + ADR-009 (PIX only) + matriz de cobertura (`pending` para F9)
-- **In-progress**: push para origin/main autorizado — a executar
-- **Next step**: Fase 9 (MVP) — especificar features do portal público, painel do membro e painel admin (escopo priorizado)
-- **Blockers**: Mercado Pago (credenciais) ainda a cadastrar pelo usuário mesmo com CNPJ informado — bloqueia apenas o financeiro da F9 (MVP é PIX, AD-009); sub-agentes disponíveis após RESTART (ativação confirmada)
-- **Uncommitted files**: nenhum esperado após ADRs/docs (verificar)
+- **Feature**: (nenhuma em andamento — iniciando Fase 9 / MVP)
+- **Phase / Task**: Fase 9 (MVP) — especificação da primeira leva de features
+- **Completed** (em 2026-09-08): push `origin/main` atualizado (f53ecb2..e73c09a); feature `sobre-dados-institucionais` revalidada PASS (11/11 ACs, ADR-010/011) com consumidores na UI (Sobre/Cultos); docs da Fase 8 completas; requisitos aprovados
+- **In-progress**: Fase 9 — decomposição do MVP em features prioritizadas (proposta em andamento)
+- **Next step**: aprovar a ordem das frentes do MVP; especificar a 1ª feature (spec.md em EARS) → validate_spec → design/tasks → execute → verifier
+- **Blockers**: **credenciais Mercado Pago em aberto** (não fornecem pela liderança) — **não bloqueia o início da F9**: doação QR PIX é estática (RN-001), financeiro usa `paymentGateway` Port com Adapter MP a plugar depois (AD-009); sem outros blockers de código
+- **Uncommitted files**: none (working tree limpo)
 - **Branch**: main
