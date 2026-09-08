@@ -14,8 +14,8 @@ Roadmap em fases dirigido por especificação (processo `tlc-spec-driven`, ver `
 | 5 | Segurança / LGPD | ✅ concluída |
 | 6 | Stack | ✅ concluída |
 | 7 | Infra / Custos | ✅ concluída |
-| **8** | **Fundação (em andamento)** | 🟡 kit SDD + piloto confirmados; docs e CI nesta fase |
-| 9 | MVP | ⏳ próxima |
+| **8** | **Fundação (concluída)** | ✅ kit SDD + piloto + requisitos aprovados + docs detalhadas;
+| 9 | MVP | 🟡 próxima (frentes do MVP: ver abaixo) |
 | 10 | Testes (framework entra aqui) | ⏳ |
 | 11 | Observabilidade (Sentry free) | ⏳ |
 | 12 | Deploy (Vercel Hobby) | ⏳ |
@@ -29,14 +29,16 @@ Roadmap em fases dirigido por especificação (processo `tlc-spec-driven`, ver `
 - Kit Spec-Driven `tlc-spec-driven` v3.3.0 instalado (`.opencode/skills/`)
 - Sub-agentes `tlc-verifier` (read-only) e `tlc-worker` (`.opencode/agent/`)
 - Node 22 LTS via `nvm` (`.nvmrc`), script `typecheck`, deps instaladas
-- `.specs/STATE.md` com ADR-001..008 e Handoff
+- `.specs/STATE.md` com ADR-001..009 e Handoff
 - **Piloto**: feature `sobre-dados-institucionais` — spec → gate → validação PASS (9/9 ACs)
 - CI dual-gate, git hook `commit-msg` (Conventional Commits), matriz de cobertura, docs índice
+- **Revisão do `docs/REQUIREMENTS.md` aprovada** (RF-016 removido; RF-032/RNF-001/RNF-012/RC-003/R-001 ✅)
+- **Docs detalhadas** escritas: PROJECT_OVERVIEW, ARCHITECTURE, DATABASE, SECURITY, LGPD, API, TESTING, OBSERVABILITY, DEPLOYMENT, COSTS
 
-**Pendente (a partir daqui):**
-- Docs detalhadas (PROJECT_OVERVIEW, ARCHITECTURE, DATABASE, SECURITY/LGPD, API, TESTING, OBSERVABILITY, DEPLOYMENT, COSTS) a partir dos ADRs e do conhecimento consolidado
-- **Revisão do `docs/REQUIREMENTS.md` pelo administrador** (itens 🆕 → ✅) antes da Fase 9
-- Registrar o restante de ADRs pendentes (WhatsApp D4, MVV final, domínio)
+**Próximo (Fase 9 — MVP):**
+- Registrar ADRs pendentes (WhatsApp D4, MVV final)
+- **Blocker:** CNPJ/credenciais Mercado Pago antes do financeiro da F9 (AD-009: MVP é PIX apenas)
+- Spec das features do MVP (portal, painel membro, painel admin) com escopo priorizado
 
 ## Fase 9 — MVP (visão)
 
@@ -45,5 +47,6 @@ FRENTES do MVP: portal público multirrota (Sobre/História/MV, Liderança, Loca
 ## Decisões & pendências transversais
 
 - Número de WhatsApp da igreja (**D4**) — em aberto (placeholder em `constants.ts`)
-- Conta Mercado Pago (CNPJ) — usuário cria e informa **antes** da Fase 9
-- Domínio próprio — manter `*.vercel.app` por enquanto
+- Conta Mercado Pago (CNPJ) — usuário cria e informa **antes** do financeiro da Fase 9
+- Missão/Visão/Valores (MVV) finais — em aberto (rascunho atual em `constants.ts`)
+- Domínio próprio — decidido: manter `*.vercel.app` por enquanto (RC-003); próprio quando houver

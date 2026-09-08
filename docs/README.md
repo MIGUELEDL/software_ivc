@@ -10,12 +10,17 @@ contexto transversal (arquitetura, segurança, custos, roadmap).
 | --------- | -------- |
 | [ROADMAP.md](ROADMAP.md) | Fases 0–15 e status atual |
 | [coverage-matrix.md](coverage-matrix.md) | Matriz RF/RNF → spec → teste → status (rastreabilidade) |
-| [REQUIREMENTS.md](REQUIREMENTS.md) | Requisitos RF/RNF/RN/RC/QA/R — **fonte de verdade** (em consolidação com o administrador) |
-| *(a criar)* `PROJECT_OVERVIEW.md` | Visão geral, contexto e contatos institucionais |
-| *(a criar na Fase 8)* `ARCHITECTURE.md` | Decisões de arquitetura (monólito modular Next.js 16) |
-| *(a criar na Fase 8)* `DATABASE.md` | Modelo de dados (Supabase/PostgreSQL, Drizzle) |
-| *(a criar na Fase 8)* `SECURITY.md` / `LGPD.md` | Segurança, RBAC e adequação à LGPD |
-| *(a criar na Fase 8)* `API.md`, `TESTING.md`, `OBSERVABILITY.md`, `DEPLOYMENT.md`, `COSTS.md` | Detalhamento por área (F3–F7) |
+| [REQUIREMENTS.md](REQUIREMENTS.md) | Requisitos RF/RNF/RN/RC/QA/R — **fonte de verdade** (aprovado pelo administrador) |
+| [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) | Visão geral, contexto e contatos institucionais |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Decisões de arquitetura (monólito modular Next.js 16) |
+| [DATABASE.md](DATABASE.md) | Modelo de dados (Supabase/PostgreSQL, Drizzle) |
+| [SECURITY.md](SECURITY.md) | Segurança, autenticação, RBAC e auditoria |
+| [LGPD.md](LGPD.md) | Adequação à LGPD (consentimentos, DPIA, direitos do titular) |
+| [API.md](API.md) | Rotas e contratos de integração (F3) |
+| [TESTING.md](TESTING.md) | Estratégia de verificação por fase (F10: framework) |
+| [OBSERVABILITY.md](OBSERVABILITY.md) | Sentry free + logs + métricas (F11) |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | CI dual-gate + Vercel Hobby (RC-003) |
+| [COSTS.md](COSTS.md) | TCO ≈ R$ 0 fixo/mês (RNF-007, RC-001) |
 
 > **Nota de formato**: o conteúdo de comportamento segue o formato **OpenSpec** como
 > referência (especificar WHAT testável, não a solução), e vive em `.specs/features/*`
