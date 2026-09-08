@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
+import Schedule from "@/components/Schedule";
 import Values from "@/components/Values";
 import LiveBanner from "@/components/LiveBanner";
 import Gallery from "@/components/Gallery";
@@ -13,6 +14,7 @@ export default function Home() {
       <Navbar />
       <Hero />
       <About />
+      <Schedule />
       <Values />
       <LiveBanner />
       <Gallery />

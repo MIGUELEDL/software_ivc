@@ -31,6 +31,18 @@ export default function About() {
                 <span className="block text-accent text-lg">Localização</span>
                 {CHURCH.foundedLocation}
               </div>
+              <div>
+                <span className="block text-accent text-lg">CNPJ</span>
+                {CHURCH.cnpj}
+              </div>
+              <div>
+                <span className="block text-accent text-lg">Liderança</span>
+                {CHURCH.leader}
+              </div>
+              <div>
+                <span className="block text-accent text-lg">Cidade</span>
+                {CHURCH.city}
+              </div>
             </div>
           </motion.div>
 
