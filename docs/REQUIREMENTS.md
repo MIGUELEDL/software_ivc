@@ -137,7 +137,7 @@ cobertura (`docs/coverage-matrix.md`) e nas specs de features (coluna "Requisito
 | RN-001 | Portal público: doação/oferta é **QR PIX** (sem dados de cartão no portal) | ✅ |
 | RN-001.1 | Financeiro: recebimentos via **webhook (Mercado Pago)** — PIX e cartão; conciliação e fechamento de caixa são obrigatórios | ✅ (PIX apenas no lançamento — ADR-009) |
 | RN-002 | Senha-ID temporária expira após o primeiro acesso (troca obrigatória) | ✅ |
-| RN-003 | "Inscrever-se" em evento redireciona para **WhatsApp** | ✅ |
+| RN-003 | "Inscrever-se" em evento redireciona para **WhatsApp** (oficial: (83) 99945-0781) | ✅ |
 | RN-004 | Toda ação administrativa sensível gera registro de auditoria | ✅ |
 | RN-005 | Um membro pertence a um templo (topologia hoje: 1 templo; evoluível) | ✅ |
 
@@ -156,7 +156,7 @@ CNPJ e Mercado Pago estiverem prontos.
 | ID | Restrição | Status |
 | -- | --------- | ------ |
 | RC-001 | Taxa de manutenção mensal ≈ R$ 0 (evangelização sem custo p/ a igreja) | ✅ |
-| RC-002 | Mercado Pago exige CNPJ — criado pelo administrador antes da Fase 9 | ✅ |
+| RC-002 | Mercado Pago exige CNPJ — **CNPJ 68.683.917/0001-71** informado (ADR-011) | ✅ (credenciais MP ainda a cadastrar) |
 | RC-003 | Domínio inicialmente `*.vercel.app` (próprio quando houver recursos) | ✅ |
 
 ### QA
@@ -170,7 +170,7 @@ CNPJ e Mercado Pago estiverem prontos.
 | ID | Risco | Mitigação | Status |
 | -- | ----- | --------- | ------ |
 | R-001 | Dependência de apenas 1 pessoa p/ conteúdo/operação | Mitigação: RBAC + auditoria + docs | ✅ |
-| R-002 | WhatsApp (D4) em aberto | Placeholder `"#"` no código até decisão | ✅ registrado |
+| R-002 | WhatsApp (D4) em aberto | Resolvido: (83) 99945-0781 (ADR-010) | ✅ resolvido |
 | R-003 | CNPJ/Mercado Pago pendentes | Bloqueiam financeiro da Fase 9 | ✅ registrado |
 
 ---
@@ -179,9 +179,9 @@ CNPJ e Mercado Pago estiverem prontos.
 
 | Pendência | Status |
 | --------- | ------ |
-| Número de WhatsApp oficial da igreja (**D4**) | 🔴 |
-| CNPJ + credenciais Mercado Pago | 🔴 (necessário p/ F9 – financeiro) |
-| Missão/Visão/Valores finais (MVV) | 🔴 |
+| Número de WhatsApp oficial da igreja (**D4**) | ✅ (83) 99945-0781 (ADR-010) |
+| CNPJ | ✅ 68.683.917/0001-71 (ADR-011) — credenciais Mercado Pago a cadastrar |
+| Missão/Visão/Valores finais (MVV) | ✅ aprovado (textos vigentes em `constants.ts`) |
 | Cartão no lançamento vs apenas PIX (RN-001.1) | ✅ decidido — PIX apenas (ADR-009) |
 | Domínio próprio vs `*.vercel.app` | ✅ temporário `*.vercel.app` (RC-003) |
 

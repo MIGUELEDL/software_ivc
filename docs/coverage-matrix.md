@@ -22,7 +22,7 @@ status `verified`, respaldada por `validation.md` no respectivo `.specs/features
 
 | Requisito(s) | Feature | Spec ACs | Teste / Gate | Status |
 | ------------ | ------- | -------- | ------------ | ------ |
-| RNF-011 (conteúdo institucional fidedigno, fonte única) | `sobre-dados-institucionais` | DADOS-01..09 | probes por AC + `npm run lint && npm run typecheck && npm run build` | ✅ verified |
+| RNF-011 (conteúdo institucional fidedigno, fonte única) — inclui WhatsApp D4 (ADR-010), CNPJ e fundação (ADR-011) | `sobre-dados-institucionais` | DADOS-01..11 | probes por AC + `npm run lint && npm run typecheck && npm run build` | ✅ verified |
 
 ### Fase 9 (MVP) — inventário aprovado, aguardando spec de cada feature
 

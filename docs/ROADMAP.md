@@ -46,7 +46,7 @@ FRENTES do MVP: portal público multirrota (Sobre/História/MV, Liderança, Loca
 
 ## Decisões & pendências transversais
 
-- Número de WhatsApp da igreja (**D4**) — em aberto (placeholder em `constants.ts`)
-- Conta Mercado Pago (CNPJ) — usuário cria e informa **antes** do financeiro da Fase 9
-- Missão/Visão/Valores (MVV) finais — em aberto (rascunho atual em `constants.ts`)
-- Domínio próprio — decidido: manter `*.vercel.app` por enquanto (RC-003); próprio quando houver
+- Número de WhatsApp da igreja (**D4**) — ✅ resolvido: (83) 99945-0781 (ADR-010)
+- Conta Mercado Pago — CNPJ 68.683.917/0001-71 informado (ADR-011); **credenciais MP a cadastrar** antes do financeiro da Fase 9
+- Missão/Visão/Valores (MVV) — ✅ aprovado (textos atuais em `constants.ts`)
+- Domínio próprio — decidido: manter `*.vercel.app` enquanto isso (RC-003); próprio quando houver
