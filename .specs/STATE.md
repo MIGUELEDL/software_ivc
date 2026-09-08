@@ -76,11 +76,11 @@
 
 ## Handoff
 
-- **Feature**: (nenhuma em andamento — Fase 8 completa)
-- **Phase / Task**: Fase 8 (Fundação) — concluída: piloto PASS + elevações (CI, hook, docs)
-- **Completed**: skill tlc-spec-driven v3.3.0; sub-agentes tlc-verifier/tlc-worker; Node 22.23.2 (nvm, `.nvmrc`); `npm install` + `typecheck`; ADR-001..009; **piloto `sobre-dados-institucionais`** (9/9 ACs, validation PASS 20ebcc7..afb209e); CI dual-gate + `.githooks/commit-msg` (Conventional Commits, `core.hooksPath`) + `.nvmrc`; docs/README.md + ROADMAP.md + coverage-matrix.md; seção SDD/Node + **Contexto & retomada** no AGENTS.md; **limpeza** de boilerplate (removidos `public/{file,globe,next,vercel,window}.svg` e `src/app/favicon.ico`) e README reescrito (480b43a) — assets únicos preservados (`img1..10.jpg`, `logo.png`); gates verdes
+- **Feature**: (nenhuma em andamento — revisão de requisitos concluída)
+- **Phase / Task**: Revisão de requisitos (REQUIREMENTS.md) + decisões aprovadas (2026-09-08)
+- **Completed** (adicionado nesta sessão): revisão do `docs/REQUIREMENTS.md` aprovada pelo administrador — RF-016 **removido** (painel membro = registro + dados pessoais, sem extrato); RF-032 ✅ (matriz de permissões a detalhar na spec de auth); RNF-001 ✅ (mobile-first, Lighthouse ≥ 90); RNF-012 ✅ (WCAG 2.1 AA); RC-003 ✅ (domínio temporário `*.vercel.app`); R-001 ✅ (garantia de continuidade via RBAC+auditoria); RN-001.1 decidido = **PIX apenas no lançamento** → **ADR-009** registrada; matriz de cobertura atualizada (inventário F9 como `pending`)
 - **In-progress**: nenhum
-- **Next step**: **REVISÃO do `docs/REQUIREMENTS.md` pelo administrador** (4 itens 🆕: RF-016, RF-032, RNF-001, RNF-012, RC-003, R-001) → confirmar status ✅; **decidir cartão-no-lançamento vs só PIX (RN-001.1) = novo ADR**; preencher D4/CNPJ/MVV; depois docs detalhadas restantes (ARCHITECTURE, DATABASE, SECURITY/LGPD, API, TESTING, OBSERVABILITY, DEPLOYMENT, COSTS) e Fase 9 (MVP)
-- **Blockers**: número de WhatsApp (D4) em aberto; Mercado Pago (CNPJ) pendente de criação pelo usuário antes da F9; sub-agentes só ativos após RESTART do opencode
+- **Next step**: escrever docs detalhadas da Fase 8 (ARCHITECTURE, DATABASE, SECURITY/LGPD, API, TESTING, OBSERVABILITY, DEPLOYMENT, COSTS) a partir dos ADRs + árvore; depois iniciar Fase 9 (MVP) com specs das features
+- **Blockers**: número de WhatsApp (D4) em aberto; Mercado Pago (CNPJ) pendente de criação pelo usuário antes da F9; MVV final ainda não definido; sub-agentes só ativos após RESTART do opencode
 - **Uncommitted files**: none (working tree limpo)
 - **Branch**: main
