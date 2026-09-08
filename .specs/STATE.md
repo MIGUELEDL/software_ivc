@@ -74,13 +74,29 @@
 - **Date**: 2026-09-08
 - **Status**: active
 
+### AD-010
+- **Decision**: Número oficial de WhatsApp da igreja (decisão D4 resolvida): **(83) 99945-0781**. `SOCIAL.whatsapp` em `src/lib/constants.ts` passa de placeholder `"#"` para `"https://wa.me/5583999450781"`.
+- **Reason**: Liderança informou o número em 2026-09-08; destrava o requisito RN-003 ("inscrever-se" em evento → WhatsApp) e remove o placeholder sem fabricar dado.
+- **Trade-off**: Número único oficial; eventuais mudanças exigem atualização da constante (fonte única, AD-008).
+- **Scope**: Portal público (links sociais), painel administ (configuração de WhatsApp RF-029 posterior).
+- **Date**: 2026-09-08
+- **Status**: active
+
+### AD-011
+- **Decision**: Dados oficiais de constituição registrados em `src/lib/constants.ts`: **fundação em 07/09/2025** (primeiro culto) e **CNPJ 68.683.917/0001-71** (criado em 03/08/2026).
+- **Reason**: Informados pela liderança em 2026-09-08 (substitui `"Em breve"` e o placeholder anterior); o CNPJ é pré-requisito do Mercado Pago (RC-002) para o financeiro da Fase 9 — MVP segue PIX apenas (AD-009).
+- **Trade-off**: Data de fundação adotada = primeiro culto (07/09/2025), não a data de registro do CNPJ (03/08/2026), conforme esclarecido pela liderança.
+- **Scope**: Portal público (seção Sobre/História), docs institucionais; CNPJ alimenta contratos Mercado Pago.
+- **Date**: 2026-09-08
+- **Status**: active
+
 ## Handoff
 
-- **Feature**: (nenhuma em andamento — Fase 8 concluída)
-- **Phase / Task**: Fase 8 (Fundação) — concluída: requisitos aprovados + ADR-009 + docs detalhadas
-- **Completed** (adicionado em 2026-09-08): revisão do `docs/REQUIREMENTS.md` aprovada (RF-016 removido; RF-032, RNF-001, RNF-012, RC-003, R-001 → ✅); ADR-009 (PIX apenas no lançamento, RN-001.1); `coverage-matrix.md` com inventário F9 `pending`; docs detalhadas escritas e commitadas: `PROJECT_OVERVIEW.md` (fc1946a), `ARCHITECTURE.md` (c94c34e), `DATABASE.md` (22f0cc8), `SECURITY.md` (b204061), `LGPD.md` (6fbb549), `API.md` (2fcb703), `TESTING.md` (7cd7a14), `OBSERVABILITY.md` (4b7d294), `DEPLOYMENT.md` (2651823), `COSTS.md` (a981284); índice e ROADMAP atualizados (1fc2188) — gates lint/typecheck/build verdes
-- **In-progress**: nenhum
-- **Next step**: Fase 9 (MVP) — especificar features do portal público (Sobre/Liderança/Localização/Cultos/Redes), Eventos→WhatsApp, Doação QR PIX, painel do membro (login+ID, avisos, QR dízimo, cartão, perfil/foto) e painel admin (RBAC, membros, eventos, financeiro PIX, configurações, auditoria) com escopo priorizado; registrar AD Rs pendentes (WhatsApp D4, MVV final) quando o administrador fornecer os dados
-- **Blockers**: número de WhatsApp (D4) em aberto; CNPJ/credenciais Mercado Pago pendentes (bloqueiam apenas o financeiro da F9 — MVP é PIX, AD-009); MVV final a confirmar; sub-agentes só ativos após RESTART do opencode
-- **Uncommitted files**: none (working tree limpo)
+- **Feature**: `sobre-dados-institucionais` (revalidada em 2026-09-08) — dados oficiais completos
+- **Phase / Task**: D4 resolvido + CNPJ + fundação (ADR-010/011) + push autorizado
+- **Completed** (adicionado em 2026-09-08): WhatsApp oficial **(83) 99945-0781** na `SOCIAL.whatsapp` (`https://wa.me/5583999450781`); CNPJ `68.683.917/0001-71` e fundação `07/09/2025` em `CHURCH` (`src/lib/constants.ts`); spec `sobre-dados-institucionais` reescrita (ACs 9–11 adicionadas; validate_spec PASS; gates verdes); ADR-010 (D4) e ADR-011 (fundação+CNPJ) registradas; MVV aprovado como está em `constants.ts`; docs da Fase 8 completas (PROJECT_OVERVIEW..COSTS) + requisitos aprovados + ADR-009 (PIX only) + matriz de cobertura (`pending` para F9)
+- **In-progress**: push para origin/main autorizado — a executar
+- **Next step**: Fase 9 (MVP) — especificar features do portal público, painel do membro e painel admin (escopo priorizado)
+- **Blockers**: Mercado Pago (credenciais) ainda a cadastrar pelo usuário mesmo com CNPJ informado — bloqueia apenas o financeiro da F9 (MVP é PIX, AD-009); sub-agentes disponíveis após RESTART (ativação confirmada)
+- **Uncommitted files**: nenhum esperado após ADRs/docs (verificar)
 - **Branch**: main
