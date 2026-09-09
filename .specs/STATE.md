@@ -92,11 +92,11 @@
 
 ## Handoff
 
-- **Feature**: (nenhuma em andamento — iniciando Fase 9 / MVP)
-- **Phase / Task**: Fase 9 (MVP) — especificação da primeira leva de features
-- **Completed** (em 2026-09-08): push `origin/main` atualizado (f53ecb2..e73c09a); feature `sobre-dados-institucionais` revalidada PASS (11/11 ACs, ADR-010/011) com consumidores na UI (Sobre/Cultos); docs da Fase 8 completas; requisitos aprovados
-- **In-progress**: Fase 9 — decomposição do MVP em features prioritizadas (proposta em andamento)
-- **Next step**: aprovar a ordem das frentes do MVP; especificar a 1ª feature (spec.md em EARS) → validate_spec → design/tasks → execute → verifier
-- **Blockers**: **credenciais Mercado Pago em aberto** (não fornecem pela liderança) — **não bloqueia o início da F9**: doação QR PIX é estática (RN-001), financeiro usa `paymentGateway` Port com Adapter MP a plugar depois (AD-009); sem outros blockers de código
-- **Uncommitted files**: none (working tree limpo)
+- **Feature**: `portal-home` (F1 da Fase 9 / MVP) — **VERIFIED PASS**
+- **Phase / Task**: Fase 9 (MVP) — home one-page institucional pronta
+- **Completed** (em 2026-09-08): feature `portal-home` especificada (12 ACs), implementada (5 commits: `13b627b` spec, `a0d1073` imagens, `b9ab530` liderança, `2be0c65` missão/visão, `956ecd3` fix), verifier PASS na iteração 2 com `validation.md` gravado (12/12 ACs, sensor 3/3 killed, gates 3/3); matriz marcada `verified` para RF-001..005 + RNF-001/011/012; imgs `img1..10` removidas (só `logo.png`), placeholders em Hero/About; gallery fora de escopo
+- **In-progress**: commit final (validation.md + matriz + Handoff) e push `origin/main` (aguardando autorização); então F2 `eventos` (RF-006, RN-003 → WhatsApp)
+- **Next step**: commitar o artefato de verificação, push; especificar feature F2 `eventos` (listagem + detalhe + "inscrever-se" → WhatsApp)
+- **Blockers**: **credenciais Mercado Pago em aberto** (não fornecidas pela liderança) — **não bloqueia a F9**: doação QR PIX é estática (RN-001), financeiro usa `paymentGateway` Port com Adapter MP a plugar depois (AD-009); **imagens novas** (substituição dos placeholders) pendentes de fornecimento — não bloqueia; **metadata literals no layout.tsx** (nome/slogan duplicados como literais, pré-existente) anotado pelo verifier como não-bloqueante — tratar em feature futura
+- **Uncommitted files**: `validation.md`, `coverage-matrix.md`, `STATE.md` (aguardando commit final)
 - **Branch**: main
