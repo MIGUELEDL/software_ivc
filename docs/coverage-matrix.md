@@ -29,7 +29,7 @@ status `verified`, respaldada por `validation.md` no respectivo `.specs/features
 | Requisito(s) | Feature | Spec ACs | Teste / Gate | Status |
 | ------------ | ------- | -------- | ------------ | ------ |
 | RF-001, RF-002, RF-003, RF-004, RF-005 (portal público: sobre/MVV; liderança; localização; cultos; redes), RNF-001, RNF-012 | `portal-home` | HOME-01..12 | probes por AC + `npm run lint && npm run typecheck && npm run build` | ✅ verified |
-| RF-006, RF-007 | portal público (eventos→WhatsApp, doação QR PIX) | — | — | 🔲 pending |
+| RF-006, RN-003 (eventos: listagem + detalhe → WhatsApp pré-preenchido) | `eventos` | EVENTOS-01..10 | probes por AC + gates + rotas dinâmicas (200/404/estado vazio) | ✅ verified |
 | RF-008, RF-011, RF-031 | autenticação e RBAC (login admin/membro, 1º acesso senha-ID) | — | — | 🔲 pending |
 | RF-012, RF-013, RF-014, RF-015 | painel membro (avisos, QR dízimo, cartão, minhas informações) | — | — | 🔲 pending |
 | RF-021..RF-030 | painel administrativo (dashboard, membros, igrejas, eventos, patrimônio, financeiro, relatórios, usuários, configurações, auditoria) | — | — | 🔲 pending |

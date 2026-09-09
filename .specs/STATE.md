@@ -92,11 +92,11 @@
 
 ## Handoff
 
-- **Feature**: `portal-home` (F1 da Fase 9 / MVP) — **VERIFIED PASS**
-- **Phase / Task**: Fase 9 (MVP) — home one-page institucional pronta
-- **Completed** (em 2026-09-08): feature `portal-home` especificada (12 ACs), implementada (5 commits: `13b627b` spec, `a0d1073` imagens, `b9ab530` liderança, `2be0c65` missão/visão, `956ecd3` fix), verifier PASS na iteração 2 com `validation.md` gravado (12/12 ACs, sensor 3/3 killed, gates 3/3); matriz marcada `verified` para RF-001..005 + RNF-001/011/012; imgs `img1..10` removidas (só `logo.png`), placeholders em Hero/About; gallery fora de escopo
-- **In-progress**: commit final (validation.md + matriz + Handoff) e push `origin/main` (aguardando autorização); então F2 `eventos` (RF-006, RN-003 → WhatsApp)
-- **Next step**: commitar o artefato de verificação, push; especificar feature F2 `eventos` (listagem + detalhe + "inscrever-se" → WhatsApp)
+- **Feature**: `eventos` (F2 da Fase 9 / MVP) — **VERIFIED PASS**
+- **Phase / Task**: Fase 9 (MVP) — rotas públicas de eventos prontas
+- **Completed** (em 2026-09-08): feature `eventos` especificada (10 ACs), implementada (3 commits: `bbc1e20` spec, `8a8c017` fonte+nav, `423d664` rotas), verifier PASS (`validation.md` gravado — 10/10 ACs, sensor 5/5 killed, gates 3/3, rotas dinâmicas 200/404/estado-vazio OK); matriz `verified` para RF-006 + RN-003; `EVENTS` vazio (sem dados fabricados); navbar/footer agora suportam rotas via next/link além das âncoras
+- **In-progress**: commit final (validation.md + matriz + Handoff) e push `origin/main` (aguardando autorização); então F3 `doacao-pix` (RF-007, RN-001)
+- **Next step**: commitar artefato de verificação, push; especificar feature F3 `doacao-pix` (QR PIX público, estático — AD-009; sem depender de credenciais MP)
 - **Blockers**: **credenciais Mercado Pago em aberto** (não fornecidas pela liderança) — **não bloqueia a F9**: doação QR PIX é estática (RN-001), financeiro usa `paymentGateway` Port com Adapter MP a plugar depois (AD-009); **imagens novas** (substituição dos placeholders) pendentes de fornecimento — não bloqueia; **metadata literals no layout.tsx** (nome/slogan duplicados como literais, pré-existente) anotado pelo verifier como não-bloqueante — tratar em feature futura
 - **Uncommitted files**: `validation.md`, `coverage-matrix.md`, `STATE.md` (aguardando commit final)
 - **Branch**: main
