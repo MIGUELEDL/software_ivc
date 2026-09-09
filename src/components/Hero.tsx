@@ -11,13 +11,9 @@ export default function Hero() {
       id="hero"
       className="relative h-screen w-full overflow-hidden"
     >
-      <Image
-        src="/img1.jpg"
-        alt="Igreja Virtude Cristã"
-        fill
-        className="object-cover"
-        preload
-      />
+      <div className="absolute inset-0 bg-gradient-to-br from-bg-dark via-primary/90 to-primary" />
+
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#1a3a6b30_0%,_transparent_70%)]" />
 
       <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
 

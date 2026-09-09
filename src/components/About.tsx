@@ -51,13 +51,14 @@ export default function About() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="relative h-80 sm:h-96 rounded-2xl overflow-hidden shadow-2xl"
+            className="relative h-80 sm:h-96 rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-primary via-bg-dark to-primary"
           >
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#C9A22730_0%,_transparent_70%)]" />
             <Image
-              src="/img2.jpg"
-              alt="Culto Igreja Virtude Cristã"
+              src="/logo.png"
+              alt="Logo Igreja Virtude Cristã"
               fill
-              className="object-cover hover:scale-105 transition-transform duration-700"
+              className="object-contain p-12"
             />
           </motion.div>
         </div>
