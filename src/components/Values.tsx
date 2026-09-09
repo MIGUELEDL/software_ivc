@@ -40,8 +40,57 @@ export default function Values() {
           className="text-center mb-16"
         >
           <h2 className="font-sans text-4xl sm:text-5xl font-bold text-primary mb-4">
-            Nossos <span className="text-accent">Valores</span>
+            Nossa <span className="text-accent">Missão</span> e{" "}
+            <span className="text-accent">Visão</span>
           </h2>
+          <p className="font-serif text-lg text-text-dark/60 max-w-2xl mx-auto">
+            Os alicerces que sustentam nosso propósito e nosso futuro.
+          </p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-2 gap-8 mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6 }}
+            className="rounded-2xl bg-bg-gray p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+          >
+            <Cross className="w-10 h-10 mb-4 text-accent" />
+            <h3 className="font-sans text-2xl font-bold text-primary mb-3">
+              Missão
+            </h3>
+            <p className="font-serif text-base leading-relaxed text-text-dark/80">
+              {CHURCH.mission}
+            </p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="rounded-2xl bg-bg-gray p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+          >
+            <BookOpen className="w-10 h-10 mb-4 text-accent" />
+            <h3 className="font-sans text-2xl font-bold text-primary mb-3">
+              Visão
+            </h3>
+            <p className="font-serif text-base leading-relaxed text-text-dark/80">
+              {CHURCH.vision}
+            </p>
+          </motion.div>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12"
+        >
+          <h3 className="font-sans text-4xl sm:text-5xl font-bold text-primary mb-4">
+            Nossos <span className="text-accent">Valores</span>
+          </h3>
           <p className="font-serif text-lg text-text-dark/60 max-w-2xl mx-auto">
             Fundamentos que guiam nossa caminhada de fé e amor.
           </p>
