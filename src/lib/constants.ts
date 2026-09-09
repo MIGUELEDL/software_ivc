@@ -76,3 +76,7 @@ export type Evento = {
 };
 
 export const EVENTS: readonly Evento[] = [] as const;
+
+export const PIX = {
+  key: CHURCH.cnpj,
+} as const;
