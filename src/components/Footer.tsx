@@ -4,6 +4,7 @@ import { CHURCH, SOCIAL, NAV_ITEMS } from "@/lib/constants";
 import { MessageCircle, Mail } from "lucide-react";
 import { FaInstagram, FaYoutube } from "react-icons/fa";
 import Image from "next/image";
+import Link from "next/link";
 
 const FOOTER_SOCIAL = [
   { icon: FaInstagram, href: SOCIAL.instagram, label: "Instagram" },
@@ -11,6 +12,26 @@ const FOOTER_SOCIAL = [
   { icon: MessageCircle, href: SOCIAL.whatsapp, label: "WhatsApp" },
   { icon: Mail, href: `mailto:${SOCIAL.email}`, label: "E-mail" },
 ];
+
+function FooterNavLink({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
+  const anchor = href.startsWith("#");
+  const className =
+    "font-serif text-white/70 hover:text-accent transition-colors text-sm";
+  if (anchor) {
+    return <a href={href} className={className}>{children}</a>;
+  }
+  return (
+    <Link href={href} className={className}>
+      {children}
+    </Link>
+  );
+}
 
 export default function Footer() {
   return (
@@ -42,12 +63,7 @@ export default function Footer() {
             <ul className="space-y-3">
               {NAV_ITEMS.map((item) => (
                 <li key={item.href}>
-                  <a
-                    href={item.href}
-                    className="font-serif text-white/70 hover:text-accent transition-colors text-sm"
-                  >
-                    {item.label}
-                  </a>
+                  <FooterNavLink href={item.href}>{item.label}</FooterNavLink>
                 </li>
               ))}
             </ul>

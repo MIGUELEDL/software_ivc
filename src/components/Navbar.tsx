@@ -5,6 +5,35 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { NAV_ITEMS, CHURCH } from "@/lib/constants";
 import Image from "next/image";
+import Link from "next/link";
+
+function NavLink({
+  href,
+  children,
+  className,
+  onClick,
+}: {
+  href: string;
+  children: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
+}) {
+  const anchor = href.startsWith("#");
+  const cls =
+    "hover:text-accent transition-colors" + (className ? ` ${className}` : "");
+  if (anchor) {
+    return (
+      <a href={href} className={cls} onClick={onClick}>
+        {children}
+      </a>
+    );
+  }
+  return (
+    <Link href={href} className={cls} onClick={onClick}>
+      {children}
+    </Link>
+  );
+}
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -47,15 +76,14 @@ export default function Navbar() {
 
         <div className="hidden md:flex items-center gap-8">
           {NAV_ITEMS.map((item) => (
-            <a
+            <span
               key={item.href}
-              href={item.href}
-              className={`font-sans text-sm font-semibold tracking-wide uppercase transition-colors hover:text-accent ${
+              className={`font-sans text-sm font-semibold tracking-wide uppercase ${
                 scrolled ? "text-text-dark" : "text-white/90"
               }`}
             >
-              {item.label}
-            </a>
+              <NavLink href={item.href}>{item.label}</NavLink>
+            </span>
           ))}
         </div>
 
@@ -80,14 +108,14 @@ export default function Navbar() {
           >
             <div className="flex flex-col px-6 py-4 gap-4">
               {NAV_ITEMS.map((item) => (
-                <a
+                <NavLink
                   key={item.href}
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className="font-sans text-sm font-semibold tracking-wide uppercase text-text-dark hover:text-accent transition-colors"
+                  className="font-sans text-sm font-semibold tracking-wide uppercase text-text-dark"
                 >
                   {item.label}
-                </a>
+                </NavLink>
               ))}
             </div>
           </motion.div>

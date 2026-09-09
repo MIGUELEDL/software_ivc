@@ -62,5 +62,17 @@ export const NAV_ITEMS = [
   { label: "Liderança", href: "#lideranca" },
   { label: "Clamor 12h", href: "#clamor" },
   { label: "Cultos", href: "#cultos" },
+  { label: "Eventos", href: "/eventos" },
   { label: "Redes", href: "#redes" },
 ] as const;
+
+export type Evento = {
+  id: string;
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  description: string;
+};
+
+export const EVENTS: readonly Evento[] = [] as const;
