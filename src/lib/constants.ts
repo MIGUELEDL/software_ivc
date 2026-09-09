@@ -59,6 +59,7 @@ export const NAV_ITEMS = [
   { label: "Início", href: "#hero" },
   { label: "Sobre", href: "#sobre" },
   { label: "Valores", href: "#valores" },
+  { label: "Liderança", href: "#lideranca" },
   { label: "Clamor 12h", href: "#clamor" },
   { label: "Redes", href: "#redes" },
 ] as const;
