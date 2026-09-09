@@ -90,13 +90,21 @@
 - **Date**: 2026-09-08
 - **Status**: active
 
+### AD-012
+- **Decision**: Doação PIX do portal (RF-007) usa **QR PIX estático gerado no app** a partir da chave CNPJ oficial `68.683.917/0001-71` (Confirmed em 2026-09-08): payload BR Code montado em `src/lib/pix.ts` (`buildBrCode`, MAI `BR.GOV.BCB.PIX01<chave>`, MCC 0000, moeda 986, país BR, nome/cidade projetados sem acentos até 25/15, TXID `***`, CRC-16/CCITT-FALSE em `6304`) + renderização com `qrcode.react@4.2.0` (nova dependência). Página `/doacao` mostra o QR e o código copia-e-cola com botão "Copiar" (clipboard + fallback acessível).
+- **Reason**: Admin omitiu chave oficial (CNPJ) em 2026-09-08; sem lib de QR instalada; QR estático (sem campo 54/valor fixo) alinha com RN-001 e AD-009 (PIX apenas no MVP); renderização no app permite trocar chave no deploy sem imagem estática.
+- **Trade-off**: Nova dependência (`qrcode.react`); QR sem valor fixo (o app bancário define) — escolha explícita do admin; MM 'copia-e-cola' fixo com TXID `***`.
+- **Scope**: Portal público `/doacao`; fonte única `PIX.key` aponta `CHURCH.cnpj` (não duplica dado).
+- **Date**: 2026-09-08
+- **Status**: active
+
 ## Handoff
 
-- **Feature**: `eventos` (F2 da Fase 9 / MVP) — **VERIFIED PASS**
-- **Phase / Task**: Fase 9 (MVP) — rotas públicas de eventos prontas
-- **Completed** (em 2026-09-08): feature `eventos` especificada (10 ACs), implementada (3 commits: `bbc1e20` spec, `8a8c017` fonte+nav, `423d664` rotas), verifier PASS (`validation.md` gravado — 10/10 ACs, sensor 5/5 killed, gates 3/3, rotas dinâmicas 200/404/estado-vazio OK); matriz `verified` para RF-006 + RN-003; `EVENTS` vazio (sem dados fabricados); navbar/footer agora suportam rotas via next/link além das âncoras
-- **In-progress**: commit final (validation.md + matriz + Handoff) e push `origin/main` (aguardando autorização); então F3 `doacao-pix` (RF-007, RN-001)
-- **Next step**: commitar artefato de verificação, push; especificar feature F3 `doacao-pix` (QR PIX público, estático — AD-009; sem depender de credenciais MP)
-- **Blockers**: **credenciais Mercado Pago em aberto** (não fornecidas pela liderança) — **não bloqueia a F9**: doação QR PIX é estática (RN-001), financeiro usa `paymentGateway` Port com Adapter MP a plugar depois (AD-009); **imagens novas** (substituição dos placeholders) pendentes de fornecimento — não bloqueia; **metadata literals no layout.tsx** (nome/slogan duplicados como literais, pré-existente) anotado pelo verifier como não-bloqueante — tratar em feature futura
-- **Uncommitted files**: `validation.md`, `coverage-matrix.md`, `STATE.md` (aguardando commit final)
+- **Feature**: `doacao-pix` (F3 da Fase 9 / MVP) — **VERIFIED PASS**
+- **Phase / Task**: Fase 9 (MVP) — rota pública de doação QR PIX pronta
+- **Completed** (em 2026-09-08): feature `doacao-pix` especificada (10 ACs), implementada (3 commits: `177e0f4` lib+chave, `6d4c5c3` widget+dependência, `931643c` rota), verifier PASS (`validation.md` gravado — 10/10 ACs, sensor 6/6 killed, gates 3/3, rota dinâmica `/doacao`→200 com QR/payload/nav); matriz `verified` para RF-007 + RN-001 (RN-001 removido da linha pendente da matriz); AD-012 registrado; `PIX.key` = CNPJ `68.683.917/0001-71` via `CHURCH.cnpj` (fonte única)
+- **In-progress**: commit final (spec/context `doacao-pix` + validation.md + matriz + AD-012 + Handoff) e push `origin/main` (aguardando autorização)
+- **Next step**: commitar artefatos da F3, push; próxima feature do MVP F9 (candidatos: autenticação/RBAC que desbloqueia painel, RF-008/RF-011/RF-031)
+- **Blockers**: **credenciais Mercado Pago em aberto** (não fornecidas pela liderança) — **não bloqueia a F9**: doação QR PIX já entregue e estática (RN-001, AD-012), financeiro/webhook MP na onda 3 (RF-026); **imagens novas** (substituição dos placeholders) pendentes de fornecimento — não bloqueia; **metadata literals no layout.tsx** (nome/slogan duplicados como literais, pré-existente) anotado pelo verifier — tratar em feature futura; **nuance a11y** (mensagem "Código copiado!" fora da região `aria-live`) plateada do verifier — fine-tune em pass futuro
+- **Uncommitted files**: `spec.md`, `context.md` (F3), `validation.md`, `coverage-matrix.md`, `STATE.md` (aguardando commit final)
 - **Branch**: main

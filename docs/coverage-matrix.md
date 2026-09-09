@@ -30,13 +30,14 @@ status `verified`, respaldada por `validation.md` no respectivo `.specs/features
 | ------------ | ------- | -------- | ------------ | ------ |
 | RF-001, RF-002, RF-003, RF-004, RF-005 (portal público: sobre/MVV; liderança; localização; cultos; redes), RNF-001, RNF-012 | `portal-home` | HOME-01..12 | probes por AC + `npm run lint && npm run typecheck && npm run build` | ✅ verified |
 | RF-006, RN-003 (eventos: listagem + detalhe → WhatsApp pré-preenchido) | `eventos` | EVENTOS-01..10 | probes por AC + gates + rotas dinâmicas (200/404/estado vazio) | ✅ verified |
+| RF-007, RN-001 (doação: QR PIX público estático, sem cartão) | `doacao-pix` | DOACAO-01..10 | probes por AC + gates + rota dinâmica (200/QR/payload/nav) | ✅ verified |
 | RF-008, RF-011, RF-031 | autenticação e RBAC (login admin/membro, 1º acesso senha-ID) | — | — | 🔲 pending |
 | RF-012, RF-013, RF-014, RF-015 | painel membro (avisos, QR dízimo, cartão, minhas informações) | — | — | 🔲 pending |
 | RF-021..RF-030 | painel administrativo (dashboard, membros, igrejas, eventos, patrimônio, financeiro, relatórios, usuários, configurações, auditoria) | — | — | 🔲 pending |
 | RF-032 | matriz de permissões por papel (ler/escrever/administrar) | — | — | 🔲 pending |
 | RNF-001, RNF-002, RNF-012 | responsividade mobile-first, identidade IVC, WCAG 2.1 AA | — | — | 🔲 pending |
 | RNF-003..RNF-010 | disponibilidade, segurança, LGPD, backup, custo, observabilidade, CI, deploy | — | — | 🔲 pending |
-| RN-001, RN-001.1, RN-002..RN-005 | regras de negócio (PIX apenas no MVP, 1º acesso, evento→WhatsApp, auditoria, 1 templo) | — | — | 🔲 pending |
+| RN-001.1, RN-002, RN-004, RN-005 | regras de negócio (webhook PIX+cartão financeiro, 1º acesso, auditoria, 1 templo) | — | — | 🔲 pending |
 
 > RF-016 (histórico de doações do membro) foi **removido** por decisão do administrador (2026-09-08).
 
