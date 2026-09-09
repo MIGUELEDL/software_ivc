@@ -56,7 +56,7 @@ export default function About() {
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#C9A22730_0%,_transparent_70%)]" />
             <Image
               src="/logo.png"
-              alt="Logo Igreja Virtude Cristã"
+              alt={`Logo ${CHURCH.name}`}
               fill
               className="object-contain p-12"
             />

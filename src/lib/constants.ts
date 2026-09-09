@@ -61,5 +61,6 @@ export const NAV_ITEMS = [
   { label: "Valores", href: "#valores" },
   { label: "Liderança", href: "#lideranca" },
   { label: "Clamor 12h", href: "#clamor" },
+  { label: "Cultos", href: "#cultos" },
   { label: "Redes", href: "#redes" },
 ] as const;

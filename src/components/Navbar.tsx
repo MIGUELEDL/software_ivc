@@ -31,7 +31,7 @@ export default function Navbar() {
         <a href="#hero" className="flex items-center gap-3">
           <Image
             src="/logo.png"
-            alt="Igreja Virtude Cristã"
+            alt={`Logo ${CHURCH.name}`}
             width={40}
             height={40}
             className="rounded-full"

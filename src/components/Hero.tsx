@@ -25,7 +25,7 @@ export default function Hero() {
         >
           <Image
             src="/logo.png"
-            alt="Logo Igreja Virtude Cristã"
+            alt={`Logo ${CHURCH.name}`}
             width={120}
             height={120}
             className="mx-auto mb-6 rounded-full shadow-2xl border-2 border-accent/50"
