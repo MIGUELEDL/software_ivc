@@ -153,7 +153,7 @@ que nenhum usuário cruze para área que não lhe pertence (RF-031).
 | AUTH-14 | P1: RBAC de rotas | Execute | Execute |
 | AUTH-15 | P1: RBAC de rotas | Execute | Execute |
 | AUTH-16 | Edge: sessão expirada | Execute | Execute |
-| AUTH-17 | Edge: e-mail inexistente | Design | Pending |
+| AUTH-17 | Edge: e-mail inexistente | Execute | Execute |
 | AUTH-18 | Edge: logout | Execute | Execute |
 | AUTH-19 | Edge: sem papel | Execute | Execute |
 
