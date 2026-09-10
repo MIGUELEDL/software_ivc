@@ -85,5 +85,25 @@ case "$status:$location" in
     ;;
 esac
 
+# --- AUTH-16 | sessão ausente: observável distinto de weak_password ---
+# Senha FORTE sem sessão NÃO pode passar pela política; deve cair no session
+# guard (auth_required), distinto de weak_password (discrimina o guard).
+out="$(curl -s -o /dev/null -w '%{http_code}|%{redirect_url}' \
+  -X POST "$BASE_URL/api/auth/trocar-senha" \
+  --data-urlencode 'new_password=Str0ngPass123')"
+status="${out%%|*}"
+location="${out#*|}"
+case "$status:$location" in
+  000:*)
+    ko "POST trocar-senha (forte, sem sessao) -> servidor nao responde"
+    ;;
+  "307:${BASE_URL}/trocar-senha?error=auth_required")
+    ok "senha forte sem sessao -> 307 /trocar-senha?error=auth_required"
+    ;;
+  *)
+    ko "POST trocar-senha (forte, sem sessao) -> $status $location (esperado 307 $BASE_URL/trocar-senha?error=auth_required)"
+    ;;
+esac
+
 printf '\nProbes auth: %d ok, %d falhas\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]

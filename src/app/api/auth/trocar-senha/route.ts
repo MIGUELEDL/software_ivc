@@ -20,13 +20,25 @@ export async function POST(request: Request) {
 
   const supabase = await createServerClient();
 
+  // AUTH-16 / session guard: password change requires a session. Distinguished
+  // from AUTH-11 so the probe can discriminate "failed policy" vs "no session".
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    return NextResponse.redirect(
+      new URL("/trocar-senha?error=auth_required", request.url)
+    );
+  }
+
   const { data, error } = await supabase.auth.updateUser({
     password: newPassword,
   });
 
   if (error || !data.user) {
     return NextResponse.redirect(
-      new URL("/trocar-senha?error=weak_password", request.url)
+      new URL("/trocar-senha?error=auth_required", request.url)
     );
   }
 

@@ -22,6 +22,12 @@ export default async function TrocarSenhaPage({
             </p>
           </div>
 
+          {error === "auth_required" && (
+            <div className="mb-6 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 font-serif">
+              Sessão não encontrada. Faça login novamente para trocar a senha.
+            </div>
+          )}
+
           {error === "weak_password" && (
             <div className="mb-6 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 font-serif">
               A senha não atende aos requisitos: mínimo 8 caracteres, com letra
