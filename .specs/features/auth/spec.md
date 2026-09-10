@@ -101,7 +101,7 @@ temporária na primeira vez que entrar, de modo que a senha-ID expira após o us
 1. WHILE a sessão tem `force_password_change = true` o sistema SHALL redirecionar qualquer rota protegida (`/painel` ou `/admin`) para `/trocar-senha`. <!-- state-driven -->
 2. WHEN o usuário envia nova senha válida em `/trocar-senha` THEN o sistema SHALL atualizar a senha, limpar `force_password_change` e redirecionar para a área do seu papel (/painel ou /admin). <!-- event-driven -->
 3. IF a nova senha violar a política (mínimo 8 caracteres, com letra e número) THEN o sistema SHALL exibir erro de validação e NÃO concluir a troca. <!-- unwanted-behavior -->
-4. IF o usuário tentar usar a senha-ID antiga após a troca THEN o sistema SHALL rejeitar o login (senha expirada). <!-- unwanted-behavior -->
+4. IF o usuário tentar usar a senha-ID antiga após a troca THEN o sistema SHALL rejeitar o login (senha expirada). *(Garantia da plataforma Supabase Auth: `updateUser({ password })` invalida a senha anterior — sem código próprio no projeto; coberto por probe runtime pós-`SUPABASE_SERVICE_ROLE_KEY`, ver tasks.md T9.)* <!-- unwanted-behavior -->
 
 **Independent Test**: Usuário criado com flag → login → forçado a `/trocar-senha`; troca com senha válida → 302 `/painel`/`/admin`; relogin com senha antiga → erro; relogin com nova → OK.
 
@@ -157,7 +157,7 @@ que nenhum usuário cruze para área que não lhe pertence (RF-031).
 | AUTH-18 | Edge: logout | Execute | Execute |
 | AUTH-19 | Edge: sem papel | Execute | Execute |
 
-**Coverage:** 19 total, 0 mapped to tasks, 19 unmapped ⚠️
+**Coverage:** 19 total, 19 implemented via tasks T1-T15 (see `tasks.md`), verify pass status at `validation.md`.
 
 ---
 
