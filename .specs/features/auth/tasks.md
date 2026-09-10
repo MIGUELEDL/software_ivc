@@ -177,7 +177,7 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 ---
 
-#### T5: Create seed-admin script
+#### T5: Create seed-admin script ✅ Complete
 
 **What**: Create `scripts/seed-admin.mjs` that uses Supabase Admin API to create the initial SUPER_ADMIN user with `force_password_change: true`.
 **Where**: `scripts/seed-admin.mjs`
