@@ -1,3 +1,9 @@
+## Fix mais recente na pipeline
+
+- **Commit `bb3a62f`** — `PIX.key` agora deriva de `CHURCH.cnpj` com `replace(/\D/g, "")` (→ `68683917000171`), conforme Manual de Padrões para Iniciação do PIX/BCB: CNPJ deve ser codificado **sem máscara** no BR Code. Payload final verificado: `00020126360014BR.GOV.BCB.PIX0114686839170001715204000053039865802BR5921IGREJA VIRTUDE CRISTA6011SANTA LUZIA62070503***630420BF` — chave limpa, sem campo 54, CRC OK. *Falha inicial (chave mascarada) detectada em teste real de app bancário pelo administrador.*
+
+---
+
 # Doação PIX Validation
 
 **Date**: 2026-09-08
