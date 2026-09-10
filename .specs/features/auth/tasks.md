@@ -259,7 +259,7 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 ---
 
-#### T8: Create logout route handler
+#### T8: Create logout route handler ✅ Complete
 
 **What**: Create `src/app/api/auth/logout/route.ts` — POST handler that signs out and redirects to `/login`.
 **Where**: `src/app/api/auth/logout/route.ts`
@@ -274,10 +274,10 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 **Done when**:
 
-- [ ] `POST(request: Request)` exported
-- [ ] Calls `signOut()` via Supabase server client (clears cookies)
-- [ ] Returns redirect to `/login`
-- [ ] Gate check passes: `npm run lint && npm run typecheck && npm run build`
+- [x] `POST(request: Request)` exported
+- [x] Calls `signOut()` via Supabase server client (clears cookies)
+- [x] Returns redirect to `/login`
+- [x] Gate check passes: `npm run lint && npm run typecheck && npm run build`
 
 **Tests**: none
 **Gate**: build

@@ -154,7 +154,7 @@ que nenhum usuário cruze para área que não lhe pertence (RF-031).
 | AUTH-15 | P1: RBAC de rotas | Design | Pending |
 | AUTH-16 | Edge: sessão expirada | Design | Pending |
 | AUTH-17 | Edge: e-mail inexistente | Design | Pending |
-| AUTH-18 | Edge: logout | Design | Pending |
+| AUTH-18 | Edge: logout | Execute | Execute |
 | AUTH-19 | Edge: sem papel | Design | Pending |
 
 **Coverage:** 19 total, 0 mapped to tasks, 19 unmapped ⚠️
