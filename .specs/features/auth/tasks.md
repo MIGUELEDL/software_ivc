@@ -205,7 +205,7 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 ### Phase 2: Auth API
 
-#### T6: Create member login route handler
+#### T6: Create member login route handler ✅ Complete
 
 **What**: Create `src/app/api/auth/login/route.ts` — POST handler that authenticates member via `signInWithPassword`, sets session cookies, and redirects to `/painel`.
 **Where**: `src/app/api/auth/login/route.ts`
@@ -220,12 +220,12 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 **Done when**:
 
-- [ ] `POST(request: Request)` exported; reads form data (email, password)
-- [ ] Calls `signInWithPassword({ email, password })` via Supabase server client
-- [ ] On success: returns redirect to `/painel` with session cookies set
-- [ ] On failure: returns redirect to `/login?error=invalid_credentials` (no session set)
-- [ ] Does not reveal whether email exists (generic error per AUTH-17)
-- [ ] Gate check passes: `npm run lint && npm run typecheck && npm run build`
+- [x] `POST(request: Request)` exported; reads form data (email, password)
+- [x] Calls `signInWithPassword({ email, password })` via Supabase server client
+- [x] On success: returns redirect to `/painel` with session cookies set
+- [x] On failure: returns redirect to `/login?error=invalid_credentials` (no session set)
+- [x] Does not reveal whether email exists (generic error per AUTH-17)
+- [x] Gate check passes: `npm run lint && npm run typecheck && npm run build`
 
 **Tests**: none
 **Gate**: build
