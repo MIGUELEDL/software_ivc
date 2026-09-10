@@ -367,7 +367,7 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 ---
 
-#### T12: Create trocar-senha page
+#### T12: Create trocar-senha page ✅ Complete
 
 **What**: Create `src/app/trocar-senha/page.tsx` — password change form that POSTs to `/api/auth/trocar-senha` with client-side validation (min 8 chars, letter+number).
 **Where**: `src/app/trocar-senha/page.tsx`
@@ -382,11 +382,11 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 **Done when**:
 
-- [ ] Page renders a form with new password + confirm password inputs
-- [ ] Form uses `action="/api/auth/trocar-senha"` with method POST
-- [ ] Client-side validation: min 8 chars, at least one letter, at least one number (AUTH-11)
-- [ ] Shows `searchParams.error` message when present (`weak_password`)
-- [ ] Gate check passes: `npm run lint && npm run typecheck && npm run build`
+- [x] Page renders a form with new password + confirm password inputs
+- [x] Form uses `action="/api/auth/trocar-senha"` with method POST
+- [x] Client-side validation: min 8 chars, at least one letter, at least one number (AUTH-11)
+- [x] Shows `searchParams.error` message when present (`weak_password`)
+- [x] Gate check passes: `npm run lint && npm run typecheck && npm run build`
 
 **Tests**: none
 **Gate**: build
