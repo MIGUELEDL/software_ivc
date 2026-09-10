@@ -315,7 +315,7 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 ### Phase 3: Pages + Route Protection
 
-#### T10: Create member login page
+#### T10: Create member login page ✅ Complete
 
 **What**: Create `src/app/login/page.tsx` — server-rendered login form that POSTs to `/api/auth/login` and displays error messages from query params.
 **Where**: `src/app/login/page.tsx`
@@ -330,11 +330,11 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 **Done when**:
 
-- [ ] Page renders a form with email and password inputs
-- [ ] Form uses `action="/api/auth/login"` with method POST (server component, no client JS needed)
-- [ ] Reads `searchParams.error` to display "Credenciais inválidas" when `error=invalid_credentials`
-- [ ] Follows IVC design tokens and layout (max-w, padding, Montserrat font)
-- [ ] Gate check passes: `npm run lint && npm run typecheck && npm run build`
+- [x] Page renders a form with email and password inputs
+- [x] Form uses `action="/api/auth/login"` with method POST (server component, no client JS needed)
+- [x] Reads `searchParams.error` to display "Credenciais inválidas" when `error=invalid_credentials`
+- [x] Follows IVC design tokens and layout (max-w, padding, Montserrat font)
+- [x] Gate check passes: `npm run lint && npm run typecheck && npm run build`
 
 **Tests**: none
 **Gate**: build
