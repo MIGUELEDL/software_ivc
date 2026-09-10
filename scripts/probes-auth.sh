@@ -66,6 +66,35 @@ check_redirect "/painel" "307" "$BASE_URL/login"
 check_redirect "/admin" "307" "$BASE_URL/login/admin"
 check_redirect "/trocar-senha" "307" "$BASE_URL/login"
 
+# --- AUTH-15 | rotas públicas respondem 200 sem sessão ---
+printf '%s\n' '-- AUTH-15 rotas publicas (sem sessao, 200)'
+for path in "/" "/eventos" "/doacao" "/login" "/login/admin"; do
+  code="$(curl -s -o /dev/null -w '%{http_code}' "$BASE_URL$path")"
+  if [ "$code" = "200" ]; then
+    ok "$path -> 200"
+  else
+    ko "$path -> $code (esperado 200)"
+  fi
+done
+
+# --- AUTH-18 | logout encerra sessão e redireciona para o login da área ---
+printf '%s\n' '-- AUTH-18 logout -> login da area (sem sessao, branch membro)'
+out="$(curl -s -o /dev/null -w '%{http_code}|%{redirect_url}' \
+  -X POST "$BASE_URL/api/auth/logout")"
+status="${out%%|*}"
+location="${out#*|}"
+case "$status:$location" in
+  000:*)
+    ko "POST logout -> servidor nao responde"
+    ;;
+  "307:${BASE_URL}/login")
+    ok "logout sem sessao -> 307 $BASE_URL/login"
+    ;;
+  *)
+    ko "POST logout -> $status $location (esperado 307 $BASE_URL/login)"
+    ;;
+esac
+
 # --- AUTH-11 | rejeição server-side via POST direto (sem sessão) ---
 printf '%s\n' '-- AUTH-11 politica de senha (POST direto)'
 out="$(curl -s -o /dev/null -w '%{http_code}|%{redirect_url}' \
