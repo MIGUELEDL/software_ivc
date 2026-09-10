@@ -232,7 +232,7 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 ---
 
-#### T7: Create admin login route handler
+#### T7: Create admin login route handler ✅ Complete
 
 **What**: Create `src/app/api/auth/login/admin/route.ts` — POST handler for admin login, same as T6 but redirects to `/admin`.
 **Where**: `src/app/api/auth/login/admin/route.ts`
@@ -247,12 +247,12 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 **Done when**:
 
-- [ ] `POST(request: Request)` exported; reads form data (email, password)
-- [ ] Calls `signInWithPassword({ email, password })` via Supabase server client
-- [ ] On success: returns redirect to `/admin` with session cookies set
-- [ ] On failure: returns redirect to `/login/admin?error=invalid_credentials`
-- [ ] Does not reveal whether email exists (generic error per AUTH-17)
-- [ ] Gate check passes: `npm run lint && npm run typecheck && npm run build`
+- [x] `POST(request: Request)` exported; reads form data (email, password)
+- [x] Calls `signInWithPassword({ email, password })` via Supabase server client
+- [x] On success: returns redirect to `/admin` with session cookies set
+- [x] On failure: returns redirect to `/login/admin?error=invalid_credentials`
+- [x] Does not reveal whether email exists (generic error per AUTH-17)
+- [x] Gate check passes: `npm run lint && npm run typecheck && npm run build`
 
 **Tests**: none
 **Gate**: build
