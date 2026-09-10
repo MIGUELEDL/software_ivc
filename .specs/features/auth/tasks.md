@@ -341,7 +341,7 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 ---
 
-#### T11: Create admin login page
+#### T11: Create admin login page ✅ Complete
 
 **What**: Create `src/app/login/admin/page.tsx` — admin login form, same pattern as T10 but POSTs to `/api/auth/login/admin`.
 **Where**: `src/app/login/admin/page.tsx`
@@ -356,11 +356,11 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 **Done when**:
 
-- [ ] Page renders a form with email and password inputs
-- [ ] Form uses `action="/api/auth/login/admin"` with method POST
-- [ ] Reads `searchParams.error` to display error message
-- [ ] Visual difference from T10: title/header indicates "Área Administrativa" (D4 — separation of context)
-- [ ] Gate check passes: `npm run lint && npm run typecheck && npm run build`
+- [x] Page renders a form with email and password inputs
+- [x] Form uses `action="/api/auth/login/admin"` with method POST
+- [x] Reads `searchParams.error` to display error message
+- [x] Visual difference from T10: title/header indicates "Área Administrativa" (D4 — separation of context)
+- [x] Gate check passes: `npm run lint && npm run typecheck && npm run build`
 
 **Tests**: none
 **Gate**: build
