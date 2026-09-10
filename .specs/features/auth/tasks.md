@@ -101,7 +101,7 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 ---
 
-#### T2: Create Supabase server client
+#### T2: Create Supabase server client ✅ Complete
 
 **What**: Create `src/lib/supabase/server.ts` exporting `createServerClient()` — initializes a Supabase client with `@supabase/ssr` `createServerClient` that reads/writes auth cookies via Next.js `cookies()`.
 **Where**: `src/lib/supabase/server.ts`

@@ -141,7 +141,7 @@ que nenhum usuário cruze para área que não lhe pertence (RF-031).
 | AUTH-02 | P1: Membro login | Design | Pending |
 | AUTH-03 | P1: Membro login | Design | Pending |
 | AUTH-04 | P1: Membro login | Design | Pending |
-| AUTH-05 | P1: Admin login | Design | Pending |
+| AUTH-05 | P1: Admin login | Execute | Execute |
 | AUTH-06 | P1: Admin login | Design | Pending |
 | AUTH-07 | P1: Admin login | Design | Pending |
 | AUTH-08 | P1: Admin login | Design | Pending |
