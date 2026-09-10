@@ -284,7 +284,7 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 ---
 
-#### T9: Create trocar-senha route handler
+#### T9: Create trocar-senha route handler ✅ Complete
 
 **What**: Create `src/app/api/auth/trocar-senha/route.ts` — POST handler that validates new password, updates it via Supabase, and clears `force_password_change` flag via admin API.
 **Where**: `src/app/api/auth/trocar-senha/route.ts`
@@ -299,14 +299,14 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 **Done when**:
 
-- [ ] `POST(request: Request)` exported; reads form data (new_password)
-- [ ] Validates password server-side: min 8 chars, at least one letter and one number (AUTH-11)
-- [ ] On validation failure: redirect to `/trocar-senha?error=weak_password`
-- [ ] Calls `supabase.auth.updateUser({ password: newPassword })` to set new password
-- [ ] Calls `admin.updateUserById(userId, { app_metadata: { ...existing, force_password_change: false } })` to clear flag — **requires `SUPABASE_SERVICE_ROLE_KEY`** (creates admin client)
-- [ ] On success: redirect to `/painel` or `/admin` based on user's role (via `isAdminRole()`)
-- [ ] Gate check passes: `npm run lint && npm run typecheck && npm run build`
-- [ ] **BLOCKER NOTE**: Full runtime probe of flag clearing requires `SUPABASE_SERVICE_ROLE_KEY` in `.env.local` (provided by user)
+- [x] `POST(request: Request)` exported; reads form data (new_password)
+- [x] Validates password server-side: min 8 chars, at least one letter and one number (AUTH-11)
+- [x] On validation failure: redirect to `/trocar-senha?error=weak_password`
+- [x] Calls `supabase.auth.updateUser({ password: newPassword })` to set new password
+- [x] Calls `admin.updateUserById(userId, { app_metadata: { ...existing, force_password_change: false } })` to clear flag — **requires `SUPABASE_SERVICE_ROLE_KEY`** (creates admin client); reads existing app_metadata before update to preserve `role`; missing key → 500 JSON
+- [x] On success: redirect to `/painel` or `/admin` based on user's role (via `isAdminRole()`)
+- [x] Gate check passes: `npm run lint && npm run typecheck && npm run build`
+- [x] **BLOCKER NOTE**: Full runtime probe of flag clearing requires `SUPABASE_SERVICE_ROLE_KEY` in `.env.local` (provided by user). Code complete and build-clean; runtime probe pending env key.
 
 **Tests**: none
 **Gate**: build

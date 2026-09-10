@@ -145,10 +145,10 @@ que nenhum usuário cruze para área que não lhe pertence (RF-031).
 | AUTH-06 | P1: Admin login | Execute | Execute |
 | AUTH-07 | P1: Admin login | Execute | Execute |
 | AUTH-08 | P1: Admin login | Design | Pending |
-| AUTH-09 | P1: 1º acesso troca | Design | Pending |
-| AUTH-10 | P1: 1º acesso troca | Design | Pending |
-| AUTH-11 | P1: 1º acesso troca | Design | Pending |
-| AUTH-12 | P1: 1º acesso troca | Design | Pending |
+| AUTH-09 | P1: 1º acesso troca | Execute | Execute |
+| AUTH-10 | P1: 1º acesso troca | Execute | Execute |
+| AUTH-11 | P1: 1º acesso troca | Execute | Execute |
+| AUTH-12 | P1: 1º acesso troca | Execute | Execute |
 | AUTH-13 | P1: RBAC de rotas | Execute | Execute |
 | AUTH-14 | P1: RBAC de rotas | Execute | Execute |
 | AUTH-15 | P1: RBAC de rotas | Design | Pending |
