@@ -418,7 +418,7 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 ---
 
-#### T14: Create admin landing
+#### T14: Create admin landing ✅ Complete
 
 **What**: Create `src/app/admin/page.tsx` — minimal server component that calls `getClaims()` and displays email + role + logout button (admin context).
 **Where**: `src/app/admin/page.tsx`
@@ -433,10 +433,10 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 **Done when**:
 
-- [ ] Server component calls `getClaims()` to extract email and role
-- [ ] Displays user email and role in the page (header: "Área Administrativa")
-- [ ] Includes a logout form (POST to `/api/auth/logout`)
-- [ ] Gate check passes: `npm run lint && npm run typecheck && npm run build`
+- [x] Server component calls `getClaims()` to extract email and role
+- [x] Displays user email and role in the page (header: "Área Administrativa")
+- [x] Includes a logout form (POST to `/api/auth/logout`)
+- [x] Gate check passes: `npm run lint && npm run typecheck && npm run build`
 
 **Tests**: none
 **Gate**: build
