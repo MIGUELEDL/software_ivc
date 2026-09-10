@@ -140,22 +140,22 @@ que nenhum usuário cruze para área que não lhe pertence (RF-031).
 | AUTH-01 | P1: Membro login | Execute | Execute |
 | AUTH-02 | P1: Membro login | Execute | Execute |
 | AUTH-03 | P1: Membro login | Execute | Execute |
-| AUTH-04 | P1: Membro login | Design | Pending |
+| AUTH-04 | P1: Membro login | Execute | Execute |
 | AUTH-05 | P1: Admin login | Execute | Execute |
 | AUTH-06 | P1: Admin login | Execute | Execute |
 | AUTH-07 | P1: Admin login | Execute | Execute |
-| AUTH-08 | P1: Admin login | Design | Pending |
+| AUTH-08 | P1: Admin login | Execute | Execute |
 | AUTH-09 | P1: 1º acesso troca | Execute | Execute |
 | AUTH-10 | P1: 1º acesso troca | Execute | Execute |
 | AUTH-11 | P1: 1º acesso troca | Execute | Execute |
 | AUTH-12 | P1: 1º acesso troca | Execute | Execute |
 | AUTH-13 | P1: RBAC de rotas | Execute | Execute |
 | AUTH-14 | P1: RBAC de rotas | Execute | Execute |
-| AUTH-15 | P1: RBAC de rotas | Design | Pending |
-| AUTH-16 | Edge: sessão expirada | Design | Pending |
+| AUTH-15 | P1: RBAC de rotas | Execute | Execute |
+| AUTH-16 | Edge: sessão expirada | Execute | Execute |
 | AUTH-17 | Edge: e-mail inexistente | Design | Pending |
 | AUTH-18 | Edge: logout | Execute | Execute |
-| AUTH-19 | Edge: sem papel | Design | Pending |
+| AUTH-19 | Edge: sem papel | Execute | Execute |
 
 **Coverage:** 19 total, 0 mapped to tasks, 19 unmapped ⚠️
 

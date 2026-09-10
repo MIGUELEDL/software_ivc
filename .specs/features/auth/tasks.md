@@ -443,7 +443,7 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 ---
 
-#### T15: Create proxy.ts for route protection
+#### T15: Create proxy.ts for route protection ✅ Complete
 
 **What**: Create `src/proxy.ts` — Next 16 proxy that refreshes session on each request, enforces RBAC redirects, and forces password change redirect.
 **Where**: `src/proxy.ts`
@@ -458,13 +458,13 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 **Done when**:
 
-- [ ] Exports default function `proxy(request: NextRequest): Promise<NextResponse>` (Next 16 convention)
-- [ ] Matcher configured for: `/painel/:path*`, `/admin/:path*`, `/trocar-senha`
-- [ ] `/trocar-senha`: if no session → redirect to `/login`; if session → allow (200)
-- [ ] `/painel/:path*`: no session → `/login`; `force_password_change` → `/trocar-senha`; admin role → `/admin` (redirect loop prevention)
-- [ ] `/admin/:path*`: no session → `/login/admin`; `force_password_change` → `/trocar-senha`; MEMBRO role → `/login/admin`
-- [ ] Session refresh: calls `getClaims()` which internally refreshes expired tokens via `@supabase/ssr`
-- [ ] Gate check passes: `npm run lint && npm run typecheck && npm run build`
+- [x] Exports default function `proxy(request: NextRequest): Promise<NextResponse>` (Next 16 convention)
+- [x] Matcher configured for: `/painel/:path*`, `/admin/:path*`, `/trocar-senha`
+- [x] `/trocar-senha`: if no session → redirect to `/login`; if session → allow (200)
+- [x] `/painel/:path*`: no session → `/login`; `force_password_change` → `/trocar-senha`; admin role → `/admin` (redirect loop prevention)
+- [x] `/admin/:path*`: no session → `/login/admin`; `force_password_change` → `/trocar-senha`; MEMBRO role → `/login/admin`
+- [x] Session refresh: calls `getClaimsFromRequest()` which internally refreshes expired tokens via `@supabase/ssr`
+- [x] Gate check passes: `npm run lint && npm run typecheck && npm run build`
 
 **Tests**: none
 **Gate**: build
