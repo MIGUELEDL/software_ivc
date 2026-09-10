@@ -118,9 +118,9 @@ que nenhum usuário cruze para área que não lhe pertence (RF-031).
 
 1. WHEN uma sessão autenticada com papel admin acessa `/painel` THEN o sistema SHALL redirecionar para `/admin`. <!-- event-driven -->
 2. WHEN uma sessão autenticada com papel MEMBRO acessa `/admin` THEN o sistema SHALL redirecionar para `/login/admin`. <!-- event-driven -->
-3. WHILE não autenticado o sistema SHALL permitir acesso público apenas às rotas públicas (`/`, `/eventos`, `/doacao`, `/login`, `/login/admin`, `/trocar-senha`, assets). <!-- state-driven -->
+3. WHILE não autenticado o sistema SHALL permitir acesso público apenas às rotas públicas (`/`, `/eventos`, `/doacao`, `/login`, `/login/admin`, assets) e SHALL redirecionar para o login da área o acesso às rotas protegidas (`/painel/:path*`, `/admin/:path*`, `/trocar-senha`). <!-- state-driven -->
 
-**Independent Test**: Sessão admin → `/painel` → 302 `/admin`; sessão membro → `/admin` → 302 `/login/admin`; rota pública sem sessão → 200.
+**Independent Test**: Sessão admin → `/painel` → 302 `/admin`; sessão membro → `/admin` → 302 `/login/admin`; rota pública sem sessão → 200; `/trocar-senha` sem sessão → 302 `/login`.
 
 ---
 
