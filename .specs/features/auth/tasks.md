@@ -393,7 +393,7 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 ---
 
-#### T13: Create member landing (painel)
+#### T13: Create member landing (painel) ✅ Complete
 
 **What**: Create `src/app/painel/page.tsx` — minimal server component that calls `getClaims()` and displays email + role + logout button.
 **Where**: `src/app/painel/page.tsx`
@@ -408,10 +408,10 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 **Done when**:
 
-- [ ] Server component calls `getClaims()` to extract email and role
-- [ ] Displays user email and role ("MEMBRO") in the page
-- [ ] Includes a logout form (POST to `/api/auth/logout`)
-- [ ] Gate check passes: `npm run lint && npm run typecheck && npm run build`
+- [x] Server component calls `getClaims()` to extract email and role
+- [x] Displays user email and role ("MEMBRO") in the page
+- [x] Includes a logout form (POST to `/api/auth/logout`)
+- [x] Gate check passes: `npm run lint && npm run typecheck && npm run build`
 
 **Tests**: none
 **Gate**: build
