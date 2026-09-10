@@ -149,8 +149,8 @@ que nenhum usuário cruze para área que não lhe pertence (RF-031).
 | AUTH-10 | P1: 1º acesso troca | Design | Pending |
 | AUTH-11 | P1: 1º acesso troca | Design | Pending |
 | AUTH-12 | P1: 1º acesso troca | Design | Pending |
-| AUTH-13 | P1: RBAC de rotas | Design | Pending |
-| AUTH-14 | P1: RBAC de rotas | Design | Pending |
+| AUTH-13 | P1: RBAC de rotas | Execute | Execute |
+| AUTH-14 | P1: RBAC de rotas | Execute | Execute |
 | AUTH-15 | P1: RBAC de rotas | Design | Pending |
 | AUTH-16 | Edge: sessão expirada | Design | Pending |
 | AUTH-17 | Edge: e-mail inexistente | Design | Pending |

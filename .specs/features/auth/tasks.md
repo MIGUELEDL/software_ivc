@@ -126,7 +126,7 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 ---
 
-#### T3: Create RBAC helper
+#### T3: Create RBAC helper ✅ Complete
 
 **What**: Create `src/lib/auth/rbac.ts` exporting `ADMIN_ROLES` set, `isAdminRole()`, and `isMemberRole()` pure functions.
 **Where**: `src/lib/auth/rbac.ts`
