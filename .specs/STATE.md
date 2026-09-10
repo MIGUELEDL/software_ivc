@@ -32,6 +32,14 @@
 - **Trade-off**: Mais código próprio de verificação de identidade vs. serviço externo pronto (Clerk etc.).
 - **Scope**: Login de membro e de admin, RBAC (MEMBRO, SECRETARIA, LIDER, FINANCEIRO, PATRIMONIAL, ADMIN, SUPER_ADMIN).
 - **Date**: 2026-09-06
+- **Status**: superseded by AD-013
+
+### AD-013
+- **Decision**: Autenticação = **Supabase Auth nativo (GoTrue) via `@supabase/ssr`** com sessão server-side e cookies httpOnly; papel do usuário em `app_metadata.role` (não-editável, lido server-side via `getClaims()`); logins separados `/login` (membro) e `/login/admin`; primeiro acesso por senha-ID temporária com troca obrigatória (flag `app_metadata.force_password_change`); 1º admin via script seed local `seed:admin` (service-role); destino pós-login = landings mínimos `/painel` e `/admin`; entrega de senha-ID manual pela liderança. **Supersede AD-004.**
+- **Reason**: Decisão do usuário em 2026-09-10 após análise (MCP Supabase ativo; projeto `[REDACTED_PROJECT_NAME]` criado). GoTrue entrega pronto hash/sessão/refresh/rate limit (cobre RNF-004 parcial) e evitar código próprio de Auth.js; papel em `app_metadata` não é editável pelo usuário → RBAC de decisão exclusiva no servidor (SECURITY.md).
+- **Trade-off**: Dependência do Supabase Auth em vez de Auth.js (lock-in moderado com AD-003); flag `force_password_change` em app_metadata substitui mecanismo nativo inexistente de expiração de senha (RN-002); resets/envio de e-mail fora do MVP (senha-ID entregue manualmente, D2).
+- **Scope**: Login membro/admin, RBAC de rotas (MEMBRO, SECRETARIA, LIDER, FINANCEIRO, PATRIMONIAL, ADMIN, SUPER_ADMIN), primeiro acesso/troca obrigatória da senha-ID. Painéis reais e gestão de papéis (RF-028/RF-032) ficam para features futuras.
+- **Date**: 2026-09-10
 - **Status**: active
 
 ### AD-005
@@ -102,11 +110,15 @@
 
 ## Handoff
 
-- **Feature**: `doacao-pix` (F3 da Fase 9 / MVP) — **VERIFIED PASS**
-- **Phase / Task**: Fase 9 (MVP) — rota pública de doação QR PIX pronta
-- **Completed** (em 2026-09-08): feature `doacao-pix` especificada (10 ACs), implementada (3 commits: `177e0f4` lib+chave, `6d4c5c3` widget+dependência, `931643c` rota), verifier PASS (`validation.md` gravado — 10/10 ACs, sensor 6/6 killed, gates 3/3, rota dinâmica `/doacao`→200 com QR/payload/nav); matriz `verified` para RF-007 + RN-001 (RN-001 removido da linha pendente da matriz); AD-012 registrado; `PIX.key` = CNPJ `68.683.917/0001-71` via `CHURCH.cnpj` (fonte única)
-- **In-progress**: commit final (spec/context `doacao-pix` + validation.md + matriz + AD-012 + Handoff) e push `origin/main` (aguardando autorização)
-- **Next step**: commitar artefatos da F3, push; próxima feature do MVP F9 (candidatos: autenticação/RBAC que desbloqueia painel, RF-008/RF-011/RF-031)
-- **Blockers**: **credenciais Mercado Pago em aberto** (não fornecidas pela liderança) — **não bloqueia a F9**: doação QR PIX já entregue e estática (RN-001, AD-012), financeiro/webhook MP na onda 3 (RF-026); **imagens novas** (substituição dos placeholders) pendentes de fornecimento — não bloqueia; **metadata literals no layout.tsx** (nome/slogan duplicados como literais, pré-existente) anotado pelo verifier — tratar em feature futura; **nuance a11y** (mensagem "Código copiado!" fora da região `aria-live`) plateada do verifier — fine-tune em pass futuro
-- **Uncommitted files**: `spec.md`, `context.md` (F3), `validation.md`, `coverage-matrix.md`, `STATE.md` (aguardando commit final)
-- **Branch**: main
+- **Feature**: `auth` (autenticação + RBAC) — **IMPLEMENTADA e VERIFICADA** (validation.md PASS, `validate_state.py auth` 0 errors)
+- **Phase / Task**: Fase 9 (MVP) — `RF-008/RF-011/RF-031/RN-002/AD-013` — fundação de sessão para os painéis
+- **Done até agora**: spec `AUTH-01..19` aprovada; design + tasks aprovados; 22 commits `444949f^..HEAD`;
+  - Código: `src/lib/auth/{claims,rbac}.ts`, `src/lib/supabase/server.ts`, `src/app/api/auth/{login,login/admin,logout,trocar-senha}/route.ts`, páginas `/login`, `/login/admin`, `/trocar-senha`, `/painel`, `/admin`, `src/proxy.ts`, `scripts/seed-admin.mjs`.
+  - Fixes no loop verifier (it-1 FAIL → it-4 PASS): AUTH-15 spec align (`5f50cac`), AUTH-18 logout área (`6856d00`), probe commitado `scripts/probes-auth.sh` (`e0feecb`) com discriminação AUTH-11 via `?error=auth_required` (`8612778`) + logout e rotas públicas (`78d3832`). **19 probes ok / 0 falhas**, sensor 5 killed + 1 equivalente.
+  - `docs/coverage-matrix.md` linha `auth` = ✅ verified.
+- **In-progress**: nada em aberto no auth — gate PASS; matrícula na matriz feita.
+- **Next step**: persistir estado (este commit) + `git push origin main`. Depois: próxima feature da Fase 9 — painel membro real (RF-012 avisos, RF-013 QR dízimo, RF-014 cartão, RF-015 perfil) ou painel admin (RF-021..030), usando `src/lib/auth/getClaims()` já pronto.
+- **Blockers**: **`SUPABASE_SERVICE_ROLE_KEY` pendente** — bloqueia `npm run seed:admin`, probe runtime AUTH-10/AUTH-12 e sessões reais (TCM `none` até F10, AD-006). **Nota**: chave anterior fornecida pelo usuário decodifica ref `[REDACTED_PROJECT_REF]` ≠ projeto `[REDACTED_PROJECT_NAME]` (`[REDACTED_PROJECT_REF]`) — rejeitada como segredo de outro ambiente (`.env.local` mantém comentada). Credenciais Mercado Pago e imagens novas seguem pendentes (não bloqueiam auth).
+- **Open decisions**: nenhuma — todas resolvidas/registradas (AD-004 superseded por AD-013; D1..D7 em context.md).
+- **Uncommitted files**: `.specs/STATE.md` (este Handoff), `.specs/features/auth/context.md`, `validation.md` (a commitar aqui), `opencode.json` (untracked, não commitado)
+- **Branch**: main (commits locais; `git push` pendente)
