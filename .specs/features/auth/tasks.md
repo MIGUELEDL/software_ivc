@@ -26,7 +26,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 | Pages (SSR/Client) | none | - (build gate only) | `src/app/**/page.tsx` | build gate only |
 | proxy.ts (middleware) | none | - (build gate only) | `src/proxy.ts` | build gate only |
 
-**Note**: Curl probes against running dev server serve as manual verification for HTTP behavior (redirects, cookies, error responses). They replace automated tests until a test runner is added in F10.
+**Note**: Curl probes against running dev server serve as manual verification for HTTP behavior (redirects, cookies, error responses). They replace automated tests until a test runner is added in F10. Committed probe script: `scripts/probes-auth.sh` (`npm run probe:auth`) — asserts `ADMIN_ROLES` membership (static), proxy redirect targets, and AUTH-11 server-side rejection (HTTP).
 
 ## Gate Check Commands
 

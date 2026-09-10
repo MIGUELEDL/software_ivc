@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "seed:admin": "node scripts/seed-admin.mjs"
+    "seed:admin": "node scripts/seed-admin.mjs",
+    "probe:auth": "bash scripts/probes-auth.sh"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
