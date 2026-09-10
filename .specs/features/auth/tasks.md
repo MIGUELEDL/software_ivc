@@ -151,7 +151,7 @@ T10, T11, T12, T13, T14, T15 — independent (cross-phase deps only)
 
 ---
 
-#### T4: Create Auth Claims DAL
+#### T4: Create Auth Claims DAL ✅ Complete
 
 **What**: Create `src/lib/auth/claims.ts` exporting `getClaims(request)` and `AuthClaims` type — extracts role, force_password_change, and email from JWT server-side.
 **Where**: `src/lib/auth/claims.ts`

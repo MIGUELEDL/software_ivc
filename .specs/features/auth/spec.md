@@ -138,11 +138,11 @@ que nenhum usuário cruze para área que não lhe pertence (RF-031).
 | Requirement ID | Story       | Phase  | Status  |
 | -------------- | ----------- | ------ | ------- |
 | AUTH-01 | P1: Membro login | Execute | Execute |
-| AUTH-02 | P1: Membro login | Design | Pending |
+| AUTH-02 | P1: Membro login | Execute | Execute |
 | AUTH-03 | P1: Membro login | Design | Pending |
 | AUTH-04 | P1: Membro login | Design | Pending |
 | AUTH-05 | P1: Admin login | Execute | Execute |
-| AUTH-06 | P1: Admin login | Design | Pending |
+| AUTH-06 | P1: Admin login | Execute | Execute |
 | AUTH-07 | P1: Admin login | Design | Pending |
 | AUTH-08 | P1: Admin login | Design | Pending |
 | AUTH-09 | P1: 1º acesso troca | Design | Pending |
