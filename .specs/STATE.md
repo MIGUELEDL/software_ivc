@@ -108,6 +108,14 @@
 
 > **Correção 2026-09-08 (commit `bb3a62f`)**: Manual de Padrões do PIX/BCB exige CNPJ **sem formatação** no BR Code (somente os 14 dígitos). `PIX.key` passou a derivar de `CHURCH.cnpj` via `replace(/\D/g, "")` (→ `68683917000171`).
 
+### AD-014
+- **Decision**: Migrações de banco do projeto são **SQL puro versionado em `supabase/migrations/`** (aplicadas via Supabase CLI/MCP no dev e em produção), iniciando com a feature painel-membro (`members`, `event_notices`). **Drizzle ORM permanece como evolução futura** (AD-003 mantida em status active, mas a materialização inicial não depende dela).
+- **Reason**: Decisão do usuário em 2026-09-11 (painel-membro, discussão opção A): sem tooling novo no MVP; trilha de migração versionada no repo desde o início; não bloqueia a AD-003 (Drizzle pode ser adotado ao migrar schema tipado).
+- **Trade-off**: SQL puro = tipos/validadores hand-written em `src/lib/painel/*`; Drizzle adiado evita dependência+config hoje.
+- **Scope**: Todas as features que tocarem banco (members, avisos, futuras: financeiro, eventos em DB, etc.).
+- **Date**: 2026-09-11
+- **Status**: active
+
 ## Handoff
 
 - **Feature**: `auth` (autenticação + RBAC) — **IMPLEMENTADA e VERIFICADA** (validation.md PASS, `validate_state.py auth` 0 errors)
