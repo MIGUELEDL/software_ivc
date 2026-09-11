@@ -272,10 +272,10 @@ T10
 **Tools**: MCP: NONE
 
 **Done when**:
-- [ ] `/painel/cartao` shows card with nome + matrícula + igreja + foto/placeholder
-- [ ] Print button opens browser print dialog with only card content
-- [ ] No members → redirect `/painel/perfil`
-- [ ] `npm run lint && npm run typecheck && npm run build` passes
+- [x] `/painel/cartao` shows card with nome + matrícula + igreja + foto/placeholder
+- [x] Print button opens browser print dialog with only card content
+- [x] No members → redirect `/painel/perfil`
+- [x] `npm run lint && npm run typecheck && npm run build` passes
 
 **Tests**: none
 **Gate**: full
