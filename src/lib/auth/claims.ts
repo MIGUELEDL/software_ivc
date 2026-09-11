@@ -6,6 +6,7 @@ export type AuthClaims = {
   role: string | null;
   forcePasswordChange: boolean;
   email: string;
+  sub: string;
 };
 
 /**
@@ -45,6 +46,7 @@ export async function getClaimsFromRequest(
     role: user.app_metadata?.role ?? null,
     forcePasswordChange: user.app_metadata?.force_password_change === true,
     email: user.email ?? "",
+    sub: user.id,
   };
 }
 
@@ -90,5 +92,6 @@ export async function getClaims(): Promise<AuthClaims | null> {
     role: user.app_metadata?.role ?? null,
     forcePasswordChange: user.app_metadata?.force_password_change === true,
     email: user.email ?? "",
+    sub: user.id,
   };
 }

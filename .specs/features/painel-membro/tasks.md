@@ -139,7 +139,7 @@ T10
 
 ---
 
-### T3: Extend AuthClaims with sub (user ID)
+### T3: Extend AuthClaims with sub (user ID) ✅ Complete
 
 **What**: Add `sub: string` field to `AuthClaims` type and populate it from `session.user.id` in both `getClaims()` and `getClaimsFromRequest()` in `src/lib/auth/claims.ts`.
 **Where**: `src/lib/auth/claims.ts`
@@ -149,10 +149,10 @@ T10
 **Tools**: MCP: NONE
 
 **Done when**:
-- [ ] `AuthClaims` type includes `sub: string`
-- [ ] `getClaims()` returns `sub: session.user.id`
-- [ ] `getClaimsFromRequest()` returns `sub: session.user.id`
-- [ ] `npm run lint && npm run typecheck && npm run build` passes
+- [x] `AuthClaims` type includes `sub: string`
+- [x] `getClaims()` returns `sub: session.user.id`
+- [x] `getClaimsFromRequest()` returns `sub: session.user.id`
+- [x] `npm run lint && npm run typecheck && npm run build` passes
 
 **Tests**: none
 **Gate**: full
