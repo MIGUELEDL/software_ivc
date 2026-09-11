@@ -120,7 +120,7 @@ T10
 
 ---
 
-### T2: Apply seed (1 member + 2 notices)
+### T2: Apply seed (1 member + 2 notices) ✅ Complete
 
 **What**: Create `supabase/migrations/0002_seed_painel_membro.sql` with INSERT statements: 1 member with auth_user_id = test auth user (seed:admin UUID if known, or placeholder), 2 event notices (one past, one future, both visivel=true). Apply to dev project.
 **Where**: `supabase/migrations/0002_seed_painel_membro.sql`
@@ -130,9 +130,9 @@ T10
 **Tools**: MCP: `supabase_execute_sql` (seed data inserts — apply_migration can't do DML)
 
 **Done when**:
-- [ ] 2 rows in `event_notices` visible in Supabase dev project
-- [ ] 1 row in `members` (auth_user_id placeholder OK — replaced when service-role available)
-- [ ] Probe commands can query these rows (status check in probes)
+- [x] 2 rows in `event_notices` visible in Supabase dev project
+- [x] 1 row in `members` (auth_user_id placeholder OK — replaced when service-role available)
+- [x] Probe commands can query these rows (status check in probes)
 
 **Tests**: none
 **Gate**: full
