@@ -251,11 +251,11 @@ T10
 **Tools**: MCP: NONE
 
 **Done when**:
-- [ ] `/painel/dizimo` shows QR with payload containing matrícula in txid
-- [ ] PIX key remains institutional (CNPJ, `PIX.key`)
-- [ ] Copy button works
-- [ ] No members row → redirect to `/painel/perfil`
-- [ ] `npm run lint && npm run typecheck && npm run build` passes
+- [x] `/painel/dizimo` shows QR with payload containing matrícula in txid
+- [x] PIX key remains institutional (CNPJ, `PIX.key`)
+- [x] Copy button works
+- [x] No members row → redirect to `/painel/perfil`
+- [x] `npm run lint && npm run typecheck && npm run build` passes
 
 **Tests**: none
 **Gate**: full
