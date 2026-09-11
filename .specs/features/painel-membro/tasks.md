@@ -159,7 +159,7 @@ T10
 
 ---
 
-### T4: Create src/lib/painel/ (members.ts + avisos.ts)
+### T4: Create src/lib/painel/ (members.ts + avisos.ts) ✅ Complete
 
 **What**: Create `src/lib/painel/members.ts` with `getMemberByAuthUid(authUid)`, `createMember(authUid, dados)`, `updateMember(authUid, dados)`, and `generateMatricula()` (read from sequence or compute max+1). Create `src/lib/painel/avisos.ts` with `listAvisosVisiveis()`. Both use `createServerClient` from `src/lib/supabase/server.ts`. Include TypeScript types for `Member` and `Aviso`.
 **Where**: `src/lib/painel/members.ts`, `src/lib/painel/avisos.ts`
@@ -169,10 +169,10 @@ T10
 **Tools**: MCP: NONE
 
 **Done when**:
-- [ ] `src/lib/painel/members.ts` exports `Member` type + 4 functions
-- [ ] `src/lib/painel/avisos.ts` exports `Aviso` type + 1 function
-- [ ] Types aligned with DB schema (T1)
-- [ ] `npm run lint && npm run typecheck` passes
+- [x] `src/lib/painel/members.ts` exports `Member` type + 4 functions
+- [x] `src/lib/painel/avisos.ts` exports `Aviso` type + 1 function
+- [x] Types aligned with DB schema (T1)
+- [x] `npm run lint && npm run typecheck` passes
 
 **Tests**: none
 **Gate**: quick
