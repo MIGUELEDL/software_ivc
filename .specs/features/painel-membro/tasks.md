@@ -179,7 +179,7 @@ T10
 
 ---
 
-### T5: Extend buildBrCode with optional txid parameter
+### T5: Extend buildBrCode with optional txid parameter ✅ Complete
 
 **What**: Add optional `txid?: string` parameter to `BrCodeInput` and `buildBrCode()`. When provided, use `emv("62", emv("05", txid))` instead of `referenceLabel = emv("05", "***")`. Export `buildBrCodePessoal(matricula: string)` helper that wraps `buildBrCode` with txid=matricula. Update `PIX_PAYLOAD` to keep `***` default (no behavioral change to `/doacao`).
 **Where**: `src/lib/pix.ts`
@@ -189,10 +189,10 @@ T10
 **Tools**: MCP: NONE
 
 **Done when**:
-- [ ] `buildBrCode({..., txid: "IVC-0001"})` generates payload with txid in field 62/05
-- [ ] `buildBrCodePessoal("IVC-0001")` returns correct payload
-- [ ] `PIX_PAYLOAD` unchanged (still uses `***`)
-- [ ] `npm run lint && npm run typecheck && npm run build` passes
+- [x] `buildBrCode({..., txid: "IVC-0001"})` generates payload with txid in field 62/05
+- [x] `buildBrCodePessoal("IVC-0001")` returns correct payload
+- [x] `PIX_PAYLOAD` unchanged (still uses `***`)
+- [x] `npm run lint && npm run typecheck && npm run build` passes
 
 **Tests**: none
 **Gate**: full

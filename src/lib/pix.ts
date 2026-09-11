@@ -4,6 +4,7 @@ type BrCodeInput = {
   key: string;
   receiverName: string;
   receiverCity: string;
+  txid?: string;
 };
 
 function project(value: string, maxLen: number): string {
@@ -33,14 +34,19 @@ function crc16(payload: string): string {
   return crc.toString(16).toUpperCase().padStart(4, "0");
 }
 
-export function buildBrCode({ key, receiverName, receiverCity }: BrCodeInput): string {
+export function buildBrCode({
+  key,
+  receiverName,
+  receiverCity,
+  txid,
+}: BrCodeInput): string {
   const gui = emv("00", "BR.GOV.BCB.PIX");
   const keyField = emv("01", key);
   const merchantAccount = emv("26", gui + keyField);
 
   const name = project(receiverName, 25);
   const city = project(receiverCity, 15);
-  const referenceLabel = emv("05", "***");
+  const referenceLabel = emv("05", txid ?? "***");
 
   const base =
     "000201" +
@@ -61,3 +67,16 @@ export const PIX_PAYLOAD = buildBrCode({
   receiverName: CHURCH.name,
   receiverCity: CHURCH.city.split("-")[0].trim(),
 });
+
+/**
+ * BR Code PIX pessoal: payload idêntico ao público (chave institucional CNPJ),
+ * mas com o campo de referência (62/05) identificando a matrícula do membro.
+ */
+export function buildBrCodePessoal(matricula: string): string {
+  return buildBrCode({
+    key: PIX.key,
+    receiverName: CHURCH.name,
+    receiverCity: CHURCH.city.split("-")[0].trim(),
+    txid: matricula,
+  });
+}
