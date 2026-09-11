@@ -229,12 +229,12 @@ T10
 **Tools**: MCP: NONE
 
 **Done when**:
-- [ ] `/painel/perfil` shows form (autocadastro or edit)
-- [ ] POST to `/api/painel/perfil` persists data + returns 201 (create) or 200 (update)
-- [ ] POST to `/api/painel/perfil/foto` uploads photo + returns 200
-- [ ] Invalid file type/size returns 400 with error message
-- [ ] Missing required fields returns 400 with inline errors
-- [ ] `npm run lint && npm run typecheck && npm run build` passes
+- [x] `/painel/perfil` shows form (autocadastro or edit)
+- [x] POST to `/api/painel/perfil` persists data + returns 201 (create) or 200 (update)
+- [x] POST to `/api/painel/perfil/foto` uploads photo + returns 200
+- [x] Invalid file type/size returns 400 with error message
+- [x] Missing required fields returns 400 with inline errors
+- [x] `npm run lint && npm run typecheck && npm run build` passes
 
 **Tests**: none
 **Gate**: full
