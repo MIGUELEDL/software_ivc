@@ -209,10 +209,10 @@ T10
 **Tools**: MCP: NONE
 
 **Done when**:
-- [ ] `/painel` shows avisos list (or empty state)
-- [ ] Nav links to `/painel/dizimo`, `/painel/cartao`, `/painel/perfil`
-- [ ] Logout button present
-- [ ] `npm run lint && npm run typecheck && npm run build` passes
+- [x] `/painel` shows avisos list (or empty state)
+- [x] Nav links to `/painel/dizimo`, `/painel/cartao`, `/painel/perfil`
+- [x] Logout button present
+- [x] `npm run lint && npm run typecheck && npm run build` passes
 
 **Tests**: none
 **Gate**: full
