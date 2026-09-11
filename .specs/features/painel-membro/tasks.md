@@ -9,7 +9,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 ---
 
 **Design**: `.specs/features/painel-membro/design.md`
-**Status**: In Progress
+**Status**: Complete
 
 ---
 
@@ -292,10 +292,10 @@ T10
 **Tools**: MCP: NONE
 
 **Done when**:
-- [ ] `scripts/probes-painel.sh` is executable and covers 8+ probes
-- [ ] `npm run probe:painel` passes all probes
-- [ ] `npm run lint && npm run typecheck && npm run build` passes
-- [ ] Probe file committed with 100755 permissions
+- [x] `scripts/probes-painel.sh` is executable and covers 8+ probes
+- [x] `npm run probe:painel` passes all probes
+- [x] `npm run lint && npm run typecheck && npm run build` passes
+- [x] Probe file committed with 100755 permissions
 
 **Tests**: none
 **Gate**: full

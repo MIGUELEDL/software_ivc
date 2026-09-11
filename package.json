@@ -9,7 +9,8 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "seed:admin": "node scripts/seed-admin.mjs",
-    "probe:auth": "bash scripts/probes-auth.sh"
+    "probe:auth": "bash scripts/probes-auth.sh",
+    "probe:painel": "bash scripts/probes-painel.sh"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

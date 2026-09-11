@@ -1,0 +1,146 @@
+#!/usr/bin/env bash
+#
+# Probes por AC da feature painel-membro (substituem runner até F10 — AD-006).
+# Uso: BASE_URL=<url> bash scripts/probes-painel.sh   (default http://localhost:3000)
+# Requer o servidor no ar: `npm run dev` (ou `npm run start` após build).
+#
+# Estático:
+#   - seed versionado em supabase/migrations/0002_seed_painel_membro.sql
+#     (1 membro IVC-0001 + 2 avisos visíveis; estado do dev verificado via MCP)
+#   - buildBrCodePessoal em src/lib/pix.ts (txid = matrícula, chave institucional)
+# HTTP (servidor dev/start deve estar no ar):
+#   - redirects do proxy nas rotas do painel sem sessão (PAINEL-03)
+#   - 401 nos POSTs de /api/painel/* sem sessão
+#   - /painel com sessão real (seed membro.teste@ivc.local) -> 200
+#
+set -euo pipefail
+
+BASE_URL="${BASE_URL:-http://localhost:3000}"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+SEED="$ROOT/supabase/migrations/0002_seed_painel_membro.sql"
+PIXLIB="$ROOT/src/lib/pix.ts"
+
+PASS=0
+FAIL=0
+ok() { PASS=$((PASS + 1)); printf '  ok   %s\n' "$1"; }
+ko() { FAIL=$((FAIL + 1)); printf '  FAIL %s\n' "$1"; }
+
+printf '== Probes painel-membro (AC) — BASE_URL=%s ==\n' "$BASE_URL"
+
+# --- Seed (fonte versionada; estado real do dev verificado via MCP) ---
+printf '%s\n' '-- seed (0002_seed_painel_membro.sql)'
+if grep -q "membro.teste@ivc.local" "$SEED"; then
+  ok "seed contem usuario auth de teste"
+else
+  ko "seed nao contem membro.teste@ivc.local"
+fi
+if grep -q "IVC-0001" "$SEED"; then
+  ok "seed contem membro com matricula IVC-0001"
+else
+  ko "seed nao contem matricula IVC-0001"
+fi
+if grep -q "Culto de Gratidão" "$SEED"; then
+  ok "seed contem aviso visivel passado (Culto de Gratidao)"
+else
+  ko "seed nao contem aviso Culto de Gratidao"
+fi
+if grep -q "Campanha de Missões" "$SEED"; then
+  ok "seed contem aviso visivel futuro (Campanha de Missoes)"
+else
+  ko "seed nao contem aviso Campanha de Missoes"
+fi
+
+# --- PAINEL-05/06/08 | buildBrCodePessoal: txid = matrícula, chave institucional ---
+printf '%s\n' '-- buildBrCodePessoal (src/lib/pix.ts)'
+if grep -q "export function buildBrCodePessoal" "$PIXLIB"; then
+  ok "buildBrCodePessoal exportada"
+else
+  ko "buildBrCodePessoal nao exportada"
+fi
+if grep -q "txid: matricula" "$PIXLIB"; then
+  ok "txtid recebe a matricula do membro"
+else
+  ko "txid nao recebe matricula"
+fi
+if grep -q "key: PIX.key" "$PIXLIB"; then
+  ok "chave PIX permanece institucional (PIX.key / CNPJ)"
+else
+  ko "chave PIX nao usa PIX.key"
+fi
+if grep -Fq 'emv("62", referenceLabel)' "$PIXLIB"; then
+  ok "payload contem campo 62 (referencia)"
+else
+  ko "campo 62 ausente no payload"
+fi
+if grep -Fq 'emv("05", txid ?? "***")' "$PIXLIB"; then
+  ok "campo 62/05 usa txid (matricula) no payload pessoal"
+else
+  ko "campo 62/05 nao usa txid"
+fi
+
+# --- PAINEL-03 | redirects do proxy nas rotas do painel (sem sessão) ---
+printf '%s\n' '-- proxy redirects (sem sessao)'
+
+redirect_target() {
+  curl -s -o /dev/null -w '%{http_code}|%{redirect_url}' "$BASE_URL$1" || true
+}
+
+check_redirect() {
+  local path="$1" expect_status="$2" expect_location="$3" out
+  out="$(redirect_target "$path")"
+  local status="${out%%|*}" location="${out#*|}"
+  if [ "$status" = "000" ]; then
+    ko "$path -> servidor nao responde em $BASE_URL (subir npm run dev/start)"
+  elif [ "$status" = "$expect_status" ] && [ -n "$location" ] && [ "$location" = "$expect_location" ]; then
+    ok "$path -> $status $location"
+  else
+    ko "$path -> $status $location (esperado $expect_status $expect_location)"
+  fi
+}
+
+check_redirect "/painel" "307" "$BASE_URL/login"
+check_redirect "/painel/dizimo" "307" "$BASE_URL/login"
+check_redirect "/painel/cartao" "307" "$BASE_URL/login"
+check_redirect "/painel/perfil" "307" "$BASE_URL/login"
+
+# --- API sem sessão: 401 (rotas fora do proxy, guard próprio) ---
+printf '%s\n' '-- POST /api/painel/* sem sessao'
+
+check_api_401() {
+  local path="$1" code
+  code="$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE_URL$path" || true)"
+  if [ "$code" = "000" ]; then
+    ko "POST $path -> servidor nao responde em $BASE_URL"
+  elif [ "$code" = "401" ]; then
+    ok "POST $path -> 401"
+  else
+    ko "POST $path -> $code (esperado 401)"
+  fi
+}
+
+check_api_401 "/api/painel/perfil"
+check_api_401 "/api/painel/perfil/foto"
+
+# --- PAINEL-03/13 | sessão real via seed: login + /painel -> 200 ---
+printf '%s\n' '-- /painel com sessao (seed membro.teste@ivc.local)'
+jar="$(mktemp)"
+login_out="$(curl -s -o /dev/null -w '%{http_code}|%{redirect_url}' -c "$jar" \
+  -X POST "$BASE_URL/api/auth/login" \
+  --data-urlencode 'email=membro.teste@ivc.local' \
+  --data-urlencode 'password=senha-teste' || true)"
+login_status="${login_out%%|*}"
+login_target="${login_out#*|}"
+if [ "$login_status" = "307" ] && [ "$login_target" = "$BASE_URL/painel" ]; then
+  code="$(curl -s -o /dev/null -w '%{http_code}' -b "$jar" "$BASE_URL/painel" || true)"
+  if [ "$code" = "200" ]; then
+    ok "login seed + /painel -> 200"
+  else
+    ko "/painel com sessao -> $code (esperado 200)"
+  fi
+else
+  ko "login seed -> $login_status $login_target (esperado 307 $BASE_URL/painel)"
+fi
+rm -f "$jar"
+
+printf '\nProbes painel-membro: %d ok, %d falhas\n' "$PASS" "$FAIL"
+[ "$FAIL" -eq 0 ]
