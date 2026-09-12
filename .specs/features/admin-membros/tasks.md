@@ -185,9 +185,9 @@ ADMIN, SUPER_ADMIN }`, `isAdminWriterRole(role)` e `isHardDeleteRole(role)`
 - Skill: NONE
 
 **Done when**:
-- [ ] Constantes e funções exportadas
-- [ ] `isAdminWriterRole("FINANCEIRO") === false`, `isHardDeleteRole("SECRETARIA") === false` (asserts no probe estático)
-- [ ] `npm run typecheck` exit 0
+- [x] Constantes e funções exportadas
+- [x] `isAdminWriterRole("FINANCEIRO") === false`, `isHardDeleteRole("SECRETARIA") === false` (asserts no probe estático)
+- [x] `npm run typecheck` exit 0
 
 **Tests**: probes estáticos (grep dos helpers)
 **Gate**: quick
