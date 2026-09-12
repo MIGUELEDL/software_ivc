@@ -240,10 +240,10 @@ erro `user_already_exists` → `email_em_uso` no caller.
 - Skill: NONE
 
 **Done when**:
-- [ ] Order de passos: createUser → matrícula → insert; catch remove o user (rollback)
-- [ ] `app_metadata` com `role=MEMBRO` e `force_password_change=true` (grep)
-- [ ] Senha-ID nunca armazenada nem em URL (só no retorno 1×)
-- [ ] `npm run typecheck` exit 0; probes estáticos (grep createUser/rollback/senha)
+- [x] Order de passos: createUser → matrícula → insert; catch remove o user (rollback)
+- [x] `app_metadata` com `role=MEMBRO` e `force_password_change=true` (grep)
+- [x] Senha-ID nunca armazenada nem em URL (só no retorno 1×)
+- [x] `npm run typecheck` exit 0; probes estáticos (grep createUser/rollback/senha)
 
 **Tests**: probes estáticos (semântica do create + rollback — L-004)
 **Gate**: quick
