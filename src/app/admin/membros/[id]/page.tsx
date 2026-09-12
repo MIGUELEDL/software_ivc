@@ -8,7 +8,6 @@ import {
   listDocumentos,
   TRANSICOES,
 } from "@/lib/admin/membros";
-import type { MembroStatus } from "@/lib/admin/membros";
 import { RemoverDocumentoButton, HardDeleteButton } from "./membro-detalhe-acoes";
 
 const STATUS_LABEL: Record<string, string> = {

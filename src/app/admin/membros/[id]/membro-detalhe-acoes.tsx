@@ -18,7 +18,6 @@ export function RemoverDocumentoButton({
   const router = useRouter();
 
   async function remover() {
-    // eslint-disable-next-line no-alert -- confirmação nativa (padrão repo)
     if (!window.confirm("Remover este documento da ficha do membro?")) {
       return;
     }
@@ -30,7 +29,6 @@ export function RemoverDocumentoButton({
       router.refresh();
       return;
     }
-    // eslint-disable-next-line no-alert -- feedback nativo de falha
     window.alert("Não foi possível remover o documento. Tente novamente.");
   }
 
@@ -55,7 +53,6 @@ export function HardDeleteButton({
   const router = useRouter();
 
   async function excluir() {
-    // eslint-disable-next-line no-alert -- confirmação nativa (padrão repo)
     if (
       !window.confirm(
         `Excluir DEFINITIVAMENTE ${nome}? A conta de acesso e o cadastro serão removidos. Esta ação não pode ser desfeita.`
@@ -70,15 +67,12 @@ export function HardDeleteButton({
       router.push("/admin/membros");
       return;
     }
-    const corpo = await resposta.json().catch(() => null);
     if (resposta.status === 409) {
-      // eslint-disable-next-line no-alert -- feedback nativo (409 com documentos)
       window.alert(
         "Não é possível excluir: há documentos cadastrados na ficha."
       );
       return;
     }
-    // eslint-disable-next-line no-alert -- feedback nativo de falha
     window.alert("Não foi possível excluir o membro. Tente novamente.");
   }
 
