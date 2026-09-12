@@ -293,10 +293,10 @@ client) e `listDocumentos(memberId)`, `criarDocumento(memberId, tipo, descricao)
 - Skill: NONE
 
 **Done when**:
-- [ ] `excluirMembro` verifica documentos antes de apagar (conta + linha)
-- [ ] `criarDocumento` valida `tipo` no serviço (check do banco já protege)
-- [ ] Documentos listados ordenados `criado_em desc`
-- [ ] `npm run typecheck` exit 0; probes estáticos (grep delete/documentos)
+- [x] `excluirMembro` verifica documentos antes de apagar (conta + linha)
+- [x] `criarDocumento` valida `tipo` no serviço (check do banco já protege)
+- [x] Documentos listados ordenados `criado_em desc`
+- [x] `npm run typecheck` exit 0; probes estáticos (grep delete/documentos)
 
 **Tests**: probes estáticos (semântica hard-delete + docs)
 **Gate**: quick

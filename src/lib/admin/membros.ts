@@ -312,3 +312,186 @@ export async function transicionarStatus(
 export async function inativarMembro(id: string): Promise<MembroAdmin> {
   return transicionarStatus(id, "INATIVO");
 }
+
+/** Hard-delete bloqueado por documentos cadastrados — o caller mapeia 409 (ADMINMEM-23). */
+export class MembroComDocumentosError extends Error {
+  constructor() {
+    super("membro_com_documentos");
+    this.name = "MembroComDocumentosError";
+  }
+}
+
+export type DocumentoTipo = "RG" | "CPF" | "comprovante_endereco" | "outro";
+
+export const TIPOS_DOCUMENTO: DocumentoTipo[] = [
+  "RG",
+  "CPF",
+  "comprovante_endereco",
+  "outro",
+];
+
+export class TipoDocumentoInvalidoError extends Error {
+  constructor() {
+    super("tipo_documento_invalido");
+    this.name = "TipoDocumentoInvalidoError";
+  }
+}
+
+export class DocumentoNaoEncontradoError extends Error {
+  constructor() {
+    super("documento_nao_encontrado");
+    this.name = "DocumentoNaoEncontradoError";
+  }
+}
+
+export type Documento = {
+  id: string;
+  member_id: string;
+  tipo: DocumentoTipo;
+  descricao: string | null;
+  criado_em: string;
+};
+
+/**
+ * Hard-delete (ADMINMEM-21..23, guardado no handler por ADMIN/SUPER_ADMIN):
+ * 1. verifica se o membro existe e se há documentos (membro com docs → 409,
+ *    nada é removido); 2. remove a conta auth via service-role; 3. remove a
+ *    linha via sessão (RLS `members_delete_admin` como backstop).
+ * Se o passo 3 falhar depois do 2, a conta já foi apagada (deleteUser é
+ * idempotente) — rollback manual: re-executar o DELETE da linha; nenhuma
+ * linha semi-deletada fica (edge case da spec, "rolback manual documentado").
+ */
+export async function excluirMembro(id: string): Promise<void> {
+  const membro = await getMembro(id);
+  if (!membro) {
+    throw new MembroNaoEncontradoError();
+  }
+
+  const supabase = await createServerClient();
+
+  const { data: docs, error: docsError } = await supabase
+    .from("member_documents")
+    .select("id")
+    .eq("member_id", id)
+    .limit(1);
+
+  if (docsError) {
+    throw docsError;
+  }
+
+  if (docs && docs.length > 0) {
+    throw new MembroComDocumentosError();
+  }
+
+  const admin = createAdminClient();
+
+  const { error: deleteAuthError } = await admin.auth.admin.deleteUser(
+    membro.auth_user_id
+  );
+  if (deleteAuthError) {
+    throw deleteAuthError;
+  }
+
+  const { error: deleteError } = await supabase
+    .from("members")
+    .delete()
+    .eq("id", id);
+
+  if (deleteError) {
+    throw deleteError;
+  }
+}
+
+/**
+ * Lista os metadados de documentos do membro ordenados por `criado_em` desc
+ * (ADMINMEM-30). Leituras passam pela RLS `docs_select_admin`.
+ */
+export async function listDocumentos(memberId: string): Promise<Documento[]> {
+  const supabase = await createServerClient();
+
+  const { data, error } = await supabase
+    .from("member_documents")
+    .select("*")
+    .eq("member_id", memberId)
+    .order("criado_em", { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []) as Documento[];
+}
+
+/**
+ * Cria um metadado de documento (ADMINMEM-28/31). O `tipo` é validado no
+ * serviço (e o check do banco, 0006, protege em profundidade); membro
+ * inexistente → `MembroNaoEncontradoError` (404 no handler).
+ */
+export async function criarDocumento(
+  memberId: string,
+  tipo: string,
+  descricao: string | null
+): Promise<Documento> {
+  const membro = await getMembro(memberId);
+  if (!membro) {
+    throw new MembroNaoEncontradoError();
+  }
+
+  if (!TIPOS_DOCUMENTO.includes(tipo as DocumentoTipo)) {
+    throw new TipoDocumentoInvalidoError();
+  }
+
+  const supabase = await createServerClient();
+
+  const { data, error } = await supabase
+    .from("member_documents")
+    .insert({
+      member_id: memberId,
+      tipo: tipo as DocumentoTipo,
+      descricao: descricao || null,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data as Documento;
+}
+
+/**
+ * Remove um metadado de documento (ADMINMEM-31). Verifica a existência do
+ * documento pertencente ao membro antes de apagar — membro ou doc ausente
+ * significam 404 no handler (ADMINMEM-31).
+ */
+export async function removerDocumento(
+  memberId: string,
+  docId: string
+): Promise<void> {
+  const supabase = await createServerClient();
+
+  const { data: doc, error: getError } = await supabase
+    .from("member_documents")
+    .select("id")
+    .eq("id", docId)
+    .eq("member_id", memberId)
+    .maybeSingle();
+
+  if (getError) {
+    throw getError;
+  }
+
+  if (!doc) {
+    throw new DocumentoNaoEncontradoError();
+  }
+
+  const { error } = await supabase
+    .from("member_documents")
+    .delete()
+    .eq("id", docId);
+
+  if (error) {
+    throw error;
+  }
+}
