@@ -391,8 +391,8 @@ inválida → 400 `status_transicao_invalida`; 404 se membro não existe.
 - Skill: NONE
 
 **Done when**:
-- [ ] Transição válida → 200; INATIVO→ATIVO→...→TRANSFERIDO→X → 400; 404
-- [ ] `npm run typecheck` exit 0; probes estáticos (grep mapa no handler)
+- [x] Transição válida → 200; INATIVO→ATIVO→...→TRANSFERIDO→X → 400; 404
+- [x] `npm run typecheck` exit 0; probes estáticos (grep mapa no handler)
 
 **Tests**: probes estáticos
 **Gate**: quick
