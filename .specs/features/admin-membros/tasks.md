@@ -484,8 +484,8 @@ props `member: Member`), movendo o bloco do cartão de `cartao/page.tsx:78-132`
 - Skill: NONE
 
 **Done when**:
-- [ ] Componente exportado com `id="cartao-membro"` e imagens/foto com alt correto
-- [ ] `npm run typecheck` exit 0
+- [x] Componente exportado com `id="cartao-membro"` e imagens/foto com alt correto
+- [x] `npm run typecheck` exit 0
 
 **Tests**: probes estáticos (grep do componente)
 **Gate**: quick
