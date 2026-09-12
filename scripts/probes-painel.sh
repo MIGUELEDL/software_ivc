@@ -206,11 +206,13 @@ login2_out="$(curl -s -o /dev/null -w '%{http_code}|%{redirect_url}' -c "$jar2" 
   --data-urlencode 'password=senha-teste' || true)"
 login2_status="${login2_out%%|*}"
 login2_target="${login2_out#*|}"
-if [ "$login2_status" = "307" ] && [ "$login2_target" = "$BASE_URL/painel" ]; then
+  if [ "$login2_status" = "307" ] && [ "$login2_target" = "$BASE_URL/painel" ]; then
   dizimo2="$(curl -s -o /dev/null -w '%{http_code}|%{redirect_url}' -b "$jar2" "$BASE_URL/painel/dizimo" || true)"
   dizimo2_code="${dizimo2%%|*}"
   dizimo2_target="${dizimo2#*|}"
-  if [ "$dizimo2_code" = "307" ] && [ "$dizimo2_target" = "$BASE_URL/painel/perfil?primeiro=1" ]; then
+  if [ "$dizimo2_code" = "200" ]; then
+    ko "residuo de run anterior: membro.semcadastro@ivc.local JA tem linha em members (criada pelo probe feliz) -> limpe via MCP: delete from public.members where auth_user_id = (select id from auth.users where email='membro.semcadastro@ivc.local'); e re-rodar"
+  elif [ "$dizimo2_code" = "307" ] && [ "$dizimo2_target" = "$BASE_URL/painel/perfil?primeiro=1" ]; then
     ok "sem cadastro: /painel/dizimo -> 307 /painel/perfil?primeiro=1"
   else
     ko "sem cadastro: /painel/dizimo -> $dizimo2_code $dizimo2_target (esperado 307 $BASE_URL/painel/perfil?primeiro=1)"
@@ -227,15 +229,20 @@ if [ "$login2_status" = "307" ] && [ "$login2_target" = "$BASE_URL/painel" ]; th
   # matrícula IVC-0002 (sequence versionada + RPC security definer, imune a
   # RLS). Cenário real: user sem row em members (seed 0004) faz POST válido —
   # se o fix regredir (ex.: RPC removida), o transform vira 409 repetido.
-  feliz_body="$(curl -s -b "$jar2" -X POST "$BASE_URL/api/painel/perfil" \
+  feliz_out="$(curl -s -w '\n%{http_code}' -b "$jar2" -X POST "$BASE_URL/api/painel/perfil" \
     --data-urlencode 'nome=Maria da Silva' \
     --data-urlencode 'whatsapp=83988887777' \
     --data-urlencode 'nascimento=1995-03-14' || true)"
-  feliz_code="$(printf '%s' "$feliz_body" | sed -n 's/.*"matricula":"\([^"]*\)".*/\1/p')"
-  if printf '%s' "$feliz_body" | grep -q 'IVC-0002' && printf '%s' "$feliz_body" | grep -q '"id"'; then
-    ok "autocadastro valido -> 201 + matricula IVC-0002 (PAINEL-13/15/19)"
+  feliz_body="${feliz_out%$'\n'*}"
+  feliz_http="${feliz_out##*$'\n'}"
+  feliz_matricula="$(printf '%s' "$feliz_body" | sed -n 's/.*"matricula":"\([^"]*\)".*/\1/p')"
+  if [ "$feliz_http" = "201" ] \
+    && printf '%s' "$feliz_body" | grep -q '"id"' \
+    && printf '%s' "$feliz_matricula" | grep -Eq '^IVC-00[0-9]{2,}$' \
+    && [ "$feliz_matricula" != "IVC-0001" ]; then
+    ok "autocadastro valido -> 201 + matricula IVC-$(printf '%s' "$feliz_matricula" | sed 's/^IVC-//') (PAINEL-13/15/19)"
   else
-    ko "autocadastro valido -> NÃO gerou IVC-0002 (resposta: $(printf '%s' "$feliz_body" | head -c 120))"
+    ko "autocadastro valido -> http=$feliz_http matricula=$feliz_matricula (esperado 201 + matricula nova != IVC-0001)"
   fi
 else
   ko "login 2o seed -> $login2_status $login2_target (esperado 307 $BASE_URL/painel)"
