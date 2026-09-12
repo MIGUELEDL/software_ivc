@@ -441,14 +441,21 @@ check_redirect "/admin/membros" "307" "$BASE_URL/login/admin"
 check_api_status "POST /api/admin/membros sem sessao" "401" "POST" "/api/admin/membros"
 
 # Login do escritor (ADMIN) e do leitor (FINANCEIRO).
+# F3 (anti-flaky): 307 sozinho nao discrimina login ok de credencial invalida
+# (ambos 307; a falha vai para /login/admin?error=invalid_credentials e
+# cascateia FALHAs nas secoes seguintes). Exigir o TARGET $BASE_URL/admin
+# garante que a sessao realmente abriu.
 admin_login="$(login_admin "$JAR_ADMIN" "admin.teste@ivc.local")"
 leitor_login="$(login_admin "$JAR_LEITOR" "leitor.teste@ivc.local")"
 admin_status="${admin_login%%|*}"
 leitor_status="${leitor_login%%|*}"
-if [ "$admin_status" = "307" ] && [ "$leitor_status" = "307" ]; then
-  ok "login admin.teste + leitor.teste -> 307 (escritor/leitor)"
+admin_target="${admin_login#*|}"
+leitor_target="${leitor_login#*|}"
+if [ "$admin_status" = "307" ] && [ "$admin_target" = "$BASE_URL/admin" ] \
+  && [ "$leitor_status" = "307" ] && [ "$leitor_target" = "$BASE_URL/admin" ]; then
+  ok "login admin.teste + leitor.teste -> 307 $BASE_URL/admin (escritor/leitor)"
 else
-  ko "login seeds -> admin=$admin_status leitor=$leitor_status (esperado 307/307)"
+  ko "login seeds -> admin=$admin_status->$admin_target leitor=$leitor_status->$leitor_target (esperado 307->$BASE_URL/admin)"
 fi
 
 # ---------------------------------------------------------------
@@ -566,17 +573,18 @@ if [ -n "$ID_PROBE" ]; then
     -X POST "$BASE_URL/api/auth/login" --data-urlencode "email=$EMAIL_PROBE" \
     --data-urlencode "password=$SENHA_PROBE" || true)"
   novo_login_status="${novo_login%%|*}"
-  if [ "$novo_login_status" = "307" ]; then
+  novo_login_target="${novo_login#*|}"
+  if [ "$novo_login_status" = "307" ] && [ "$novo_login_target" = "$BASE_URL/painel" ]; then
     painel_target="$(curl -s -o /dev/null -w '%{http_code}|%{redirect_url}' -b "$JAR_NOVO" "$BASE_URL/painel" || true)"
     painel_status="${painel_target%%|*}"
     painel_redirect="${painel_target#*|}"
     if [ "$painel_status" = "307" ] && [ "$painel_redirect" = "$BASE_URL/trocar-senha" ]; then
-      ok "novo membro: login 307 + /painel -> 307 /trocar-senha (forca troca)"
+      ok "novo membro: login 307->$BASE_URL/painel + /painel -> 307 /trocar-senha (forca troca)"
     else
       ko "novo membro: /painel -> $painel_status $painel_redirect (esperado 307 $BASE_URL/trocar-senha)"
     fi
   else
-    ko "login do novo membro -> $novo_login_status (esperado 307)"
+    ko "login do novo membro -> $novo_login_status->$novo_login_target (esperado 307->$BASE_URL/painel)"
   fi
 
   # ---------------------------------------------------------------
