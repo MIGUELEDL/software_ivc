@@ -35,6 +35,10 @@ Camadas (AD-002): RSC para leitura (server components) + Route Handlers para esc
 
 Decisão: **A** — consistência com o que já existe (RSC já lê `getClaims`; auth usa Route Handlers com forms `action="/api/..."`).
 
+> **Desvio registrado (F4, verifier VALID-004):** o form do perfil (`src/app/painel/perfil/perfil-form.tsx`) foge da opção A — é **client component** (`"use client"`, `perfil-form.tsx:1`) que faz `fetch("/api/painel/perfil", { method: "POST" })` + `router.push`/redirect client-side (Q-views `perfil/page.tsx:93-146`), em vez de form server `action="/api/painel/perfil"` como o auth faz.
+> **Por quê**: os Route Handlers de escrita já estavam implementados e o proxy cobre `/api/painel/*`; o autocadastro (`?primeiro=1`) exige redirect condicional pós-POST que client form resolve sem RSC dup. **Custo**: diverge do padrão RSC do repo (mais JS client, ~1 componente).
+> **Aceito**: ACs preservadas (401/400/200/307 todas verificadas nos probes — runtime real 26 ok), sem mudança de código nesta feature. Se uma feature futura reusar este form, avaliar migrar p/ server form (Server Actions) — AD-003/AD-014 mantidos.
+
 ---
 
 ## Code Reuse Analysis
