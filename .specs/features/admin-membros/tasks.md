@@ -580,9 +580,9 @@ mensagem `email_em_uso`.
 - Skill: NONE
 
 **Done when**:
-- [ ] Fluxo feliz: 201 + senha exibida no estado do form; navegação sem senha na URL
-- [ ] 400 mapeia campos; 409 mostra aviso
-- [ ] `npm run typecheck` exit 0
+- [x] Fluxo feliz: 201 + senha exibida no estado do form; navegação sem senha na URL
+- [x] 400 mapeia campos; 409 mostra aviso
+- [x] `npm run typecheck` exit 0
 
 **Tests**: probes estáticos (grep fetch/form) + runtime (via T23)
 **Gate**: quick
