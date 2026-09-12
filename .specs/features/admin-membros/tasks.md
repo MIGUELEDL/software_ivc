@@ -321,8 +321,8 @@ client) e `listDocumentos(memberId)`, `criarDocumento(memberId, tipo, descricao)
 - Skill: NONE
 
 **Done when**:
-- [ ] 401 sem sessão; 403 p/ leitor em escrita; 403 p/ SECRETARIA em hard-delete
-- [ ] `npm run typecheck` exit 0; probes estáticos (grep guards)
+- [x] 401 sem sessão; 403 p/ leitor em escrita; 403 p/ SECRETARIA em hard-delete
+- [x] `npm run typecheck` exit 0; probes estáticos (grep guards)
 
 **Tests**: probes estáticos (RBAC — L-003)
 **Gate**: quick
