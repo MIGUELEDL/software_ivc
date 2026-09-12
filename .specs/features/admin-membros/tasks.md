@@ -606,9 +606,9 @@ cartão; hard-delete client confirm (`DELETE .../[id]`).
 - Skill: NONE
 
 **Done when**:
-- [ ] 200 com todos os blocos; 404 p/ id inexistente; forms apontam para as rotas certas
-- [ ] Leitor vê a página mas o hard-delete não aparece (guard de UI)
-- [ ] `npm run typecheck` exit 0
+- [x] 200 com todos os blocos; 404 p/ id inexistente; forms apontam para as rotas certas
+- [x] Leitor vê a página mas o hard-delete não aparece (guard de UI)
+- [x] `npm run typecheck` exit 0
 
 **Tests**: probes estáticos (grep rotas dos forms) + runtime (via T23)
 **Gate**: quick
