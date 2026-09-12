@@ -136,10 +136,10 @@ ADMIN/SUPER_ADMIN) e member_documents (select all-admin, insert/delete writers).
 - Skill: NONE
 
 **Done when**:
-- [ ] Seed versionado e idempotente (`on conflict (id) do nothing`)
-- [ ] Ambos os usuários com `raw_app_meta_data` contendo `role` (ADMIN / FINANCEIRO)
-- [ ] Nenhum com `force_password_change` (probes não podem travar no `/trocar-senha`)
-- [ ] Aplicado no dev via MCP sem erro
+- [x] Seed versionado e idempotente (`on conflict (id) do nothing`)
+- [x] Ambos os usuários com `raw_app_meta_data` contendo `role` (ADMIN / FINANCEIRO)
+- [x] Nenhum com `force_password_change` (probes não podem travar no `/trocar-senha`)
+- [x] Aplicado no dev via MCP sem erro
 
 **Tests**: probes estáticos (greps no `.sql`: emails, roles)
 **Gate**: quick
