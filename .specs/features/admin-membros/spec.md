@@ -113,12 +113,12 @@ usuários do SQL manual.
 
 **Acceptance Criteria**:
 
-1. WHEN um escritor envia `PUT /api/admin/membros/[id]` com dados textuais válidos (nome, nascimento, whatsapp, endereço) THEN o sistema SHALL atualizar o registro e responder `200` com o membro atualizado. <!-- event-driven -->
+1. WHEN um escritor envia `POST /api/admin/membros/[id]/dados` com dados textuais válidos (nome, nascimento, whatsapp, endereço) THEN o sistema SHALL atualizar o registro e responder `200` com o membro atualizado. <!-- event-driven -->
 2. IF algum campo obrigatório for inválido/ausente THEN o sistema SHALL responder `400` com o mapeamento de campos sem efetuar a atualização. <!-- unwanted-behavior -->
 3. IF o membro não existir THEN o sistema SHALL responder `404`. <!-- unwanted-behavior -->
 4. O sistema SHALL manter o e-mail inalterável nesta action (não aceito nem exposto como editável). <!-- ubiquitous -->
 
-**Independent Test**: PUT válido → 200 com dados novos; PUT com nascimento inválido → 400; PUT em id inexistente → 404.
+**Independent Test**: POST `/dados` válido → 200 com dados novos; POST `/dados` com nascimento inválido → 400; POST `/dados` em id inexistente → 404.
 
 ---
 
@@ -136,7 +136,7 @@ inativo, transferido) e remover cadastros de forma segura.
 3. WHEN um escritor aciona "remover" um membro THEN o sistema SHALL alternar o status para `INATIVO` (não apagar o histórico). <!-- event-driven -->
 4. WHEN `ADMIN`/`SUPER_ADMIN` envia `DELETE /api/admin/membros/[id]` de um membro sem documentos THEN o sistema SHALL remover a linha `members` e a conta auth correspondente e responder `204`. <!-- complex -->
 5. IF o hard-delete for solicitado para membro com documentos cadastrados THEN o sistema SHALL responder `409` e não remover nada. <!-- unwanted-behavior -->
-6. IF um papel não-escritor (leitor ou não-admin) tentar qualquer ação de escrita (PUT status, DELETE) THEN o sistema SHALL responder `403`. <!-- unwanted-behavior -->
+6. IF um papel não-escritor (leitor ou não-admin) tentar qualquer ação de escrita (POST dados/status/documentos, DELETE) THEN o sistema SHALL responder `403`. <!-- unwanted-behavior -->
 
 **Independent Test**: Inativar ATIVO → 200 e status INATIVO; TRANSFERIDO→ATIVO → 400; DELETE de membro sem documentos → 204 e linha some (auth user também); DELETE com documento → 409; leitor tenta DELETE → 403.
 
@@ -189,10 +189,10 @@ patrimonial, líder) consultem membros sem poder alterar dados.
 **Acceptance Criteria**:
 
 1. WHEN um papel leitor (FINANCEIRO/PATRIMONIAL/LIDER) acessa rotas de leitura (`/admin/membros`, `/admin/membros/[id]`, `/admin/membros/[id]/cartao`, documentos GET) THEN o sistema SHALL permitir a leitura. <!-- event-driven -->
-2. WHEN um papel leitor ou um papel não-admin envia qualquer requisição de escrita (`POST /api/admin/membros`, `PUT`, `DELETE`, `POST/DELETE documentos`) THEN o sistema SHALL responder `403`. <!-- unwanted-behavior -->
+2. WHEN um papel leitor ou um papel não-admin envia qualquer requisição de escrita (`POST /api/admin/membros`, `POST dados/status/documentos`, `DELETE`) THEN o sistema SHALL responder `403`. <!-- unwanted-behavior -->
 3. IF uma requisição a `/api/admin/*` chega sem sessão THEN o sistema SHALL responder `401`. <!-- unwanted-behavior -->
 
-**Independent Test**: Sessão leitor → GET 200; POST/PUT/DELETE → 403; sem sessão → 401.
+**Independent Test**: Sessão leitor → GET 200; POST/DELETE → 403; sem sessão → 401.
 
 ---
 
