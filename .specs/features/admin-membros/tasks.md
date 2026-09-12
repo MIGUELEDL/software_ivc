@@ -110,11 +110,11 @@ ADMIN/SUPER_ADMIN) e member_documents (select all-admin, insert/delete writers).
 - Skill: NONE
 
 **Done when**:
-- [ ] SQL versionado contém as 6 colunas de endereço e a coluna `status` com check
-- [ ] `member_documents` com FK `members(id) on delete cascade` + check de `tipo`
-- [ ] 7 policies presentes (4 members + 3 documents) com os papéis certos
-- [ ] Migration aplicada no projeto dev via MCP sem erro
-- [ ] Nenhuma regressão nas policies existentes (`members_*_own`, `event_notices_select_visible` — não alteradas)
+- [x] SQL versionado contém as 6 colunas de endereço e a coluna `status` com check
+- [x] `member_documents` com FK `members(id) on delete cascade` + check de `tipo`
+- [x] 7 policies presentes (4 members + 3 documents) com os papéis certos
+- [x] Migration aplicada no projeto dev via MCP sem erro
+- [x] Nenhuma regressão nas policies existentes (`members_*_own`, `event_notices_select_visible` — não alteradas)
 
 **Tests**: probes estáticos (greps no novo `.sql`: colunas, tabela, policies)
 **Gate**: quick
