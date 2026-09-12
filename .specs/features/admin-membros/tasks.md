@@ -345,8 +345,8 @@ opcional) → 400 `{error,campos}`; `criarMembro` → 201 `{ member, senha_tempo
 - Skill: NONE
 
 **Done when**:
-- [ ] 201 com senha 1×; 400 por campo; 409 `email_em_uso`; 401/403 (via T9)
-- [ ] `npm run typecheck` exit 0; probes estáticos (grep validação/status)
+- [x] 201 com senha 1×; 400 por campo; 409 `email_em_uso`; 401/403 (via T9)
+- [x] `npm run typecheck` exit 0; probes estáticos (grep validação/status)
 
 **Tests**: probes estáticos (validação + status — L-005)
 **Gate**: quick
