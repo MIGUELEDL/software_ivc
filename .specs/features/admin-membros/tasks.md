@@ -660,11 +660,11 @@ reais (`admin.teste@ivc.local` escrita, `leitor.teste@ivc.local` leitura): lista
 - Skill: NONE
 
 **Done when**:
-- [ ] `BASE_URL=http://localhost:3000 bash scripts/probes-admin-membros.sh` → 0 falhas
+- [x] `BASE_URL=http://localhost:3000 bash scripts/probes-admin-membros.sh` → 0 falhas
       (2 corridas consecutivas verdes; discriminações de mutação em mente do verifier)
-- [ ] Cleanup remove o membro + conta criados; email `$RANDOM` evita colisão
-- [ ] `npm run probe:admin-membros` idempotente frente a reruns
-- [ ] Gates: `npm run lint && npm run typecheck && npm run build` verdes
+- [x] Cleanup remove o membro + conta criados; email `$RANDOM` evita colisão
+- [x] `npm run probe:admin-membros` idempotente frente a reruns
+- [x] Gates: `npm run lint && npm run typecheck && npm run build` verdes
 
 **Tests**: probes (e2e runtime + estático agregado)
 **Gate**: full
