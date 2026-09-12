@@ -7,8 +7,10 @@ import type { Member } from "@/lib/painel/members";
  * Membro estendido com o schema admin (0006): ciclo de vida + endereço.
  * Reusa o tipo `Member` do painel-membro (design: 1 tipo, reuso).
  */
+export type MembroStatus = "ATIVO" | "INATIVO" | "TRANSFERIDO";
+
 export type MembroAdmin = Member & {
-  status: "ATIVO" | "INATIVO" | "TRANSFERIDO";
+  status: MembroStatus;
   logradouro: string | null;
   numero: string | null;
   bairro: string | null;
@@ -194,4 +196,119 @@ export async function criarMembro(
     });
     throw erroInsert;
   }
+}
+
+export type MembroDadosAdmin = {
+  nome: string;
+  nascimento: string;
+  whatsapp: string;
+  logradouro?: string | null;
+  numero?: string | null;
+  bairro?: string | null;
+  cidade?: string | null;
+  uf?: string | null;
+  cep?: string | null;
+};
+
+/**
+ * Atualiza os dados textuais do membro (nome/nascimento/whatsapp/endereço) e
+ * reanota `atualizado_em` (ADMINMEM-14..16). E-mail não é aceito (ADMINMEM-16:
+ * inalterável nesta feature). Erros de banco propagam para o handler mapear.
+ */
+export async function atualizarDadosMembro(
+  id: string,
+  dados: MembroDadosAdmin
+): Promise<MembroAdmin> {
+  const supabase = await createServerClient();
+
+  const { data, error } = await supabase
+    .from("members")
+    .update({
+      nome: dados.nome,
+      nascimento: dados.nascimento,
+      whatsapp: dados.whatsapp,
+      logradouro: dados.logradouro ?? null,
+      numero: dados.numero ?? null,
+      bairro: dados.bairro ?? null,
+      cidade: dados.cidade ?? null,
+      uf: dados.uf ?? null,
+      cep: dados.cep ?? null,
+      atualizado_em: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data as MembroAdmin;
+}
+
+/** Membro inexistente — o caller mapeia para 404 (ADMINMEM-17/24/27/31). */
+export class MembroNaoEncontradoError extends Error {
+  constructor() {
+    super("membro_nao_encontrado");
+    this.name = "MembroNaoEncontradoError";
+  }
+}
+
+/** Transição de status inválida — o caller mapeia para 400 (ADMINMEM-18). */
+export class StatusInvalidoError extends Error {
+  constructor(origem: MembroStatus, destino: string) {
+    super(`status_transicao_invalida: ${origem} -> ${destino}`);
+    this.name = "StatusInvalidoError";
+  }
+}
+
+/**
+ * Transições válidas do ciclo de vida (ADMINMEM-17/18): ATIVO→INATIVO,
+ * ATIVO→TRANSFERIDO, INATIVO→ATIVO, INATIVO→TRANSFERIDO; TRANSFERIDO é
+ * terminal (nenhum destino). Qualquer outra combinação lança
+ * `StatusInvalidoError` sem alterar o registro.
+ */
+export const TRANSICOES: Record<MembroStatus, MembroStatus[]> = {
+  ATIVO: ["INATIVO", "TRANSFERIDO"],
+  INATIVO: ["ATIVO", "TRANSFERIDO"],
+  TRANSFERIDO: [],
+};
+
+export async function transicionarStatus(
+  id: string,
+  novo: MembroStatus
+): Promise<MembroAdmin> {
+  const atual = await getMembro(id);
+
+  if (!atual) {
+    throw new MembroNaoEncontradoError();
+  }
+
+  const permitidas = TRANSICOES[atual.status];
+  if (!permitidas.includes(novo)) {
+    throw new StatusInvalidoError(atual.status, novo);
+  }
+
+  const supabase = await createServerClient();
+
+  const { data, error } = await supabase
+    .from("members")
+    .update({ status: novo })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data as MembroAdmin;
+}
+
+/**
+ * "Remover" = inativar (soft): preserva o histórico e não apaga nada
+ * (ADMINMEM-19). Equivale a transicionarStatus(id, "INATIVO").
+ */
+export async function inativarMembro(id: string): Promise<MembroAdmin> {
+  return transicionarStatus(id, "INATIVO");
 }

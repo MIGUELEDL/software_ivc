@@ -267,9 +267,9 @@ transição p/ INATIVO.
 - Skill: NONE
 
 **Done when**:
-- [ ] Mapa de transições com as 5 válidas + TRANSFERIDO terminal
-- [ ] `transicionarStatus` lança erro tipado em transição inválida (→ handler 400)
-- [ ] `npm run typecheck` exit 0; probes estáticos (grep mapa + erro)
+- [x] Mapa de transições com as 5 válidas + TRANSFERIDO terminal
+- [x] `transicionarStatus` lança erro tipado em transição inválida (→ handler 400)
+- [x] `npm run typecheck` exit 0; probes estáticos (grep mapa + erro)
 
 **Tests**: probes estáticos (todas transições — L-003)
 **Gate**: quick
