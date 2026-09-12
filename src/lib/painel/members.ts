@@ -41,24 +41,26 @@ export async function getMemberByAuthUid(
 }
 
 /**
- * Gera a próxima matrícula no formato IVC-#### (max+1 sobre as existentes).
- * A constraint unique de `matricula` protege contra corrida (409 no perdedor).
+ * Gera a próxima matrícula IVC-#### via RPC `proxima_matricula` (0005),
+ * que usa `nextval` na sequence versionada `members_matricula_seq` (0001:5).
+ *
+ * Usei RPC `security definer` em vez de max+1 sobre `select("matricula")`
+ * porque o client autenticado enxerga apenas as próprias linhas de `members`
+ * (RLS `members_select_own`, 0001:44-46): um membro em autocadastro veria `[]`
+ * → max=0 → sempre `IVC-0001` → colisão com o seed (23505 → 409 permanente,
+ * bug real reproduzido live no round 3 do verifier). `nextval` em sequence é
+ * imune a RLS e garante matrícula única mesmo na corrida (23505 no perdedor).
  */
 export async function generateMatricula(): Promise<string> {
   const supabase = await createServerClient();
 
-  const { data, error } = await supabase.from("members").select("matricula");
+  const { data, error } = await supabase.rpc("proxima_matricula");
 
-  if (error) {
-    throw error;
+  if (error || typeof data !== "string") {
+    throw error ?? new Error("falha ao gerar matricula via proxima_matricula");
   }
 
-  const max = (data ?? []).reduce((acc, row) => {
-    const n = Number.parseInt(String(row.matricula ?? "").replace(/^IVC-/, ""), 10);
-    return Number.isFinite(n) && n > acc ? n : acc;
-  }, 0);
-
-  return `IVC-${String(max + 1).padStart(4, "0")}`;
+  return data;
 }
 
 /**
