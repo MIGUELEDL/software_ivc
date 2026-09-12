@@ -308,6 +308,13 @@ if grep -q 'requireWriter' "$DADOS_ROUTE" && grep -q 'membro_nao_encontrado' "$D
 else
   ko "rota dados incompleta"
 fi
+# AC16 (estatico): a rota de edicao NAO consome `email` (inalteravel) — o
+# campo nao e lido nem validado aqui.
+if ! grep -q 'form.get("email")' "$DADOS_ROUTE"; then
+  ok "dados: rota nao consome email (AC16 inalteravel)"
+else
+  ko "dados route consome email (AC16)"
+fi
 if grep -q 'requireWriter' "$STATUS_ROUTE" && grep -q 'status_transicao_invalida' "$STATUS_ROUTE"; then
   ok "POST status: guard + 400 status_transicao_invalida"
 else
@@ -352,6 +359,15 @@ if grep -q 'fetch("/api/admin/membros"' "$NOVO_FORM" && grep -q 'senha_temporari
   ok "novo: form client POST + senha temporaria 1x (ADMINMEM-12)"
 else
   ko "form de criacao incompleto"
+fi
+# AC11 (estatico): `senha_temporaria` só existe na rota POST criar (linha de
+# producao, nao so comentario) e no form cliente — nenhuma outra resposta ou
+# rota exporta a senha-ID.
+outras_senha="$(grep -rl 'senha_temporaria' "$ROOT/src" | grep -vF "$CREATE_ROUTE" | grep -vF "$NOVO_FORM" || true)"
+if [ -z "$outras_senha" ] && grep -q 'senha_temporaria: senhaTemporaria' "$CREATE_ROUTE"; then
+  ok "senha_temporaria so na rota POST criar + form cliente (AC11)"
+else
+  ko "senha_temporaria fora do create/form: ${outras_senha:-producao ausente na rota} (AC11)"
 fi
 if grep -q 'action={`/api/admin/membros/${id}/dados`}' "$DETALHE" \
   && grep -q 'action={`/api/admin/membros/${id}/status`}' "$DETALHE" \
@@ -408,8 +424,9 @@ need_server
 JAR_ADMIN="$(mktemp)"
 JAR_LEITOR="$(mktemp)"
 JAR_NOVO="$(mktemp)"
+JAR_MEMBRO="$(mktemp)"
 LEFTOVER="$(mktemp)"
-trap 'if [ -s "$LEFTOVER" ]; then idc="$(cat "$LEFTOVER")"; curl -s -b "$JAR_ADMIN" -X DELETE "$BASE_URL/api/admin/membros/$idc" -o /dev/null 2>/dev/null || true; fi; rm -f "$JAR_ADMIN" "$JAR_LEITOR" "$JAR_NOVO" "$LEFTOVER"' EXIT
+trap 'if [ -s "$LEFTOVER" ]; then idc="$(cat "$LEFTOVER")"; curl -s -b "$JAR_ADMIN" -X DELETE "$BASE_URL/api/admin/membros/$idc" -o /dev/null 2>/dev/null || true; fi; rm -f "$JAR_ADMIN" "$JAR_LEITOR" "$JAR_NOVO" "$JAR_MEMBRO" "$LEFTOVER"' EXIT
 
 login_admin() { # jar email  -> prints status|redirect
   curl -s -o /dev/null -w '%{http_code}|%{redirect_url}' -c "$1" -X POST "$BASE_URL/api/auth/login/admin" \
@@ -463,6 +480,29 @@ if [ "$admin_status" = "307" ] && [ "$admin_target" = "$BASE_URL/admin" ] \
   ok "login admin.teste + leitor.teste -> 307 $BASE_URL/admin (escritor/leitor)"
 else
   ko "login seeds -> admin=$admin_status->$admin_target leitor=$leitor_status->$leitor_target (esperado 307->$BASE_URL/admin)"
+fi
+
+# AC05: sessao de papel MEMBRO (nao admin) em /admin/membros -> 307 /login/admin
+# (o proxy AUTH-14 desvia sessao nao-admin da area admin). Usa o seed
+# membro.teste@ivc.local (MEMBRO, sem force_password_change — senão o proxy
+# mandaria /trocar-senha antes).
+printf '%s\n' '-- runtime: sessao MEMBRO na area admin (ADMINMEM-05)'
+membro_login="$(curl -s -o /dev/null -w '%{http_code}|%{redirect_url}' -c "$JAR_MEMBRO" \
+  -X POST "$BASE_URL/api/auth/login" --data-urlencode 'email=membro.teste@ivc.local' \
+  --data-urlencode 'password=senha-teste' || true)"
+membro_status="${membro_login%%|*}"
+membro_target="${membro_login#*|}"
+if [ "$membro_status" = "307" ] && [ "$membro_target" = "$BASE_URL/painel" ]; then
+  membro_admin="$(curl -s -o /dev/null -w '%{http_code}|%{redirect_url}' -b "$JAR_MEMBRO" "$BASE_URL/admin/membros" || true)"
+  membro_admin_status="${membro_admin%%|*}"
+  membro_admin_target="${membro_admin#*|}"
+  if [ "$membro_admin_status" = "307" ] && [ "$membro_admin_target" = "$BASE_URL/login/admin" ]; then
+    ok "sessao MEMBRO em /admin/membros -> 307 $BASE_URL/login/admin (ADMINMEM-05)"
+  else
+    ko "sessao MEMBRO em /admin/membros -> $membro_admin_status->$membro_admin_target (esperado 307 $BASE_URL/login/admin)"
+  fi
+else
+  ko "login membro.teste -> $membro_status->$membro_target (esperado 307->$BASE_URL/painel)"
 fi
 
 # ---------------------------------------------------------------
@@ -554,10 +594,25 @@ if [ -n "$ID_PROBE" ]; then
   # ---------------------------------------------------------------
   printf '%s\n' '-- runtime: detalhe e cartao (escritor + leitor)'
   detalhe_admin="$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR_ADMIN" "$BASE_URL/admin/membros/$ID_PROBE" || true)"
+  detalhe_admin_body="$(curl -s -b "$JAR_ADMIN" "$BASE_URL/admin/membros/$ID_PROBE" || true)"
   if [ "$detalhe_admin" = "200" ]; then
     ok "detalhe do membro -> 200 (ADMINMEM-24)"
   else
     ko "detalhe -> $detalhe_admin (esperado 200)"
+  fi
+  # AC07: o endereço enviado no cadastro aparece na ficha (detalhe RSC).
+  if printf '%s' "$detalhe_admin_body" | grep -q 'Rua dos Probes'; then
+    ok "detalhe mostra o logradouro do cadastro (AC07/ADMINMEM-08)"
+  else
+    ko "logradouro do cadastro ausente no detalhe (AC07)"
+  fi
+  # AC11 (negativo): a senha-ID nunca vaza fora do POST de criação — nem no
+  # detalhe nem na listagem.
+  if ! printf '%s' "$detalhe_admin_body" | grep -q 'senha_temporaria' \
+    && ! printf '%s' "$lista_body" | grep -q 'senha_temporaria'; then
+    ok "senha_temporaria ausente no detalhe e na listagem (AC11)"
+  else
+    ko "senha_temporaria vazou em resposta nao-criacao (AC11)"
   fi
   detalhe_leitor="$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR_LEITOR" "$BASE_URL/admin/membros/$ID_PROBE" || true)"
   if [ "$detalhe_leitor" = "200" ]; then
@@ -625,6 +680,19 @@ if [ -n "$ID_PROBE" ]; then
     ok "POST dados id inexistente -> 404 (ADMINMEM-16)"
   else
     ko "POST dados id inexistente -> $dados_inex (esperado 404)"
+  fi
+
+  # AC16 (live): apos editar dados, o email original segue logavel — a conta
+  # auth nao foi alterada/trocada pela edicao de dados.
+  email_apos_dados="$(curl -s -o /dev/null -w '%{http_code}|%{redirect_url}' \
+    -X POST "$BASE_URL/api/auth/login" --data-urlencode "email=$EMAIL_PROBE" \
+    --data-urlencode "password=$SENHA_PROBE" || true)"
+  email_apos_status="${email_apos_dados%%|*}"
+  email_apos_target="${email_apos_dados#*|}"
+  if [ "$email_apos_status" = "307" ] && [ "$email_apos_target" = "$BASE_URL/painel" ]; then
+    ok "email segue logavel apos edicao de dados (AC16 inalteravel)"
+  else
+    ko "login apos edicao -> $email_apos_status->$email_apos_target (AC16)"
   fi
 
   # ---------------------------------------------------------------
