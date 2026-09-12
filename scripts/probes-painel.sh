@@ -18,7 +18,13 @@ set -euo pipefail
 BASE_URL="${BASE_URL:-http://localhost:3000}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SEED="$ROOT/supabase/migrations/0002_seed_painel_membro.sql"
+STORAGE="$ROOT/supabase/migrations/0003_storage_fotos_membros.sql"
+SEED2="$ROOT/supabase/migrations/0004_seed_membro_sem_cadastro.sql"
 PIXLIB="$ROOT/src/lib/pix.ts"
+AVISOSLIB="$ROOT/src/lib/painel/avisos.ts"
+DIZIMO="$ROOT/src/app/painel/dizimo/page.tsx"
+CARTAO="$ROOT/src/app/painel/cartao/page.tsx"
+PERFILROUTE="$ROOT/src/app/api/painel/perfil/route.ts"
 
 PASS=0
 FAIL=0
@@ -48,6 +54,55 @@ if grep -q "Campanha de Missões" "$SEED"; then
   ok "seed contem aviso visivel futuro (Campanha de Missoes)"
 else
   ko "seed nao contem aviso Campanha de Missoes"
+fi
+
+# --- PAINEL-01 | avisos no painel: filtro visibilidade + ordenacao desc por data_hora ---
+printf '%s\n' '-- avisos (src/lib/painel/avisos.ts)'
+if grep -q '.eq("visivel", true)' "$AVISOSLIB"; then
+  ok "avisos filtrados por visivel=true (nao mostra ocultos)"
+else
+  ko "avisos nao filtram visivel=true"
+fi
+if grep -q '.order("data_hora", { ascending: false })' "$AVISOSLIB"; then
+  ok "avisos ordenados por data_hora desc (mais recente primeiro)"
+else
+    ko "avisos nao ordenam por data_hora desc"
+fi
+
+# --- PAINEL-07 | membro sem cadastro (sem linha em members): redirect ?primeiro=1 ---
+printf '%s\n' '-- dizimo/cartao p/ membro sem cadastro (PAINEL-07)'
+if grep -Fq 'redirect("/painel/perfil?primeiro=1")' "$DIZIMO"; then
+  ok "dizimo redireciona p/ /painel/perfil?primeiro=1 quando membro sem cadastro"
+else
+  ko "dizimo nao redireciona p/ ?primeiro=1 (sem cadastro)"
+fi
+if grep -Fq 'redirect("/painel/perfil?primeiro=1")' "$CARTAO"; then
+  ok "cartao redireciona p/ /painel/perfil?primeiro=1 quando membro sem cadastro"
+else
+  ko "cartao nao redireciona p/ ?primeiro=1 (sem cadastro)"
+fi
+
+# --- PAINEL-16 | perfil: valida payload (nome/nascimento/whatsapp) e responde 400 ---
+printf '%s\n' '-- perfil route valida campos (PAINEL-16)'
+if grep -q 'campos.nome' "$PERFILROUTE"; then
+  ok "route valida campo nome"
+else
+  ko "route nao valida campo nome"
+fi
+if grep -q 'campos.whatsapp' "$PERFILROUTE"; then
+  ok "route valida campo whatsapp"
+else
+  ko "route nao valida campo whatsapp"
+fi
+if grep -q 'nascimento' "$PERFILROUTE"; then
+  ok "route valida campo nascimento"
+else
+  ko "route nao valida campo nascimento"
+fi
+if grep -q 'status: 400' "$PERFILROUTE"; then
+  ok "route responde 400 em dados invalidos"
+else
+  ko "route nao responde 400"
 fi
 
 # --- PAINEL-05/06/08 | buildBrCodePessoal: txid = matrícula, chave institucional ---
@@ -141,6 +196,36 @@ else
   ko "login seed -> $login_status $login_target (esperado 307 $BASE_URL/painel)"
 fi
 rm -f "$jar"
+
+# --- PAINEL-07/16 | runtime: 2º seed (sem cadastro) + dados inválidos no perfil ---
+printf '\n%s\n' '-- PAINEL-07/16 runtime (seed membro.semcadastro@ivc.local)'
+jar2="$(mktemp)"
+login2_out="$(curl -s -o /dev/null -w '%{http_code}|%{redirect_url}' -c "$jar2" \
+  -X POST "$BASE_URL/api/auth/login" \
+  --data-urlencode 'email=membro.semcadastro@ivc.local' \
+  --data-urlencode 'password=senha-teste' || true)"
+login2_status="${login2_out%%|*}"
+login2_target="${login2_out#*|}"
+if [ "$login2_status" = "307" ] && [ "$login2_target" = "$BASE_URL/painel" ]; then
+  dizimo2="$(curl -s -o /dev/null -w '%{http_code}|%{redirect_url}' -b "$jar2" "$BASE_URL/painel/dizimo" || true)"
+  dizimo2_code="${dizimo2%%|*}"
+  dizimo2_target="${dizimo2#*|}"
+  if [ "$dizimo2_code" = "307" ] && [ "$dizimo2_target" = "$BASE_URL/painel/perfil?primeiro=1" ]; then
+    ok "sem cadastro: /painel/dizimo -> 307 /painel/perfil?primeiro=1"
+  else
+    ko "sem cadastro: /painel/dizimo -> $dizimo2_code $dizimo2_target (esperado 307 $BASE_URL/painel/perfil?primeiro=1)"
+  fi
+  invalido="$(curl -s -o /dev/null -w '%{http_code}' -b "$jar2" -X POST "$BASE_URL/api/painel/perfil" \
+    --data-urlencode 'nome=' --data-urlencode 'nascimento=nao-data' || true)"
+  if [ "$invalido" = "400" ]; then
+    ok "POST perfil campos invalidos -> 400 (PAINEL-16)"
+  else
+    ko "POST perfil invalido -> $invalido (esperado 400)"
+  fi
+else
+  ko "login 2o seed -> $login2_status $login2_target (esperado 307 $BASE_URL/painel)"
+fi
+rm -f "$jar2"
 
 printf '\nProbes painel-membro: %d ok, %d falhas\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]
