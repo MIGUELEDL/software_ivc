@@ -437,8 +437,8 @@ membro não existe; 403 p/ SECRETARIA (via guard).
 - Skill: NONE
 
 **Done when**:
-- [ ] 201 com tipo válido; 400 tipo inválido; 404 membro inexistente
-- [ ] `npm run typecheck` exit 0
+- [x] 201 com tipo válido; 400 tipo inválido; 404 membro inexistente
+- [x] `npm run typecheck` exit 0
 
 **Tests**: probes estáticos
 **Gate**: quick
