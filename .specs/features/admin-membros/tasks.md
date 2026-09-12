@@ -161,9 +161,9 @@ chave não estiver configurada. **Nunca** importado em client components.
 - Skill: NONE
 
 **Done when**:
-- [ ] `createAdminClient` exportado e funcional (typecheck passa)
-- [ ] Sem import em nenhum arquivo `"use client"` (verificado por grep)
-- [ ] `npm run typecheck` exit 0
+- [x] `createAdminClient` exportado e funcional (typecheck passa)
+- [x] Sem import em nenhum arquivo `"use client"` (verificado por grep)
+- [x] `npm run typecheck` exit 0
 
 **Tests**: probes estáticos (grep da export + ausência em client)
 **Gate**: quick
