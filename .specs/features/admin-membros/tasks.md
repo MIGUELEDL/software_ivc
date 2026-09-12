@@ -630,8 +630,8 @@ na T19 — este crafting foca na entrada de navegação).
 - Skill: NONE
 
 **Done when**:
-- [ ] Navegação do landing admin lista Membros (link para `/admin/membros`)
-- [ ] `npm run typecheck` exit 0
+- [x] Navegação do landing admin lista Membros (link para `/admin/membros`)
+- [x] `npm run typecheck` exit 0
 
 **Tests**: probes estáticos (grep estado vazio)
 **Gate**: quick
