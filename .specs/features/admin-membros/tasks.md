@@ -531,8 +531,8 @@ voltar; `foto_url`/placeholder vêm do `MemberCard`.
 - Skill: NONE
 
 **Done when**:
-- [ ] 200 com cartão p/ id do seed; 404 p/ id inexistente
-- [ ] `npm run typecheck` exit 0
+- [x] 200 com cartão p/ id do seed; 404 p/ id inexistente
+- [x] `npm run typecheck` exit 0
 
 **Tests**: probes estáticos + runtime (404)
 **Gate**: full (com servidor)
