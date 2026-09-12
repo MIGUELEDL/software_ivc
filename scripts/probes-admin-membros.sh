@@ -220,6 +220,35 @@ else
   ko "listDocumentos sem order criado_em desc"
 fi
 
+# ------------------------------------------------------------------
+# ESTÁTICO — AC39: hard-delete com falha parcial de auth -> 500 sem
+# inconsistência. A ORDEM garante a recuperação (edge case da spec,
+# "rolback manual documentado"): a conta auth é removida PRIMEIRO
+# (`deleteUser` é idempotente) e só depois a linha `members`. Se a linha
+# falhar após a conta, não há órfão inverso (linha sem conta) — estado
+# consistente; o handler converte qualquer falha em 500 `erro_interno`,
+# DEPOIS do guard de documentos (409) e do 404, que vêm antes no catch.
+# ------------------------------------------------------------------
+printf '%s\n' '-- hard-delete: ordem auth->linha (AC39) e 500 no handler'
+# scoped dentro de excluirMembro (linhas DENTRO da funcao, nao do arquivo)
+ln_excluir="$(grep -n 'export async function excluirMembro' "$MEMBERS_LIB" | cut -d: -f1 || true)"
+ln_auth="$(grep -nF 'auth.admin.deleteUser' "$MEMBERS_LIB" | awk -F: -v s="$ln_excluir" '$1 > s { print $1; exit }' || true)"
+ln_members="$(grep -nF '.from("members")' "$MEMBERS_LIB" | awk -F: -v s="$ln_excluir" '$1 > s { print $1; exit }' || true)"
+ln_members_del="$(grep -nF '.delete()' "$MEMBERS_LIB" | awk -F: -v s="$ln_members" '$1 > s { print $1; exit }' || true)"
+if [ -n "$ln_auth" ] && [ -n "$ln_members_del" ] && [ "$ln_auth" -lt "$ln_members_del" ]; then
+  ok "excluirMembro: conta auth removida antes da linha members (AC39)"
+else
+  ko "excluirMembro: ordem errada (deleteUser=$ln_auth, delete members=$ln_members_del) (AC39)"
+fi
+ln_guard_409="$(grep -n 'instanceof MembroComDocumentosError' "$HARD_DELETE_ROUTE" | head -1 | cut -d: -f1 || true)"
+ln_erro_500="$(grep -n 'erro_interno' "$HARD_DELETE_ROUTE" | head -1 | cut -d: -f1 || true)"
+if grep -q '"erro_interno"' "$HARD_DELETE_ROUTE" && grep -q 'status: 500' "$HARD_DELETE_ROUTE" \
+  && [ -n "$ln_guard_409" ] && [ -n "$ln_erro_500" ] && [ "$ln_guard_409" -lt "$ln_erro_500" ]; then
+  ok "DELETE [id]: catch generico -> 500 erro_interno apos guard 409 (AC39)"
+else
+  ko "DELETE [id]: 500 generico ausente ou guard 409 fora de ordem (AC39)"
+fi
+
 # =====================================================================
 # ESTÁTICO — helpers (supabase/admin.ts, rbac.ts, http.ts)
 # =====================================================================
@@ -616,6 +645,22 @@ if [ -n "$ID_PROBE" ]; then
     else
       ko "filtro de status nao discriminou inativos/ativos"
     fi
+
+    # AC38: inativar preserva o histórico — o detalhe continua 200 exibindo o
+    # status Inativo e a listagem ainda contém o membro (nada de 404/remoção).
+    apos_inativar_http="$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR_ADMIN" "$BASE_URL/admin/membros/$ID_PROBE" || true)"
+    apos_inativar="$(curl -s -b "$JAR_ADMIN" "$BASE_URL/admin/membros/$ID_PROBE" || true)"
+    if [ "$apos_inativar_http" = "200" ] && printf '%s' "$apos_inativar" | grep -q 'Inativo'; then
+      ok "inativado: detalhe 200 mostra status Inativo (AC38 historico preservado)"
+    else
+      ko "inativado: detalhe $apos_inativar_http sem status Inativo (AC38)"
+    fi
+    lista_apos_inativar="$(curl -s -b "$JAR_ADMIN" "$BASE_URL/admin/membros" || true)"
+    if printf '%s' "$lista_apos_inativar" | grep -q "$MATRICULA_PROBE"; then
+      ok "inativado: listagem ainda contem o membro (AC38, nao deletado)"
+    else
+      ko "inativado: membro sumiu da listagem (AC38)"
+    fi
   else
     ko "inativar p/ filtro -> $status_inativar_2 (esperado 200; filtro nao testado)"
   fi
@@ -676,6 +721,17 @@ if [ -n "$ID_PROBE" ]; then
   fi
 
   if [ -n "$DOC_ID" ]; then
+    # AC29 (RSC, zero GET API): o detalhe do membro exibe os documentos — a
+    # descricao do doc criado aparece na pagina (leitura via RSC, ordenada por
+    # criado_em desc — coberto pelo grep de order no servico).
+    detalhe_com_doc_http="$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR_ADMIN" "$BASE_URL/admin/membros/$ID_PROBE" || true)"
+    detalhe_com_doc="$(curl -s -b "$JAR_ADMIN" "$BASE_URL/admin/membros/$ID_PROBE" || true)"
+    if [ "$detalhe_com_doc_http" = "200" ] && printf '%s' "$detalhe_com_doc" | grep -q 'Documento do probe'; then
+      ok "detalhe exibe a descricao do documento registrado (AC29 via RSC)"
+    else
+      ko "detalhe sem a descricao do documento (AC29)"
+    fi
+
     hard_com_doc="$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR_ADMIN" -X DELETE "$BASE_URL/api/admin/membros/$ID_PROBE" || true)"
     if [ "$hard_com_doc" = "409" ]; then
       ok "hard-delete com documento -> 409 (ADMINMEM-23)"
