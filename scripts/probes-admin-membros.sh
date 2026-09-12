@@ -209,10 +209,16 @@ if grep -q 'throw new StatusInvalidoError' "$MEMBERS_LIB"; then
 else
   ko "StatusInvalidoError ausente"
 fi
-if grep -q 'MembroComDocumentosError' "$MEMBERS_LIB" && grep -q 'member_documents' "$MEMBERS_LIB"; then
-  ok "excluirMembro verifica documentos antes de apagar (ADMINMEM-23)"
+# F4: o guard 409 vem de um select REAL em member_documents DENTRO de
+# excluirMembro e ANTES do deleteUser — não é só o nome da classe existindo.
+ln_excluir="$(grep -n 'export async function excluirMembro' "$MEMBERS_LIB" | cut -d: -f1 || true)"
+ln_docs_sel="$(grep -nF '.from("member_documents")' "$MEMBERS_LIB" | awk -F: -v s="$ln_excluir" '$1 > s { print $1; exit }' || true)"
+ln_auth="$(grep -nF 'auth.admin.deleteUser' "$MEMBERS_LIB" | awk -F: -v s="$ln_excluir" '$1 > s { print $1; exit }' || true)"
+if [ -n "$ln_docs_sel" ] && [ -n "$ln_auth" ] && [ "$ln_docs_sel" -lt "$ln_auth" ] \
+  && grep -q 'throw new MembroComDocumentosError' "$MEMBERS_LIB"; then
+  ok "excluirMembro: select member_documents real antes do deleteUser (AC23)"
 else
-  ko "hard-delete sem checagem de documentos"
+  ko "hard-delete sem guard real de documentos (AC23)"
 fi
 if grep -q '.order("criado_em", { ascending: false })' "$MEMBERS_LIB"; then
   ok "documentos listados por criado_em desc (ADMINMEM-30)"
@@ -289,9 +295,10 @@ fi
 # ESTÁTICO — route handlers (guardas, validação, status codes)
 # =====================================================================
 printf '%s\n' '-- rotas /api/admin/membros*'
-if grep -q 'requireWriter' "$CREATE_ROUTE" && grep -q 'senha_temporaria' "$CREATE_ROUTE" \
-  && grep -q 'email_em_uso' "$CREATE_ROUTE" && grep -q 'status: 201' "$CREATE_ROUTE"; then
-  ok "POST criar: guard writer + 201 c/ senha 1x + 409 email_em_uso"
+if grep -q 'requireWriter' "$CREATE_ROUTE" \
+  && grep -qE 'NextResponse\.json\(\{ error: "email_em_uso" \}, \{ status: 409 \}\)' "$CREATE_ROUTE" \
+  && grep -q 'status: 201' "$CREATE_ROUTE"; then
+  ok "POST criar: guard writer + 201 c/ senha 1x + 409 email_em_uso (linha de producao)"
 else
   ko "rota criar incompleta"
 fi
