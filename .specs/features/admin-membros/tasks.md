@@ -213,9 +213,9 @@ retorna null p/ 404).
 - Skill: NONE
 
 **Done when**:
-- [ ] `listMembros` ordena `nome asc` por default e aplica `ilike` nome/matrícula + filtro status
-- [ ] `getMembro` retorna null em not-found (não lança)
-- [ ] `npm run typecheck` exit 0; probes estáticos (grep ordenação/filtro) passam
+- [x] `listMembros` ordena `nome asc` por default e aplica `ilike` nome/matrícula + filtro status
+- [x] `getMembro` retorna null em not-found (não lança)
+- [x] `npm run typecheck` exit 0; probes estáticos (grep ordenação/filtro) passam
 
 **Tests**: probes estáticos (semântica ordenação/filtro — L-001/05)
 **Gate**: quick
