@@ -94,10 +94,10 @@ if grep -q 'campos.whatsapp' "$PERFILROUTE"; then
 else
   ko "route nao valida campo whatsapp"
 fi
-if grep -q 'nascimento' "$PERFILROUTE"; then
-  ok "route valida campo nascimento"
+if grep -q 'campos\.nascimento' "$PERFILROUTE"; then
+  ok "route valida campo nascimento (campos.nascimento -> 400)"
 else
-  ko "route nao valida campo nascimento"
+  ko "route nao valida campo nascimento via campos.nascimento"
 fi
 if grep -q 'status: 400' "$PERFILROUTE"; then
   ok "route responde 400 em dados invalidos"
@@ -216,7 +216,8 @@ if [ "$login2_status" = "307" ] && [ "$login2_target" = "$BASE_URL/painel" ]; th
     ko "sem cadastro: /painel/dizimo -> $dizimo2_code $dizimo2_target (esperado 307 $BASE_URL/painel/perfil?primeiro=1)"
   fi
   invalido="$(curl -s -o /dev/null -w '%{http_code}' -b "$jar2" -X POST "$BASE_URL/api/painel/perfil" \
-    --data-urlencode 'nome=' --data-urlencode 'nascimento=nao-data' || true)"
+    --data-urlencode 'nome=Maria da Silva' --data-urlencode 'whatsapp=83988887777' \
+    --data-urlencode 'nascimento=nao-data' || true)"
   if [ "$invalido" = "400" ]; then
     ok "POST perfil campos invalidos -> 400 (PAINEL-16)"
   else
