@@ -32,8 +32,9 @@ status `verified`, respaldada por `validation.md` no respectivo `.specs/features
 | RF-006, RN-003 (eventos: listagem + detalhe → WhatsApp pré-preenchido) | `eventos` | EVENTOS-01..10 | probes por AC + gates + rotas dinâmicas (200/404/estado vazio) | ✅ verified |
 | RF-007, RN-001 (doação: QR PIX público estático, sem cartão) | `doacao-pix` | DOACAO-01..10 | probes por AC + gates + rota dinâmica (200/QR/payload/nav) | ✅ verified |
 | RF-008, RF-011, RF-031, RN-002 (1º acesso senha-ID), AD-013 | `auth` | AUTH-01..19 | probes por AC (`scripts/probes-auth.sh`, 19 checks) + `npm run lint && npm run typecheck && npm run build` | ✅ verified |
-| RF-012, RF-013, RF-014, RF-015 | painel membro (avisos, QR dízimo, cartão, minhas informações) | — | — | 🔲 pending |
-| RF-021..RF-030 | painel administrativo (dashboard, membros, igrejas, eventos, patrimônio, financeiro, relatórios, usuários, configurações, auditoria) | — | — | 🔲 pending |
+| RF-012, RF-013, RF-014, RF-015 | painel membro (avisos, QR dízimo, cartão, minhas informações) | PAINEL-01..19 | probes por AC (`scripts/probes-painel.sh`, 27 ok/0 falhas) + gates | ✅ verified |
+| RF-022 (membros CRUD: cadastro com conta auth e senha-ID, edição, ciclo de vida ATIVO/INATIVO/TRANSFERIDO, hard-delete restrito, documentos, RBAC escritor/leitor), AD-013 | `admin-membros` | ADMINMEM-01..39 | probes por AC (`scripts/probes-admin-membros.sh`, 106 ok/0 falhas em 2 runs) + gates | ✅ verified |
+| RF-021, RF-023..RF-030 | painel administrativo (dashboard, igrejas, eventos, patrimônio, financeiro, relatórios, usuários, configurações, auditoria) | — | — | 🔲 pending |
 | RF-032 | matriz de permissões por papel (ler/escrever/administrar) | — | — | 🔲 pending |
 | RNF-001, RNF-002, RNF-012 | responsividade mobile-first, identidade IVC, WCAG 2.1 AA | — | — | 🔲 pending |
 | RNF-003..RNF-010 | disponibilidade, segurança, LGPD, backup, custo, observabilidade, CI, deploy | — | — | 🔲 pending |

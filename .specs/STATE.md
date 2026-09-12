@@ -147,3 +147,17 @@
 - **Bug P1 que a verificação matou**: autocadastro válido devolvia **409 permanente** (cadastro_duplicado) — causa: `max(matricula)+1` via client autenticado sob RLS cego → sempre IVC-0001 → colisão com seed. **Fix**: RPC `proxima_matricula()` **security definer** imune a RLS (migration 0005 commitada `20a60a3` + `members.ts` via RPC `8244c8b`) — provado 2× : 27/0 live, mutações M9a/M9b mortas.
 - **Lessons L-004/L-005** (probe re-runnable + RPC imune a RLS) promovidas no LESSONS.md.
 - **Póximos passos (qualquer sessão nova)**: começar pelo `validation.md` round 5 PASS já persistido; considerar promover os lessons como L-004/L-005 confirmados (recurrence>1) e em seguida abrir a próxima feature já com probes discriminativos re-runnáveis desde o round 1.
+
+## Handoff — feature admin-membros CONCLUÍDA (2026-09-12)
+
+- **Feature**: admin-membros (RF-022) — **fechada e provada** — Verifier round 1 PASS (0 gaps abertos).
+- **O que foi entregue**: CRUD de membros no painel admin com conta auth nativa (criação → `auth.users` papel `MEMBRO` + `force_password_change`, senha-ID temporária exibida 1×), listagem com busca/filtro/ordenação `nome asc`, edição de dados, ciclo de vida ATIVO/INATIVO/TRANSFERIDO com transições validadas, "remover" = inativar, hard-delete restrito (ADMIN/SUPER_ADMIN, sem documentos), documentos (metadados, P2), RBAC escritor (SECRETARIA/ADMIN/SUPER_ADMIN) vs leitor (FINANCEIRO/PATRIMONIAL/LIDER), cartão do membro no admin reusando `MemberCard`.
+- **Arquitetura**: RSC lê (server client, RLS) + Route Handlers escrevem (`POST /api/admin/membros...`), `src/lib/admin/http.ts` guards 401/403, `createAdminClient` service-role só p/ auth ops, `src/lib/admin/membros.ts` service layer com rollback 2-passos no criar.
+- **DB**: migrations `0006_admin_membros.sql` (status/endereço/`member_documents` + 7 policies RLS + helper `auth_role()`) e `0007_seed_admin.sql` (admin.teste/leitor.teste, senha `senha-teste`) aplicadas no dev `[REDACTED_PROJECT_REF]`.
+- **Verificação**: `scripts/probes-admin-membros.sh` **106 ok / 0 falhas × 2 runs live** + regressões painel 27/0 e auth 19/0; sensor 7/7 mutantes mortos (incl. M4b role lists RLS — fix F1); `validate_spec.py`, `validate_tasks.py`, `validate_state.py` todos verdes.
+- **Loop verifier**: round 0 FAIL (1 mutante sobrevivente + AC38/39 sem evidência + flakiness login) → 6 fix tasks `f832f3f..84d2757` → round 1 PASS.
+- **Lessons candidatas novas**: L-006 (role lists de policies por policy), L-007 (assert redirect target em login), L-008 (propriedades negativas precisam de assert explícito).
+- **Próximos passos**: `git push origin main` (se autorizado); próxima feature da Fase 9 — recomendado: painel admin base (RF-021 dashboard) ou RF-028/029 usuários/config (RF-032 matriz de permissões refina o RBAC já rascunhado em admin-membros).
+- **Open decisions**: nenhuma em aberto (verbos HTTP da spec re-alinhados aos endpoints POST aprovados, commit `778944e`).
+- **Uncommitted files**: `validation.md`, `docs/coverage-matrix.md`, `.specs/STATE.md` (a commitar agora); `next-env.d.ts`/`opencode.json`/`tsconfig.tsbuildinfo` (untracked, não commitados); `.specs/LESSONS.md`/`lessons.json` (gerados, não commitados).
+- **Branch**: main (commits locais; `git push` pendente — nunca sem autorização).
