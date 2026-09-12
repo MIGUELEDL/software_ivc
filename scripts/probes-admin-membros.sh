@@ -45,6 +45,27 @@ FAIL=0
 ok() { PASS=$((PASS + 1)); printf '  ok   %s\n' "$1"; }
 ko() { FAIL=$((FAIL + 1)); printf '  FAIL %s\n' "$1"; }
 
+# F1 (M4b): asserta a lista de papeis EXATA de cada policy RLS (0006). Só casam
+# linhas que SÃO a expressão `using (public.auth_role() in ...` / `with check
+# (...)` dentro do bloco da policy (início em coluna 0) — comentários nunca
+# contam. Exige a lista completa + o nº de expressões esperado (update tem
+# using E with check). Se um papel for removido/adicionado/trocado, o grep
+# falha -> o probe mata a mutacao.
+check_policy_roles() { # nome_policy, lista_esperada, qtd_expressoes
+  local nome="$1" esperado="$2" qtd="${3:-1}" bloco n
+  bloco="$(awk -v pol="create policy \"${nome}\"" '
+    index($0, pol) == 1 { on = 1; next }
+    on && /^create policy/ { on = 0 }
+    on && ($0 ~ /^[[:space:]]*using \(public\.auth_role\(\) in/ || $0 ~ /^[[:space:]]*with check \(public\.auth_role\(\) in/) { print }
+  ' "$MIG06")"
+  n="$(printf '%s\n' "$bloco" | grep -cE '^[[:space:]]*(using|with check) \(public\.auth_role\(\) in' || true)"
+  if [ "$n" = "$qtd" ] && printf '%s' "$bloco" | grep -Fq "$esperado"; then
+    ok "policy ${nome}: lista de papeis exata (M4b)"
+  else
+    ko "policy ${nome}: papeis divergentes (esperado ${esperado} em ${qtd} expressao(oes), achou ${n})"
+  fi
+}
+
 printf '== Probes admin-membros (ADMINMEM-01..39) — BASE_URL=%s ==\n' "$BASE_URL"
 
 # =====================================================================
@@ -108,6 +129,17 @@ if grep -q "members_delete_admin" "$MIG06" && grep -q "'ADMIN','SUPER_ADMIN'" "$
 else
   ko "delete admin nao restrito a ADMIN/SUPER_ADMIN"
 fi
+
+# F1 (M4b): lista exata de papeis POR policy — um grep fraco sozinho deixa
+# passar remover FINANCEIRO (etc.) de uma policy. Os asserts abaixo exigem a
+# expressao USING/WITH CHECK inteira, no bloco certo, com a lista completa.
+check_policy_roles members_select_admin "('SECRETARIA','LIDER','FINANCEIRO','PATRIMONIAL','ADMIN','SUPER_ADMIN')" 1
+check_policy_roles members_insert_admin "('SECRETARIA','ADMIN','SUPER_ADMIN')" 1
+check_policy_roles members_update_admin "('SECRETARIA','ADMIN','SUPER_ADMIN')" 2
+check_policy_roles members_delete_admin "('ADMIN','SUPER_ADMIN')" 1
+check_policy_roles docs_select_admin "('SECRETARIA','LIDER','FINANCEIRO','PATRIMONIAL','ADMIN','SUPER_ADMIN')" 1
+check_policy_roles docs_insert_admin "('SECRETARIA','ADMIN','SUPER_ADMIN')" 1
+check_policy_roles docs_delete_admin "('SECRETARIA','ADMIN','SUPER_ADMIN')" 1
 
 printf '%s\n' '-- 0007_seed_admin.sql (seed de teste)'
 if grep -q 'admin.teste@ivc.local' "$MIG07" && grep -q 'leitor.teste@ivc.local' "$MIG07"; then
