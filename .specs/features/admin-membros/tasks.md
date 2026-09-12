@@ -459,8 +459,8 @@ membro não existe; 403 p/ SECRETARIA (via guard).
 - Skill: NONE
 
 **Done when**:
-- [ ] 204 ao remover; 404 doc/membro inexistente; sem regressão nos demais
-- [ ] `npm run typecheck` exit 0
+- [x] 204 ao remover; 404 doc/membro inexistente; sem regressão nos demais
+- [x] `npm run typecheck` exit 0
 
 **Tests**: probes estáticos
 **Gate**: quick
