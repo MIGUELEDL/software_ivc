@@ -554,9 +554,9 @@ filtro de status e busca no form.
 - Skill: NONE
 
 **Done when**:
-- [ ] 200 sem `q` (orde `nome asc`); filtra por `q` e `status` via searchParams
-- [ ] Estado vazio ("Nenhum membro encontrado") quando filtro não retorna nada
-- [ ] `npm run typecheck` exit 0; probes estáticos (grep ordenação/filtro)
+- [x] 200 sem `q` (orde `nome asc`); filtra por `q` e `status` via searchParams
+- [x] Estado vazio ("Nenhum membro encontrado") quando filtro não retorna nada
+- [x] `npm run typecheck` exit 0; probes estáticos (grep ordenação/filtro)
 
 **Tests**: probes estáticos + runtime (200/307)
 **Gate**: full (com servidor)
