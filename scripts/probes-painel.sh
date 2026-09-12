@@ -223,6 +223,20 @@ if [ "$login2_status" = "307" ] && [ "$login2_target" = "$BASE_URL/painel" ]; th
   else
     ko "POST perfil invalido -> $invalido (esperado 400)"
   fi
+  # PAINEL-13/15/19 caminho feliz: autocadastro válido deve gerar 201 com
+  # matrícula IVC-0002 (sequence versionada + RPC security definer, imune a
+  # RLS). Cenário real: user sem row em members (seed 0004) faz POST válido —
+  # se o fix regredir (ex.: RPC removida), o transform vira 409 repetido.
+  feliz_body="$(curl -s -b "$jar2" -X POST "$BASE_URL/api/painel/perfil" \
+    --data-urlencode 'nome=Maria da Silva' \
+    --data-urlencode 'whatsapp=83988887777' \
+    --data-urlencode 'nascimento=1995-03-14' || true)"
+  feliz_code="$(printf '%s' "$feliz_body" | sed -n 's/.*"matricula":"\([^"]*\)".*/\1/p')"
+  if printf '%s' "$feliz_body" | grep -q 'IVC-0002' && printf '%s' "$feliz_body" | grep -q '"id"'; then
+    ok "autocadastro valido -> 201 + matricula IVC-0002 (PAINEL-13/15/19)"
+  else
+    ko "autocadastro valido -> NÃO gerou IVC-0002 (resposta: $(printf '%s' "$feliz_body" | head -c 120))"
+  fi
 else
   ko "login 2o seed -> $login2_status $login2_target (esperado 307 $BASE_URL/painel)"
 fi
