@@ -130,3 +130,13 @@
 - **Open decisions**: nenhuma — todas resolvidas/registradas (AD-004 superseded por AD-013; D1..D7 em context.md).
 - **Uncommitted files**: `.specs/STATE.md` (este Handoff), `.specs/features/auth/context.md`, `validation.md` (a commitar aqui), `opencode.json` (untracked, não commitado)
 - **Branch**: main (commits locais; `git push` pendente)
+
+## Handoff — feature CONCLUÍDA (2026-09-12)
+
+<!-- CHECKPOINT-PAUSA: painel-membro round4 -->
+- **Feature**: painel-membro — status: **fix P1 aplicado + verde live (27 ok / 0 falhas)**.
+- **O que foi resolvido (rounds 3→4)**: bug real de produção — autocadastro válido retornava **409 permanente** (cadastro_duplicado). Causa: `generateMatricula` fazia `select max(matricula)+1` como **client autenticado**, sob RLS `members_select_own` → user sem row via `[]` → sempre `IVC-0001` → colisão com seed (unique 23505 → 409).
+- **Fix commitado**: RPC `proxima_matricula()` **security definer** (`supabase/migrations/0005_proxima_matricula_rpc.sql`, commit `20a60a3`) imune a RLS via sequence versionada; `src/lib/painel/members.ts:57` via `supabase.rpc`. Probe round 4 (`350c9cb`) asserta 201 real + matrícula derivada (regex, ≠ seed) + guard de resíduo re-runnable.
+- **Evidence**: probe live 27/0; mutation M9 (remover RPC) killed; rodada 4 do verifier prescreveu 3 fixes de higiene no probe — TODOS aplicados e commitados (`350c9cb`).
+- **Próxima ação na retomada**: **re-despachar verifier round 5** — rodada final de confirmação da fix P1. Prescrição técnica já cumprida; nada em aberto.
+- **Tests**: `BASE_URL=http://localhost:3000 bash scripts/probes-painel.sh` → 27 ok, 0 falhas (servidor dev :3000 no ar).
