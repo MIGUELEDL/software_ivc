@@ -171,7 +171,7 @@ nesta etapa.
 
 1. WHEN um escritor envia `POST /api/admin/membros/[id]/documentos` com `tipo` válido (`RG`, `CPF`, `comprovante_endereco`, `outro`) THEN o sistema SHALL criar o metadado e responder `201`. <!-- event-driven -->
 2. IF o `tipo` for inválido THEN o sistema SHALL responder `400`. <!-- unwanted-behavior -->
-3. WHEN um admin lê `GET /api/admin/membros/[id]/documentos` THEN o sistema SHALL listar os metadados ordenados por `criado_em` desc. <!-- event-driven -->
+3. WHEN um admin acessa `/admin/membros/[id]` THEN o sistema SHALL exibir os documentos do membro ordenados por `criado_em` desc. <!-- event-driven -->
 4. WHEN um escritor envia `DELETE /api/admin/membros/[id]/documentos/[docId]` THEN o sistema SHALL remover o metadado e responder `204`. <!-- event-driven -->
 5. IF o membro ou o documento não existir THEN o sistema SHALL responder `404`. <!-- unwanted-behavior -->
 
@@ -188,7 +188,7 @@ patrimonial, líder) consultem membros sem poder alterar dados.
 
 **Acceptance Criteria**:
 
-1. WHEN um papel leitor (FINANCEIRO/PATRIMONIAL/LIDER) acessa rotas de leitura (`/admin/membros`, `/admin/membros/[id]`, `/admin/membros/[id]/cartao`, documentos GET) THEN o sistema SHALL permitir a leitura. <!-- event-driven -->
+1. WHEN um papel leitor (FINANCEIRO/PATRIMONIAL/LIDER) acessa rotas de leitura (`/admin/membros`, `/admin/membros/[id]`, `/admin/membros/[id]/cartao`, seção de documentos no detalhe) THEN o sistema SHALL permitir a leitura. <!-- event-driven -->
 2. WHEN um papel leitor ou um papel não-admin envia qualquer requisição de escrita (`POST /api/admin/membros`, `POST dados/status/documentos`, `DELETE`) THEN o sistema SHALL responder `403`. <!-- unwanted-behavior -->
 3. IF uma requisição a `/api/admin/*` chega sem sessão THEN o sistema SHALL responder `401`. <!-- unwanted-behavior -->
 
