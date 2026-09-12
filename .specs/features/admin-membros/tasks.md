@@ -507,9 +507,9 @@ print). Sem mudança de comportamento.
 - Skill: NONE
 
 **Done when**:
-- [ ] Page renderiza `MemberCard`; probes antigos do painel-membro continuam verdes
+- [x] Page renderiza `MemberCard`; probes antigos do painel-membro continuam verdes
       (`bash scripts/probes-painel.sh` no servidor)
-- [ ] `npm run typecheck` exit 0
+- [x] `npm run typecheck` exit 0
 
 **Tests**: probes (regressão painel-membro) + typecheck
 **Gate**: full (após start do servidor)
