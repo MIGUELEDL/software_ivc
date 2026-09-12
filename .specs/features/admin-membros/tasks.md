@@ -414,8 +414,8 @@ membro não existe; 403 p/ SECRETARIA (via guard).
 - Skill: NONE
 
 **Done when**:
-- [ ] 204 limpa (conta auth removida também); 409 com documentos; 403 SECRETARIA
-- [ ] `npm run typecheck` exit 0; probes estáticos (grep guard + 409)
+- [x] 204 limpa (conta auth removida também); 409 com documentos; 403 SECRETARIA
+- [x] `npm run typecheck` exit 0; probes estáticos (grep guard + 409)
 
 **Tests**: probes estáticos
 **Gate**: quick
