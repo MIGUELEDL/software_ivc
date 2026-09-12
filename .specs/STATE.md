@@ -140,3 +140,10 @@
 - **Evidence**: probe live 27/0; mutation M9 (remover RPC) killed; rodada 4 do verifier prescreveu 3 fixes de higiene no probe — TODOS aplicados e commitados (`350c9cb`).
 - **Próxima ação na retomada**: **re-despachar verifier round 5** — rodada final de confirmação da fix P1. Prescrição técnica já cumprida; nada em aberto.
 - **Tests**: `BASE_URL=http://localhost:3000 bash scripts/probes-painel.sh` → 27 ok, 0 falhas (servidor dev :3000 no ar).
+## Handoff — feature painel-membro CONCLUÍDA (2026-09-12)
+
+- **Estado**: feature **fechada e provada** — round 5 FINAL PASS (verifier independente). Nada em aberto.
+- **O que foi entregue**: autocadastro de membro gerando **201 real + matrícula derivada** (nunca hardcoded), perfil com validação real de nascimento (400 discriminado), avisos filtrados/ordenados, PIX pessoal com txid=matrícula + chave institucional.
+- **Bug P1 que a verificação matou**: autocadastro válido devolvia **409 permanente** (cadastro_duplicado) — causa: `max(matricula)+1` via client autenticado sob RLS cego → sempre IVC-0001 → colisão com seed. **Fix**: RPC `proxima_matricula()` **security definer** imune a RLS (migration 0005 commitada `20a60a3` + `members.ts` via RPC `8244c8b`) — provado 2× : 27/0 live, mutações M9a/M9b mortas.
+- **Lessons L-004/L-005** (probe re-runnable + RPC imune a RLS) promovidas no LESSONS.md.
+- **Póximos passos (qualquer sessão nova)**: começar pelo `validation.md` round 5 PASS já persistido; considerar promover os lessons como L-004/L-005 confirmados (recurrence>1) e em seguida abrir a próxima feature já com probes discriminativos re-runnáveis desde o round 1.

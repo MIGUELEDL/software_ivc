@@ -22,3 +22,15 @@
 - **Gap P1 (409 permanente)**: KILLED — RPC `proxima_matricula()` security definer versionada (0005), imune a RLS; mutação M9 morreu 2x (26/1 e 26/1).
 - **Probe hygiene**: guard de resíduo explícito com comando de limpeza + POST 400 isolado por campo (rebote de análise round 4) — probe agora re-runnable.
 - **Veredito final**: feature CONCLUÍDA. Nenhum item em aberto.
+
+---
+## Round 5 (FINAL) — PASS ✅
+
+- **Probe live (2x consecutivas re-runnable)**: `BASE_URL=http://localhost:3000 bash scripts/probes-painel.sh` → **27 ok, 0 falhas** (ambas as corridas: sequence em IVC-0004.., matrícula do funil derivada por regex ≠ seed, jamais hardcoded).
+- **Fix P1 (matrícula via RPC security definer) — discriminado 2x**:
+  - **M9a** (RPC `proxima_matricula` removida do dev) → probe feliz **FALHA** (autocadastro → 409/500) **morto** ✅
+  - **M9b** (voltar ao max+1 histórico via client) → probe feliz **FALHA** (409 permanece) **morto** ✅
+- **Probe hygiene round 4 aceita**: 3 defeitos prescritos corrigidos — (1) 201 real assertado, (2) matrícula derivada por regex (não hardcoded IVC-0002), (3) guard de resíduo + limpeza documentada (probe re-runnable por design).
+- **Gates**: lint 0 erros · typecheck exit 0 · probe live green · mutations 0 sobreviventes.
+
+**Resultado**: feature **CONCLUÍDA** — 5 rounds de verificação, 27 ACs com probes verde 27/0 no servidor real, 1 bug de produção (autocadastro válido → 409 permanente) encontrado e morto com fix versionado (RPC `security definer`, migration 0005).
