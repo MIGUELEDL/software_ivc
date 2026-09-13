@@ -2,7 +2,7 @@ import { ArrowLeft, IdCard, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getClaims } from "@/lib/auth/claims";
-import { isAdminWriterRole, isHardDeleteRole } from "@/lib/auth/rbac";
+import { can } from "@/lib/auth/rbac";
 import {
   getMembro,
   listDocumentos,
@@ -39,7 +39,8 @@ const TIPO_DOCUMENTO_LABEL: Record<string, string> = {
  * Detalhe do membro (ADMINMEM-24): dados, contatos, endereço, situação,
  * documentos e ações. Qualquer papel admin lê; forms de escrita (dados,
  * transição, documentos) e remoção de doc só para escritores; hard-delete só
- * ADMIN/SUPER_ADMIN (isHardDeleteRole). Guard real nas rotas de API (403).
+ * quem administra membros na matriz (can "membros","administrar"). Guard real
+ * nas rotas de API (403).
  */
 export default async function MembroDetalhePage({
   params,
@@ -49,8 +50,8 @@ export default async function MembroDetalhePage({
   const { id } = await params;
 
   const claims = await getClaims();
-  const escritor = isAdminWriterRole(claims?.role ?? "");
-  const hardDelete = isHardDeleteRole(claims?.role ?? "");
+  const escritor = await can(claims?.role ?? "", "membros", "escrever");
+  const hardDelete = await can(claims?.role ?? "", "membros", "administrar");
 
   let membro: Awaited<ReturnType<typeof getMembro>> = null;
   let documentos: Awaited<ReturnType<typeof listDocumentos>> = [];

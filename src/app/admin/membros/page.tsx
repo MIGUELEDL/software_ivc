@@ -1,7 +1,7 @@
 import { Eye, IdCard, Search, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { getClaims } from "@/lib/auth/claims";
-import { isAdminWriterRole } from "@/lib/auth/rbac";
+import { can } from "@/lib/auth/rbac";
 import { listMembros } from "@/lib/admin/membros";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -53,7 +53,7 @@ export default async function AdminMembrosPage({
   const status = STATUS_PARA_DB[statusOpt] ?? undefined;
 
   const claims = await getClaims();
-  const escritor = isAdminWriterRole(claims?.role ?? "");
+  const escritor = await can(claims?.role ?? "", "membros", "escrever");
 
   let membros: Awaited<ReturnType<typeof listMembros>> = [];
   let falhaConsulta = false;

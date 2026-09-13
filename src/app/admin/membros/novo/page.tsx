@@ -1,7 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { getClaims } from "@/lib/auth/claims";
-import { isAdminWriterRole } from "@/lib/auth/rbac";
+import { can } from "@/lib/auth/rbac";
 import { MembroNovoForm } from "./membro-novo-form";
 
 /**
@@ -12,7 +12,7 @@ import { MembroNovoForm } from "./membro-novo-form";
  */
 export default async function MembroNovoPage() {
   const claims = await getClaims();
-  const escritor = isAdminWriterRole(claims?.role ?? "");
+  const escritor = await can(claims?.role ?? "", "membros", "escrever");
 
   if (!escritor) {
     return (

@@ -149,6 +149,7 @@ Aplicar no dev `[REDACTED_PROJECT_REF]` via MCP e validar por SQL.
 
 **Tests**: probe estático (asserts T2 no script) + typecheck
 **Gate**: quick
+**Status**: ✅ Done (merge backward: http.ts reimplementado via `can()` sem trocar assinaturas; 3 páginas migradas para `can()` — ver relatório do batch)
 
 ### T3: http.ts — guardas module-aware (ler/escrever/administrar)
 

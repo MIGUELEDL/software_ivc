@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server";
 import { getClaims } from "@/lib/auth/claims";
 import type { AuthClaims } from "@/lib/auth/claims";
-import {
-  isAdminRole,
-  isAdminWriterRole,
-  isHardDeleteRole,
-} from "@/lib/auth/rbac";
+import { can, isAdminRole } from "@/lib/auth/rbac";
 
 /**
  * Guardas dos route handlers `/api/admin/*` — os proxies de página não cobrem
@@ -30,9 +26,10 @@ function negar(mensagem: "nao_autenticado" | "nao_autorizado", status: 401 | 403
 }
 
 /**
- * Guarda de leitura (ADMINMEM-32): qualquer papel admin autenticado passa —
- * leitores (FINANCEIRO/PATRIMONIAL/LIDER) leem. Sem sessão → 401; papel
- * não-admin (ex.: MEMBRO) → 403.
+ * Guarda de leitura: qualquer papel admin autenticado passa — a autoridade
+ * fina por módulo vira `can()`; o merge para guardas module-aware acontece na
+ * evolução deste arquivo (T3 da matriz). Sem sessão → 401; papel não-admin
+ * (ex.: MEMBRO) → 403.
  */
 export async function authAdmin(): Promise<AuthClaims | NextResponse> {
   const claims = await getClaims();
@@ -46,30 +43,33 @@ export async function authAdmin(): Promise<AuthClaims | NextResponse> {
 }
 
 /**
- * Guarda de escrita (ADMINMEM-33): SECRETARIA/ADMIN/SUPER_ADMIN. Sem sessão →
- * 401; leitor ou não-admin → 403.
+ * Guarda de escrita em membros (paridade com a policy 0006): decide pela
+ * matriz `can("membros","escrever")` (SECRETARIA/ADMIN/SUPER_ADMIN). Sem
+ * sessão → 401; leitor ou não-admin → 403. Ainda com assinatura fixa no
+ * módulo membros até os callers migrarem para `requireEscrita(modulo)`.
  */
 export async function requireWriter(): Promise<AuthClaims | NextResponse> {
   const claims = await getClaims();
   if (!claims) {
     return negar("nao_autenticado", 401);
   }
-  if (!isAdminWriterRole(claims.role ?? "")) {
+  if (!(await can(claims.role ?? "", "membros", "escrever"))) {
     return negar("nao_autorizado", 403);
   }
   return claims;
 }
 
 /**
- * Guarda de hard-delete (ADMINMEM-21..23/34): ADMIN/SUPER_ADMIN. Sem sessão →
- * 401; SECRETARIA e demais → 403 (secretaria inativa, não apaga).
+ * Guarda de hard-delete em membros (paridade com a policy 0006): decide pela
+ * matriz `can("membros","administrar")` (ADMIN/SUPER_ADMIN — SECRETARIA e
+ * demais → 403, secretaria inativa e não apaga).
  */
 export async function requireHardDelete(): Promise<AuthClaims | NextResponse> {
   const claims = await getClaims();
   if (!claims) {
     return negar("nao_autenticado", 401);
   }
-  if (!isHardDeleteRole(claims.role ?? "")) {
+  if (!(await can(claims.role ?? "", "membros", "administrar"))) {
     return negar("nao_autorizado", 403);
   }
   return claims;
