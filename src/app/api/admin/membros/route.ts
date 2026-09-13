@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireWriter, erroCampos } from "@/lib/admin/http";
+import { requireEscrita, erroCampos } from "@/lib/admin/http";
 import { criarMembro, EmailEmUsoError } from "@/lib/admin/membros";
 import {
   validarNascimento,
@@ -15,7 +15,7 @@ import {
  * (senha-ID exibida uma única vez — nunca persistida nem em URL).
  */
 export async function POST(request: Request) {
-  const auth = await requireWriter();
+  const auth = await requireEscrita("membros");
   if (auth instanceof NextResponse) {
     return auth;
   }

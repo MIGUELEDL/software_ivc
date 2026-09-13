@@ -1,13 +1,18 @@
 import { NextResponse } from "next/server";
 import { getClaims } from "@/lib/auth/claims";
 import type { AuthClaims } from "@/lib/auth/claims";
-import { can, isAdminRole } from "@/lib/auth/rbac";
+import { can } from "@/lib/auth/rbac";
+import type { Modulo, Nivel } from "@/lib/auth/rbac";
 
 /**
  * Guardas dos route handlers `/api/admin/*` — os proxies de página não cobrem
  * `/api` (design, sec. Route Handlers). Convenção: cada guarda retorna as
  * claims quando autoriza, ou um `NextResponse` de erro (401/403) que o handler
  * devolve diretamente (`instanceof NextResponse`).
+ *
+ * Autoridade por módulo vem da matriz `permissions` via `can()` (AD-015):
+ * leitura = ler, escrita = escrever, hard-delete = administrar. Negativa é
+ * registrada no log do servidor (MATRIZ-20 — observabilidade de negação).
  *
  * Formato de erro (padrão painel-membro): 401 `{ error: "nao_autenticado" }`,
  * 403 `{ error: "nao_autorizado" }`, 400 `{ error: "dados_invalidos", campos }`.
@@ -25,52 +30,70 @@ function negar(mensagem: "nao_autenticado" | "nao_autorizado", status: 401 | 403
   return NextResponse.json({ error: mensagem }, { status });
 }
 
+/** Nega 403 e registra a negativa no log do servidor (MATRIZ-20). */
+function negarPermissao(
+  papel: string,
+  modulo: Modulo,
+  nivel: Nivel
+): NextResponse {
+  console.error(
+    `rbac: acesso negado papel=${papel} modulo=${modulo} nivel=${nivel}`
+  );
+  return negar("nao_autorizado", 403);
+}
+
 /**
- * Guarda de leitura: qualquer papel admin autenticado passa — a autoridade
- * fina por módulo vira `can()`; o merge para guardas module-aware acontece na
- * evolução deste arquivo (T3 da matriz). Sem sessão → 401; papel não-admin
- * (ex.: MEMBRO) → 403.
+ * Guarda de leitura por módulo: exige `can(papel, modulo, 'ler')` — qualquer
+ * papel admin com leitura na matriz passa; leitor sem linha no módulo → 403.
+ * Sem sessão → 401.
  */
-export async function authAdmin(): Promise<AuthClaims | NextResponse> {
+export async function authAdmin(
+  modulo: Modulo
+): Promise<AuthClaims | NextResponse> {
   const claims = await getClaims();
   if (!claims) {
     return negar("nao_autenticado", 401);
   }
-  if (!isAdminRole(claims.role ?? "")) {
-    return negar("nao_autorizado", 403);
+  const papel = claims.role ?? "";
+  if (!(await can(papel, modulo, "ler"))) {
+    return negarPermissao(papel, modulo, "ler");
   }
   return claims;
 }
 
 /**
- * Guarda de escrita em membros (paridade com a policy 0006): decide pela
- * matriz `can("membros","escrever")` (SECRETARIA/ADMIN/SUPER_ADMIN). Sem
- * sessão → 401; leitor ou não-admin → 403. Ainda com assinatura fixa no
- * módulo membros até os callers migrarem para `requireEscrita(modulo)`.
+ * Guarda de escrita por módulo: exige `can(papel, modulo, 'escrever')`.
+ * Sem sessão → 401; leitor ou não-admin → 403 (negativa logada).
  */
-export async function requireWriter(): Promise<AuthClaims | NextResponse> {
+export async function requireEscrita(
+  modulo: Modulo
+): Promise<AuthClaims | NextResponse> {
   const claims = await getClaims();
   if (!claims) {
     return negar("nao_autenticado", 401);
   }
-  if (!(await can(claims.role ?? "", "membros", "escrever"))) {
-    return negar("nao_autorizado", 403);
+  const papel = claims.role ?? "";
+  if (!(await can(papel, modulo, "escrever"))) {
+    return negarPermissao(papel, modulo, "escrever");
   }
   return claims;
 }
 
 /**
- * Guarda de hard-delete em membros (paridade com a policy 0006): decide pela
- * matriz `can("membros","administrar")` (ADMIN/SUPER_ADMIN — SECRETARIA e
- * demais → 403, secretaria inativa e não apaga).
+ * Guarda de administrar por módulo (hard-delete e afins): exige
+ * `can(papel, modulo, 'administrar')`. Sem sessão → 401; demais papéis → 403
+ * (negativa logada).
  */
-export async function requireHardDelete(): Promise<AuthClaims | NextResponse> {
+export async function requireAdministrar(
+  modulo: Modulo
+): Promise<AuthClaims | NextResponse> {
   const claims = await getClaims();
   if (!claims) {
     return negar("nao_autenticado", 401);
   }
-  if (!(await can(claims.role ?? "", "membros", "administrar"))) {
-    return negar("nao_autorizado", 403);
+  const papel = claims.role ?? "";
+  if (!(await can(papel, modulo, "administrar"))) {
+    return negarPermissao(papel, modulo, "administrar");
   }
   return claims;
 }

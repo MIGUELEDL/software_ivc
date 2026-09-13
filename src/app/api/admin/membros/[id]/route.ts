@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireHardDelete } from "@/lib/admin/http";
+import { requireAdministrar } from "@/lib/admin/http";
 import {
   excluirMembro,
   MembroComDocumentosError,
@@ -16,7 +16,7 @@ export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const auth = await requireHardDelete();
+  const auth = await requireAdministrar("membros");
   if (auth instanceof NextResponse) {
     return auth;
   }

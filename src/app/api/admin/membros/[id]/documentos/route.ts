@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireWriter, erroCampos } from "@/lib/admin/http";
+import { requireEscrita, erroCampos } from "@/lib/admin/http";
 import {
   criarDocumento,
   TIPOS_DOCUMENTO,
@@ -17,7 +17,7 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const auth = await requireWriter();
+  const auth = await requireEscrita("membros");
   if (auth instanceof NextResponse) {
     return auth;
   }

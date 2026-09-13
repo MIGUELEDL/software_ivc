@@ -173,6 +173,7 @@ novo `requireAdministrar(modulo)` exige `can(_, modulo, 'administrar')`; remover
 
 **Tests**: probe estático (greps das novas guardas + ausência das antigas) + typecheck
 **Gate**: quick
+**Status**: ✅ Done (merge backward: 6 rotas migradas para requireEscrita/requireAdministrar aqui — ver relatório do batch; MATRIZ-20: negativa logada nas guardas)
 
 ### Phase 3: Route Handlers do piloto (membros)
 

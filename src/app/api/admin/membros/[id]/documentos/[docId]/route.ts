@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireWriter } from "@/lib/admin/http";
+import { requireEscrita } from "@/lib/admin/http";
 import {
   removerDocumento,
   DocumentoNaoEncontradoError,
@@ -14,7 +14,7 @@ export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string; docId: string }> }
 ) {
-  const auth = await requireWriter();
+  const auth = await requireEscrita("membros");
   if (auth instanceof NextResponse) {
     return auth;
   }
