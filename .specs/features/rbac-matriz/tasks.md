@@ -9,7 +9,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 ---
 
 **Design**: `.specs/features/rbac-matriz/design.md`
-**Status**: Approved
+**Status**: In Progress
 
 ---
 
@@ -120,6 +120,7 @@ Aplicar no dev `[REDACTED_PROJECT_REF]` via MCP e validar por SQL.
 
 **Tests**: probe estático (greps no `.sql`: tabela, RLS, seed, policies/can_access) + checagem SQL via MCP
 **Gate**: quick
+**Status**: ✅ Done (aplicada no dev; SQL: 48 linhas + spot-check membros 6 pares ok)
 
 ### Phase 2: RBAC core — app module-aware
 
