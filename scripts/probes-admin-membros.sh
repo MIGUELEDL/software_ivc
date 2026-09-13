@@ -3,8 +3,11 @@
 # Probes por AC da feature admin-membros (RF-022 / ADMINMEM-01..39).
 # Uso: BASE_URL=<url> bash scripts/probes-admin-membros.sh  (default http://localhost:3000)
 # Requer o servidor no ar (produção: `npm run build && npm run start -- -p 3000`)
-# e as migrações 0006/0007 aplicadas no dev (usuários admin.teste/leitor.teste,
-# senha `senha-teste`, role ADMIN/FINANCEIRO — sem force_password_change).
+# e as migrações 0006/0007/0008/0009 aplicadas no dev (users seed sem
+# force_password_change: admin.teste ADMIN, leitor.teste FINANCEIRO,
+# secretaria.teste SECRETARIA, membro.teste MEMBRO — senha `senha-teste`).
+# A partir do RF-032 a autoridade por papel vem da matriz `permissions` (0008):
+# guards/can() na app espelham can_access() nas policies RLS (mesma fonte).
 #
 # Re-runnable (L-005): emails `probe<rand>@teste.com` com $RANDOM; ordem
 # create -> act -> cleanup (hard-delete do criado no fim). Trap no EXIT tenta
@@ -20,6 +23,9 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 MIG06="$ROOT/supabase/migrations/0006_admin_membros.sql"
 MIG07="$ROOT/supabase/migrations/0007_seed_admin.sql"
+MIG08="$ROOT/supabase/migrations/0008_permissions_matriz.sql"
+MIG09="$ROOT/supabase/migrations/0009_seed_secretaria.sql"
+MIG10="$ROOT/supabase/migrations/0010_seed_membro.sql"
 MEMBERS_LIB="$ROOT/src/lib/admin/membros.ts"
 SUPABASE_ADMIN="$ROOT/src/lib/supabase/admin.ts"
 RBAC="$ROOT/src/lib/auth/rbac.ts"
@@ -45,28 +51,66 @@ FAIL=0
 ok() { PASS=$((PASS + 1)); printf '  ok   %s\n' "$1"; }
 ko() { FAIL=$((FAIL + 1)); printf '  FAIL %s\n' "$1"; }
 
-# F1 (M4b): asserta a lista de papeis EXATA de cada policy RLS (0006). Só casam
-# linhas que SÃO a expressão `using (public.auth_role() in ...` / `with check
-# (...)` dentro do bloco da policy (início em coluna 0) — comentários nunca
-# contam. Exige a lista completa + o nº de expressões esperado (update tem
-# using E with check). Se um papel for removido/adicionado/trocado, o grep
-# falha -> o probe mata a mutacao.
-check_policy_roles() { # nome_policy, lista_esperada, qtd_expressoes
-  local nome="$1" esperado="$2" qtd="${3:-1}" bloco n
-  bloco="$(awk -v pol="create policy \"${nome}\"" '
+# F1 (M4b → RF-032/L-006): a fonte única da matriz é a tabela `permissions`
+# (0008) e as policies admin decidem via `can_access('membros', ...)` — não
+# por role-lists. O assert exige a expressão USANDO/WITH CHECK inteira e exata
+# dentro do bloco E o número certo de expressões por policy. Remover/trocar a
+# policy, o módulo ou o nível quebra o grep (mata a mutação).
+bloco_policy() { # arquivo nome_policy
+  awk -v pol="create policy \"$2\"" '
     index($0, pol) == 1 { on = 1; next }
     on && /^create policy/ { on = 0 }
-    on && ($0 ~ /^[[:space:]]*using \(public\.auth_role\(\) in/ || $0 ~ /^[[:space:]]*with check \(public\.auth_role\(\) in/) { print }
-  ' "$MIG06")"
-  n="$(printf '%s\n' "$bloco" | grep -cE '^[[:space:]]*(using|with check) \(public\.auth_role\(\) in' || true)"
-  if [ "$n" = "$qtd" ] && printf '%s' "$bloco" | grep -Fq "$esperado"; then
-    ok "policy ${nome}: lista de papeis exata (M4b)"
+    on { print }
+  ' "$1"
+}
+
+probe_policy_access() { # nome_policy tabela modulo nivel usa(ns) esperado
+  #   1: nome (ex: members_select_admin)  2: tabela (members)
+  #   3: modulo ('membros')  4: nivel ('ler')
+  #   5: formato 'U', 'C', 'UC' (using/with check ou ambos)  6: qtd expr esperadas
+  local nome="$1" tabela="$2" modulo="$3" nivel="$4" comb="$5" qtd="$6"
+  local bloco n
+  bloco="$(bloco_policy "$MIG08" "$nome")"
+  if [ -z "$bloco" ]; then
+    ko "policy ${nome}: ausente em 0008"
+    return
+  fi
+  if grep -q "drop policy if exists \"${nome}\" on public.${tabela};" "$MIG08"; then
+    ok "0008 dropa e recria ${nome} via can_access"
   else
-    ko "policy ${nome}: papeis divergentes (esperado ${esperado} em ${qtd} expressao(oes), achou ${n})"
+    ko "0008 sem drop de ${nome}"
+  fi
+  local lit nivel_expr
+  case "$nivel" in
+    ler) nivel_expr="ler" ;;
+    escrever) nivel_expr="escrever" ;;
+    administrar) nivel_expr="administrar" ;;
+  esac
+  if [[ "$comb" == *U* ]]; then
+    lit="using (public.can_access('${modulo}','${nivel_expr}'))"
+    if printf '%s\n' "$bloco" | grep -Fq "$lit"; then
+      ok "policy ${nome}: ${lit}"
+    else
+      ko "policy ${nome}: sem ${lit}"
+    fi
+  fi
+  if [[ "$comb" == *C* ]]; then
+    lit="with check (public.can_access('${modulo}','${nivel_expr}'))"
+    if printf '%s\n' "$bloco" | grep -Fq "$lit"; then
+      ok "policy ${nome}: ${lit}"
+    else
+      ko "policy ${nome}: sem ${lit}"
+    fi
+  fi
+  n="$(printf '%s\n' "$bloco" | grep -c "public.can_access('${modulo}','" || true)"
+  if [ "$n" = "$qtd" ]; then
+    ok "policy ${nome}: ${qtd} expressoes can_access('${modulo}') exatas (M4b)"
+  else
+    ko "policy ${nome}: ${n} expr can_access (esperado ${qtd})"
   fi
 }
 
-printf '== Probes admin-membros (ADMINMEM-01..39) — BASE_URL=%s ==\n' "$BASE_URL"
+printf '== Probes admin-membros (ADMINMEM-01..39 + RF-032/MATRIZ-01..20) — BASE_URL=%s ==\n' "$BASE_URL"
 
 # =====================================================================
 # ESTÁTICO — migrations 0006/0007 (schema, RLS, seed)
@@ -109,37 +153,72 @@ if grep -q 'create or replace function public.auth_role()' "$MIG06" && grep -q '
 else
   ko "auth_role() ausente ou sem security definer"
 fi
-if grep -q 'create policy "members_select_admin"' "$MIG06" \
-  && grep -q 'create policy "members_insert_admin"' "$MIG06" \
-  && grep -q 'create policy "members_update_admin"' "$MIG06" \
-  && grep -q 'create policy "members_delete_admin"' "$MIG06"; then
-  ok "4 policies em members (select/insert/update/delete)"
-else
-  ko "policies de members incompletas"
-fi
-if grep -q 'create policy "docs_select_admin"' "$MIG06" \
-  && grep -q 'create policy "docs_insert_admin"' "$MIG06" \
-  && grep -q 'create policy "docs_delete_admin"' "$MIG06"; then
-  ok "3 policies em member_documents (select/insert/delete)"
-else
-  ko "policies de documents incompletas"
-fi
-if grep -q "members_delete_admin" "$MIG06" && grep -q "'ADMIN','SUPER_ADMIN'" "$MIG06"; then
-  ok "delete de members restrito a ADMIN/SUPER_ADMIN"
-else
-  ko "delete admin nao restrito a ADMIN/SUPER_ADMIN"
-fi
 
-# F1 (M4b): lista exata de papeis POR policy — um grep fraco sozinho deixa
-# passar remover FINANCEIRO (etc.) de uma policy. Os asserts abaixo exigem a
-# expressao USING/WITH CHECK inteira, no bloco certo, com a lista completa.
-check_policy_roles members_select_admin "('SECRETARIA','LIDER','FINANCEIRO','PATRIMONIAL','ADMIN','SUPER_ADMIN')" 1
-check_policy_roles members_insert_admin "('SECRETARIA','ADMIN','SUPER_ADMIN')" 1
-check_policy_roles members_update_admin "('SECRETARIA','ADMIN','SUPER_ADMIN')" 2
-check_policy_roles members_delete_admin "('ADMIN','SUPER_ADMIN')" 1
-check_policy_roles docs_select_admin "('SECRETARIA','LIDER','FINANCEIRO','PATRIMONIAL','ADMIN','SUPER_ADMIN')" 1
-check_policy_roles docs_insert_admin "('SECRETARIA','ADMIN','SUPER_ADMIN')" 1
-check_policy_roles docs_delete_admin "('SECRETARIA','ADMIN','SUPER_ADMIN')" 1
+printf '%s\n' '-- 0008_permissions_matriz.sql (matriz RBAC / RF-032, AD-015)'
+if grep -q 'create table if not exists public.permissions' "$MIG08" \
+  && grep -q 'primary key (role, module)' "$MIG08" \
+  && grep -q "nivel in ('ler','escrever','administrar')" "$MIG08"; then
+  ok "tabela permissions: PK (role,module) + check de nivel (MATRIZ-01)"
+else
+  ko "tabela permissions ausente/incompleta (MATRIZ-01)"
+fi
+if grep -q 'alter table public.permissions enable row level security' "$MIG08" \
+  && grep -q 'create policy "permissions_select_authenticated"' "$MIG08" \
+  && grep -q 'using (true);' "$MIG08"; then
+  ok "RLS permissions: select autenticado liberado (matriz pseudo-publica)"
+else
+  ko "RLS de leitura de permissions ausente"
+fi
+if grep -q 'permissions_insert_super_admin' "$MIG08" \
+  && grep -q 'permissions_update_super_admin' "$MIG08" \
+  && grep -q 'permissions_delete_super_admin' "$MIG08" \
+  && [ "$(grep -c "public.auth_role() = 'SUPER_ADMIN'" "$MIG08" || true)" -ge 4 ]; then
+  ok "escrita da matriz (insert/update/delete) so SUPER_ADMIN (AD-015)"
+else
+  ko "escrita da matriz nao restrita a SUPER_ADMIN"
+fi
+if grep -q 'create or replace function public.can_access(p_module text, p_nivel text)' "$MIG08" \
+  && grep -q 'security definer' "$MIG08" \
+  && grep -q "nivel = 'administrar'" "$MIG08" \
+  && grep -q "nivel = 'escrever' and p_nivel in ('ler','escrever')" "$MIG08" \
+  && grep -q "nivel = 'ler' and p_nivel = 'ler'" "$MIG08"; then
+  ok "can_access() security definer com hierarquia administrar>escrever>ler (MATRIZ-06)"
+else
+  ko "can_access() sem hierarquia completa"
+fi
+if grep -q 'revoke all on function public.can_access(text,text) from public;' "$MIG08" \
+  && grep -q 'grant execute on function public.can_access(text,text) to authenticated;' "$MIG08"; then
+  ok "can_access() executavel apenas por authenticated"
+else
+  ko "revoke/grant de can_access() ausente"
+fi
+n_seed="$(grep -c "^  ('[A-Z_]*','[a-z]*','" "$MIG08" || true)"
+if [ "$n_seed" = "48" ]; then
+  ok "seed da matriz com 48 pares (Anexo A, MATRIZ-12)"
+else
+  ko "seed da matriz: $n_seed pares (esperado 48)"
+fi
+if grep -q 'on conflict (role, module) do nothing' "$MIG08"; then
+  ok "seed idempotente (on conflict do nothing)"
+else
+  ko "seed sem idempotencia"
+fi
+if grep -q 'MEMBRO' "$MIG08" && ! grep -Eq "^  \('MEMBRO'," "$MIG08"; then
+  ok "MEMBRO citado so como sem-linha (nao tem pares — fail-closed MATRIZ-10)"
+else
+  ko "MEMBRO com linha de permissao na matriz (fail-closed quebrado)"
+fi
+# F1 (M4b): as 7 policies admin recriadas decidem via can_access('membros') —
+# expresión EXATA por policy + contagem. Usuários sem linha no módulo (MEMBRO)
+# ficam negados por fail-closed (MATRIZ-10); SA consideram administrar (M2).
+printf '%s\n' '-- 0008: policies admin via can_access (paridade guards/can())'
+probe_policy_access members_select_admin members membros ler U 1
+probe_policy_access members_insert_admin members membros escrever C 1
+probe_policy_access members_update_admin members membros escrever UC 2
+probe_policy_access members_delete_admin members membros administrar U 1
+probe_policy_access docs_select_admin member_documents membros ler U 1
+probe_policy_access docs_insert_admin member_documents membros escrever C 1
+probe_policy_access docs_delete_admin member_documents membros escrever U 1
 
 printf '%s\n' '-- 0007_seed_admin.sql (seed de teste)'
 if grep -q 'admin.teste@ivc.local' "$MIG07" && grep -q 'leitor.teste@ivc.local' "$MIG07"; then
@@ -157,10 +236,35 @@ if grep -q 'on conflict (id) do nothing' "$MIG07"; then
 else
   ko "seed sem idempotencia"
 fi
-if ! grep -q '"force_password_change": true' "$MIG07"; then
+if ! grep -q '"force_password_change": true' "$MIG07" \
+  && ! grep -q '"force_password_change": true' "$MIG09"; then
   ok "nenhum seed com force_password_change"
 else
   ko "seed contem force_password_change (probes travaria)"
+fi
+
+printf '%s\n' '-- 0009_seed_secretaria.sql (escritor de nivel escrever, RF-032)'
+if grep -q 'secretaria.teste@ivc.local' "$MIG09" && grep -q "'role', 'SECRETARIA'" "$MIG09"; then
+  ok "seed contem secretaria.teste com role SECRETARIA (MATRIZ-14)"
+else
+  ko "seed SECRETARIA ausente"
+fi
+if grep -q 'on conflict (id) do nothing' "$MIG09"; then
+  ok "seed 0009 idempotente"
+else
+  ko "seed 0009 sem idempotencia"
+fi
+
+printf '%s\n' '-- 0010_seed_membro.sql (re-seed da sessao MEMBRO para probes)'
+if grep -q 'membro.teste@ivc.local' "$MIG10" && grep -q "'role', 'MEMBRO'" "$MIG10"; then
+  ok "re-seed membro.teste com role MEMBRO (fail-closed MATRIZ-10)"
+else
+  ko "re-seed membro.teste ausente"
+fi
+if grep -q 'on conflict (id) do nothing' "$MIG10"; then
+  ok "seed 0010 idempotente"
+else
+  ko "seed 0010 sem idempotencia"
 fi
 
 # =====================================================================
@@ -256,7 +360,7 @@ else
 fi
 
 # =====================================================================
-# ESTÁTICO — helpers (supabase/admin.ts, rbac.ts, http.ts)
+# ESTÁTICO — helpers (supabase/admin.ts, rbac.ts, http.ts, RF-032)
 # =====================================================================
 printf '%s\n' '-- helpers (admin.ts / rbac.ts / http.ts)'
 if grep -q 'export function createAdminClient' "$SUPABASE_ADMIN" \
@@ -265,25 +369,50 @@ if grep -q 'export function createAdminClient' "$SUPABASE_ADMIN" \
 else
   ko "createAdminClient ausente/incompleto"
 fi
-if grep -q 'ADMIN_WRITER_ROLES' "$RBAC" \
-  && grep -q 'export function isAdminWriterRole' "$RBAC" \
-  && grep -q 'export function isHardDeleteRole' "$RBAC"; then
-  ok "RBAC writer/hard-delete helpers exportados (ADMINMEM-32..34)"
+# AD-015: autoridade fina vem da matriz `permissions`. O gate grosseiro admin
+# (ADMIN_ROLES/isAdminRole) segue só para roteamento do proxy; os helpers
+# antigos de escritor/hard-delete foram REMOVIDOS (L-006).
+if grep -q 'export type Nivel' "$RBAC" \
+  && grep -q 'export const MODULOS' "$RBAC" \
+  && grep -q 'export type Modulo' "$RBAC" \
+  && grep -q 'export const ORDEM' "$RBAC" \
+  && grep -q 'export const getMatriz' "$RBAC" \
+  && grep -q 'export async function can' "$RBAC"; then
+  ok "rbac.ts: Nivel/MODULOS/ORDEM/getMatriz/can presentes (MATRIZ-01..09)"
 else
-  ko "helpers RBAC ausentes"
+  ko "rbac.ts sem ontologia da matriz completa"
 fi
-if grep -q 'SECRETARIA' "$RBAC" && grep -q 'SUPER_ADMIN' "$RBAC"; then
-  ok "writers SECRETARIA/ADMIN/SUPER_ADMIN; hard-delete ADMIN/SUPER_ADMIN"
+if grep -q 'export const ADMIN_ROLES' "$RBAC" && grep -q 'export function isAdminRole' "$RBAC"; then
+  ok "ADMIN_ROLES/isAdminRole mantidos como gate grosseiro do proxy (AD-015)"
 else
-  ko "roles dos helpers RBAC incompletas"
+  ko "gate grosseiro admin removido"
 fi
-if grep -q 'export async function requireWriter' "$HTTP" \
-  && grep -q 'export async function requireHardDelete' "$HTTP" \
+old_helpers="$(grep -rlE 'isAdminWriterRole|isHardDeleteRole|ADMIN_WRITER_ROLES' "$ROOT/src" || true)"
+if [ -z "$old_helpers" ]; then
+  ok "helpers antigos isAdminWriterRole/isHardDeleteRole/ADMIN_WRITER_ROLES removidos (L-006)"
+else
+  ko "helpers antigos presentes: ${old_helpers} (L-006)"
+fi
+if grep -q 'export async function authAdmin(' "$HTTP" \
+  && grep -q 'export async function requireEscrita(' "$HTTP" \
+  && grep -q 'export async function requireAdministrar(' "$HTTP" \
+  && grep -q 'negarPermissao(' "$HTTP" \
   && grep -q '"nao_autenticado"' "$HTTP" \
   && grep -q '"nao_autorizado"' "$HTTP"; then
-  ok "guards HTTP 401/403 presentes (ADMINMEM-33/34)"
+  ok "guards HTTP module-aware auth/ler/escrever/administrar (AD-015)"
 else
-  ko "guards HTTP ausentes"
+  ko "guards HTTP module-aware ausentes"
+fi
+if grep -q 'rbac: acesso negado' "$HTTP"; then
+  ok "negativa de permissao registrada no log (MATRIZ-20)"
+else
+  ko "sem log de negativa (MATRIZ-20)"
+fi
+old_guards="$(grep -rlE 'requireWriter|requireHardDelete' "$ROOT/src" || true)"
+if [ -z "$old_guards" ]; then
+  ok "guards antigos requireWriter/requireHardDelete removidos"
+else
+  ko "guards antigos presentes: ${old_guards}"
 fi
 if grep -q 'erroCampos' "$HTTP" && grep -q '"dados_invalidos"' "$HTTP"; then
   ok "erroCampos -> 400 {error: dados_invalidos, campos}"
@@ -295,14 +424,14 @@ fi
 # ESTÁTICO — route handlers (guardas, validação, status codes)
 # =====================================================================
 printf '%s\n' '-- rotas /api/admin/membros*'
-if grep -q 'requireWriter' "$CREATE_ROUTE" \
+if grep -q 'requireEscrita("membros")' "$CREATE_ROUTE" \
   && grep -qE 'NextResponse\.json\(\{ error: "email_em_uso" \}, \{ status: 409 \}\)' "$CREATE_ROUTE" \
   && grep -q 'status: 201' "$CREATE_ROUTE"; then
-  ok "POST criar: guard writer + 201 c/ senha 1x + 409 email_em_uso (linha de producao)"
+  ok "POST criar: guard membros/escrever + 201 c/ senha 1x + 409 email_em_uso (linha de producao)"
 else
   ko "rota criar incompleta"
 fi
-if grep -q 'requireWriter' "$DADOS_ROUTE" && grep -q 'membro_nao_encontrado' "$DADOS_ROUTE" \
+if grep -q 'requireEscrita("membros")' "$DADOS_ROUTE" && grep -q 'membro_nao_encontrado' "$DADOS_ROUTE" \
   && grep -q 'erroCampos(campos)' "$DADOS_ROUTE"; then
   ok "POST dados: guard + 400 por campo (erroCampos) + 404 membro"
 else
@@ -315,23 +444,23 @@ if ! grep -q 'form.get("email")' "$DADOS_ROUTE"; then
 else
   ko "dados route consome email (AC16)"
 fi
-if grep -q 'requireWriter' "$STATUS_ROUTE" && grep -q 'status_transicao_invalida' "$STATUS_ROUTE"; then
-  ok "POST status: guard + 400 status_transicao_invalida"
+if grep -q 'requireEscrita("membros")' "$STATUS_ROUTE" && grep -q 'status_transicao_invalida' "$STATUS_ROUTE"; then
+  ok "POST status: guard membros/escrever + 400 status_transicao_invalida"
 else
   ko "rota status incompleta"
 fi
-if grep -q 'requireHardDelete' "$HARD_DELETE_ROUTE" && grep -q 'membro_com_documentos' "$HARD_DELETE_ROUTE"; then
-  ok "DELETE [id]: guard hard-delete + 409 com documentos"
+if grep -q 'requireAdministrar("membros")' "$HARD_DELETE_ROUTE" && grep -q 'membro_com_documentos' "$HARD_DELETE_ROUTE"; then
+  ok "DELETE [id]: guard membros/administrar + 409 com documentos"
 else
   ko "rota hard-delete incompleta"
 fi
-if grep -q 'requireWriter' "$DOCS_ROUTE" && grep -q 'TIPOS_DOCUMENTO' "$DOCS_ROUTE"; then
-  ok "POST documentos: guard + validacao de tipo"
+if grep -q 'requireEscrita("membros")' "$DOCS_ROUTE" && grep -q 'TIPOS_DOCUMENTO' "$DOCS_ROUTE"; then
+  ok "POST documentos: guard membros/escrever + validacao de tipo"
 else
   ko "rota documentos incompleta"
 fi
-if grep -q 'requireWriter' "$DOC_DELETE_ROUTE" && grep -q 'documento_nao_encontrado' "$DOC_DELETE_ROUTE"; then
-  ok "DELETE doc: guard + 404 documento"
+if grep -q 'requireEscrita("membros")' "$DOC_DELETE_ROUTE" && grep -q 'documento_nao_encontrado' "$DOC_DELETE_ROUTE"; then
+  ok "DELETE doc: guard membros/escrever + 404 documento"
 else
   ko "rota delete doc incompleta"
 fi
@@ -345,13 +474,14 @@ if grep -q 'listMembros({ q, status })' "$LISTA" && grep -q 'Nenhum membro encon
 else
   ko "lista incompleta"
 fi
-if grep -q 'isAdminWriterRole' "$LISTA" && grep -q 'href="/admin/membros/novo"' "$LISTA"; then
-  ok "lista: link Novo membro apenas para escritor (RBAC de UI)"
+if grep -q 'await can(claims?.role ?? "", "membros", "escrever")' "$LISTA" \
+  && grep -q 'href="/admin/membros/novo"' "$LISTA"; then
+  ok "lista: link Novo membro apenas p/ quem e escritor na matriz (RBAC UI)"
 else
   ko "RBAC de UI na lista ausente"
 fi
-if grep -q 'const escritor = isAdminWriterRole' "$NOVO_PAGE"; then
-  ok "novo: pagina server guarda por escritor"
+if grep -q 'const escritor = await can(claims?.role ?? "", "membros", "escrever")' "$NOVO_PAGE"; then
+  ok "novo: pagina server guarda por escrever na matriz"
 else
   ko "guard de UI em novo ausente"
 fi
@@ -376,8 +506,9 @@ if grep -q 'action={`/api/admin/membros/${id}/dados`}' "$DETALHE" \
 else
   ko "forms do detalhe incompletos"
 fi
-if grep -q 'isHardDeleteRole' "$DETALHE" && grep -q '<HardDeleteButton' "$DETALHE"; then
-  ok "detalhe: hard-delete so para ADMIN/SUPER_ADMIN (guard de UI)"
+if grep -q 'const hardDelete = await can(claims?.role ?? "", "membros", "administrar")' "$DETALHE" \
+  && grep -q '<HardDeleteButton' "$DETALHE"; then
+  ok "detalhe: hard-delete so para quem administra membros na matriz (guard UI)"
 else
   ko "guard de hard-delete na UI ausente"
 fi
@@ -425,8 +556,9 @@ JAR_ADMIN="$(mktemp)"
 JAR_LEITOR="$(mktemp)"
 JAR_NOVO="$(mktemp)"
 JAR_MEMBRO="$(mktemp)"
+JAR_SECRETARIA="$(mktemp)"
 LEFTOVER="$(mktemp)"
-trap 'if [ -s "$LEFTOVER" ]; then idc="$(cat "$LEFTOVER")"; curl -s -b "$JAR_ADMIN" -X DELETE "$BASE_URL/api/admin/membros/$idc" -o /dev/null 2>/dev/null || true; fi; rm -f "$JAR_ADMIN" "$JAR_LEITOR" "$JAR_NOVO" "$JAR_MEMBRO" "$LEFTOVER"' EXIT
+trap 'if [ -s "$LEFTOVER" ]; then idc="$(cat "$LEFTOVER")"; curl -s -b "$JAR_ADMIN" -X DELETE "$BASE_URL/api/admin/membros/$idc" -o /dev/null 2>/dev/null || true; fi; rm -f "$JAR_ADMIN" "$JAR_LEITOR" "$JAR_NOVO" "$JAR_MEMBRO" "$JAR_SECRETARIA" "$LEFTOVER"' EXIT
 
 login_admin() { # jar email  -> prints status|redirect
   curl -s -o /dev/null -w '%{http_code}|%{redirect_url}' -c "$1" -X POST "$BASE_URL/api/auth/login/admin" \
@@ -464,22 +596,31 @@ check_api_status() { # nome, esperado, metodo, caminho, [jar]
 check_redirect "/admin/membros" "307" "$BASE_URL/login/admin"
 check_api_status "POST /api/admin/membros sem sessao" "401" "POST" "/api/admin/membros"
 
-# Login do escritor (ADMIN) e do leitor (FINANCEIRO).
+# Login do escritor (ADMIN), do leitor (FINANCEIRO) e do escritor SECRETARIA.
 # F3 (anti-flaky): 307 sozinho nao discrimina login ok de credencial invalida
 # (ambos 307; a falha vai para /login/admin?error=invalid_credentials e
 # cascateia FALHAs nas secoes seguintes). Exigir o TARGET $BASE_URL/admin
 # garante que a sessao realmente abriu.
 admin_login="$(login_admin "$JAR_ADMIN" "admin.teste@ivc.local")"
 leitor_login="$(login_admin "$JAR_LEITOR" "leitor.teste@ivc.local")"
+secretaria_login="$(login_admin "$JAR_SECRETARIA" "secretaria.teste@ivc.local")"
 admin_status="${admin_login%%|*}"
 leitor_status="${leitor_login%%|*}"
+secretaria_status="${secretaria_login%%|*}"
 admin_target="${admin_login#*|}"
 leitor_target="${leitor_login#*|}"
+secretaria_target="${secretaria_login#*|}"
 if [ "$admin_status" = "307" ] && [ "$admin_target" = "$BASE_URL/admin" ] \
   && [ "$leitor_status" = "307" ] && [ "$leitor_target" = "$BASE_URL/admin" ]; then
   ok "login admin.teste + leitor.teste -> 307 $BASE_URL/admin (escritor/leitor)"
 else
   ko "login seeds -> admin=$admin_status->$admin_target leitor=$leitor_status->$leitor_target (esperado 307->$BASE_URL/admin)"
+fi
+# RF-032/MATRIZ-14: SECRETARIA (escreve membros) abre sessão admin.
+if [ "$secretaria_status" = "307" ] && [ "$secretaria_target" = "$BASE_URL/admin" ]; then
+  ok "login secretaria.teste -> 307 $BASE_URL/admin (SECRETARIA escreve na matriz)"
+else
+  ko "login secretaria.teste -> $secretaria_status->$secretaria_target (esperado 307->$BASE_URL/admin)"
 fi
 
 # AC05: sessao de papel MEMBRO (nao admin) em /admin/membros -> 307 /login/admin
@@ -498,6 +639,9 @@ if [ "$membro_status" = "307" ] && [ "$membro_target" = "$BASE_URL/painel" ]; th
   membro_admin_target="${membro_admin#*|}"
   if [ "$membro_admin_status" = "307" ] && [ "$membro_admin_target" = "$BASE_URL/login/admin" ]; then
     ok "sessao MEMBRO em /admin/membros -> 307 $BASE_URL/login/admin (ADMINMEM-05)"
+    # RF-032/MATRIZ-10: MEMBRO não tem linha na matriz — chamada direta à API
+    # regista 403 (fail-closed), mesmo com proxy de página desviado.
+    check_api_status "MEMBRO POST criar -> 403 (sem linha na matriz, MATRIZ-10)" "403" "POST" "/api/admin/membros" "$JAR_MEMBRO"
   else
     ko "sessao MEMBRO em /admin/membros -> $membro_admin_status->$membro_admin_target (esperado 307 $BASE_URL/login/admin)"
   fi
@@ -516,6 +660,43 @@ fi
 check_api_status "leitor POST criar -> 403 (ADMINMEM-33)" "403" "POST" "/api/admin/membros" "$JAR_LEITOR"
 check_api_status "leitor DELETE [id] -> 403" "403" "DELETE" "/api/admin/membros/00000000-0000-4000-8000-0000000000ff" "$JAR_LEITOR"
 check_api_status "leitor POST status -> 403" "403" "POST" "/api/admin/membros/00000000-0000-4000-8000-0000000000ff/status" "$JAR_LEITOR"
+
+# ---------------------------------------------------------------
+# RF-032: discriminacao por papel na matriz (MATRIZ-13..18). SECRETARIA tem
+# membros=escrever (escreve e cria) mas NAO administrar (hard-delete -> 403);
+# ADMIN administra (hard-delete 204 no cleanup). Barra a regressao para a
+# role-list antiga (isAdminWriterRole) e prova o ramo `escrever` do can().
+printf '%s\n' '-- runtime: matriz de permissoes por papel (RF-032/MATRIZ-13..18)'
+sec_read="$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR_SECRETARIA" "$BASE_URL/admin/membros" || true)"
+if [ "$sec_read" = "200" ]; then
+  ok "SECRETARIA le /admin/membros -> 200 (escrever concede leitura, MATRIZ-06)"
+else
+  ko "SECRETARIA le /admin/membros -> $sec_read (esperado 200)"
+fi
+check_api_status "SECRETARIA DELETE [id] -> 403 (escrever nao administra, MATRIZ-17)" "403" "DELETE" "/api/admin/membros/00000000-0000-4000-8000-0000000000ff" "$JAR_SECRETARIA"
+
+SEC_SURFIXO="$RANDOM$RANDOM"
+SEC_EMAIL="probe-sec${SEC_SURFIXO}@teste.com"
+sec_criar="$(curl -s -w '\n%{http_code}' -b "$JAR_SECRETARIA" -X POST "$BASE_URL/api/admin/membros" \
+  --data-urlencode "nome=Probe Secretaria ${SEC_SURFIXO}" --data-urlencode 'nascimento=1988-03-10' \
+  --data-urlencode 'whatsapp=83988886666' --data-urlencode "email=$SEC_EMAIL" \
+  --data-urlencode 'logradouro=Rua da Secretaria' --data-urlencode 'numero=7' \
+  --data-urlencode 'bairro=Centro' --data-urlencode 'cidade=Santa Luzia' \
+  --data-urlencode 'uf=PB' --data-urlencode 'cep=58600-000' || true)"
+sec_body="${sec_criar%$'\n'*}"
+sec_http="${sec_criar##*$'\n'}"
+SEC_ID="$(printf '%s' "$sec_body" | sed -n 's/.*"id":"\([^"]*\)".*/\1/p')"
+if [ "$sec_http" = "201" ] && [ -n "$SEC_ID" ]; then
+  ok "SECRETARIA POST criar valido -> 201 (MATRIZ-14)"
+  sec_limpa="$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR_ADMIN" -X DELETE "$BASE_URL/api/admin/membros/$SEC_ID" || true)"
+  if [ "$sec_limpa" = "204" ]; then
+    ok "limpeza do membro da SECRETARIA via ADMIN (administrar) -> 204 (MATRIZ-18)"
+  else
+    ko "limpeza via ADMIN -> $sec_limpa (esperado 204)"
+  fi
+else
+  ko "SECRETARIA POST criar valido -> $sec_http (esperado 201, MATRIZ-14)"
+fi
 
 # ---------------------------------------------------------------
 printf '%s\n' '-- runtime: criar membro (escritor) + erros'
