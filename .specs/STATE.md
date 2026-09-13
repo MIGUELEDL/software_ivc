@@ -116,6 +116,14 @@
 - **Date**: 2026-09-11
 - **Status**: active
 
+### AD-015
+- **Decision**: RBAC fino (RF-032) passa a ser definido pela **tabela `permissions` no banco** (PK `(role, module)`, nível `ler`/`escrever`/`administrar` hierárquicos), fonte única consultada por `can(papel, modulo, nivel)` na aplicação e por `can_access(module, nivel)` (SECURITY DEFINER, papel do JWT via `auth_role()`) nas policies RLS. Fail-closed: papel sem linha ou erro de leitura → nega. O proxy mantém `isAdminRole` como gate grosseiro de roteamento (decisão fina no servidor + RLS). UI de gestão da matriz fica na RF-028; escrita na tabela só `SUPER_ADMIN`.
+- **Reason**: Role-lists duplicadas entre TS e SQL se provaram frágeis (mutante M4b da RF-022); decisão do usuário em 2026-09-12 (matriz no banco para editar sem deploy). Matriz-default confirmada: `SUPER_ADMIN`/`ADMIN` administram tudo; `SECRETARIA` escreve membros/eventos (lê demais); `FINANCEIRO` escreve financeiro/relatórios; `PATRIMONIAL` escreve patrimônio; `LIDER` lê; `usuarios`/`configuracoes`/`auditoria` só `ADMIN`/`SUPER_ADMIN`; `MEMBRO` sem acesso admin (dados próprios via policies de 0001, intactas).
+- **Trade-off**: Camada de consulta extra (tabela ~48 linhas) e escrita via SQL até a RF-028; `permissions` é dado não-sensível (SELECT liberado a authenticated para o app decidir sem service-role).
+- **Scope**: Controle de acesso por módulo em todas as features admin futuras; piloto inicial no módulo membros (substitui `isAdminWriterRole`/`isHardDeleteRole` e as policies de 0006 por `can_access`).
+- **Date**: 2026-09-12
+- **Status**: active
+
 ## Handoff
 
 - **Feature**: `auth` (autenticação + RBAC) — **IMPLEMENTADA e VERIFICADA** (validation.md PASS, `validate_state.py auth` 0 errors)
