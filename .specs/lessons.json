@@ -3,7 +3,7 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 6,
+  "next_id": 9,
   "lessons": [
     {
       "id": "L-001",
@@ -94,6 +94,60 @@
       ],
       "created": "2026-09-12T01:07:31Z",
       "last_seen": "2026-09-12T01:07:31Z"
+    },
+    {
+      "id": "L-006",
+      "key": "surviving_mutant::greps de policy rls por nome nao discriminam a composicao de papeis assertar as role lists de cada policy",
+      "text": "Greps de policy RLS por nome nao discriminam a composicao de papeis - assertar as role lists de cada policy",
+      "signal": "surviving_mutant",
+      "scope": "probes",
+      "status": "candidate",
+      "features": [
+        "admin-membros"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "scripts/probes-admin-membros.sh:91-110 (M4b FINANCEIRO drop) (probes)"
+      ],
+      "created": "2026-09-12T22:02:47Z",
+      "last_seen": "2026-09-12T22:02:47Z"
+    },
+    {
+      "id": "L-007",
+      "key": "surviving_mutant::assert de login por status only 307 aceita falha de credenciais assertar o redirect target",
+      "text": "Assert de login por status-only (307) aceita falha de credenciais - assertar o redirect target",
+      "signal": "surviving_mutant",
+      "scope": "probes",
+      "status": "candidate",
+      "features": [
+        "admin-membros"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "scripts/probes-admin-membros.sh:387-391 (login 307 flaky) (probes)"
+      ],
+      "created": "2026-09-12T22:02:47Z",
+      "last_seen": "2026-09-12T22:02:47Z"
+    },
+    {
+      "id": "L-008",
+      "key": "spec_precision_gap::propriedades negativas senha nao exposta historico preservado precisam de assert explicito nao da ausencia",
+      "text": "Propriedades negativas (senha nao exposta, historico preservado) precisam de assert explicito, nao da ausencia",
+      "signal": "spec_precision_gap",
+      "scope": "probes",
+      "status": "candidate",
+      "features": [
+        "admin-membros"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "spec.md ADMINMEM-11 / ADMINMEM-38 (probes)"
+      ],
+      "created": "2026-09-12T22:02:47Z",
+      "last_seen": "2026-09-12T22:02:47Z"
     }
   ]
 }

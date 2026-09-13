@@ -44,6 +44,24 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - evidence: M7 / src/app/api/painel/perfil/route.ts:42-44 / probes-painel.sh:97-100,218-219 (probes/api) (probes/api)
 - last seen: 2026-09-12T01:07:31Z
 
+### L-006 - Greps de policy RLS por nome nao discriminam a composicao de papeis - assertar as role lists de cada policy
+- signal: `surviving_mutant` · recurrence: 1 feature(s) · scope: `probes` · harmful: 0
+- features: admin-membros
+- evidence: scripts/probes-admin-membros.sh:91-110 (M4b FINANCEIRO drop) (probes)
+- last seen: 2026-09-12T22:02:47Z
+
+### L-007 - Assert de login por status-only (307) aceita falha de credenciais - assertar o redirect target
+- signal: `surviving_mutant` · recurrence: 1 feature(s) · scope: `probes` · harmful: 0
+- features: admin-membros
+- evidence: scripts/probes-admin-membros.sh:387-391 (login 307 flaky) (probes)
+- last seen: 2026-09-12T22:02:47Z
+
+### L-008 - Propriedades negativas (senha nao exposta, historico preservado) precisam de assert explicito, nao da ausencia
+- signal: `spec_precision_gap` · recurrence: 1 feature(s) · scope: `probes` · harmful: 0
+- features: admin-membros
+- evidence: spec.md ADMINMEM-11 / ADMINMEM-38 (probes)
+- last seen: 2026-09-12T22:02:47Z
+
 ## Quarantined (failed when applied - ignore)
 
 A confirmed lesson that recurred alongside failure. Kept for the maintainer to review.
