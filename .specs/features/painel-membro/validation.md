@@ -1,5 +1,7 @@
 # Validation — painel-membro
 
+**Result**: PASS
+
 > Estado **final** deste artefato. Resultado da rodada 5 (verificador independente).
 > Feature: autocadastro + perfil + avisos no painel do membro (PAINEL-13/15/16/19 etc).
 > **Veredito: PASS** — confirmado com servidor REAL ao vivo, 2 vezes: 27 ok / 0 falhas.
