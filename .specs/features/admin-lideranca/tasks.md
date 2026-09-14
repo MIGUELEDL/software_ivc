@@ -211,13 +211,13 @@ valida nome/cargo → 400 discriminado, igreja inexistente → 404, sucesso → 
 - Skill: NONE
 
 **Done when**:
-- [ ] POST líder 201 (ATIVO default); 400 por campo; 404 igreja inexistente
-- [ ] 401/403 sem `igrejas/escrever`
-- [ ] Gate quick passa: `npm run typecheck`
+- [x] POST líder 201 (ATIVO default); 400 por campo; 404 igreja inexistente
+- [x] 401/403 sem `igrejas/escrever`
+- [x] Gate quick passa: `npm run typecheck`
 
 **Tests**: probe estático + runtime curl
 **Gate**: quick
-**Status**: ⏳ Pending
+**Status**: ✅ Done (lideres/route.ts POST; typecheck 0 erros)
 
 ### T5: Rota `PATCH /api/admin/lideres/[id]` (incl. soft-delete por status)
 
