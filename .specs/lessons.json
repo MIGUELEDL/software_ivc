@@ -3,7 +3,7 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 9,
+  "next_id": 11,
   "lessons": [
     {
       "id": "L-001",
@@ -154,6 +154,42 @@
       ],
       "created": "2026-09-12T22:02:47Z",
       "last_seen": "2026-09-14T15:42:29Z"
+    },
+    {
+      "id": "L-009",
+      "key": "surviving_mutant::asserte o 400 por campo em runtime enviar payload invalido e checar status corpo error campos discriminados nao apenas o grep da ligacao errocampos",
+      "text": "Asserte o 400 por campo em runtime (enviar payload invalido e checar status + corpo {error, campos} discriminados), nao apenas o grep da ligacao erroCampos",
+      "signal": "surviving_mutant",
+      "scope": "probes",
+      "status": "candidate",
+      "features": [
+        "admin-eventos"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "M3 (EVT-05) validation.md (probes)"
+      ],
+      "created": "2026-09-14T21:18:05Z",
+      "last_seen": "2026-09-14T21:18:05Z"
+    },
+    {
+      "id": "L-010",
+      "key": "surviving_mutant::asserte o 404 de recurso inexistente em runtime curl com id inexistente e corpo nao encontrado nao apenas a presenca da excecao strings no codigo",
+      "text": "Asserte o 404 de recurso inexistente em runtime (curl com id inexistente e corpo nao_encontrado), nao apenas a presenca da excecao/strings no codigo",
+      "signal": "surviving_mutant",
+      "scope": "probes",
+      "status": "candidate",
+      "features": [
+        "admin-eventos"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "M4 (EVT-09) validation.md (probes)"
+      ],
+      "created": "2026-09-14T21:18:05Z",
+      "last_seen": "2026-09-14T21:18:05Z"
     }
   ]
 }

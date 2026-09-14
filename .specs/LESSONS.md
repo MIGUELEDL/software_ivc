@@ -60,6 +60,18 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - evidence: M7 / src/app/api/painel/perfil/route.ts:42-44 / probes-painel.sh:97-100,218-219 (probes/api) (probes/api)
 - last seen: 2026-09-12T01:07:31Z
 
+### L-009 - Asserte o 400 por campo em runtime (enviar payload invalido e checar status + corpo {error, campos} discriminados), nao apenas o grep da ligacao erroCampos
+- signal: `surviving_mutant` · recurrence: 1 feature(s) · scope: `probes` · harmful: 0
+- features: admin-eventos
+- evidence: M3 (EVT-05) validation.md (probes)
+- last seen: 2026-09-14T21:18:05Z
+
+### L-010 - Asserte o 404 de recurso inexistente em runtime (curl com id inexistente e corpo nao_encontrado), nao apenas a presenca da excecao/strings no codigo
+- signal: `surviving_mutant` · recurrence: 1 feature(s) · scope: `probes` · harmful: 0
+- features: admin-eventos
+- evidence: M4 (EVT-09) validation.md (probes)
+- last seen: 2026-09-14T21:18:05Z
+
 ## Quarantined (failed when applied - ignore)
 
 A confirmed lesson that recurred alongside failure. Kept for the maintainer to review.
