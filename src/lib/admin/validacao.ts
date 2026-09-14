@@ -90,3 +90,113 @@ export function lerEndereco(formData: FormData): EnderecoForm {
     cep: ler("cep"),
   };
 }
+
+// ---- Eventos (RF-024) ------------------------------------------------------
+
+/** Data YYYY-MM-DD real (não apenas formato) para `events.date` (EVT-05). */
+export function validarDataEvento(valor: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
+    return false;
+  }
+  return !Number.isNaN(new Date(`${valor}T00:00:00`).getTime());
+}
+
+export type EventoValidado = {
+  title?: string;
+  description?: string | null;
+  date?: string;
+  time?: string;
+  location?: string;
+  visivel?: boolean;
+  status?: "ATIVO" | "INATIVO";
+};
+
+export type ValidarEventoResultado =
+  | { ok: true; dados: EventoValidado }
+  | { ok: false; campos: Record<string, string> };
+
+/**
+ * Valida payload de evento por campo (EVT-05/08). Modo `completo` (POST)
+ * exige os obrigatórios `title`/`date`/`time`/`location`; modo `parcial`
+ * (PATCH) valida apenas campos enviados. Regras: `date` `YYYY-MM-DD` real,
+ * `time` `HH:MM` (formato visual RF-006), `visivel` booleano quando enviado,
+ * `status` `ATIVO`/`INATIVO` quando enviado.
+ */
+export function validarEvento(
+  body: Record<string, unknown>,
+  modo: "completo" | "parcial" = "completo"
+): ValidarEventoResultado {
+  const campos: Record<string, string> = {};
+  const dados: EventoValidado = {};
+
+  const title = body.title;
+  if (title !== undefined || modo === "completo") {
+    const valor = String(title ?? "").trim();
+    if (!valor) {
+      campos.title = "Informe o título do evento.";
+    } else {
+      dados.title = valor;
+    }
+  }
+
+  if (body.description !== undefined) {
+    const valor = String(body.description).trim();
+    dados.description = valor === "" ? null : valor;
+  }
+
+  const date = body.date;
+  if (date !== undefined || modo === "completo") {
+    const valor = String(date ?? "").trim();
+    if (!valor) {
+      campos.date = "Informe a data do evento.";
+    } else if (!validarDataEvento(valor)) {
+      campos.date = "Data inválida (use AAAA-MM-DD).";
+    } else {
+      dados.date = valor;
+    }
+  }
+
+  const time = body.time;
+  if (time !== undefined || modo === "completo") {
+    const valor = String(time ?? "").trim();
+    if (!valor) {
+      campos.time = "Informe a hora do evento.";
+    } else if (!/^\d{2}:\d{2}$/.test(valor)) {
+      campos.time = "Hora inválida (use HH:MM).";
+    } else {
+      dados.time = valor;
+    }
+  }
+
+  const location = body.location;
+  if (location !== undefined || modo === "completo") {
+    const valor = String(location ?? "").trim();
+    if (!valor) {
+      campos.location = "Informe o local do evento.";
+    } else {
+      dados.location = valor;
+    }
+  }
+
+  if (body.visivel !== undefined) {
+    if (typeof body.visivel !== "boolean") {
+      campos.visivel = "visivel deve ser um booleano.";
+    } else {
+      dados.visivel = body.visivel;
+    }
+  }
+
+  if (body.status !== undefined) {
+    if (body.status !== "ATIVO" && body.status !== "INATIVO") {
+      campos.status = "Status deve ser ATIVO ou INATIVO.";
+    } else {
+      dados.status = body.status;
+    }
+  }
+
+  if (Object.keys(campos).length > 0) {
+    return { ok: false, campos };
+  }
+
+  return { ok: true, dados };
+}

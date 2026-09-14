@@ -151,14 +151,14 @@ null), `criarEvento()`, `atualizarEvento()` (404 se inexistente; aceita `visivel
 - Skill: NONE
 
 **Done when**:
-- [ ] Service com CRUD eventos, exceção 404 e filtros público/admin
-- [ ] `listarEventosPublicos()` visivel+ATIVO `date` asc; `buscarEventoPublico()` ocultos null
-- [ ] `validarEvento` adicionado e exportado (obrigatórios, date/time/visivel/status)
-- [ ] Gate quick passa: `npm run typecheck` (PATH nvm ativado)
+- [x] Service com CRUD eventos, exceção 404 e filtros público/admin
+- [x] `listarEventosPublicos()` visivel+ATIVO `date` asc; `buscarEventoPublico()` ocultos null
+- [x] `validarEvento` adicionado e exportado (obrigatórios, date/time/visivel/status)
+- [x] Gate quick passa: `npm run typecheck` (PATH nvm ativado)
 
 **Tests**: probe estático (asserts T2 no script) + typecheck
 **Gate**: quick
-**Status**: Pending
+**Status**: ✅ Done (eventos.ts com 5 funções + EventoNaoEncontradoError; validarEvento completo/parcial em validacao.ts; typecheck 0 erros)
 
 ### Phase 3: Route Handlers
 
