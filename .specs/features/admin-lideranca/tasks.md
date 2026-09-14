@@ -187,14 +187,14 @@ explícita `claims.role === 'SUPER_ADMIN'` → 204, `403` para ADMIN, 404 inexis
 - Skill: NONE
 
 **Done when**:
-- [ ] POST cria igreja 201; valida campos → 400 discriminado; 401/403 sem escrita
-- [ ] GET lista para leitor 200; PATCH atualiza 200 e 404 inexistente
-- [ ] DELETE: SUPER_ADMIN 204 (cascata), ADMIN 403, inexistente 404
-- [ ] Gate quick passa: `npm run typecheck`
+- [x] POST cria igreja 201; valida campos → 400 discriminado; 401/403 sem escrita
+- [x] GET lista para leitor 200; PATCH atualiza 200 e 404 inexistente
+- [x] DELETE: SUPER_ADMIN 204 (cascata), ADMIN 403, inexistente 404
+- [x] Gate quick passa: `npm run typecheck`
 
 **Tests**: probe estático (guards/validação) + runtime curl das rotas
 **Gate**: quick
-**Status**: ⏳ Pending
+**Status**: ✅ Done (route.ts POST/GET + [id]/route.ts PATCH/DELETE; typecheck 0 erros)
 
 ### T4: Rota `POST /api/admin/igrejas/[id]/lideres`
 
