@@ -370,14 +370,14 @@ não contém INATIVO (após inativar e re-ativar). Registra contagem ok/falhas c
 - Skill: NONE
 
 **Done when**:
-- [ ] Suite roda limpa contra `next start` :3000 → 0 falhas (ADMIN, leitor, MEMBRO, SUPER_ADMIN, portal)
-- [ ] Discriminadores por papel ok (403 SECRETARIA/FINANCEIRO; DELETE igreja 403 ADMIN vs 204 SUPER_ADMIN)
-- [ ] Resíduo limpo entre runs (idempotente)
-- [ ] Regressões `probes-admin-membros.sh`, `probes-painel.sh`, `probes-auth.sh` verdes + lint/typecheck/build
+- [x] Suite roda limpa contra `next start` :3000 → 0 falhas (ADMIN, leitor, MEMBRO, SUPER_ADMIN, portal) — `102 ok, 0 falhas`
+- [x] Discriminadores por papel ok (403 SECRETARIA/FINANCEIRO; DELETE igreja 403 ADMIN vs 204 SUPER_ADMIN)
+- [x] Resíduo limpo entre runs (idempotente) — trap EXIT + DELETE só SUPER_ADMIN 204
+- [x] Regressões `probes-admin-membros.sh`, `probes-painel.sh`, `probes-auth.sh` verdes + lint/typecheck/build
 
 **Tests**: `bash scripts/probes-admin-lideranca.sh` (servidor :3000) + suítes de regressão
 **Gate**: full
-**Status**: ⏳ Pending
+**Status**: ✅ Done (102 ok/0 falhas; regressões: membros 139 ok, painel 27 ok, auth 19 ok; lint/typecheck/build verdes. Fix de RLS storage: policy SELECT `lideranca_fotos_select` em 0011 — o upsert (`x-upsert`) do storage exige SELECT em `storage.objects`, sem ela INSERT/UPDATE de foto falhava com "new row violates row-level security policy")
 
 ### T11: Fechamento — state/coverage/matrix/handoff
 
