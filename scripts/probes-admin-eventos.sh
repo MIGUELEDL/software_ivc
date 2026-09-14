@@ -485,6 +485,36 @@ else
   ko "ADMIN POST evento A -> $a_http (esperado 201)"
 fi
 
+# --- POST invalido -> 400 com campos discriminados (EVT-05) ---
+printf '%s\n' '-- runtime: POST invalido -> 400 campos (EVT-05)'
+bad_out="$(curl -s -w '\n%{http_code}' -b "$JAR_ADMIN" -X POST "$BASE_URL/api/admin/eventos" \
+  -H 'Content-Type: application/json' \
+  -d "{\"title\":\"\",\"date\":\"06/15/2027\",\"time\":\"99:99\",\"location\":\"\",\"visivel\":\"nao\",\"status\":\"ATIVADO\"}" || true)"
+bad_http="${bad_out##*$'\n'}"
+bad_body="${bad_out%$'\n'*}"
+if [ "$bad_http" = "400" ] \
+  && printf '%s' "$bad_body" | grep -q 'dados_invalidos' \
+  && printf '%s' "$bad_body" | grep -q '"campos"' \
+  && printf '%s' "$bad_body" | grep -q '"title"'; then
+  ok "POST invalido -> 400 + {error, campos} title (EVT-05)"
+else
+  ko "POST invalido -> $bad_http sem {error:dados_invalidos, campos} (EVT-05)"
+fi
+
+# --- PATCH id inexistente -> 404 (EVT-09) ---
+printf '%s\n' '-- runtime: PATCH evento inexistente -> 404 (EVT-09)'
+nope_id="99999999-9999-4000-8000-000000000099"
+nope_out="$(curl -s -w '\n%{http_code}' -b "$JAR_ADMIN" -X PATCH "$BASE_URL/api/admin/eventos/$nope_id" \
+  -H 'Content-Type: application/json' \
+  -d '{"location":"Nao existe"}' || true)"
+nope_http="${nope_out##*$'\n'}"
+nope_body="${nope_out%$'\n'*}"
+if [ "$nope_http" = "404" ] && printf '%s' "$nope_body" | grep -q 'nao_encontrado'; then
+  ok "PATCH evento inexistente -> 404 nao_encontrado (EVT-09)"
+else
+  ko "PATCH evento inexistente -> $nope_http sem nao_encontrado (EVT-09)"
+fi
+
 # Edit fields
 if [ -n "$A_ID" ]; then
   A_TITLE_EDITED="Probe Editado ${RAND_SUFIXO}"
