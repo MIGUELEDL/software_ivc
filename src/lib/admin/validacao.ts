@@ -33,6 +33,39 @@ export function validarUf(valor: string): boolean {
   return /^[A-Za-z]{2}$/.test(valor);
 }
 
+// ---- Igrejas/Liderança (RF-023) ------------------------------------------------
+
+/** CNPJ sem máscara: 14 dígitos numéricos (IGR-06). */
+export function validarCnpj(valor: string): boolean {
+  return /^\d{14}$/.test(valor);
+}
+
+/** Limite máximo de foto para upload (2 MB, padrão 0003). */
+export const FOTO_MAX_BYTES = 2 * 1024 * 1024;
+
+const FOTO_MIME_EXT: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+};
+
+export type ValidarFotoResultado =
+  | { ok: true; ext: string }
+  | { ok: false; motivo: "tipo" | "tamanho" };
+
+/**
+ * Valida tipo MIME e tamanho de arquivo de foto para upload em buckets
+ * `fotos-membros` / `fotos-lideranca` (padrão 0003/AD-014).
+ * Aceita image/jpeg, image/png, image/webp com até 2 MB.
+ */
+export function validarFoto(file: File): ValidarFotoResultado {
+  const ext = FOTO_MIME_EXT[file.type];
+  if (!ext) return { ok: false, motivo: "tipo" };
+  if (file.size === 0 || file.size > FOTO_MAX_BYTES)
+    return { ok: false, motivo: "tamanho" };
+  return { ok: true, ext };
+}
+
 export type EnderecoForm = {
   logradouro: string | null;
   numero: string | null;

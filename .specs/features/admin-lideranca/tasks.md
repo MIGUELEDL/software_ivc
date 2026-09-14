@@ -159,14 +159,14 @@ dígitos numeric) e `validarFoto` (mime/extensão) em `src/lib/admin/validacao.t
 - Skill: NONE
 
 **Done when**:
-- [ ] Service com CRUD igrejas/leaders e exceções 404/dedup
-- [ ] `listarLideresAtivos()` filtrado/ordenado; `subirFotoLider()` com upsert no bucket
-- [ ] `validarCnpj`/`validarFoto` adicionados e exportados
-- [ ] Gate quick passa: `npm run typecheck` (PATH nvm ativado)
+- [x] Service com CRUD igrejas/leaders e exceções 404/dedup
+- [x] `listarLideresAtivos()` filtrado/ordenado; `subirFotoLider()` com upsert no bucket
+- [x] `validarCnpj`/`validarFoto` adicionados e exportados
+- [x] Gate quick passa: `npm run typecheck` (PATH nvm ativado)
 
 **Tests**: probe estático (asserts T2 no script) + typecheck
 **Gate**: quick
-**Status**: ⏳ Pending
+**Status**: ✅ Done (lideranca.ts com 9 funções; validarCnpj + validarFoto em validacao.ts; typecheck 0 erros)
 
 ### Phase 3: Route Handlers
 
