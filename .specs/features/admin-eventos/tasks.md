@@ -316,14 +316,14 @@ ocultos/inativos. Registra contagem ok/falhas com `trap` de cleanup (re-ativar/r
 - Skill: NONE
 
 **Done when**:
-- [ ] Suite roda limpa contra `next start` :3000 → 0 falhas (ADMIN, SECRETARIA, leitor, MEMBRO, portal)
-- [ ] Discriminadores por papel ok (403 leitor em escrita; 201/200 escritores; portal oculta quando `visivel=false`/INATIVO)
-- [ ] Resíduo limpo entre runs (idempotente) — trap EXIT
-- [ ] Regressões `probes-admin-lideranca.sh`, `probes-admin-membros.sh`, `probes-painel.sh`, `probes-auth.sh` verdes + lint/typecheck/build
+- [x] Suite roda limpa contra `next start` :3000 → 0 falhas (ADMIN, SECRETARIA, leitor, MEMBRO, portal)
+- [x] Discriminadores por papel ok (403 leitor em escrita; 201/200 escritores; portal oculta quando `visivel=false`/INATIVO)
+- [x] Resíduo limpo entre runs (idempotente) — trap EXIT
+- [x] Regressões `probes-admin-lideranca.sh`, `probes-admin-membros.sh`, `probes-painel.sh`, `probes-auth.sh` verdes + lint/typecheck/build
 
 **Tests**: `bash scripts/probes-admin-eventos.sh` (servidor :3000) + suítes de regressão
 **Gate**: full
-**Status**: Pending
+**Status**: Done
 
 ### T9: Fechamento — state/coverage/matrix/handoff
 

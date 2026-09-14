@@ -17,7 +17,7 @@ migração das páginas `/eventos` e `/eventos/[id]` para ler do banco (eventos
 - [ ] CRUD admin em `/admin/eventos` com guardas da matriz (ler/escrever)
 - [ ] Visibilidade manual (`visivel` false oculta do portal) + soft-delete (`status` INATIVO oculta), sem DELETE direto
 - [ ] Portal `/eventos` e `/eventos/[id]` migrados para ler `events` do banco — leitura pública, mantendo inscrição via WhatsApp (RN-003, regressão RF-006)
-- [ ] Probes discriminativos por papel/AC (L-006..L-008)
+- [x] Probes discriminativos por papel/AC (L-006..L-008)
 
 ## Out of Scope
 
