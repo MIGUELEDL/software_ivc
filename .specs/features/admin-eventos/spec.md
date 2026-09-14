@@ -108,13 +108,13 @@ com data, hora e local, e me inscrever via WhatsApp.
 | EVT-09 | P0: Eventos (PATCH 404) | - | Done (T4) |
 | EVT-10 | P0: Eventos (PATCH INATIVO) | - | Done (T4) |
 | EVT-11 | P0: Eventos (visivel false oculta) | - | Done (T4) |
-| EVT-12 | P1: Portal (lista pública) | - | Pending |
-| EVT-13 | P1: Portal (detalhe + WhatsApp) | - | Pending |
-| EVT-14 | P1: Portal (404 para ocultos) | - | Pending |
-| EVT-15 | P1: Portal (empty state) | - | Pending |
-| EVT-16 | P1: Portal (nav) | - | Pending |
+| EVT-12 | P1: Portal (lista pública) | - | Done (T7) |
+| EVT-13 | P1: Portal (detalhe + WhatsApp) | - | Done (T7) |
+| EVT-14 | P1: Portal (404 para ocultos) | - | Done (T7) |
+| EVT-15 | P1: Portal (empty state) | - | Done (T7) |
+| EVT-16 | P1: Portal (nav) | - | Done (T7) |
 
-**Coverage:** 16 total, 0 mapped to tasks, 16 unmapped ⚠️
+**Coverage:** 16 total, 16 mapped to tasks (T1/T3/T4/T7), 0 unmapped
 
 ## External Interfaces
 

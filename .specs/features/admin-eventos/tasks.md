@@ -284,14 +284,14 @@ WhatsApp" (RN-003/EVT-13) e layout. Preservar item de navegação `Eventos` (EVT
 - Skill: NONE
 
 **Done when**:
-- [ ] `/eventos` renderiza eventos visivel+ATIVO (date asc) lendo de `events` (seed visível)
-- [ ] `/eventos/[id]` mostra detalhe + WhatsApp; oculto/INATIVO/inexistente → 404; sem `generateStaticParams`
-- [ ] Estado vazio e nav `Eventos` preservados
-- [ ] Gate quick passa: `npm run typecheck` (+ lint)
+- [x] `/eventos` renderiza eventos visivel+ATIVO (date asc) lendo de `events` (seed visível)
+- [x] `/eventos/[id]` mostra detalhe + WhatsApp; oculto/INATIVO/inexistente → 404; sem `generateStaticParams`
+- [x] Estado vazio e nav `Eventos` preservados
+- [x] Gate quick passa: `npm run typecheck` (+ lint)
 
 **Tests**: probe estático (grep RSC/remoção de `EVENTS`, sem `generateStaticParams`) + runtime (HTML contém título do seed, 404 oculto)
 **Gate**: quick
-**Status**: Pending
+**Status**: ✅ Done (page.tsx async RSC via listarEventosPublicos com empty state preservado; [id]/page.tsx via buscarEventoPublico → notFound, sem generateStaticParams, WhatsApp RN-003 mantido; NAV_ITEMS intocado; typecheck/lint 0 erros)
 
 ### Phase 6: Probes e regressão
 

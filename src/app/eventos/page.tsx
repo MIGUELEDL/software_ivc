@@ -1,8 +1,22 @@
-import { EVENTS } from "@/lib/constants";
 import Link from "next/link";
+import { listarEventosPublicos } from "@/lib/admin/eventos";
+import type { Evento } from "@/lib/admin/eventos";
 import { CalendarDays, Clock, MapPin, ArrowRight } from "lucide-react";
 
-export default function EventosPage() {
+/**
+ * Lista pública de eventos (EVT-12/15): async RSC que lê `events` do banco
+ * via RLS anon, filtrando `visivel=true` e `status='ATIVO'` ordenado por
+ * `date` asc (portal DB-driven, regressão RF-006). Falha de leitura degrada
+ * para o estado vazio (mesmo padrão de Leadership/IGR-23).
+ */
+export default async function EventosPage() {
+  let eventos: Evento[] = [];
+  try {
+    eventos = await listarEventosPublicos();
+  } catch (erro) {
+    console.error("portal: falha ao carregar eventos do banco", erro);
+  }
+
   return (
     <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -15,7 +29,7 @@ export default function EventosPage() {
           </p>
         </div>
 
-        {EVENTS.length === 0 ? (
+        {eventos.length === 0 ? (
           <div className="max-w-2xl mx-auto rounded-2xl bg-white shadow-xl p-12 text-center">
             <CalendarDays className="w-14 h-14 mx-auto mb-6 text-accent" />
             <h2 className="font-sans text-2xl font-bold text-primary mb-3">
@@ -27,7 +41,7 @@ export default function EventosPage() {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {EVENTS.map((event) => (
+            {eventos.map((event) => (
               <article
                 key={event.id}
                 className="rounded-2xl bg-white shadow-xl p-8 flex flex-col hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"

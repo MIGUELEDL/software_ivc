@@ -1,6 +1,8 @@
-import { EVENTS, SOCIAL, CHURCH } from "@/lib/constants";
+import { SOCIAL, CHURCH } from "@/lib/constants";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { buscarEventoPublico } from "@/lib/admin/eventos";
+import type { Evento } from "@/lib/admin/eventos";
 import {
   CalendarDays,
   Clock,
@@ -9,18 +11,30 @@ import {
   ArrowLeft,
 } from "lucide-react";
 
-export function generateStaticParams() {
-  return EVENTS.map((event) => ({ id: event.id }));
-}
-
+/**
+ * Detalhe público de evento (EVT-13/14): async RSC que lê `events` via
+ * `buscarEventoPublico()` — evento inexistente, `visivel=false` ou
+ * `status='INATIVO'` → 404 (não expor ocultos). Página dinâmica (sem
+ * `generateStaticParams` — dados vêm do banco). Botão "Inscrever-se via
+ * WhatsApp" preservado com o número oficial (RN-003/AD-010).
+ */
 export default async function EventoPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const event = EVENTS.find((e) => e.id === id);
-  if (!event) notFound();
+
+  let event: Evento | null = null;
+  try {
+    event = await buscarEventoPublico(id);
+  } catch (erro) {
+    console.error("portal: falha ao buscar evento", erro);
+  }
+
+  if (!event) {
+    notFound();
+  }
 
   const whatsappUrl = `${SOCIAL.whatsapp}?text=${encodeURIComponent(
     `Gostaria de me inscrever no evento ${event.title}`
@@ -57,9 +71,11 @@ export default async function EventoPage({
             </p>
           </div>
 
-          <p className="font-serif text-lg leading-relaxed text-text-dark/80 mb-10">
-            {event.description}
-          </p>
+          {event.description && (
+            <p className="font-serif text-lg leading-relaxed text-text-dark/80 mb-10">
+              {event.description}
+            </p>
+          )}
 
           <a
             href={whatsappUrl}
