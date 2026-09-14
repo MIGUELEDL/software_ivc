@@ -312,14 +312,14 @@ status), upload de foto (form → POST foto). Guarda de escrita por `can('igreja
 - Skill: NONE
 
 **Done when**:
-- [ ] Detalhe lê igreja + líderes; 404 inexistente
-- [ ] Form de edição (igreja/líder), inativar/ativar, upload de foto operam
-- [ ] Ações de escrita ocultas p/ leitor; DELETE igreja só SUPER_ADMIN
-- [ ] Gate quick passa: `npm run typecheck` (+ lint)
+- [x] Detalhe lê igreja + líderes; 404 inexistente
+- [x] Form de edição (igreja/líder), inativar/ativar, upload de foto operam
+- [x] Ações de escrita ocultas p/ leitor; DELETE igreja só SUPER_ADMIN
+- [x] Gate quick passa: `npm run typecheck` (+ lint)
 
 **Tests**: probe estático + runtime curl páginas
 **Gate**: quick
-**Status**: ⏳ Pending
+**Status**: ✅ Done (page.tsx + editar-igreja-form + lider-novo-form + lider-linha; typecheck/lint 0 erros)
 
 ### Phase 5: Portal
 

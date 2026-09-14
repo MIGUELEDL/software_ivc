@@ -12,9 +12,11 @@ import { useState } from "react";
 export function ExcluirIgrejaBotao({
   igrejaId,
   nome,
+  redirecionar,
 }: {
   igrejaId: string;
   nome: string;
+  redirecionar?: string;
 }) {
   const router = useRouter();
   const [enviando, setEnviando] = useState(false);
@@ -48,7 +50,11 @@ export function ExcluirIgrejaBotao({
       }
 
       if (resposta.status === 204) {
-        router.refresh();
+        if (redirecionar) {
+          router.push(redirecionar);
+        } else {
+          router.refresh();
+        }
         return;
       }
 

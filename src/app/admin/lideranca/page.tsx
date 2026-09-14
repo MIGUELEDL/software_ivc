@@ -1,4 +1,4 @@
-import { ArrowLeft, Building2, Eye, Pencil, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Building2, Eye, Pencil, Plus } from "lucide-react";
 import Link from "next/link";
 import { getClaims } from "@/lib/auth/claims";
 import { can } from "@/lib/auth/rbac";
