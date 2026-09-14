@@ -104,10 +104,10 @@ com data, hora e local, e me inscrever via WhatsApp.
 | EVT-05 | P0: Eventos (POST 400) | - | Done (T3) |
 | EVT-06 | P0: Eventos (POST 401/403) | - | Done (T3) |
 | EVT-07 | P0: Eventos (GET list) | - | Done (T3) |
-| EVT-08 | P0: Eventos (PATCH 200) | - | Pending |
-| EVT-09 | P0: Eventos (PATCH 404) | - | Pending |
-| EVT-10 | P0: Eventos (PATCH INATIVO) | - | Pending |
-| EVT-11 | P0: Eventos (visivel false oculta) | - | Pending |
+| EVT-08 | P0: Eventos (PATCH 200) | - | Done (T4) |
+| EVT-09 | P0: Eventos (PATCH 404) | - | Done (T4) |
+| EVT-10 | P0: Eventos (PATCH INATIVO) | - | Done (T4) |
+| EVT-11 | P0: Eventos (visivel false oculta) | - | Done (T4) |
 | EVT-12 | P1: Portal (lista pública) | - | Pending |
 | EVT-13 | P1: Portal (detalhe + WhatsApp) | - | Pending |
 | EVT-14 | P1: Portal (404 para ocultos) | - | Pending |

@@ -202,14 +202,14 @@ valida apenas campos enviados (parcial) → 200; evento inexistente → 404 `{er
 - Skill: NONE
 
 **Done when**:
-- [ ] PATCH atualiza campos enviados e responde 200; 404 inexistente
-- [ ] `visivel=false` e `status='INATIVO'` persistidos (ocultam portal); campo inválido → 400
-- [ ] Sem rota/action DELETE
-- [ ] Gate quick passa: `npm run typecheck`
+- [x] PATCH atualiza campos enviados e responde 200; 404 inexistente
+- [x] `visivel=false` e `status='INATIVO'` persistidos (ocultam portal); campo inválido → 400
+- [x] Sem rota/action DELETE
+- [x] Gate quick passa: `npm run typecheck`
 
 **Tests**: probe estático + runtime curl
 **Gate**: quick
-**Status**: Pending
+**Status**: ✅ Done (PATCH parcial via validarEvento('parcial'), aceita visivel/status, 404 {error:'nao_encontrado'}, sem DELETE; typecheck 0 erros)
 
 ### Phase 4: Páginas admin
 
