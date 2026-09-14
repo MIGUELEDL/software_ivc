@@ -230,13 +230,13 @@ valida apenas campos enviados (parcial) → 200; evento inexistente → 404 `{er
 - Skill: NONE
 
 **Done when**:
-- [ ] Lista para papel leitor 200; badges de `visivel`/`status`; ações de escrita ocultas p/ leitor
-- [ ] Form cria evento com 400 por campo e redirect
-- [ ] Gate quick passa: `npm run typecheck` (+ lint)
+- [x] Lista para papel leitor 200; badges de `visivel`/`status`; ações de escrita ocultas p/ leitor
+- [x] Form cria evento com 400 por campo e redirect
+- [x] Gate quick passa: `npm run typecheck` (+ lint)
 
 **Tests**: probe estático (guardas/badges) + runtime curl páginas
 **Gate**: quick
-**Status**: Pending
+**Status**: ✅ Done (page.tsx lista com badges e ações por nível; nova/ page.tsx + form client com 400 por campo e redirect ao detalhe; typecheck/lint 0 erros)
 
 ### T6: Página `/admin/eventos/[id]` — detalhe/edição + toggles
 
