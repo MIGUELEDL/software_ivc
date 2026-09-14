@@ -234,13 +234,13 @@ atualiza `name`/`role`/`order`/`status` por campo → 200; líder inexistente �
 - Skill: NONE
 
 **Done when**:
-- [ ] PATCH atualiza campos e responde 200; 404 inexistente
-- [ ] `status='INATIVO'` persiste (soft-delete) e campo inválido → 400
-- [ ] Gate quick passa: `npm run typecheck`
+- [x] PATCH atualiza campos e responde 200; 404 inexistente
+- [x] `status='INATIVO'` persiste (soft-delete) e campo inválido → 400
+- [x] Gate quick passa: `npm run typecheck`
 
 **Tests**: probe estático + runtime curl
 **Gate**: quick
-**Status**: ⏳ Pending
+**Status**: ✅ Done (lideres/[id]/route.ts PATCH; typecheck 0 erros)
 
 ### T6: Rota `POST /api/admin/lideres/[id]/foto`
 
