@@ -196,3 +196,16 @@
 - **Open decisions**: nenhuma em aberto (AD-015 active; matriz-default confirmada no spec).
 - **Uncommitted files**: `.specs/STATE.md` (este Handoff — a commitar agora); `next-env.d.ts`/`opencode.json`/`tsconfig.tsbuildinfo` (untracked, não commitados).
 - **Branch**: main (commits locais do RF-032; `git push` pendente — nunca sem autorização).
+
+## Handoff — feature admin-eventos CONCLUÍDA (2026-09-14)
+
+- **Feature**: admin-eventos (RF-024, EVT-01..16) — **implementada e provada por probes (69 ok/0 falhas); Verifier assina validation.md** (validado no loop 3 de verificação — validation.md provisório commitado).
+- **O que foi entregue**: tabela `events` (0012) com RLS via `can_access('eventos',...)` (SELECT anon+authenticated, escrita `escrever`, sem DELETE policy), CRUD admin em `/admin/eventos` (lista/nova/detalhe) sob guards da matriz, `validarEvento`/`validarDataEvento` (400 discriminado), soft-delete `status=INATIVO` + `visivel=false` ocultam do portal (sem hard-delete), portal `/eventos` e `/eventos/[id]` migrados para **RSC async DB-driven** (sem `generateStaticParams`, sem literal `EVENTS`) lendo `listarEventosPublicos`/`buscarEventoPublico` — lista visivel+ATIVO `date` asc, detalhe com `notFound()` 404 para ocultos e botão "Inscrever-se via WhatsApp" preservado (wa.me/5583999450781, RN-003), empty state "Em breve avisaremos os próximos eventos", nav "Eventos" preservada (EVT-16).
+- **DB**: migration `0012_events.sql` aplicada no dev `[REDACTED_PROJECT_REF]` + seed idempotente "Clamor 12h" (`…00f`, 2026-10-01 12:00 Santa Luzia - PB), âncora do portal.
+- **Probe novo**: `scripts/probes-admin-eventos.sh` (69 ok/0 falhas) — estático (migration/RLS/guards/service/páginas/sem literal EVENTS/sem generateStaticParams) + runtime com sessões reais (login 307 target; ADMIN cria/edita/toggles; SECRETARIA 201/200; leitor ler 200/escrita 403; MEMBRO proxy redirect + 403; portal contém/oculta seed+A por visivel/status; detalhe 404 para ocultos; 200 com WhatsApp; empty state com todos ocultos), trap EXIT idempotente (restaura seed, oculta A/B).
+- **Regressões**: liderança 102/0, membros 139/0, painel 27/0, auth 19/0 (287 ok/0 falhas no total) + gates lint/typecheck/build verdes (`/eventos` e `/eventos/[id]` `ƒ Dynamic`).
+- **Ajuste de probe durante T8**: WhatsApp no HTML renderizado é URL-encoded (`Gostaria%20de%20me%20inscrever…`) → assert usa o href real; `generateStaticParams`/`DELETE`/`campos` apareciam em comentários JSDoc → asserts precisos (`function generateStaticParams`, `method: "DELETE"`, `corpo?.campos`); empty state exigia ocultar evento B (SECRETARIA) além de A+seed.
+- **Próximos passos**: `git push origin main` (RF-024 está local — commits `883f673`..`4ea42ec`; **nunca sem autorização**) + rodar Verifier round (assina validation.md 16/16, sensor 3/3) + escolher próximo módulo da Fase 9 (RF-025 patrimônio, RF-026 financeiro, RF-027 relatórios, RF-021 dashboard, RF-028 usuários, RF-029 configurações, RF-030 auditoria).
+- **Open decisions**: nenhuma em aberto.
+- **Uncommitted files**: `.specs/STATE.md` (este Handoff — a commitar agora); `validation.md`/`docs/coverage-matrix.md`/`tasks.md`/`spec.md` (a commitar agora); `next-env.d.ts`/`opencode.json`/`tsconfig.tsbuildinfo` (untracked, não commitados).
+- **Branch**: main (commits locais do RF-024; `git push` pendente — nunca sem autorização).

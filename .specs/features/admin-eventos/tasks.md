@@ -342,11 +342,11 @@ verificação) e gates finais.
 - MCP: NONE
 
 **Done when**:
-- [ ] tasks.md com todas as tarefas ✅ e cobertura 16/16 — validation.md Verifier PASS (16/16, sensor 3/3)
-- [ ] coverage-matrix RF-024 ✅ verified com evidência — `docs/coverage-matrix.md`
-- [ ] `validate_state.py admin-eventos` 0 erros (após Verifier PASS)
-- [ ] Gates finais (lint/typecheck/build) verdes
+- [ ] tasks.md com todas as tarefas ✅ e cobertura 16/16 — validation.md Verifier PASS (16/16, sensor 3/3) [Verifier]
+- [x] coverage-matrix RF-024 ✅ verified com evidência — `docs/coverage-matrix.md`
+- [ ] `validate_state.py admin-eventos` 0 erros (após Verifier PASS) — já 0 erros agora (pré-Verifier) [Verifier]
+- [x] Gates finais (lint/typecheck/build) verdes
 
 **Tests**: `validate_state.py admin-eventos` + gates
 **Gate**: build
-**Status**: Pending
+**Status**: Em fechamento (Verifier assina validation.md)
