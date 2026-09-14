@@ -178,13 +178,13 @@ lista `date` desc (inclui ocultos/INATIVO).
 - Skill: NONE
 
 **Done when**:
-- [ ] POST cria evento 201 (ATIVO/visivel defaults); valida campos → 400 discriminado; 401/403 sem escrita
-- [ ] GET lista para leitor 200 ordenado por `date` desc
-- [ ] Gate quick passa: `npm run typecheck`
+- [x] POST cria evento 201 (ATIVO/visivel defaults); valida campos → 400 discriminado; 401/403 sem escrita
+- [x] GET lista para leitor 200 ordenado por `date` desc
+- [x] Gate quick passa: `npm run typecheck`
 
 **Tests**: probe estático (guards/validação) + runtime curl das rotas
 **Gate**: quick
-**Status**: Pending
+**Status**: ✅ Done (route.ts POST/GET com requireEscrita('eventos')/authAdmin('eventos'), validarEvento completo → 400 por campo, 201 com defaults; typecheck 0 erros)
 
 ### T4: Rota `PATCH /api/admin/eventos/[id]` (incl. `visivel` e `status`)
 
