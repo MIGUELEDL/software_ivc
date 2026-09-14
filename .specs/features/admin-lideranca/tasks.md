@@ -259,13 +259,13 @@ lider inexistente → 404.
 - Skill: NONE
 
 **Done when**:
-- [ ] Upload válido → 200 com `photo_url` persistida em `leaders.photo_url`
-- [ ] Mime/tamanho inválido → 400/413 sem persistir
-- [ ] Gate quick passa: `npm run typecheck`
+- [x] Upload válido → 200 com `photo_url` persistida em `leaders.photo_url`
+- [x] Mime/tamanho inválido → 400/413 sem persistir
+- [x] Gate quick passa: `npm run typecheck`
 
 **Tests**: probe estático + runtime curl (upload e rejeição)
 **Gate**: quick
-**Status**: ⏳ Pending
+**Status**: ✅ Done (lideres/[id]/foto/route.ts POST; typecheck 0 erros)
 
 ### Phase 4: Páginas admin
 
