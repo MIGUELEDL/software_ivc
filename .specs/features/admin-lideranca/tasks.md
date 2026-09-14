@@ -286,14 +286,14 @@ fundada_em → `POST /api/admin/igrejas` com 400 por campo e redirect ao detalhe
 - Skill: NONE
 
 **Done when**:
-- [ ] Lista para papel leitor 200; ações de escrita ocultas p/ leitor
-- [ ] Botão excluir igreja só para `SUPER_ADMIN`
-- [ ] Form cria igreja com 400 por campo e redirect
-- [ ] Gate quick passa: `npm run typecheck` (+ lint)
+- [x] Lista para papel leitor 200; ações de escrita ocultas p/ leitor
+- [x] Botão excluir igreja só para `SUPER_ADMIN`
+- [x] Form cria igreja com 400 por campo e redirect
+- [x] Gate quick passa: `npm run typecheck` (+ lint)
 
 **Tests**: probe estático (guardas/gmória) + runtime curl páginas
 **Gate**: quick
-**Status**: ⏳ Pending
+**Status**: ✅ Done (lista + nova + form + botão exclusão + módulo no dashboard; typecheck/lint 0 erros)
 
 ### T8: Página `/admin/lideranca/[id]` — detalhe/edição + líderes
 
