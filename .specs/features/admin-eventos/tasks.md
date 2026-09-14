@@ -119,15 +119,15 @@ true, status ATIVO). Aplicar no dev `[REDACTED_PROJECT_REF]` via MCP e validar p
 - Skill: NONE
 
 **Done when**:
-- [ ] SQL versionado com `events` (check `status`, default `visivel`), RLS SELECT/INSERT/UPDATE, sem DELETE
-- [ ] RLS escrita `can_access('eventos','escrever')`; SELECT anon/authenticated
-- [ ] Seed idempotente `Clamor 12h` (visivel=true, ATIVO, date futura)
-- [ ] Migration aplicada no dev via MCP sem erro
-- [ ] SQL: `can_access('eventos','escrever')` confere; tabela listada sem policy DELETE
+- [x] SQL versionado com `events` (check `status`, default `visivel`), RLS SELECT/INSERT/UPDATE, sem DELETE
+- [x] RLS escrita `can_access('eventos','escrever')`; SELECT anon/authenticated
+- [x] Seed idempotente `Clamor 12h` (visivel=true, ATIVO, date futura)
+- [x] Migration aplicada no dev via MCP sem erro
+- [x] SQL: `can_access('eventos','escrever')` confere; tabela listada sem policy DELETE
 
 **Tests**: probe estático (greps no `.sql`: tabela, RLS, sem DELETE, seed) + checagem SQL via MCP
 **Gate**: quick
-**Status**: Pending
+**Status**: ✅ Done (aplicada no dev `[REDACTED_PROJECT_REF]`; SQL confere: 10 colunas, check `events_status_check`, 3 policies SEM DELETE, seed `Clamor 12h` com visivel=true/ATIVO)
 
 ### Phase 2: Service layer
 

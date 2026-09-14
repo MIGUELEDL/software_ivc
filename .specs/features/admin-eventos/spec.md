@@ -97,9 +97,9 @@ com data, hora e local, e me inscrever via WhatsApp.
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| EVT-01 | P0: Eventos (schema) | - | Pending |
-| EVT-02 | P0: Eventos (select anon) | - | Pending |
-| EVT-03 | P0: Eventos (write, sem delete) | - | Pending |
+| EVT-01 | P0: Eventos (schema) | - | Done (T1) |
+| EVT-02 | P0: Eventos (select anon) | - | Done (T1) |
+| EVT-03 | P0: Eventos (write, sem delete) | - | Done (T1) |
 | EVT-04 | P0: Eventos (POST 201) | - | Pending |
 | EVT-05 | P0: Eventos (POST 400) | - | Pending |
 | EVT-06 | P0: Eventos (POST 401/403) | - | Pending |
