@@ -130,6 +130,15 @@ create policy "lideranca_fotos_update_admin"
     and public.can_access('igrejas', 'escrever')
   );
 
+-- SELECT de objetos requerido pelo upsert do storage (o motor consulta a
+-- existência do objeto antes de INSERT/UPDATE — `x-upsert: true` da rota).
+drop policy if exists "lideranca_fotos_select" on storage.objects;
+create policy "lideranca_fotos_select"
+  on storage.objects
+  for select
+  to anon, authenticated
+  using (true);
+
 -- -------------------------------------------------------------- seeds -------
 -- Usuário de desenvolvimento superadmin.teste (papel SUPER_ADMIN) para os
 -- probes do ramo `administrar`/DELETE de igreja (padrão 0007/0009).
