@@ -255,14 +255,14 @@ veem detalhe sem ações.
 - Skill: NONE
 
 **Done when**:
-- [ ] Detalhe lê evento; 404 inexistente
-- [ ] Form de edição inclui toggles `visivel`/`status` (sem DELETE)
-- [ ] Ações de escrita ocultas p/ leitor
-- [ ] Gate quick passa: `npm run typecheck` (+ lint)
+- [x] Detalhe lê evento; 404 inexistente
+- [x] Form de edição inclui toggles `visivel`/`status` (sem DELETE)
+- [x] Ações de escrita ocultas p/ leitor
+- [x] Gate quick passa: `npm run typecheck` (+ lint)
 
 **Tests**: probe estático + runtime curl páginas
 **Gate**: quick
-**Status**: Pending
+**Status**: ✅ Done ([id]/page.tsx lê via listarEventos() + 404; evento-editar-form com toggle visivel (checkbox) e status ATIVO/INATIVO, sem DELETE; ações só p/ escritores; typecheck/lint 0 erros)
 
 ### Phase 5: Portal
 
