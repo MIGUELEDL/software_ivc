@@ -340,13 +340,13 @@ quando sem líderes ATIVO; preservar `id="lideranca"` e título/navegação (HOM
 - Skill: NONE
 
 **Done when**:
-- [ ] Home render líderes ATIVO ordenados por `order` (seed visível), com foto quando houver
-- [ ] Estado vazio sem líderes ATIVO; âncora `#lideranca` e nav preservadas
-- [ ] Gate quick passa: `npm run typecheck` (+ lint)
+- [x] Home render líderes ATIVO ordenados por `order` (seed visível), com foto quando houver
+- [x] Estado vazio sem líderes ATIVO; âncora `#lideranca` e nav preservadas
+- [x] Gate quick passa: `npm run typecheck` (+ lint)
 
 **Tests**: probe estático (grep props/âncora, sem literal de líder) + runtime (HTML contém nome do líder ATIVO)
 **Gate**: quick
-**Status**: ⏳ Pending
+**Status**: ✅ Done (page.tsx async RSC + Leadership.tsx DB-driven; typecheck/lint/build passam)
 
 ### Phase 6: Probes e regressão
 
