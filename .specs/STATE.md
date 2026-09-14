@@ -170,6 +170,20 @@
 - **Uncommitted files**: `validation.md`, `docs/coverage-matrix.md`, `.specs/STATE.md` (a commitar agora); `next-env.d.ts`/`opencode.json`/`tsconfig.tsbuildinfo` (untracked, não commitados); `.specs/LESSONS.md`/`lessons.json` (gerados, não commitados).
 - **Branch**: main (commits locais; `git push` pendente — nunca sem autorização).
 
+## Handoff — feature admin-lideranca CONCLUÍDA (2026-09-14)
+
+- **Feature**: admin-lideranca (RF-023, IGR-01..25) — **fechada e provada** — Verifier PASS (25/25 ACs, sensor 3/3 killed).
+- **O que foi entregue**: Full CRUD de igrejas (DELETE só SUPER_ADMIN via app+RLS) e líderes (soft-delete ATIVO/INATIVO, sem DELETE), foto de líder (upsert 2MB, bucket público `fotos-lideranca`), portal DB-driven (home RSC `listarLideresAtivos` + `Leadership.tsx`), páginas admin de lista/nova/detalhe com gestão de líderes, tudo sob `can_access('igrejas', ...)` da matriz (RF-032).
+- **DB**: migration `0011_igrejas_lideranca.sql` aplicada no dev `[REDACTED_PROJECT_REF]` + seeds (igreja IVC `…00d`, Pastor Ernandes `…00e`, usuario superadmin.teste `…00c`).
+- **Bug real matado na verificação**: foto de líder falhava com "new row violates row-level security policy" — causa: upload com `x-upsert:true` do storage exige **policy de SELECT** em `storage.objects` (motor consulta existencia antes de INSERT/UPDATE); `0011` nao tinha. Fix: policy `lideranca_fotos_select` (leitura publica do bucket), commit `2737ca0`, aplicada no dev.
+- **Probe novo**: `scripts/probes-admin-lideranca.sh` (102 ok/0 falhas) — estático (migration/RLS/guards/portal) + runtime com sessões reais (ADMIN/leitor/MEMBRO/SUPER_ADMIN), trap de cleanup, discriminadores por papel.
+- **Verificação**: Verifier independente — 25/25 ACs com evidência file:line; sensor 3 mutações mortas (DELETE SUPER_ADMIN, 400 foto, filtro ATIVO portal); gates: 287 probes ok/0 falhas (102+139+27+19), lint/typecheck/build verdes; `validate_state.py admin-lideranca` 0 erros.
+- **Observação infra (não-bloqueante)**: objetos de foto de probes acumulam no bucket dev `fotos-lideranca` entre rodadas (padrão `fotos-membros`); não afeta re-runs (upsert). IGR-23 (estado vazio) e ordenação visual com 2+ líderes só verificados por código/estática (seed tem 1 líder ATIVO).
+- **Próximos passos**: `git push origin main` (RF-023 está local — 15 commits `a6588c0..HEAD`; **nunca sem autorização**) + escolher próximo módulo da Fase 9 (RF-024 eventos, RF-025 patrimônio, RF-026 financeiro, RF-027 relatórios, RF-021 dashboard) — nascem já com matriz (guardas/can()).
+- **Open decisions**: nenhuma em aberto.
+- **Uncommitted files**: `.specs/STATE.md` (este Handoff — a commitar agora); `validation.md`/`docs/coverage-matrix.md`/`.specs/features/admin-lideranca/tasks.md` (a commitar agora); `next-env.d.ts`/`opencode.json`/`tsconfig.tsbuildinfo` (untracked, não commitados).
+- **Branch**: main (commits locais do RF-023; `git push` pendente — nunca sem autorização).
+
 ## Handoff — feature rbac-matriz CONCLUÍDA (2026-09-13)
 
 - **Feature**: rbac-matriz (RF-032, AD-015) — **fechada e provada** — PASS (20/20 ACs; verificação inline, v. validation.md).

@@ -396,11 +396,11 @@ errors após verificação) e gates finais.
 - MCP: NONE
 
 **Done when**:
-- [ ] tasks.md com todas as tarefas ✅ e cobertura 25/25
-- [ ] coverage-matrix RF-023 ✅ verified com evidência
-- [ ] `validate_state.py admin-lideranca` 0 erros (após Verifier PASS)
-- [ ] Gates finais (lint/typecheck/build) verdes
+- [x] tasks.md com todas as tarefas ✅ e cobertura 25/25 — validation.md Verifier PASS (25/25, sensor 3/3)
+- [x] coverage-matrix RF-023 ✅ verified com evidência — `docs/coverage-matrix.md:37`
+- [x] `validate_state.py admin-lideranca` 0 erros (após Verifier PASS)
+- [x] Gates finais (lint/typecheck/build) verdes
 
 **Tests**: `validate_state.py admin-lideranca` + gates
 **Gate**: build
-**Status**: ⏳ Pending
+**Status**: ✅ Done (Verifier PASS 25/25 ACs, sensor 3/3 killed, 287 probes ok/0 falhas, validate_state 0 erros)
