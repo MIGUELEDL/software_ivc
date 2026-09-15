@@ -228,10 +228,10 @@ T14 (dep T3) → T15 (dep T1..T13) → T16 (dep T15)
 
 **Done when**:
 
-- [ ] GET handler: `authAdmin("financeiro")` guard, calls `buscarLancamento(id)`, returns 200 `{ lancamento }` or 404
-- [ ] PATCH handler: `requireEscrita("financeiro")` guard, parses JSON, calls `validarLancamento(body, "parcial")`, calls `atualizarLancamento(id, patch)`, returns 200 `{ lancamento }`
-- [ ] PATCH returns 400 `{ error: "transacao_conciliada" }` if LancamentoConciliadoError
-- [ ] `npm run typecheck` passes
+- [x] GET handler: `authAdmin("financeiro")` guard, calls `buscarLancamento(id)`, returns 200 `{ lancamento }` or 404
+- [x] PATCH handler: `requireEscrita("financeiro")` guard, parses JSON, calls `validarLancamento(body, "parcial")`, calls `atualizarLancamento(id, patch)`, returns 200 `{ lancamento }`
+- [x] PATCH returns 400 `{ error: "transacao_conciliada" }` if LancamentoConciliadoError
+- [x] `npm run typecheck` passes
 
 **Tests**: runtime probes (happy + error paths, in T15)
 **Gate**: quick (`npm run typecheck`)
