@@ -372,12 +372,12 @@ T14 (dep T3) → T15 (dep T1..T13) → T16 (dep T15)
 
 **Done when**:
 
-- [ ] Client component with form: descrição, valor, tipo (select), método (select), data, categoria (optional), observações (optional)
-- [ ] Submit calls POST `/api/admin/financeiro` with JSON body
-- [ ] On 400: displays per-field errors from `campos` object
-- [ ] On 201: redirects to `/admin/financeiro`
-- [ ] On 403: shows unauthorized message
-- [ ] `npm run build` passes
+- [x] Client component with form: descrição, valor, tipo (select), método (select), data, categoria (optional), observações (optional)
+- [x] Submit calls POST `/api/admin/financeiro` with JSON body
+- [x] On 400: displays per-field errors from `campos` object
+- [x] On 201: redirects to `/admin/financeiro`
+- [x] On 403: shows unauthorized message
+- [x] `npm run build` passes
 
 **Tests**: static probes (page structure, in T15)
 **Gate**: build (`npm run build`)
