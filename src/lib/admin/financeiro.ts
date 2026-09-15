@@ -279,6 +279,62 @@ export async function cancelarLancamento(id: string): Promise<Lancamento> {
 // ---------------------------------------------------------------------------
 
 /**
+ * Calcula a prévia do fechamento de caixa (FIN-09/AC-21): totais de receitas e
+ * despesas apenas das transações **CONCILIADO** sem `cash_close_id` dentro do
+ * período (`data <= hoje`), saldo, e a quantidade de transações **PENDENTE**
+ * (apenas informativo — não entram no fechamento). `haConciliados` indica se
+ * há transações elegíveis (AC-23: sem nenhuma → caller responde 400).
+ */
+export type FechamentoPreview = {
+  receitas: number;
+  despesas: number;
+  saldo: number;
+  pendentes: number;
+  haConciliados: boolean;
+};
+
+export async function previewFechamentoCaixa(): Promise<FechamentoPreview> {
+  const supabase = await createServerClient();
+
+  const hoje = new Date().toISOString().slice(0, 10);
+
+  const { data: transacoes, error } = await supabase
+    .from("transactions")
+    .select("tipo, status, valor, cash_close_id")
+    .lte("data", hoje);
+
+  if (error) {
+    throw error;
+  }
+
+  const lista = (transacoes ?? []) as {
+    tipo: string;
+    status: string;
+    valor: number;
+    cash_close_id: string | null;
+  }[];
+
+  const conciliadas = lista.filter(
+    (t) => t.status === "CONCILIADO" && t.cash_close_id === null
+  );
+  const receitas = conciliadas
+    .filter((t) => t.tipo === "RECEITA")
+    .reduce((soma, t) => soma + t.valor, 0);
+  const despesas = conciliadas
+    .filter((t) => t.tipo === "DESPESA")
+    .reduce((soma, t) => soma + t.valor, 0);
+  const pendentes = lista.filter((t) => t.status === "PENDENTE").length;
+
+  return {
+    receitas,
+    despesas,
+    saldo: receitas - despesas,
+    pendentes,
+    haConciliados: conciliadas.length > 0,
+  };
+}
+
+/**
  * Fecha o caixa: agrega as transações CONCILIADO com `cash_close_id` nulo e
  * `data <= hoje`, cria um snapshot imutável em `cash_closes` e marca as
  * transações incluídas com o `cash_close_id`. Sem transações CONCILIADO →

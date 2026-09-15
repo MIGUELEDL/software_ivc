@@ -1,9 +1,31 @@
-import { CalendarDays, Church, Package, Users } from "lucide-react";
+import { CalendarDays, Church, Package, Users, Wallet } from "lucide-react";
 import Link from "next/link";
 import { getClaims } from "@/lib/auth/claims";
+import { listarLancamentos } from "@/lib/admin/financeiro";
+
+function formatarMoeda(valor: number): string {
+  return valor.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+}
 
 export default async function AdminPage() {
   const claims = await getClaims();
+
+  let lancamentos: Awaited<ReturnType<typeof listarLancamentos>> = [];
+  try {
+    lancamentos = await listarLancamentos();
+  } catch {
+    lancamentos = [];
+  }
+  const receitas = lancamentos
+    .filter((l) => l.tipo === "RECEITA")
+    .reduce((acc, l) => acc + l.valor, 0);
+  const despesas = lancamentos
+    .filter((l) => l.tipo === "DESPESA")
+    .reduce((acc, l) => acc + l.valor, 0);
+  const saldo = receitas - despesas;
 
   return (
     <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
@@ -85,6 +107,22 @@ export default async function AdminPage() {
                     </span>
                   </span>
                 </Link>
+                <Link
+                  href="/admin/financeiro"
+                  className="flex items-center gap-4 rounded-xl bg-bg-gray p-5 hover:bg-primary/5 transition-colors"
+                >
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <Wallet size={20} aria-hidden="true" />
+                  </span>
+                  <span>
+                    <span className="block font-sans text-base font-bold text-text-dark">
+                      Financeiro
+                    </span>
+                    <span className="block font-serif text-sm text-text-dark/60">
+                      Controle de receitas, despesas e caixa
+                    </span>
+                  </span>
+                </Link>
               </nav>
 
               <div className="rounded-lg bg-bg-gray p-5">
@@ -103,6 +141,23 @@ export default async function AdminPage() {
                 <p className="font-serif text-base text-text-dark">
                   {claims.role ?? "Sem papel atribuído"}
                 </p>
+              </div>
+
+              <div className="rounded-lg bg-bg-gray p-5">
+                <p className="font-sans text-sm font-semibold text-text-dark/60 mb-1">
+                  Resumo financeiro
+                </p>
+                <div className="grid grid-cols-2 gap-4 mt-2">
+                  <p className="font-serif text-base text-green-700">
+                    Receitas: {formatarMoeda(receitas)}
+                  </p>
+                  <p className="font-serif text-base text-red-700">
+                    Despesas: {formatarMoeda(despesas)}
+                  </p>
+                  <p className="font-serif text-base font-bold text-text-dark col-span-2">
+                    Saldo: {formatarMoeda(saldo)}
+                  </p>
+                </div>
               </div>
 
               <form action="/api/auth/logout" method="POST">

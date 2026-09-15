@@ -2,17 +2,20 @@ import { ArrowLeft, CalendarClock, CircleDollarSign } from "lucide-react";
 import Link from "next/link";
 import { getClaims } from "@/lib/auth/claims";
 import { can } from "@/lib/auth/rbac";
-import { listarFechamentos } from "@/lib/admin/financeiro";
+import {
+  listarFechamentos,
+  previewFechamentoCaixa,
+} from "@/lib/admin/financeiro";
 import { FecharCaixaButton } from "./fechar-caixa-button";
 
 /**
  * Fechamento de caixa (FIN-09/AC-20): lista os snapshots imutáveis anteriores
  * — data, total de receitas, total de despesas, saldo e quantidade de
  * transações (AC-20/22). Guarda de leitura `financeiro`; botão "Fechar caixa"
- * (AC-21/22) só para escritores — o POST agrega as CONCILIADO do período e
- * cria o snapshot; sem CONCILIADO a rota responde 400
- * `sem_transacoes_para_fechar` (AC-23). Estado vazio → "Nenhum fechamento
- * realizado".
+ * (AC-21) mostra a prévia do período (receitas/despesas CONCILIADO, saldo e
+ * PENDENTES informativos) e, após confirmação, POST → cria o snapshot
+ * (AC-22); sem CONCILIADO a rota responde 400 `sem_transacoes_para_fechar`
+ * (AC-23). Estado vazio → "Nenhum fechamento realizado".
  */
 export default async function AdminFinanceiroFechamentoPage() {
   const claims = await getClaims();
@@ -48,8 +51,12 @@ export default async function AdminFinanceiroFechamentoPage() {
 
   let fechamentos: Awaited<ReturnType<typeof listarFechamentos>> = [];
   let falhaConsulta = false;
+  let preview: Awaited<ReturnType<typeof previewFechamentoCaixa>> | null = null;
   try {
-    fechamentos = await listarFechamentos();
+    [fechamentos, preview] = await Promise.all([
+      listarFechamentos(),
+      previewFechamentoCaixa(),
+    ]);
   } catch {
     falhaConsulta = true;
   }
@@ -72,7 +79,7 @@ export default async function AdminFinanceiroFechamentoPage() {
             </p>
           </div>
 
-          {escritor && <FecharCaixaButton />}
+          {escritor && preview && <FecharCaixaButton preview={preview} />}
         </div>
 
         {falhaConsulta ? (
