@@ -173,11 +173,11 @@ T14 (dep T3) → T15 (dep T1..T13) → T16 (dep T15)
 
 **Done when**:
 
-- [ ] `validarLancamento(body, modo)` exported with return type `{ ok: true; dados: LancamentoDados } | { ok: false; campos: Record<string, string> }`
-- [ ] Completo validates: `descricao` (string não vazia), `valor` (number ≥ 0), `tipo` (RECEITA|DESPESA), `metodo` (PIX|CARTAO|DINHEIRO|TRANSFERENCIA), `data` (YYYY-MM-DD válida)
-- [ ] Parcial validates only fields present in body
-- [ ] Error keys: `campos.descricao`, `campos.valor`, `campos.tipo`, `campos.metodo`, `campos.data`
-- [ ] `npm run typecheck` passes
+- [x] `validarLancamento(body, modo)` exported with return type `{ ok: true; dados: LancamentoDados } | { ok: false; campos: Record<string, string> }`
+- [x] Completo validates: `descricao` (string não vazia), `valor` (number ≥ 0), `tipo` (RECEITA|DESPESA), `metodo` (PIX|CARTAO|DINHEIRO|TRANSFERENCIA), `data` (YYYY-MM-DD válida)
+- [x] Parcial validates only fields present in body
+- [x] Error keys: `campos.descricao`, `campos.valor`, `campos.tipo`, `campos.metodo`, `campos.data`
+- [x] `npm run typecheck` passes
 
 **Tests**: runtime probes (400 per field, in T15)
 **Gate**: quick (`npm run typecheck`)

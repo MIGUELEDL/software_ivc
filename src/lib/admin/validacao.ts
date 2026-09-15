@@ -5,6 +5,12 @@
  */
 import { ASSET_CATEGORIES as AssetCategoriasFixo } from "@/lib/admin/asset-types";
 import type { AssetCategoria, AssetStatus } from "@/lib/admin/asset-types";
+import {
+  TIPOS_LANCAMENTO as TiposLancamentoFixo,
+  STATUS_LANCAMENTO as StatusLancamentoFixo,
+  METODOS_PAGAMENTO as MetodosPagamentoFixo,
+} from "@/lib/admin/financeiro-types";
+import type { LancamentoDados } from "@/lib/admin/financeiro-types";
 
 export function validarNascimento(valor: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
@@ -321,5 +327,102 @@ export function validateAsset(
   }
 
   return { ok: true, dados };
+}
+
+// ---------------------------------------------------------------------------
+// Financeiro (RF-026) — validação de lançamentos por campo.
+// ---------------------------------------------------------------------------
+
+/**
+ * Valida payload de lançamento financeiro por campo (FIN-02/AC-4). Modo
+ * `completo` (POST) exige `descricao`, `valor`, `tipo`, `metodo` e `data`;
+ * modo `parcial` (PATCH) valida apenas campos enviados (inclui `status`).
+ * Regras: `descricao` obrigatória não-vazia; `valor` number finito >= 0
+ * (não aceita string numérica); `tipo` `RECEITA`/`DESPESA`; `metodo` no enum
+ * fixo; `data` `YYYY-MM-DD` real; `categoria`/`observacoes` strings opcionais.
+ * Erros são acumulados por campo (não para no primeiro).
+ */
+export function validarLancamento(
+  body: Record<string, unknown>,
+  modo: "completo" | "parcial" = "completo"
+):
+  | { ok: true; dados: LancamentoDados }
+  | { ok: false; campos: Record<string, string> } {
+  const campos: Record<string, string> = {};
+  const dados: Partial<LancamentoDados> = {};
+
+  const descricao = body.descricao;
+  if (descricao !== undefined || modo === "completo") {
+    const valor = String(descricao ?? "").trim();
+    if (!valor) {
+      campos.descricao = "Descrição é obrigatória.";
+    } else {
+      dados.descricao = valor;
+    }
+  }
+
+  const valor = body.valor;
+  if (valor !== undefined || modo === "completo") {
+    if (typeof valor !== "number" || !Number.isFinite(valor) || valor < 0) {
+      campos.valor = "Valor deve ser um número maior ou igual a zero.";
+    } else {
+      dados.valor = valor;
+    }
+  }
+
+  const tipo = body.tipo;
+  if (tipo !== undefined || modo === "completo") {
+    const valorTipo = String(tipo ?? "").trim();
+    if (!(TiposLancamentoFixo as readonly string[]).includes(valorTipo)) {
+      campos.tipo = "Tipo deve ser RECEITA ou DESPESA.";
+    } else {
+      dados.tipo = valorTipo as LancamentoDados["tipo"];
+    }
+  }
+
+  const metodo = body.metodo;
+  if (metodo !== undefined || modo === "completo") {
+    const valorMetodo = String(metodo ?? "").trim();
+    if (!(MetodosPagamentoFixo as readonly string[]).includes(valorMetodo)) {
+      campos.metodo = "Método de pagamento inválido.";
+    } else {
+      dados.metodo = valorMetodo as LancamentoDados["metodo"];
+    }
+  }
+
+  const data = body.data;
+  if (data !== undefined || modo === "completo") {
+    const valorData = String(data ?? "").trim();
+    if (!valorData || !validarDataEvento(valorData)) {
+      campos.data = "Data inválida.";
+    } else {
+      dados.data = valorData;
+    }
+  }
+
+  if (body.status !== undefined) {
+    const valorStatus = String(body.status ?? "").trim();
+    if (!(StatusLancamentoFixo as readonly string[]).includes(valorStatus)) {
+      campos.status = "Status deve ser PENDENTE, CONCILIADO ou CANCELADO.";
+    } else {
+      dados.status = valorStatus as LancamentoDados["status"];
+    }
+  }
+
+  if (body.categoria !== undefined) {
+    const valorCategoria = String(body.categoria).trim();
+    dados.categoria = valorCategoria === "" ? null : valorCategoria;
+  }
+
+  if (body.observacoes !== undefined) {
+    const valorObservacoes = String(body.observacoes).trim();
+    dados.observacoes = valorObservacoes === "" ? null : valorObservacoes;
+  }
+
+  if (Object.keys(campos).length > 0) {
+    return { ok: false, campos };
+  }
+
+  return { ok: true, dados: dados as LancamentoDados };
 }
 
