@@ -647,7 +647,7 @@ if [ -n "$A_ID" ]; then
 fi
 
 # =====================================================================
-# RUNTIME — webhook MP: approved cria CONCILIADO + idempotencia (AC-13..17)
+# RUNTIME — WRITE-ONLY echo: webhook approved cria + PATCH CONCILIADO (AC-8/16)
 # =====================================================================
 printf '%s\n' '-- runtime: webhook approved (AC-16) + idempotencia (AC-14)'
 WH_REF="pay-${RAND_SUFIXO}000"
@@ -696,6 +696,13 @@ if [ "$wh_fail_http" = "200" ]; then
 else
   ko "webhook nao-approved -> $wh_fail_http (esperado 200)"
 fi
+# M-H v4: status != approved NAO deve criar transacao (assert negativo determinístico)
+fail_lancamentos="$(curl -s -b "$JAR_ADMIN" "$BASE_URL/api/admin/financeiro?busca=webhook+probe" || true)"
+if ! printf '%s' "$fail_lancamentos" | grep -q "pay-fail-${RAND_SUFIXO}"; then
+  ok "webhook nao-approved NAO criou transacao (assert negativo, AC-17)"
+else
+  ko "webhook nao-approved criou transacao indevida (AC-17)"
+fi
 wh_inv="$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE_URL/api/webhooks/mercadopago" \
   -H 'Content-Type: application/json' -d 'nao-json' || true)"
 if [ "$wh_inv" = "400" ]; then
@@ -729,29 +736,17 @@ for CID in "$C1_ID" "$C2_ID"; do
     -H 'Content-Type: application/json' -d '{"status":"CONCILIADO"}' -o /dev/null 2>/dev/null || true
 done
 
-printf '%s\n' '-- runtime: POST fechamento sem CONCILIADO restante (AC-23)'
+printf '%s\n' '-- runtime: POST fechamento inicial absorve CONCILIADO pendentes (AC-22)'
 fech_vazio="$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR_FIN" -X POST "$BASE_URL/api/admin/financeiro/fechamento" || true)"
-# Se o webhook probe acima criou uma CONCILIADO sem cash_close_id, este POST
-# pode criar snapshot com ela (200). Para a assercao AC-23 ser deterministica,
-# rodamos PRIMEIRO um POST (que absorve qualquer CONCILIADO pendente) e so
-# verificamos 400 ao fechar de novo. Aceitamos 201 OU 400 aqui com relatorio.
+# Pode haver CONCILIADO pendente do webhook probe e/ou C1/C2 (marcadas acima);
+# este POST absorve tudo e limpa o estado para o snapshot deterministico a seguir.
 if [ "$fech_vazio" = "400" ] || [ "$fech_vazio" = "201" ]; then
-  ok "POST fechamento inicial -> $fech_vazio (novo snapshot se houver CONCILIADO; AC-22/23)"
+  ok "POST fechamento inicial -> $fech_vazio (absorve CONCILIADO pendentes; AC-22)"
 else
   ko "POST fechamento inicial -> $fech_vazio (esperado 201 ou 400)"
 fi
 
-printf '%s\n' '-- runtime: preview page (AC-21) — verifica numeros na DOM admin'
-fech_page="$(curl -s -b "$JAR_FIN" "$BASE_URL/admin/financeiro/fechamento" || true)"
-if printf '%s' "$fech_page" | grep -q 'Fechar caixa' \
-  && (printf '%s' "$fech_page" | grep -q 'Nenhum fechamento realizado' \
-      || printf '%s' "$fech_page" | grep -q 'Receitas'); then
-  ok "fechamento page: listagem + botao (AC-20; empty state ou historico de snapshots)"
-else
-  ko "fechamento page incompleta (AC-20)"
-fi
-
-# snapshot efetivo: criar 2 CONCILIADO novas e fechar de fato (AC-22)
+# snapshot deterministico: criar 2 CONCILIADO (R1=150 RECEITA, R2=50 DESPESA)
 r1_out="$(curl -s -w '\n%{http_code}' -b "$JAR_FIN" -X POST "$BASE_URL/api/admin/financeiro" \
   -H 'Content-Type: application/json' \
   -d "{\"descricao\":\"Probe Fecho Final1 ${RAND_SUFIXO}\",\"valor\":150,\"tipo\":\"RECEITA\",\"metodo\":\"PIX\",\"data\":\"$(date +%F)\"}" || true)"
@@ -765,6 +760,38 @@ for RID in "$R1_ID" "$R2_ID"; do
     -H 'Content-Type: application/json' -d '{"status":"CONCILIADO"}' -o /dev/null 2>/dev/null || true
 done
 
+printf '%s\n' '-- runtime: PATCH em transacao CONCILIADO -> 400 (AC-8)'
+if [ -n "$R1_ID" ]; then
+  patch_conc="$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR_FIN" -X PATCH "$BASE_URL/api/admin/financeiro/$R1_ID" \
+    -H 'Content-Type: application/json' -d '{"descricao":"edit conciliada"}' || true)"
+  if [ "$patch_conc" = "400" ]; then
+    ok "PATCH transacao CONCILIADO -> 400 transacao_conciliada (AC-8)"
+  else
+    ko "PATCH transacao CONCILIADO -> $patch_conc (esperado 400, AC-8)"
+  fi
+else
+  ko "R1_ID vazio — nao foi possivel testar PATCH em CONCILIADO (AC-8)"
+fi
+
+printf '%s\n' '-- runtime: preview page (AC-21) — numeros exatos na DOM admin'
+fech_page="$(curl -s -b "$JAR_FIN" "$BASE_URL/admin/financeiro/fechamento" || true)"
+if printf '%s' "$fech_page" | grep -q 'data-testid="preview-fechamento"' \
+  && printf '%s' "$fech_page" | grep -q 'Prévia do período' \
+  && printf '%s' "$fech_page" | grep -qP 'R\$\s*150,00' \
+  && printf '%s' "$fech_page" | grep -qP 'R\$\s*50,00' \
+  && printf '%s' "$fech_page" | grep -qP 'R\$\s*100,00'; then
+  ok "preview fechamento: receitas 150,00 / despesas 50,00 / saldo 100,00 (AC-21)"
+else
+  ko "preview fechamento sem numeros deterministicos 150/50/100 (AC-21)"
+fi
+if printf '%s' "$fech_page" | grep -q 'Fechar caixa' \
+  && (printf '%s' "$fech_page" | grep -q 'Nenhum fechamento realizado' \
+      || printf '%s' "$fech_page" | grep -q 'Receitas'); then
+  ok "fechamento page: listagem + botao (AC-20; empty state ou historico de snapshots)"
+else
+  ko "fechamento page incompleta (AC-20)"
+fi
+
 snap_out="$(curl -s -w '\n%{http_code}' -b "$JAR_FIN" -X POST "$BASE_URL/api/admin/financeiro/fechamento" || true)"
 snap_http="${snap_out##*$'\n'}"
 snap_body="${snap_out%$'\n'*}"
@@ -774,15 +801,18 @@ else
   ko "POST fechamento -> $snap_http sem snapshot (AC-22)"
 fi
 if [ "$snap_http" = "201" ]; then
-  SNAP_TOTAL_REC="$(printf '%s' "$snap_body" | sed -n 's/.*"total_receitas":\([0-9.]*\).*/\1/p')"
-  SNAP_TOTAL_DESP="$(printf '%s' "$snap_body" | sed -n 's/.*"total_despesas":\([0-9.]*\).*/\1/p')"
-  # Pelo menos as receitas 150.00 das probes finais entram no total
-  if printf '%s' "$snap_body" | grep -q '"total_receitas":' \
-    && printf '%s' "$snap_body" | grep -q '"total_despesas":' \
-    && printf '%s' "$snap_body" | grep -q '"qtd_transacoes":'; then
-    ok "snapshot traz total_receitas/total_despesas/qtd_transacoes (AC-22)"
+  # Apos o POST inicial acumulsor acima, o snapshot so contem R1(150 RECEITA)+R2(50 DESPESA):
+  # assert EXATO mata o sensor que trocava o reduce de tipo (total_receitas somando DESPESA).
+  SNAP_TOTAL_REC="$(printf '%s' "$snap_body" | sed -n 's/.*"total_receitas":\([-0-9.]*\).*/\1/p')"
+  SNAP_TOTAL_DESP="$(printf '%s' "$snap_body" | sed -n 's/.*"total_despesas":\([-0-9.]*\).*/\1/p')"
+  SNAP_QTD="$(printf '%s' "$snap_body" | sed -n 's/.*"qtd_transacoes":\([0-9]*\).*/\1/p')"
+  rec_ok="$(awk -v a="$SNAP_TOTAL_REC" -v b=150 'BEGIN{print (a+0==b+0)?"1":"0"}')"
+  desp_ok="$(awk -v a="$SNAP_TOTAL_DESP" -v b=50 'BEGIN{print (a+0==b+0)?"1":"0"}')"
+  qtd_ok="$(awk -v a="$SNAP_QTD" -v b=2 'BEGIN{print (a+0==b+0)?"1":"0"}')"
+  if [ "$rec_ok" = "1" ] && [ "$desp_ok" = "1" ] && [ "$qtd_ok" = "1" ]; then
+    ok "snapshot totais exatos: receitas=150 despesas=50 qtd=2 (AC-22)"
   else
-    ko "snapshot sem totais (AC-22)"
+    ko "snapshot totais errados: receitas=$SNAP_TOTAL_REC (esperado 150) despesas=$SNAP_TOTAL_DESP (esperado 50) qtd=$SNAP_QTD (esperado 2) — sensor de tipo (AC-22)"
   fi
   fech_list="$(curl -s -b "$JAR_FIN" "$BASE_URL/api/admin/financeiro/fechamento" || true)"
   # confirma snapshot visivel na lista (por criado recente: primeiro item)
@@ -791,6 +821,15 @@ if [ "$snap_http" = "201" ]; then
   else
     ko "lista de fechamentos sem o snapshot criado (AC-20)"
   fi
+  # apos o snapshot, nao ha mais CONCILIADO pendentes -> proximo POST deve ser 400
+  fech_pos="$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR_FIN" -X POST "$BASE_URL/api/admin/financeiro/fechamento" || true)"
+  if [ "$fech_pos" = "400" ]; then
+    ok "POST fechamento apos snapshot -> 400 sem_transacoes_para_fechar determinístico (AC-23)"
+  else
+    ko "POST fechamento pos-snapshot -> $fech_pos (esperado 400 determinístico, AC-23)"
+  fi
+else
+  ko "AC-22/23 skipped — snapshot 201 nao obtido (preview/saldo ok acima)"
 fi
 
 # =====================================================================
@@ -811,6 +850,56 @@ if printf '%s' "$dash" | grep -q 'Membros' \
   ok "dashboard admin preserva cards pre-existentes (regressao)"
 else
   ko "dashboard admin perdeu cards pre-existentes"
+fi
+
+# =====================================================================
+# RUNTIME — filtros cumulativos (AC-26)
+# =====================================================================
+printf '%s\n' '-- runtime: filtros tipo/status/data (AC-26)'
+f_tipo="$(curl -s -b "$JAR_FIN" "$BASE_URL/api/admin/financeiro?tipo=DESPESA" || true)"
+if printf '%s' "$f_tipo" | grep -q '"lancamentos":' && ! printf '%s' "$f_tipo" | grep -q '"tipo":"RECEITA"'; then
+  ok "filtro tipo=DESPESA retorna somente despesas (AC-26)"
+else
+  ko "filtro tipo=DESPESA permitiu RECEITA (AC-26)"
+fi
+f_status="$(curl -s -b "$JAR_FIN" "$BASE_URL/api/admin/financeiro?status=CANCELADO" || true)"
+if printf '%s' "$f_status" | grep -q '"lancamentos":' \
+  && ! printf '%s' "$f_status" | grep -q '"status":"PENDENTE"' \
+  && ! printf '%s' "$f_status" | grep -q '"status":"CONCILIADO"'; then
+  ok "filtro status=CANCELADO retorna somente cancelados (AC-26)"
+else
+  ko "filtro status=CANCELADO permitiu outro status (AC-26)"
+fi
+f_pp="$(curl -s -b "$JAR_FIN" "$BASE_URL/api/admin/financeiro?status=PENDENTE,CONCILIADO" || true)"
+if printf '%s' "$f_pp" | grep -q '"status":"PENDENTE"' \
+  && printf '%s' "$f_pp" | grep -q '"status":"CONCILIADO"' \
+  && ! printf '%s' "$f_pp" | grep -q '"status":"CANCELADO"'; then
+  ok "filtro status=PENDENTE,CONCILIADO (multi-valor cumulativo, AC-26)"
+else
+  ko "filtro multi-status falhou (AC-26)"
+fi
+f_data="$(curl -s -b "$JAR_FIN" "$BASE_URL/api/admin/financeiro?data_inicio=$(date +%F)&data_fim=$(date +%F)" || true)"
+if printf '%s' "$f_data" | grep -q '"lancamentos":' \
+  && printf '%s' "$f_data" | grep -q '"data":"'"$(date +%F)"'"'; then
+  ok "filtro período hoje..hoje traz lançamentos de hoje (AC-26)"
+else
+  ko "filtro período hoje..hoje vazio/inválido (AC-26)"
+fi
+f_tipo_status="$(curl -s -b "$JAR_FIN" "$BASE_URL/api/admin/financeiro?tipo=DESPESA&status=PENDENTE&data_inicio=$(date +%F)&data_fim=$(date +%F)" || true)"
+if printf '%s' "$f_tipo_status" | grep -q '"tipo":"DESPESA"' \
+  && printf '%s' "$f_tipo_status" | grep -q '"status":"PENDENTE"' \
+  && ! printf '%s' "$f_tipo_status" | grep -q '"tipo":"RECEITA"' \
+  && ! printf '%s' "$f_tipo_status" | grep -q '"status":"CONCILIADO"' \
+  && ! printf '%s' "$f_tipo_status" | grep -q '"status":"CANCELADO"'; then
+  ok "filtros cumulativos tipo+status+período aplicados juntos (AC-26)"
+else
+  ko "filtros cumulativos falharam (AC-26)"
+fi
+f_empty="$(curl -s -b "$JAR_FIN" "$BASE_URL/admin/financeiro?busca=zzz-sem-resultado-probe" || true)"
+if printf '%s' "$f_empty" | grep -q 'Nenhum lançamento encontrado'; then
+  ok "busca sem resultado exibe empty state 'Nenhum lançamento encontrado' (AC-29)"
+else
+  ko "empty state nao exibido na busca sem resultado (AC-29)"
 fi
 
 # cleanup final best effort (trap tambem faz)

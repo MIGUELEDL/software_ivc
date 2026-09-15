@@ -22,6 +22,9 @@ export default async function AdminFinanceiroFechamentoPage() {
   const leitor = await can(claims?.role ?? "", "financeiro", "ler");
   const escritor = await can(claims?.role ?? "", "financeiro", "escrever");
 
+  const formatarValor = (valor: number) =>
+    valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
   if (!leitor) {
     return (
       <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
@@ -61,8 +64,6 @@ export default async function AdminFinanceiroFechamentoPage() {
     falhaConsulta = true;
   }
 
-  const formatarValor = (valor: number) =>
-    valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   const formatarData = (data: string) =>
     new Date(`${data}T00:00:00`).toLocaleDateString("pt-BR");
 
@@ -81,6 +82,46 @@ export default async function AdminFinanceiroFechamentoPage() {
 
           {escritor && preview && <FecharCaixaButton preview={preview} />}
         </div>
+
+        {!falhaConsulta && escritor && preview && (
+          <div
+            className="mb-8 rounded-2xl bg-white shadow-xl p-6"
+            data-testid="preview-fechamento"
+          >
+            <p className="font-sans text-sm font-semibold text-text-dark/60 mb-3">
+              Prévia do período (transações conciliadas)
+            </p>
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-1 font-serif text-sm sm:grid-cols-4">
+              <div>
+                <dt className="text-text-dark/60">Receitas</dt>
+                <dd className="text-green-700 font-semibold">
+                  {formatarValor(preview.receitas)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-text-dark/60">Despesas</dt>
+                <dd className="text-red-700 font-semibold">
+                  {formatarValor(preview.despesas)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-text-dark/60">Saldo</dt>
+                <dd className="text-text-dark font-semibold">
+                  {formatarValor(preview.saldo)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-text-dark/60">
+                  PENDENTES{" "}
+                  <span className="text-text-dark/40">(informativo)</span>
+                </dt>
+                <dd className="text-text-dark/70 font-semibold">
+                  {preview.pendentes}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        )}
 
         {falhaConsulta ? (
           <div className="rounded-2xl bg-white shadow-xl p-10 text-center">

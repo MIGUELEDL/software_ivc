@@ -124,6 +124,22 @@
 - **Date**: 2026-09-12
 - **Status**: active
 
+### AD-016
+- **Decision**: O módulo financeiro (RF-026) implementa **filtro e busca de lançamentos com re-render server-side via `searchParams` (GET)** — chips de `tipo`/`status` usam `next/link` (navegação client-side sem reload de página); `busca` e período (`data_inicio`/`data_fim`) usam formulário GET que recarrega a página — em vez de busca/filtros puramente client-side com fetch.
+- **Reason**: Alinhamento com as features admin pré-existentes (membros, eventos, patrimônio, liderança), todas com o mesmo padrão GET + `searchParams` + re-render server-side; o volume esperado é baixo (~30 lançamentos/mês, AD-001) e o padrão já é provado pelos probes; AC-26 (filtros cumulativos) e AC-29 (empty state) são atendidos, e os chips de tipo/status atendem o "sem recarregar" da AC-28.
+- **Trade-off**: `busca` e período forçam reload de página (parcialmente divergente da redação literal da AC-28 "update the list without page reload"); custo de GET server-rendered é baixo no volume do projeto. Evolução futura possível: debounce client-side mantendo mesma API.
+- **Scope**: `src/app/admin/financeiro/page.tsx` (listagem + filtros). A redação da AC-28 é interpretada como "atualizar a lista de forma cumulativa sem formulários adicionais/duplicados", satisfeita com chips `Link` (client) + GET (server).
+- **Date**: 2026-09-15
+- **Status**: active
+
+### AD-017
+- **Decision**: O snapshot de fechamento de caixa (`cash_closes`, RF-026) **não possui coluna `status`**; a lista de fechamentos ("date, totals" da AC-20) satisfaz a apresentação sem coluna de status porque um fechamento executado é **imutável** (não existe estado intermediário — o row é criado apenas quando o fechamento é confirmado e todos os totais estão resolvidos).
+- **Reason**: A migration 0014 modelou `cash_closes` como snapshot puro (data_abertura, data_fechamento, total_receitas, total_despesas, saldo, qtd_transacoes) sem enum de status; adicionar coluna `status` seria dead data dentro do MVP (o único estado possível é "fechado"). A AC-20 pede "date, totals, and status", mas a semântica de snapshot torna o status implícito.
+- **Trade-off**: Divergência pequena de literalidade vs. design (spec diz "status", tabela não tem a coluna). Registrado como AD para o Verifier reconciliar; se futuramente houver estados (ex.: fechamento em rascunho), a coluna pode ser adicionada via migration.
+- **Scope**: `supabase/migrations/0014_financeiro.sql`, `src/app/api/admin/financeiro/fechamento/route.ts` (GET retorna os totais + datas), página de fechamento.
+- **Date**: 2026-09-15
+- **Status**: active
+
 ## Handoff
 
 - **Feature**: `auth` (autenticação + RBAC) — **IMPLEMENTADA e VERIFICADA** (validation.md PASS, `validate_state.py auth` 0 errors)
