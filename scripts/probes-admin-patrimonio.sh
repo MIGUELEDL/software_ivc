@@ -596,8 +596,8 @@ if [ -n "$A_ID" ]; then
   curl -s -b "$JAR_ADMIN" -X PATCH "$BASE_URL/api/admin/assets/$A_ID" \
     -H 'Content-Type: application/json' -d '{"status":"INATIVO"}' -o /dev/null 2>/dev/null || true
   list_inativo="$(curl -s -b "$JAR_ADMIN" "$BASE_URL/api/admin/assets" || true)"
-  if printf '%s' "$list_inativo" | grep -q "\"$A_ID\"" \
-    && printf '%s' "$list_inativo" | grep -q '"status":"INATIVO"'; then
+  a_obj="$(printf '%s' "$list_inativo" | sed -n "s/.*\"id\":\"$A_ID\",\([^}]*\).*/\1/p" || true)"
+  if [ -n "$a_obj" ] && printf '%s' "$a_obj" | grep -q '"status":"INATIVO"'; then
     ok "lista admin contem A INATIVO (historico preservado, PAT-03/10)"
   else
     ko "lista admin perdeu A INATIVO (baixa dura, PAT-10 quebrado)"

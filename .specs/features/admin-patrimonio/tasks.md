@@ -9,7 +9,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 ---
 
 **Design**: `.specs/features/admin-patrimonio/design.md`
-**Status**: In Progress
+**Status**: Completed
 
 ---
 
@@ -126,11 +126,11 @@ padrão 0007/0009). Aplicar no dev `[REDACTED_PROJECT_REF]` via MCP e validar po
 - Skill: NONE
 
 **Done when**:
-- [ ] SQL versionado com `assets` (CHECK categoria, índice único parcial, status default), RLS SELECT/INSERT/UPDATE **sem anon**, sem DELETE
-- [ ] RLS: SELECT `can_access('patrimonio','ler')` (authenticated only); escrita `can_access('patrimonio','escrever')`
-- [ ] Seed idempotente `Kit de Som` + `patrimonial.teste` (papel PATRIMONIAL)
-- [ ] Migration aplicada no dev via MCP sem erro
-- [ ] SQL/MCP: policy SELECT sem anon confere; tabela listada sem policy DELETE
+- [x] SQL versionado com `assets` (CHECK categoria, índice único parcial, status default), RLS SELECT/INSERT/UPDATE **sem anon**, sem DELETE
+- [x] RLS: SELECT `can_access('patrimonio','ler')` (authenticated only); escrita `can_access('patrimonio','escrever')`
+- [x] Seed idempotente `Kit de Som` + `patrimonial.teste` (papel PATRIMONIAL)
+- [x] Migration aplicada no dev via MCP sem erro
+- [x] SQL/MCP: policy SELECT sem anon confere; tabela listada sem policy DELETE
 
 **Tests**: probe estático (greps no `.sql`: tabela, CHECK, índice único, RLS sem anon, sem DELETE, seed) + checagem SQL via MCP
 **Gate**: quick
@@ -158,13 +158,14 @@ Expor uma constante `ASSET_CATEGORIES` (enum) para a UI e a validação.
 - Skill: NONE
 
 **Done when**:
-- [ ] Service com CRUD assets, exceção 404 e lista `name` asc
-- [ ] `validateAsset` com enum/valor/data/status; `ASSET_CATEGORIES` exportado
-- [ ] Gate quick passa: `npm run typecheck` (PATH nvm ativado)
+- [x] Service com CRUD assets, exceção 404 e lista `name` asc
+- [x] `validateAsset` com enum/valor/data/status; `ASSET_CATEGORIES` exportado
+- [x] Gate quick passa: `npm run typecheck` (PATH nvm ativado)
 
 **Tests**: probe estático (asserts T2 no script) + typecheck
 **Gate**: quick
-**Status**: Pending
+**Status**: ✅ Done (2026-09-14 — probes 67/0, regressoes 358/0, gates verdes)
+
 
 ### Phase 3: Route Handlers
 
@@ -185,13 +186,14 @@ validação por campo via `validateAsset` → 400 `{error, campos}`, 201 com ass
 - Skill: NONE
 
 **Done when**:
-- [ ] POST cria asset 201 (ATIVO default); valida campos → 400 discriminado; tombo duplicado → 409; 401/403 sem escrita
-- [ ] GET lista para leitor 200 ordenado por `name` asc
-- [ ] Gate quick passa: `npm run typecheck`
+- [x] POST cria asset 201 (ATIVO default); valida campos → 400 discriminado; tombo duplicado → 409; 401/403 sem escrita
+- [x] GET lista para leitor 200 ordenado por `name` asc
+- [x] Gate quick passa: `npm run typecheck`
 
 **Tests**: probe estático (guards/validação) + runtime curl das rotas
 **Gate**: quick
-**Status**: Pending
+**Status**: ✅ Done (2026-09-14 — probes 67/0, regressoes 358/0, gates verdes)
+
 
 ### T4: Rota `PATCH /api/admin/assets/[id]` (incl. `status` baixa)
 
@@ -209,14 +211,15 @@ duplicado → 409. Sem rota DELETE (PAT-03).
 - Skill: NONE
 
 **Done when**:
-- [ ] PATCH atualiza campos enviados e responde 200; 404 inexistente; 409 tombo duplicado
-- [ ] `status='INATIVO'` persistido (baixa/soft-delete); campo inválido → 400
-- [ ] Sem rota/action DELETE
-- [ ] Gate quick passa: `npm run typecheck`
+- [x] PATCH atualiza campos enviados e responde 200; 404 inexistente; 409 tombo duplicado
+- [x] `status='INATIVO'` persistido (baixa/soft-delete); campo inválido → 400
+- [x] Sem rota/action DELETE
+- [x] Gate quick passa: `npm run typecheck`
 
 **Tests**: probe estático + runtime curl
 **Gate**: quick
-**Status**: Pending
+**Status**: ✅ Done (2026-09-14 — probes 67/0, regressoes 358/0, gates verdes)
+
 
 ### Phase 4: Páginas admin
 
@@ -238,13 +241,14 @@ localização/valor/data de aquisição/responsável/observações → `POST
 - Skill: NONE
 
 **Done when**:
-- [ ] Lista para papel leitor 200; badges de `status`; ações de escrita ocultas p/ leitor
-- [ ] Form cria asset com 400 por campo, 409 duplicado e redirect
-- [ ] Gate quick passa: `npm run typecheck` (+ lint)
+- [x] Lista para papel leitor 200; badges de `status`; ações de escrita ocultas p/ leitor
+- [x] Form cria asset com 400 por campo, 409 duplicado e redirect
+- [x] Gate quick passa: `npm run typecheck` (+ lint)
 
 **Tests**: probe estático (guardas/badges) + runtime curl páginas
 **Gate**: quick
-**Status**: Pending
+**Status**: ✅ Done (2026-09-14 — probes 67/0, regressoes 358/0, gates verdes)
+
 
 ### T6: Página `/admin/patrimonio/[id]` — detalhe/edição + baixa
 
@@ -262,14 +266,15 @@ toggle `status` `ATIVO`/`INATIVO` (baixa); sem botão DELETE. Guarda de escrita 
 - Skill: NONE
 
 **Done when**:
-- [ ] Detalhe lê asset; 404 inexistente
-- [ ] Form de edição inclui toggle `status` ATIVO/INATIVO (sem DELETE)
-- [ ] Ações de escrita ocultas p/ leitor
-- [ ] Gate quick passa: `npm run typecheck` (+ lint)
+- [x] Detalhe lê asset; 404 inexistente
+- [x] Form de edição inclui toggle `status` ATIVO/INATIVO (sem DELETE)
+- [x] Ações de escrita ocultas p/ leitor
+- [x] Gate quick passa: `npm run typecheck` (+ lint)
 
 **Tests**: probe estático + runtime curl páginas
 **Gate**: quick
-**Status**: Pending
+**Status**: ✅ Done (2026-09-14 — probes 67/0, regressoes 358/0, gates verdes)
+
 
 ### Phase 5: Dashboard
 
@@ -291,13 +296,14 @@ Igrejas & Liderança) intactos.
 - Skill: NONE
 
 **Done when**:
-- [ ] `/admin` renderiza cards Eventos e Patrimônio com hrefs corretos
-- [ ] Cards Membros/Igrejas & Liderança intactos; typecheck + lint passam
-- [ ] Gate quick passa: `npm run typecheck` (+ lint)
+- [x] `/admin` renderiza cards Eventos e Patrimônio com hrefs corretos
+- [x] Cards Membros/Igrejas & Liderança intactos; typecheck + lint passam
+- [x] Gate quick passa: `npm run typecheck` (+ lint)
 
 **Tests**: probe estático (greps de href/ícone/subtitle) + runtime (HTML do /admin contém os cards)
 **Gate**: quick
-**Status**: Pending
+**Status**: ✅ Done (2026-09-14 — probes 67/0, regressoes 358/0, gates verdes)
+
 
 ### Phase 6: Probes e regressão
 
@@ -326,14 +332,15 @@ criados). Registra contagem ok/falhas.
 - Skill: NONE
 
 **Done when**:
-- [ ] Suite roda limpa contra `next start` :3000 → 0 falhas (PATRIMONIAL, ADMIN, leitor, SECRETARIA, MEMBRO, 400/404/409, dashboard)
-- [ ] Discriminadores por papel ok (403 leitor/scretaria em escrita; 201 PATRIMONIAL/ADMIN; SELECT sem anon)
-- [ ] Resíduo limpo entre runs (idempotente) — trap EXIT
-- [ ] Regressões `probes-admin-eventos.sh`, `probes-admin-lideranca.sh`, `probes-admin-membros.sh`, `probes-painel.sh`, `probes-auth.sh` verdes + lint/typecheck/build
+- [x] Suite roda limpa contra `next start` :3000 → 0 falhas (PATRIMONIAL, ADMIN, leitor, SECRETARIA, MEMBRO, 400/404/409, dashboard)
+- [x] Discriminadores por papel ok (403 leitor/scretaria em escrita; 201 PATRIMONIAL/ADMIN; SELECT sem anon)
+- [x] Resíduo limpo entre runs (idempotente) — trap EXIT
+- [x] Regressões `probes-admin-eventos.sh`, `probes-admin-lideranca.sh`, `probes-admin-membros.sh`, `probes-painel.sh`, `probes-auth.sh` verdes + lint/typecheck/build
 
 **Tests**: `bash scripts/probes-admin-patrimonio.sh` (servidor :3000) + suítes de regressão
 **Gate**: full
-**Status**: Pending
+**Status**: ✅ Done (2026-09-14 — probes 67/0, regressoes 358/0, gates verdes)
+
 
 ### T9: Fechamento — state/coverage/matrix/handoff
 
@@ -352,11 +359,11 @@ após verificação) e gates finais.
 - MCP: NONE
 
 **Done when**:
-- [ ] tasks.md com todas as tarefas ✅ e cobertura 12/12 — validation.md Verifier PASS (12/12, sensor 3/3)
-- [ ] coverage-matrix RF-025 ✅ verified com evidência — `docs/coverage-matrix.md`
-- [ ] `validate_state.py admin-patrimonio` 0 erros (após Verifier PASS)
-- [ ] Gates finais (lint/typecheck/build) verdes
+- [x] tasks.md com todas as tarefas ✅ e cobertura 12/12 — validation.md Verifier PASS (12/12, sensor 3/3)
+- [x] coverage-matrix RF-025 ✅ verified com evidência — `docs/coverage-matrix.md`
+- [x] `validate_state.py admin-patrimonio` 0 erros (após Verifier PASS)
+- [x] Gates finais (lint/typecheck/build) verdes
 
 **Tests**: `validate_state.py admin-patrimonio` + gates
 **Gate**: build
-**Status**: Pending
+**Status**: ✅ Done (2026-09-14 — probes 67/0, regressoes 358/0, gates verdes)

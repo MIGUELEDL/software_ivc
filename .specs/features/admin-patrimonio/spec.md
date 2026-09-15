@@ -87,20 +87,20 @@ caráter interno do patrimônio.
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| PAT-01 | P0: Assets (schema + enum) | - | Done (T1 — migration 0013) |
-| PAT-02 | P0: Assets (SELECT admin-only) | - | Done (T1 — RLS sem anon, MCP) |
-| PAT-03 | P0: Assets (write, sem DELETE) | - | Done (T1 — policies INSERT/UPDATE, sem DELETE) |
-| PAT-04 | P0: Assets (POST 201) | - | Pending |
-| PAT-05 | P0: Assets (POST 400 por campo) | - | Pending |
-| PAT-06 | P0: Assets (POST 401/403) | - | Pending |
-| PAT-07 | P0: Assets (GET list name asc) | - | Pending |
-| PAT-08 | P0: Assets (PATCH 200 parcial) | - | Pending |
-| PAT-09 | P0: Assets (PATCH 404) | - | Pending |
-| PAT-10 | P0: Assets (PATCH INATIVO baixa) | - | Done (T1 — DB: CHECK status inclui INATIVO, sem DELETE; rota PATCH em T4) |
-| PAT-11 | P0: Assets (anon/leitor não lê) | - | Done (T1 — DB: anon_count=0, sem policy anon; API em T3) |
-| PAT-12 | P0: Dashboard (cards Eventos+Patrimônio) | - | Pending |
+| PAT-01 | P0: Assets (schema + enum) | - | Done (T1 — migration 0013; T2 — ASSET_CATEGORIES) |
+| PAT-02 | P0: Assets (SELECT admin-only) | - | Done (T1 — RLS sem anon, MCP; T3 — guards) |
+| PAT-03 | P0: Assets (write, sem DELETE) | - | Done (T1 — policies INSERT/UPDATE, sem DELETE; T4 — sem rota DELETE) |
+| PAT-04 | P0: Assets (POST 201) | - | Done (T3 — POST 201; T5 — form) |
+| PAT-05 | P0: Assets (POST 400 por campo) | - | Done (T2 — validateAsset; T3 — 400 campos) |
+| PAT-06 | P0: Assets (POST 401/403) | - | Done (T3 — guards; probes runtime discriminativos) |
+| PAT-07 | P0: Assets (GET list name asc) | - | Done (T2 — order name asc; T3 — GET; T5 — lista) |
+| PAT-08 | P0: Assets (PATCH 200 parcial) | - | Done (T4 — PATCH [id]; T6 — form) |
+| PAT-09 | P0: Assets (PATCH 404) | - | Done (T2 — BemNaoEncontradoError; T4 — 404) |
+| PAT-10 | P0: Assets (PATCH INATIVO baixa) | - | Done (T1 — DB: CHECK status inclui INATIVO, sem DELETE; T4 — rota PATCH status) |
+| PAT-11 | P0: Assets (anon/leitor não lê) | - | Done (T1 — DB: anon_count=0, sem policy anon; T3 — API 401/403) |
+| PAT-12 | P0: Dashboard (cards Eventos+Patrimônio) | - | Done (T7 — cards no /admin) |
 
-**Coverage:** 12 total, 0 mapped to tasks, 12 unmapped ⚠️
+**Coverage:** 12 total, 12 mapped to tasks, 0 unmapped ✅
 
 ## External Interfaces
 
