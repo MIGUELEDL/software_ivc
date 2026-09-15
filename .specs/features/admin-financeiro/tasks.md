@@ -401,14 +401,14 @@ T14 (dep T3) → T15 (dep T1..T13) → T16 (dep T15)
 
 **Done when**:
 
-- [ ] RSC page displays full entry details (all fields)
-- [ ] Shows tipo/method/status badges
-- [ ] If PENDENTE: "Cancelar" button calls POST `/api/admin/financeiro/[id]/cancelar`
-- [ ] If CONCILIADO: read-only (no cancel button), shows "Conciliado" badge
-- [ ] If CANCELADO: read-only, shows "Cancelado" badge
-- [ ] Edit button (PATCH flow) for PENDENTE entries
-- [ ] 404 handling: shows not found
-- [ ] `npm run build` passes
+- [x] RSC page displays full entry details (all fields)
+- [x] Shows tipo/method/status badges
+- [x] If PENDENTE: "Cancelar" button calls POST `/api/admin/financeiro/[id]/cancelar`
+- [x] If CONCILIADO: read-only (no cancel button), shows "Conciliado" badge
+- [x] If CANCELADO: read-only, shows "Cancelado" badge
+- [x] Edit button (PATCH flow) for PENDENTE entries
+- [x] 404 handling: shows not found
+- [x] `npm run build` passes
 
 **Tests**: static probes (page structure, in T15)
 **Gate**: build (`npm run build`)
