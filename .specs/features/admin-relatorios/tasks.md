@@ -249,12 +249,12 @@ T11 -> T12
 
 **Done when**:
 
-- [ ] POST parseia `request.formData()`, extrai title/category/file
-- [ ] Falta title/category/file ou tipo/tamanho inválido → 400 `{ error: "dados_invalidos", campos: {...} }`
-- [ ] Sucesso → 201 `{ documento }`
-- [ ] GET lista documentos (filtro `categoria`), guarda de leitura
-- [ ] Leitor (SECRETARIA/PATRIMONIAL/LIDER) no POST → 403 `nao_autorizado`; anon → 401
-- [ ] `npm run lint && npm run typecheck` pass
+- [x] POST parseia `request.formData()`, extrai title/category/file
+- [x] Falta title/category/file ou tipo/tamanho inválido → 400 `{ error: "dados_invalidos", campos: {...} }`
+- [x] Sucesso → 201 `{ documento }`
+- [x] GET lista documentos (filtro `categoria`), guarda de leitura
+- [x] Leitor (SECRETARIA/PATRIMONIAL/LIDER) no POST → 403 `nao_autorizado`; anon → 401
+- [x] `npm run lint && npm run typecheck` pass
 
 **Tests**: runtime probes (upload 201, 400 por campo, 403 leitor, 401 anon, list — in T11)
 **Gate**: quick
