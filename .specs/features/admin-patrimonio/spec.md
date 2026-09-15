@@ -87,17 +87,17 @@ caráter interno do patrimônio.
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| PAT-01 | P0: Assets (schema + enum) | - | Pending |
-| PAT-02 | P0: Assets (SELECT admin-only) | - | Pending |
-| PAT-03 | P0: Assets (write, sem DELETE) | - | Pending |
+| PAT-01 | P0: Assets (schema + enum) | - | Done (T1 — migration 0013) |
+| PAT-02 | P0: Assets (SELECT admin-only) | - | Done (T1 — RLS sem anon, MCP) |
+| PAT-03 | P0: Assets (write, sem DELETE) | - | Done (T1 — policies INSERT/UPDATE, sem DELETE) |
 | PAT-04 | P0: Assets (POST 201) | - | Pending |
 | PAT-05 | P0: Assets (POST 400 por campo) | - | Pending |
 | PAT-06 | P0: Assets (POST 401/403) | - | Pending |
 | PAT-07 | P0: Assets (GET list name asc) | - | Pending |
 | PAT-08 | P0: Assets (PATCH 200 parcial) | - | Pending |
 | PAT-09 | P0: Assets (PATCH 404) | - | Pending |
-| PAT-10 | P0: Assets (PATCH INATIVO baixa) | - | Pending |
-| PAT-11 | P0: Assets (anon/leitor não lê) | - | Pending |
+| PAT-10 | P0: Assets (PATCH INATIVO baixa) | - | Done (T1 — DB: CHECK status inclui INATIVO, sem DELETE; rota PATCH em T4) |
+| PAT-11 | P0: Assets (anon/leitor não lê) | - | Done (T1 — DB: anon_count=0, sem policy anon; API em T3) |
 | PAT-12 | P0: Dashboard (cards Eventos+Patrimônio) | - | Pending |
 
 **Coverage:** 12 total, 0 mapped to tasks, 12 unmapped ⚠️

@@ -134,7 +134,7 @@ padrão 0007/0009). Aplicar no dev `[REDACTED_PROJECT_REF]` via MCP e validar po
 
 **Tests**: probe estático (greps no `.sql`: tabela, CHECK, índice único, RLS sem anon, sem DELETE, seed) + checagem SQL via MCP
 **Gate**: quick
-**Status**: Pending
+**Status**: ✅ Done (2026-09-14 — migration aplicada no dev `[REDACTED_PROJECT_REF]`; MCP valida schema/RLS/seed/índice único/anon vazio)
 
 ### Phase 2: Service layer
 
