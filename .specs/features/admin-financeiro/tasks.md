@@ -282,14 +282,14 @@ T14 (dep T3) → T15 (dep T1..T13) → T16 (dep T15)
 
 **Done when**:
 
-- [ ] POST handler: NO auth guard (public endpoint)
-- [ ] Parses JSON body; returns 400 `{ error: "payload_invalido" }` if invalid
-- [ ] Logs event to `webhook_events` table (event_id, event_type, payload)
-- [ ] Idempotent: if `event_id` already exists (UNIQUE constraint), returns 200 without duplicate
-- [ ] If `action` contains "payment.created" or "payment.updated" with status "approved": creates transaction (tipo=RECEITA, método=PIX, status=CONCILIADO, external_reference from payment data) or updates existing if external_reference matches
-- [ ] If payment status is not "approved": logs only, no transaction created
-- [ ] Returns 200 `{ ok: true }` on success
-- [ ] `npm run typecheck` passes
+- [x] POST handler: NO auth guard (public endpoint)
+- [x] Parses JSON body; returns 400 `{ error: "payload_invalido" }` if invalid
+- [x] Logs event to `webhook_events` table (event_id, event_type, payload)
+- [x] Idempotent: if `event_id` already exists (UNIQUE constraint), returns 200 without duplicate
+- [x] If `action` contains "payment.created" or "payment.updated" with status "approved": creates transaction (tipo=RECEITA, método=PIX, status=CONCILIADO, external_reference from payment data) or updates existing if external_reference matches
+- [x] If payment status is not "approved": logs only, no transaction created
+- [x] Returns 200 `{ ok: true }` on success
+- [x] `npm run typecheck` passes
 
 **Tests**: runtime probes (webhook idempotency, in T15)
 **Gate**: quick (`npm run typecheck`)
