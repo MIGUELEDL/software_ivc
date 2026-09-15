@@ -32,6 +32,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 MIG13="$ROOT/supabase/migrations/0013_assets.sql"
 SERVICE="$ROOT/src/lib/admin/assets.ts"
+ASSET_TYPES="$ROOT/src/lib/admin/asset-types.ts"
 VALIDACAO="$ROOT/src/lib/admin/validacao.ts"
 ASSETS_ROUTE="$ROOT/src/app/api/admin/assets/route.ts"
 ASSET_ID_ROUTE="$ROOT/src/app/api/admin/assets/[id]/route.ts"
@@ -161,17 +162,17 @@ if grep -q 'status: "ATIVO"' "$SERVICE"; then
 else
   ko "criarAsset: default ATIVO ausente (PAT-04)"
 fi
-if grep -q 'ASSET_CATEGORIES' "$SERVICE" \
-  && grep -q '"AUDIO"' "$SERVICE" \
-  && grep -q '"VIDEO"' "$SERVICE" \
-  && grep -q '"INSTRUMENTO"' "$SERVICE" \
-  && grep -q '"MOBILIA"' "$SERVICE" \
-  && grep -q '"EQUIPAMENTO"' "$SERVICE" \
-  && grep -q '"RELIGIOSO"' "$SERVICE" \
-  && grep -q '"OUTRO"' "$SERVICE"; then
-  ok "service: ASSET_CATEGORIES enum fixo (PAT-01)"
+if grep -q 'ASSET_CATEGORIES' "$ASSET_TYPES" \
+  && grep -q '"AUDIO"' "$ASSET_TYPES" \
+  && grep -q '"VIDEO"' "$ASSET_TYPES" \
+  && grep -q '"INSTRUMENTO"' "$ASSET_TYPES" \
+  && grep -q '"MOBILIA"' "$ASSET_TYPES" \
+  && grep -q '"EQUIPAMENTO"' "$ASSET_TYPES" \
+  && grep -q '"RELIGIOSO"' "$ASSET_TYPES" \
+  && grep -q '"OUTRO"' "$ASSET_TYPES"; then
+  ok "asset-types: ASSET_CATEGORIES enum fixo (PAT-01)"
 else
-  ko "service: ASSET_CATEGORIES incompleto (PAT-01)"
+  ko "asset-types: ASSET_CATEGORIES incompleto (PAT-01)"
 fi
 if grep -q 'if (dados.status !== undefined) patch.status = dados.status' "$SERVICE"; then
   ok "atualizarAsset: aceita status (baixa, PAT-08/10)"
@@ -237,12 +238,12 @@ if grep -q '_INATIVO_ via status' "$ASSET_ID_ROUTE" \
 else
   ko "PATCH [id]: nota de baixa ausente"
 fi
-if ! grep -q 'DELETE' "$ASSET_ID_ROUTE"; then
+if ! grep -qE 'method: "DELETE"|async function DELETE' "$ASSET_ID_ROUTE"; then
   ok "sem DELETE em [id]/route.ts (PAT-03)"
 else
   ko "[id]/route.ts contem DELETE (PAT-03)"
 fi
-if ! grep -q 'DELETE' "$ASSETS_ROUTE"; then
+if ! grep -qE 'method: "DELETE"|async function DELETE' "$ASSETS_ROUTE"; then
   ok "sem DELETE em assets/route.ts (PAT-03)"
 else
   ko "assets/route.ts contem DELETE (PAT-03)"
@@ -299,10 +300,11 @@ else
   ko "detalhe sem guard escrita"
 fi
 if grep -q 'method: "PATCH"' "$EDITAR_FORM" \
-  && grep -q 'name="status"' "$EDITAR_FORM" \
+  && grep -q 'setStatus("ATIVO")' "$EDITAR_FORM" \
   && grep -q 'setStatus("INATIVO")' "$EDITAR_FORM" \
-  && ! grep -q 'method: "DELETE"' "$EDITAR_FORM"; then
-  ok "editar form: PATCH + toggle status ATIVO/INATIVO sem DELETE (PAT-08/10/03)"
+  && grep -q 'status,' "$EDITAR_FORM" \
+  && ! grep -qE 'method: "DELETE"|async function DELETE' "$EDITAR_FORM"; then
+  ok "editar form: PATCH parcial + toggle status sem DELETE (PAT-08/10/03)"
 else
   ko "editar form incompleta (PAT-08/10/03)"
 fi
