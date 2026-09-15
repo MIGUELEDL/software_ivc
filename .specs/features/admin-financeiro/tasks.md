@@ -313,10 +313,10 @@ T14 (dep T3) → T15 (dep T1..T13) → T16 (dep T15)
 
 **Done when**:
 
-- [ ] GET handler: `authAdmin("financeiro")` guard, calls `listarFechamentos`, returns `{ fechamentos }`
-- [ ] POST handler: `requireEscrita("financeiro")` guard, calls `fecharCaixa()`, returns 201 `{ fechamento }`
-- [ ] POST returns 400 `{ error: "sem_transacoes_para_fechar" }` if no CONCILIADO transactions
-- [ ] `npm run typecheck` passes
+- [x] GET handler: `authAdmin("financeiro")` guard, calls `listarFechamentos`, returns `{ fechamentos }`
+- [x] POST handler: `requireEscrita("financeiro")` guard, calls `fecharCaixa()`, returns 201 `{ fechamento }`
+- [x] POST returns 400 `{ error: "sem_transacoes_para_fechar" }` if no CONCILIADO transactions
+- [x] `npm run typecheck` passes
 
 **Tests**: runtime probes (happy + error paths, in T15)
 **Gate**: quick (`npm run typecheck`)
