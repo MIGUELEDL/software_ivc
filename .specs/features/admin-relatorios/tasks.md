@@ -221,11 +221,11 @@ T11 -> T12
 
 **Done when**:
 
-- [ ] `tipo=financeiro` converte `data_inicio`/`data_fim` para `LancamentoFiltros` e retorna CSV
-- [ ] `tipo=membros|eventos|patrimonio` retornam CSV correspondente
-- [ ] `tipo` inválido/ausente → 400 `{ error: "tipo_invalido" }`
-- [ ] Response com BOM, headers `text/csv; charset=utf-8` + `Content-Disposition: attachment`
-- [ ] `npm run lint && npm run typecheck` pass
+- [x] `tipo=financeiro` converte `data_inicio`/`data_fim` para `LancamentoFiltros` e retorna CSV
+- [x] `tipo=membros|eventos|patrimonio` retornam CSV correspondente
+- [x] `tipo` inválido/ausente → 400 `{ error: "tipo_invalido" }`
+- [x] Response com BOM, headers `text/csv; charset=utf-8` + `Content-Disposition: attachment`
+- [x] `npm run lint && npm run typecheck` pass
 
 **Tests**: runtime probes (export each tipo 200 + tipo inválido 400 — in T11)
 **Gate**: quick
