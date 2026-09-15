@@ -1,4 +1,4 @@
-import { Church, Users } from "lucide-react";
+import { CalendarDays, Church, Package, Users } from "lucide-react";
 import Link from "next/link";
 import { getClaims } from "@/lib/auth/claims";
 
@@ -50,6 +50,38 @@ export default async function AdminPage() {
                     </span>
                     <span className="block font-serif text-sm text-text-dark/60">
                       Gestão das igrejas e da liderança institucional
+                    </span>
+                  </span>
+                </Link>
+                <Link
+                  href="/admin/eventos"
+                  className="flex items-center gap-4 rounded-xl bg-bg-gray p-5 hover:bg-primary/5 transition-colors"
+                >
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <CalendarDays size={20} aria-hidden="true" />
+                  </span>
+                  <span>
+                    <span className="block font-sans text-base font-bold text-text-dark">
+                      Eventos
+                    </span>
+                    <span className="block font-serif text-sm text-text-dark/60">
+                      Gestão dos eventos e agenda da igreja
+                    </span>
+                  </span>
+                </Link>
+                <Link
+                  href="/admin/patrimonio"
+                  className="flex items-center gap-4 rounded-xl bg-bg-gray p-5 hover:bg-primary/5 transition-colors"
+                >
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <Package size={20} aria-hidden="true" />
+                  </span>
+                  <span>
+                    <span className="block font-sans text-base font-bold text-text-dark">
+                      Patrimônio
+                    </span>
+                    <span className="block font-serif text-sm text-text-dark/60">
+                      Inventário dos bens da igreja
                     </span>
                   </span>
                 </Link>
