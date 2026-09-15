@@ -111,12 +111,12 @@ T14 (dep T3) → T15 (dep T1..T13) → T16 (dep T15)
 
 **Done when**:
 
-- [ ] `TIPOS_LANCAMENTO = ["RECEITA", "DESPESA"] as const` exported
-- [ ] `STATUS_LANCAMENTO = ["PENDENTE", "CONCILIADO", "CANCELADO"] as const` exported
-- [ ] `METODOS_PAGAMENTO = ["PIX", "CARTAO", "DINHEIRO", "TRANSFERENCIA"] as const` exported
-- [ ] Interfaces: `Lancamento`, `LancamentoDados`, `LancamentoPatch`, `FechamentoCaixa`, `WebhookEvent`
-- [ ] No `@/lib/supabase/*` imports (pure module)
-- [ ] `npm run typecheck` passes
+- [x] `TIPOS_LANCAMENTO = ["RECEITA", "DESPESA"] as const` exported
+- [x] `STATUS_LANCAMENTO = ["PENDENTE", "CONCILIADO", "CANCELADO"] as const` exported
+- [x] `METODOS_PAGAMENTO = ["PIX", "CARTAO", "DINHEIRO", "TRANSFERENCIA"] as const` exported
+- [x] Interfaces: `Lancamento`, `LancamentoDados`, `LancamentoPatch`, `FechamentoCaixa`, `WebhookEventPayload`
+- [x] No `@/lib/supabase/*` imports (pure module)
+- [x] `npm run typecheck` passes
 
 **Tests**: build gate (types)
 **Gate**: quick (`npm run typecheck`)
