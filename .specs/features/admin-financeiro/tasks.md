@@ -140,16 +140,16 @@ T14 (dep T3) → T15 (dep T1..T13) → T16 (dep T15)
 
 **Done when**:
 
-- [ ] `LancamentoNaoEncontradoError` class exported
-- [ ] `LancamentoConciliadoError` class exported
-- [ ] `listarLancamentos(filtros?)` — query com filtros opcionais (tipo, status, data_inicio, data_fim, busca), ORDER BY data DESC
-- [ ] `buscarLancamento(id)` — SELECT + `.single()`, throws `LancamentoNaoEncontradoError` if null
-- [ ] `criarLancamento(dados)` — INSERT, returns created row
-- [ ] `atualizarLancamento(id, patch)` — SELECT first (check status ≠ CONCILIADO), then UPDATE parcial, throws `LancamentoConciliadoError` if CONCILIADO
-- [ ] `cancelarLancamento(id)` — SELECT first (check status = PENDENTE), then UPDATE status=CANCELADO, throws if not PENDENTE
-- [ ] `fecharCaixa()` — SELECT sum/count of CONCILIADO transactions, INSERT cash_close, UPDATE transactions with cash_close_id, return snapshot
-- [ ] `listarFechamentos()` — SELECT all cash_closes ORDER BY created_at DESC
-- [ ] `npm run typecheck` passes
+- [x] `LancamentoNaoEncontradoError` class exported
+- [x] `LancamentoConciliadoError` class exported
+- [x] `listarLancamentos(filtros?)` — query com filtros opcionais (tipo, status, data_inicio, data_fim, busca), ORDER BY data DESC
+- [x] `buscarLancamento(id)` — SELECT + `.single()`, throws `LancamentoNaoEncontradoError` if null
+- [x] `criarLancamento(dados)` — INSERT, returns created row
+- [x] `atualizarLancamento(id, patch)` — SELECT first (check status ≠ CONCILIADO), then UPDATE parcial, throws `LancamentoConciliadoError` if CONCILIADO
+- [x] `cancelarLancamento(id)` — SELECT first (check status = PENDENTE), then UPDATE status=CANCELADO, throws if not PENDENTE
+- [x] `fecharCaixa()` — SELECT sum/count of CONCILIADO transactions, INSERT cash_close, UPDATE transactions with cash_close_id, return snapshot
+- [x] `listarFechamentos()` — SELECT all cash_closes ORDER BY created_at DESC
+- [x] `npm run typecheck` passes
 
 **Tests**: runtime probes (CRUD via API, in T15)
 **Gate**: quick (`npm run typecheck`)
