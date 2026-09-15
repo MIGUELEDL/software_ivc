@@ -191,13 +191,13 @@ T11 -> T12
 
 **Done when**:
 
-- [ ] `listarDocumentos` orders `created_at desc`, optional `categoria` filter
-- [ ] `subirDocumento`: path sempre `documentos/{uuid}.{ext}` (nunca nome do usuário); valida title/categoria/mime/tamanho → exceptions tipadas
-- [ ] Rollback: upload ok + insert falha → remove objeto storage (sem órfão, REL-13)
-- [ ] `removerDocumento` remove row + objeto storage
-- [ ] `urlDownloadDocumento` usa `createSignedUrl(path, 60)`; inexistente → exception 404
-- [ ] Exceptions de domínio exportadas (padrão `LancamentoNaoEncontradoError`)
-- [ ] `npm run lint && npm run typecheck` pass
+- [x] `listarDocumentos` orders `created_at desc`, optional `categoria` filter
+- [x] `subirDocumento`: path sempre `documentos/{uuid}.{ext}` (nunca nome do usuário); valida title/categoria/mime/tamanho → exceptions tipadas
+- [x] Rollback: upload ok + insert falha → remove objeto storage (sem órfão, REL-13)
+- [x] `removerDocumento` remove row + objeto storage
+- [x] `urlDownloadDocumento` usa `createSignedUrl(path, 60)`; inexistente → exception 404
+- [x] Exceptions de domínio exportadas (padrão `LancamentoNaoEncontradoError`)
+- [x] `npm run lint && npm run typecheck` pass
 
 **Tests**: runtime probes (upload/list/download/delete, rollback — in T11)
 **Gate**: quick

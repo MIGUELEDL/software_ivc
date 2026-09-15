@@ -1,9 +1,74 @@
+import { randomUUID } from "node:crypto";
+import { createServerClient } from "@/lib/supabase/server";
 import { listarLancamentos, type LancamentoFiltros } from "@/lib/admin/financeiro";
 import { listMembros } from "@/lib/admin/membros";
 import { listarEventos } from "@/lib/admin/eventos";
 import { listarAssets } from "@/lib/admin/assets";
+import {
+  DOCUMENT_CATEGORIES,
+  DOCUMENT_MIME_TYPES,
+  DOCUMENT_MAX_BYTES,
+  type Documento,
+  type DocumentoDados,
+  type DocumentoCategoria,
+} from "@/lib/admin/relatorios-constants";
 
 const SEPARADOR = ";";
+
+// ---------------------------------------------------------------------------
+// Exceções de domínio (padrão assets.ts/financeiro.ts — caller mapeia HTTP).
+// ---------------------------------------------------------------------------
+
+/** Título obrigatório não-vazio — caller mapeia 400 (REL-09/10). */
+export class DocumentoTituloInvalidoError extends Error {
+  constructor() {
+    super("titulo_invalido");
+    this.name = "DocumentoTituloInvalidoError";
+  }
+}
+
+/** Categoria fora do enum fixo — caller mapeia 400 (REL-09/10). */
+export class DocumentoCategoriaInvalidaError extends Error {
+  constructor() {
+    super("categoria_invalida");
+    this.name = "DocumentoCategoriaInvalidaError";
+  }
+}
+
+/** MIME fora da whitelist do bucket — caller mapeia 400 (REL-10). */
+export class DocumentoTipoInvalidoError extends Error {
+  constructor() {
+    super("tipo_invalido");
+    this.name = "DocumentoTipoInvalidoError";
+  }
+}
+
+/** Tamanho zero ou acima do limite (10MB) — caller mapeia 400/413 (REL-10). */
+export class DocumentoTamanhoInvalidoError extends Error {
+  constructor() {
+    super("tamanho_invalido");
+    this.name = "DocumentoTamanhoInvalidoError";
+  }
+}
+
+/** Documento inexistente — caller mapeia 404 (REL-15/18). */
+export class DocumentoNaoEncontradoError extends Error {
+  constructor() {
+    super("documento_nao_encontrado");
+    this.name = "DocumentoNaoEncontradoError";
+  }
+}
+
+const MIME_EXT: Record<string, string> = {
+  "application/pdf": "pdf",
+  "text/csv": "csv",
+  "application/vnd.ms-excel": "xls",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlsx",
+  "application/msword": "doc",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+  "application/vnd.oasis.opendocument.spreadsheet": "ods",
+  "application/vnd.oasis.opendocument.text": "odt",
+};
 
 /**
  * Escapa um campo CSV conforme RFC 4180 na variante PT-BR (REL-08): campos
@@ -161,4 +226,185 @@ export async function gerarCSVPatrimonio(): Promise<{ csv: string; filename: str
     csv: `\uFEFF${[header.join(SEPARADOR), ...linhas].join("\r\n")}`,
     filename: "relatorio-patrimonio.csv",
   };
+}
+
+// ---------------------------------------------------------------------------
+// Documentos (REL-09/11/13/14/16) — metadados em `documents` + arquivo no
+// bucket privado `documentos`. Leitura/escrita passam pela RLS
+// `documents_*_admin` (`can_access('relatorios', ...)`, sem anon).
+// ---------------------------------------------------------------------------
+
+/**
+ * Lista os documentos (REL-11) ordenados por `created_at` desc (novos
+ * primeiro), com filtro opcional por categoria. Sirve a GET.
+ */
+export async function listarDocumentos(
+  categoria?: DocumentoCategoria
+): Promise<Documento[]> {
+  const supabase = await createServerClient();
+
+  let query = supabase
+    .from("documents")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (categoria !== undefined) {
+    query = query.eq("category", categoria);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []) as Documento[];
+}
+
+/** Busca um documento por id — null quando inexistente (p/ 404, REL-15). */
+export async function buscarDocumento(id: string): Promise<Documento | null> {
+  const supabase = await createServerClient();
+
+  const { data, error } = await supabase
+    .from("documents")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return (data as Documento | null) ?? null;
+}
+
+/**
+ * Sobe um documento (REL-09/10/13): valida title/categoria/mime/tamanho →
+ * upload no bucket `documentos` com path `documentos/{uuid}.{ext}` (nunca o
+ * nome do usuário — design) → insert do metadado. Se o insert falhar, remove
+ * o objeto do storage (rollback evita órfão, REL-13). Sucesso → documento.
+ */
+export async function subirDocumento(
+  dados: DocumentoDados,
+  file: File
+): Promise<Documento> {
+  const titulo = dados.title.trim();
+  if (!titulo) {
+    throw new DocumentoTituloInvalidoError();
+  }
+
+  const categoria = dados.category;
+  if (!(DOCUMENT_CATEGORIES as readonly string[]).includes(categoria)) {
+    throw new DocumentoCategoriaInvalidaError();
+  }
+
+  const ext = MIME_EXT[file.type];
+  if (!ext || !(DOCUMENT_MIME_TYPES as readonly string[]).includes(file.type)) {
+    throw new DocumentoTipoInvalidoError();
+  }
+  if (file.size === 0 || file.size > DOCUMENT_MAX_BYTES) {
+    throw new DocumentoTamanhoInvalidoError();
+  }
+
+  const supabase = await createServerClient();
+  const path = `documentos/${randomUUID()}.${ext}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("documentos")
+    .upload(path, file, { contentType: file.type });
+
+  if (uploadError) {
+    throw uploadError;
+  }
+
+  let uploadedBy: string | null = null;
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    uploadedBy = user?.id ?? null;
+  } catch {
+    uploadedBy = null;
+  }
+
+  const { data, error: insertError } = await supabase
+    .from("documents")
+    .insert({
+      title: titulo,
+      description: dados.description?.trim() || null,
+      category: categoria,
+      file_path: path,
+      file_name: file.name,
+      mime_type: file.type,
+      file_size: file.size,
+      uploaded_by: uploadedBy,
+    })
+    .select()
+    .single();
+
+  if (insertError) {
+    const { error: removeError } = await supabase.storage
+      .from("documentos")
+      .remove([path]);
+    if (removeError) {
+      console.error("rollback storage remove", path, removeError);
+    }
+    throw insertError;
+  }
+
+  return data as Documento;
+}
+
+/**
+ * Remove um documento (REL-15/16): sem registro → `DocumentoNaoEncontradoError`
+ * (404); senão remove a linha primeiro e, se o DELETE for ok, remove o objeto
+ * do storage (ordem segura — design: remove storage só se row ok).
+ */
+export async function removerDocumento(id: string): Promise<void> {
+  const supabase = await createServerClient();
+
+  const existente = await buscarDocumento(id);
+  if (!existente) {
+    throw new DocumentoNaoEncontradoError();
+  }
+
+  const { error: deleteError } = await supabase
+    .from("documents")
+    .delete()
+    .eq("id", id);
+
+  if (deleteError) {
+    throw deleteError;
+  }
+
+  const { error: removeStorageError } = await supabase.storage
+    .from("documentos")
+    .remove([existente.file_path]);
+
+  if (removeStorageError) {
+    console.error("storage remove", existente.file_path, removeStorageError);
+  }
+}
+
+/**
+ * Gera URL assinada de download (REL-14) — signed URL de 60s no bucket
+ * privado `documentos`. Documento inexistente → `DocumentoNaoEncontradoError`
+ * (404). Falha ao gerar a URL → erro do storage (500).
+ */
+export async function urlDownloadDocumento(id: string): Promise<string> {
+  const existente = await buscarDocumento(id);
+  if (!existente) {
+    throw new DocumentoNaoEncontradoError();
+  }
+
+  const supabase = await createServerClient();
+  const { data, error } = await supabase.storage
+    .from("documentos")
+    .createSignedUrl(existente.file_path, 60);
+
+  if (error) {
+    throw error;
+  }
+
+  return data.signedUrl;
 }
