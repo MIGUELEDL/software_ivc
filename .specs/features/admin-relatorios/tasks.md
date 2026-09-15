@@ -161,13 +161,13 @@ T11 -> T12
 
 **Done when**:
 
-- [ ] `escapaCSV` quotes fields with embedded `"`/`;`/newline (RFC 4180)
-- [ ] `gerarCSVFinanceiro` respects período (data_inicio/data_fim), ordena `data` desc, columns exact (Data;Tipo;Metodo;Status;Categoria;Descricao;Valor)
-- [ ] Totals row: Receitas, Despesas, Saldo from filtered rows (valor `toFixed(2)` com vírgula)
-- [ ] `gerarCSVMembros` (Matricula;Nome;Status;Nascimento;Whatsapp;Cidade), `gerarCSVEventos` (Titulo;Data;Hora;Local;Visivel;Status), `gerarCSVPatrimonio` (Nome;Categoria;Tombo;Local;Valor Aquisicao;Data Aquisicao;Responsavel;Status)
-- [ ] CSV prefixado com BOM `\uFEFF`, separador `;`
-- [ ] Filenames: `relatorio-financeiro-<data>.csv`, `relatorio-membros.csv`, `relatorio-eventos.csv`, `relatorio-patrimonio.csv`
-- [ ] `npm run lint && npm run typecheck` pass
+- [x] `escapaCSV` quotes fields with embedded `"`/`;`/newline (RFC 4180)
+- [x] `gerarCSVFinanceiro` respects período (data_inicio/data_fim), ordena `data` desc, columns exact (Data;Tipo;Metodo;Status;Categoria;Descricao;Valor)
+- [x] Totals row: Receitas, Despesas, Saldo from filtered rows (valor `toFixed(2)` com vírgula)
+- [x] `gerarCSVMembros` (Matricula;Nome;Status;Nascimento;Whatsapp;Cidade), `gerarCSVEventos` (Titulo;Data;Hora;Local;Visivel;Status), `gerarCSVPatrimonio` (Nome;Categoria;Tombo;Local;Valor Aquisicao;Data Aquisicao;Responsavel;Status)
+- [x] CSV prefixado com BOM `\uFEFF`, separador `;`
+- [x] Filenames: `relatorio-financeiro-<data>.csv`, `relatorio-membros.csv`, `relatorio-eventos.csv`, `relatorio-patrimonio.csv`
+- [x] `npm run lint && npm run typecheck` pass
 
 **Tests**: runtime probes (CSV content assertions — in T11)
 **Gate**: quick
