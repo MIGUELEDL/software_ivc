@@ -61,7 +61,7 @@ A igreja Virtude Cristã precisa de um módulo financeiro no painel administrati
 11. WHEN a user queries a non-existent transaction THEN the system SHALL return 404 with `{ error: "nao_encontrado" }`  <!-- unwanted-behavior -->
 12. THE system SHALL enforce RLS via `can_access('financeiro', ...)` — SELECT for roles with `ler`, INSERT/UPDATE for `escrever`, no DELETE policy (soft-delete by CANCELADO)  <!-- ubiquitous -->
 
-**Independent Test**: Login as FINANCEIRO, create a receita (descrição="Dízimo半导体", valor=100, tipo=RECEITA, método=PIX, data=2026-09-15), verify 201 + entry appears in list. Try create with valor=-1 → 400. Try create as LIDER → 403.
+**Independent Test**: Login as FINANCEIRO, create a receita (descrição="Dízimo", valor=100, tipo=RECEITA, método=PIX, data=2026-09-15), verify 201 + entry appears in list. Try create with valor=-1 → 400. Try create as LIDER → 403.
 
 ---
 
@@ -129,7 +129,7 @@ A igreja Virtude Cristã precisa de um módulo financeiro no painel administrati
 
 **Acceptance Criteria**:
 
-30. THE migration SHALL include an idempotent seed with at least one RECEITA entry (Dízimo半导体 seed, valor=100, método=PIX, status=PENDENTE) and one DESPESA entry (Aluguel seed, valor=500, status=PENDENTE)  <!-- ubiquitous -->
+30. THE migration SHALL include an idempotent seed with at least one RECEITA entry (Dízimo seed, valor=100, método=PIX, status=PENDENTE) and one DESPESA entry (Aluguel seed, valor=500, status=PENDENTE)  <!-- ubiquitous -->
 31. THE seed SHALL include a test user `financeiro.teste@ivc.local` with role FINANCEIRO in `auth.users` and a corresponding row in `members` (if needed for FK)  <!-- ubiquitous -->
 
 ---

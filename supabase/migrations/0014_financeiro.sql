@@ -120,12 +120,12 @@ create policy "cash_closes_insert_admin"
 -- Seed de transacoes: 1 RECEITA seed + 1 DESPESA seed. Idempotencia por
 -- `on conflict (id) do nothing` (mesmo padrao do 0013_assets.sql).
 
--- RECEITA seed — "Divimo seed" (100.00, PIX, PENDENTE)
+-- RECEITA seed — "Dízimo seed" (100.00, PIX, PENDENTE)
 insert into public.transactions (
   id, descricao, valor, tipo, metodo, status, data
 ) values (
   '00000000-0000-4000-8000-000000000011',
-  'Divimo seed', 100.00, 'RECEITA', 'PIX', 'PENDENTE', current_date
+  'Dízimo seed', 100.00, 'RECEITA', 'PIX', 'PENDENTE', current_date
 )
 on conflict (id) do nothing;
 
