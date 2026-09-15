@@ -432,11 +432,11 @@ T14 (dep T3) → T15 (dep T1..T13) → T16 (dep T15)
 
 **Done when**:
 
-- [ ] RSC page lists previous cash closes: data, total receitas, total despesas, saldo, qtd transações
-- [ ] "Fechar caixa" button triggers POST `/api/admin/financeiro/fechamento`
-- [ ] Shows preview of current period (total CONCILIADO receitas/despesas/saldo) before confirmation
-- [ ] Empty state: "Nenhum fechamento realizado"
-- [ ] `npm run build` passes
+- [x] RSC page lists previous cash closes: data, total receitas, total despesas, saldo, qtd transações
+- [x] "Fechar caixa" button triggers POST `/api/admin/financeiro/fechamento`
+- [x] Shows preview of current period (total CONCILIADO receitas/despesas/saldo) before confirmation
+- [x] Empty state: "Nenhum fechamento realizado"
+- [x] `npm run build` passes
 
 **Tests**: static probes (page structure, in T15)
 **Gate**: build (`npm run build`)
