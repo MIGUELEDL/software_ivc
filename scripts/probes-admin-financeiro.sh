@@ -697,9 +697,12 @@ else
   ko "webhook nao-approved -> $wh_fail_http (esperado 200)"
 fi
 # M-H v4: status != approved NAO deve criar transacao (assert negativo determinístico)
-fail_lancamentos="$(curl -s -b "$JAR_ADMIN" "$BASE_URL/api/admin/financeiro?busca=webhook+probe" || true)"
-if ! printf '%s' "$fail_lancamentos" | grep -q "pay-fail-${RAND_SUFIXO}"; then
-  ok "webhook nao-approved NAO criou transacao (assert negativo, AC-17)"
+# NOTA: a transacao mutante nasce com descricao padrao "Doacao PIX (webhook)",
+# invisivel ao filtro `busca=webhook+probe`; por isso a lista e consultada SEM
+# filtro e o assert procura a external_reference `pay-fail-<sufixo>`.
+fail_lancamentos="$(curl -s -b "$JAR_ADMIN" "$BASE_URL/api/admin/financeiro" || true)"
+if ! printf '%s' "$fail_lancamentos" | grep -q "\"external_reference\":\"pay-fail-${RAND_SUFIXO}\""; then
+  ok "webhook nao-approved NAO criou transacao (assert negativo por external_reference, AC-17)"
 else
   ko "webhook nao-approved criou transacao indevida (AC-17)"
 fi
@@ -773,16 +776,19 @@ else
   ko "R1_ID vazio — nao foi possivel testar PATCH em CONCILIADO (AC-8)"
 fi
 
-printf '%s\n' '-- runtime: preview page (AC-21) — numeros exatos na DOM admin'
+printf '%s\n' '-- runtime: preview page (AC-21) — valores exatos SO no bloco do preview'
 fech_page="$(curl -s -b "$JAR_FIN" "$BASE_URL/admin/financeiro/fechamento" || true)"
-if printf '%s' "$fech_page" | grep -q 'data-testid="preview-fechamento"' \
-  && printf '%s' "$fech_page" | grep -q 'Prévia do período' \
-  && printf '%s' "$fech_page" | grep -qP 'R\$\s*150,00' \
-  && printf '%s' "$fech_page" | grep -qP 'R\$\s*50,00' \
-  && printf '%s' "$fech_page" | grep -qP 'R\$\s*100,00'; then
-  ok "preview fechamento: receitas 150,00 / despesas 50,00 / saldo 100,00 (AC-21)"
+# isola o bloco <div data-testid="preview-fechamento">...</dl> para assertar os
+# valores EXATOS ali — a tabela de historico (snapshots-residuo de rodadas
+# anteriores) tem os mesmos numeros e nao pode mascarar o preview mutado.
+preview_bloco="$(printf '%s' "$fech_page" | sed -n 's/.*data-testid="preview-fechamento"\(.*\)<\/dl>.*/\1/p' || true)"
+if printf '%s' "$preview_bloco" | grep -qP 'R\$\s*150,00' \
+  && printf '%s' "$preview_bloco" | grep -qP 'R\$\s*50,00' \
+  && printf '%s' "$preview_bloco" | grep -qP 'R\$\s*100,00' \
+  && printf '%s' "$preview_bloco" | grep -q 'PENDENTES'; then
+  ok "preview fechamento: receitas 150,00 / despesas 50,00 / saldo 100,00 no bloco preview (AC-21)"
 else
-  ko "preview fechamento sem numeros deterministicos 150/50/100 (AC-21)"
+  ko "preview fechamento sem valores deterministicos 150/50/100 no bloco preview (AC-21)"
 fi
 if printf '%s' "$fech_page" | grep -q 'Fechar caixa' \
   && (printf '%s' "$fech_page" | grep -q 'Nenhum fechamento realizado' \
