@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ASSET_CATEGORIES } from "@/lib/admin/assets";
+import { ASSET_CATEGORIES } from "@/lib/admin/asset-types";
 
 type AssetCriado = { id: string };
 

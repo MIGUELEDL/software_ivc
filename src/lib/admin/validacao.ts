@@ -3,8 +3,8 @@
  * Nascimento usa os mesmos bounds do painel-membro (perfil/route.ts:13-31):
  * YYYY-MM-DD válida, não futura, máx. 120 anos.
  */
-import { ASSET_CATEGORIES as AssetCategoriasFixo } from "@/lib/admin/assets";
-import type { AssetCategoria, AssetStatus } from "@/lib/admin/assets";
+import { ASSET_CATEGORIES as AssetCategoriasFixo } from "@/lib/admin/asset-types";
+import type { AssetCategoria, AssetStatus } from "@/lib/admin/asset-types";
 
 export function validarNascimento(valor: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(valor)) {

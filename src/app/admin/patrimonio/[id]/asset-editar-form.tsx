@@ -6,7 +6,7 @@ import {
   ASSET_CATEGORIES,
   type Asset,
   type AssetStatus,
-} from "@/lib/admin/assets";
+} from "@/lib/admin/asset-types";
 
 /**
  * Form de edição de bem patrimonial (PAT-08). PATCH parcial em
