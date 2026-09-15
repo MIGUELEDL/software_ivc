@@ -340,15 +340,15 @@ T14 (dep T3) → T15 (dep T1..T13) → T16 (dep T15)
 
 **Done when**:
 
-- [ ] Page renders as RSC (server component)
-- [ ] Fetches lancamentos via server-side query (not client fetch)
-- [ ] Displays table: descrição, valor (formatted R$), tipo badge, método, status badge, data
-- [ ] Filter controls: tipo (RECEITA/DESPESA/both), status (PENDENTE/CONCILIADO/CANCELADO), período (date range), busca (text)
-- [ ] Filters update via URL search params (no client state)
-- [ ] Empty state: "Nenhum lançamento encontrado"
-- [ ] Link "Novo lançamento" → `/admin/financeiro/nova`
-- [ ] Rows link to `/admin/financeiro/[id]`
-- [ ] `npm run build` passes
+- [x] Page renders as RSC (server component)
+- [x] Fetches lancamentos via server-side query (not client fetch)
+- [x] Displays table: descrição, valor (formatted R$), tipo badge, método, status badge, data
+- [x] Filter controls: tipo (RECEITA/DESPESA/both), status (PENDENTE/CONCILIADO/CANCELADO), período (date range), busca (text)
+- [x] Filters update via URL search params (no client state)
+- [x] Empty state: "Nenhum lançamento encontrado"
+- [x] Link "Novo lançamento" → `/admin/financeiro/nova`
+- [x] Rows link to `/admin/financeiro/[id]`
+- [x] `npm run build` passes
 
 **Tests**: static probes (page structure, in T15)
 **Gate**: build (`npm run build`)
