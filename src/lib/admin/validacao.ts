@@ -3,6 +3,9 @@
  * Nascimento usa os mesmos bounds do painel-membro (perfil/route.ts:13-31):
  * YYYY-MM-DD válida, não futura, máx. 120 anos.
  */
+import { ASSET_CATEGORIES as AssetCategoriasFixo } from "@/lib/admin/assets";
+import type { AssetCategoria, AssetStatus } from "@/lib/admin/assets";
+
 export function validarNascimento(valor: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
     return false;
@@ -200,3 +203,123 @@ export function validarEvento(
 
   return { ok: true, dados };
 }
+
+// ---------------------------------------------------------------------------
+// Patrimônio (RF-025) — validação de bens por campo.
+// ---------------------------------------------------------------------------
+
+/** Payload validado de bem patrimonial (PAT-04/05/08/10). */
+export type AssetValidado = {
+  name?: string;
+  category?: AssetCategoria;
+  numero_patrimonio?: string | null;
+  location?: string | null;
+  acquisition_value?: number | null;
+  acquisition_date?: string | null;
+  responsible?: string | null;
+  observations?: string | null;
+  status?: AssetStatus;
+};
+
+export type ValidarAssetResultado =
+  | { ok: true; dados: AssetValidado }
+  | { ok: false; campos: Record<string, string> };
+
+/**
+ * Valida payload de bem patrimonial por campo (PAT-04/05/08/10). Modo
+ * `completo` (POST) exige `name` e `category`; modo `parcial` (PATCH) valida
+ * apenas campos enviados (inclui `status`). Regras: `name` obrigatório
+ * não-vazio; `category` no enum fixo; `numero_patrimonio` não-vazia quando
+ * presente (única no DB — 409, ver rota); `acquisition_value` numeric >= 0
+ * quando presente; `acquisition_date` `YYYY-MM-DD` real; `status`
+ * `ATIVO`/`INATIVO` quando enviado.
+ */
+export function validateAsset(
+  body: Record<string, unknown>,
+  modo: "completo" | "parcial" = "completo"
+): ValidarAssetResultado {
+  const campos: Record<string, string> = {};
+  const dados: AssetValidado = {};
+
+  const name = body.name;
+  if (name !== undefined || modo === "completo") {
+    const valor = String(name ?? "").trim();
+    if (!valor) {
+      campos.name = "Informe o nome do bem.";
+    } else {
+      dados.name = valor;
+    }
+  }
+
+  const category = body.category;
+  if (category !== undefined || modo === "completo") {
+    const valor = String(category ?? "").trim();
+    if (!(AssetCategoriasFixo as readonly string[]).includes(valor)) {
+      campos.category =
+        "Categoria inválida (use AUDIO, VIDEO, INSTRUMENTO, MOBILIA, EQUIPAMENTO, RELIGIOSO ou OUTRO).";
+    } else {
+      dados.category = valor as AssetCategoria;
+    }
+  }
+
+  if (body.numero_patrimonio !== undefined) {
+    const valor = String(body.numero_patrimonio ?? "").trim();
+    if (!valor) {
+      campos.numero_patrimonio = "Número de patrimônio não pode ser vazio.";
+    } else {
+      dados.numero_patrimonio = valor;
+    }
+  }
+
+  const location = body.location;
+  if (location !== undefined) {
+    const valor = String(location ?? "").trim();
+    dados.location = valor === "" ? null : valor;
+  }
+
+  if (body.acquisition_value !== undefined) {
+    const valor = body.acquisition_value;
+    if (typeof valor !== "number" || !Number.isFinite(valor) || valor < 0) {
+      campos.acquisition_value = "Valor de aquisição deve ser numérico >= 0.";
+    } else {
+      dados.acquisition_value = valor;
+    }
+  }
+
+  if (body.acquisition_date !== undefined) {
+    const valor = String(body.acquisition_date ?? "").trim();
+    if (!validarDataEvento(valor)) {
+      campos.acquisition_date = "Data de aquisição inválida (use AAAA-MM-DD).";
+    } else {
+      dados.acquisition_date = valor;
+    }
+  }
+
+  const responsible = body.responsible;
+  if (responsible !== undefined) {
+    const valor = String(responsible ?? "").trim();
+    dados.responsible = valor === "" ? null : valor;
+  }
+
+  const observations = body.observations;
+  if (observations !== undefined) {
+    const valor = String(observations ?? "").trim();
+    dados.observations = valor === "" ? null : valor;
+  }
+
+  if (body.status !== undefined) {
+    const valor = String(body.status ?? "").trim();
+    if (valor !== "ATIVO" && valor !== "INATIVO") {
+      campos.status = "Status deve ser ATIVO ou INATIVO.";
+    } else {
+      dados.status = valor as AssetStatus;
+    }
+  }
+
+  if (Object.keys(campos).length > 0) {
+    return { ok: false, campos };
+  }
+
+  return { ok: true, dados };
+}
+
