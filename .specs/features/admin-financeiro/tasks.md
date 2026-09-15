@@ -255,10 +255,10 @@ T14 (dep T3) → T15 (dep T1..T13) → T16 (dep T15)
 
 **Done when**:
 
-- [ ] POST handler: `requireEscrita("financeiro")` guard, calls `cancelarLancamento(id)`, returns 200 `{ lancamento }`
-- [ ] Returns 400 `{ error: "transacao_nao_cancelavel" }` if not PENDENTE
-- [ ] Returns 404 if not found
-- [ ] `npm run typecheck` passes
+- [x] POST handler: `requireEscrita("financeiro")` guard, calls `cancelarLancamento(id)`, returns 200 `{ lancamento }`
+- [x] Returns 400 `{ error: "transacao_nao_cancelavel" }` if not PENDENTE
+- [x] Returns 404 if not found
+- [x] `npm run typecheck` passes
 
 **Tests**: runtime probes (happy + error paths, in T15)
 **Gate**: quick (`npm run typecheck`)
