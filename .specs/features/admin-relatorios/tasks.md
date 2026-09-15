@@ -132,12 +132,12 @@ T11 -> T12
 
 **Done when**:
 
-- [ ] `DOCUMENT_CATEGORIES` = FINANCEIRO/MEMBROS/EVENTOS/PATRIMONIO/IGREJAS/GERAL as const
-- [ ] `DOCUMENT_MIME_TYPES` whitelist matches migration bucket
-- [ ] `DOCUMENT_MAX_BYTES = 10 * 1024 * 1024`
-- [ ] Types `Documento`, `DocumentoDados`, `DocumentoCategoria` exported
-- [ ] No `server-only`/supabase imports (client-safe)
-- [ ] `npm run lint && npm run typecheck` pass
+- [x] `DOCUMENT_CATEGORIES` = FINANCEIRO/MEMBROS/EVENTOS/PATRIMONIO/IGREJAS/GERAL as const
+- [x] `DOCUMENT_MIME_TYPES` whitelist matches migration bucket
+- [x] `DOCUMENT_MAX_BYTES = 10 * 1024 * 1024`
+- [x] Types `Documento`, `DocumentoDados`, `DocumentoCategoria` exported
+- [x] No `server-only`/supabase imports (client-safe)
+- [x] `npm run lint && npm run typecheck` pass
 
 **Tests**: build gate only (from coverage matrix)
 **Gate**: quick
