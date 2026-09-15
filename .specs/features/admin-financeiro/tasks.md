@@ -201,10 +201,10 @@ T14 (dep T3) → T15 (dep T1..T13) → T16 (dep T15)
 
 **Done when**:
 
-- [ ] GET handler: `authAdmin("financeiro")` guard, reads query params (tipo, status, data_inicio, data_fim, busca), calls `listarLancamentos`, returns `{ lancamentos }`
-- [ ] POST handler: `requireEscrita("financeiro")` guard, parses JSON, calls `validarLancamento(body, "completo")`, returns 400+campos if invalid, calls `criarLancamento`, returns 201 `{ lancamento }`
-- [ ] Error handling: JSON parse error → 400, domain error → appropriate status, DB error → 500
-- [ ] `npm run typecheck` passes
+- [x] GET handler: `authAdmin("financeiro")` guard, reads query params (tipo, status, data_inicio, data_fim, busca), calls `listarLancamentos`, returns `{ lancamentos }`
+- [x] POST handler: `requireEscrita("financeiro")` guard, parses JSON, calls `validarLancamento(body, "completo")`, returns 400+campos if invalid, calls `criarLancamento`, returns 201 `{ lancamento }`
+- [x] Error handling: JSON parse error → 400, domain error → appropriate status, DB error → 500
+- [x] `npm run typecheck` passes
 
 **Tests**: runtime probes (happy + error paths, in T15)
 **Gate**: quick (`npm run typecheck`)
