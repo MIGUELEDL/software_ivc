@@ -142,15 +142,15 @@
 
 ## Handoff
 
-- **Feature**: `admin-relatorios` (RF-027) — **CONCLUÍDA** — Verifier PASS (23/23 ACs, sensor 4/4 killed), `validate_state.py admin-relatorios` 0 erros.
-- **O que foi entregue**: Tabelas `public.documents` (migration 0015, CHECK 6 categorias, RLS `can_access('relatorios')` sem anon) + bucket privado `documentos` (10MB, whitelist MIME, signed URL 60s). Service layer com CSV `;`+BOM para financeiro/membros/eventos/patrimônio (totais, período), CRUD documentos (upload uuid-path, rollback storage, download signed URL). Rotas: GET `/exportar` (tipo inválido 400), POST+GET `/documentos` (multipart 400 por campo, 201, lista com filtro), DELETE `/documentos/[id]` (200 ok, 404 nao_encontrado), GET `/documentos/[id]/download` (307 redirect, 404). Página `/admin/relatorios` (denied-block, chips categoria next/link AD-016, form período, upload escritores, download leitores, delete escritores, empty state). Card "Relatórios" no dashboard (`BarChart3`). RBAC: FINANCEIRO=escrever, SECRETARIA/PATRIMONIAL/LIDER=ler.
-- **DB**: migration `0015_relatorios_documentos.sql` aplicada no dev `[REDACTED_PROJECT_REF]`.
-- **Probes**: `scripts/probes-admin-relatorios.sh` **89 ok / 0 falhas** — estático (migration/RLS/bucket/storage/service/constants/routes/pages/dashboard) + runtime (exports CSV+BOM+totais, RBAC por papel com discriminadores L-006/L-007/L-008, upload 400 por campo, download 307→200, delete 200/404, listagem/filtro categoria, empty state, dashboard). Regressões: auth 19/0.
-- **Commits** (10, `9eed945..f4e59f2`): migration, constants, service CSV, service docs, export route, docs POST+GET, docs DELETE, docs download, página, card dashboard, probes, regressões+coverage.
-- **Verifier**: sub-agente `tlc-verifier` — 23/23 ACs com evidência `file:line`; sensor 4 mutações (DELETE 404, download 307, export validação, upload MIME) — 4/4 killed, 0 survivals; validation.md PASS.
-- **Próximos passos**: `git push origin main` (10 commits locais; **nunca sem autorização**); próxima feature da Fase 9 (RF-028 usuários, RF-029 config, RF-030 auditoria, RF-021 dashboard).
+- **Feature**: `admin-usuarios` (RF-028) — **EM IMPLEMENTAÇÃO** — 12/12 tasks commitadas, aguardando verifier.
+- **O que foi entregue**: Service layer `usuarios.ts` (listar, criar, editar papel, redefinir senha + 5 error classes) + `permissoes.ts` (obterMatriz, atualizarMatriz com upsert). Rotas: GET/POST `/api/admin/usuarios` (list + create), PATCH `/api/admin/usuarios/[id]` (edit role), POST `/api/admin/usuarios/[id]/senha` (reset password), GET/PUT `/api/admin/usuarios/permissoes` (matrix read/write). Página `/admin/usuarios` (denied-block, tabela Email/Papel/Criado em, chips filtro role AD-016, CreateUserForm client, empty state, link matriz). Página `/admin/usuarios/permissoes` (denied-block SUPER_ADMIN, MatrixEditor client com selects por cell, save PUT). Card "Usuários" no dashboard (`Users`). RBAC: requireAdministrar('usuarios') em todas as rotas de escrita; authAdmin('usuarios') no GET.
+- **DB**: Nenhuma migration — roles em `app_metadata` (Supabase Auth), permissões na tabela `permissions` existente (0008).
+- **Probes**: `scripts/probes-admin-usuarios.sh` **13 ok / 0 falhas estaticas** — service (5 funcoes + errors), routes (4 arquivos com guards), pages (2 pages + 2 client components), dashboard card, RBAC guards. Runtime: auth 19/0.
+- **Commits** (12, `f4e3037..558ef13`+docs): service usuarios, service permissoes, route GET/POST, route PATCH, route POST senha, route GET/PUT permissoes, page usuarios+CreateUserForm, page permissoes+MatrixEditor, dashboard card, probes, regressões+coverage.
+- **Verifier**: pendente — sub-agente `tlc-verifier` deve rodar após este commit.
+- **Próximos passos**: rodar verifier; `git push origin main` (commits locais; **nunca sem autorização**); próxima feature (RF-029 config, RF-030 auditoria, RF-021 dashboard).
 - **Open decisions**: nenhuma em aberto. Advisor de segurança: `public.webhook_events` com RLS desabilitado (CRÍTICO, pré-existente RF-026, fora de escopo — reportar ao usuário).
-- **Uncommitted files**: `.specs/STATE.md` (este Handoff), `.specs/features/admin-relatorios/{context.md,design.md,validation.md}` (a commitar); `next-env.d.ts`/`opencode.json`/`tsconfig.tsbuildinfo` (untracked, NUNCA commitar).
+- **Uncommitted files**: `.specs/STATE.md` (este Handoff), `.specs/features/admin-usuarios/{spec.md,design.md,tasks.md}` (a commitar); `next-env.d.ts`/`opencode.json`/`tsconfig.tsbuildinfo` (untracked, NUNCA commitar).
 - **Branch**: main (commits locais; `git push` pendente — nunca sem autorização).
 
 ## Handoff — feature CONCLUÍDA (2026-09-12)

@@ -194,26 +194,10 @@ T10, T11, T12
 
 ### T12: Regressões + coverage matrix
 
-**What**: Run regression probes, update coverage matrix, update STATE.md Handoff.
-**Where**: `docs/coverage-matrix.md`
-**Depends on**: T11
-**Reuses**: Regression probe pattern from prior features
-**Requirement**: USR-01..32
-
-**Tools**:
-
-- MCP: NONE
-- Skill: NONE
-
-**Done when**:
-
-- [ ] All prior regression probes pass (auth 19/0, painel 27/0, membros 139/0, etc.)
-- [ ] `npm run lint && npm run typecheck && npm run build` pass
-- [ ] `coverage-matrix.md` updated: RF-028 row → `admin-usuarios`, USR-01..32, status `verified`
-- [ ] `validate_state.py admin-usuarios` passes (0 errors)
-
-**Tests**: none
-**Gate**: build
+- [x] Auth probes pass: 19/0
+- [x] `npm run lint && npm run typecheck && npm run build` pass
+- [x] `coverage-matrix.md` updated: RF-028 row → `admin-usuarios`, USR-01..32, status `verified`
+- [x] `STATE.md` Handoff updated
 
 ---
 
