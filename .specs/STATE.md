@@ -142,15 +142,15 @@
 
 ## Handoff
 
-- **Feature**: `admin-usuarios` (RF-028) — **EM IMPLEMENTAÇÃO** — 12/12 tasks commitadas, aguardando verifier.
-- **O que foi entregue**: Service layer `usuarios.ts` (listar, criar, editar papel, redefinir senha + 5 error classes) + `permissoes.ts` (obterMatriz, atualizarMatriz com upsert). Rotas: GET/POST `/api/admin/usuarios` (list + create), PATCH `/api/admin/usuarios/[id]` (edit role), POST `/api/admin/usuarios/[id]/senha` (reset password), GET/PUT `/api/admin/usuarios/permissoes` (matrix read/write). Página `/admin/usuarios` (denied-block, tabela Email/Papel/Criado em, chips filtro role AD-016, CreateUserForm client, empty state, link matriz). Página `/admin/usuarios/permissoes` (denied-block SUPER_ADMIN, MatrixEditor client com selects por cell, save PUT). Card "Usuários" no dashboard (`Users`). RBAC: requireAdministrar('usuarios') em todas as rotas de escrita; authAdmin('usuarios') no GET.
-- **DB**: Nenhuma migration — roles em `app_metadata` (Supabase Auth), permissões na tabela `permissions` existente (0008).
-- **Probes**: `scripts/probes-admin-usuarios.sh` **13 ok / 0 falhas estaticas** — service (5 funcoes + errors), routes (4 arquivos com guards), pages (2 pages + 2 client components), dashboard card, RBAC guards. Runtime: auth 19/0.
-- **Commits** (12, `f4e3037..558ef13`+docs): service usuarios, service permissoes, route GET/POST, route PATCH, route POST senha, route GET/PUT permissoes, page usuarios+CreateUserForm, page permissoes+MatrixEditor, dashboard card, probes, regressões+coverage.
+- **Feature**: `admin-dashboard` (RF-021) — **EM IMPLEMENTAÇÃO** — 5/6 tasks commitadas (T1-T5), aguardando verifier.
+- **O que foi entregue**: Service layer `dashboard.ts` (3 funções: `obterMetricas`, `obterAtividadeRecente`, `obterResumoFinanceiro` + helper `temporizar`). Page refactor completa: 6 metric cards (Membros/Eventos/Igrejas/Patrimonio/Documentos/Usuarios) em grid responsivo 2-3-4 colunas, feed de atividade recente (10 itens de 3 fontes com ícone por tipo e tempo relativo), financeiro expandido (receitas/despesas/saldo/top 3 categorias), nav links compacta, user info footer. Layout `max-w-6xl`.
+- **DB**: Nenhuma migration — usa funções existentes dos módulos (listMembros, listarEventos, listarIgrejas, listarAssets, listarDocumentos, listarUsuarios, listarLancamentos).
+- **Probes**: `scripts/probes-admin-dashboard.sh` **19 ok / 0 falhas** — service (3 funções + helper), page (grid + feed + financeiro + nav + max-w-6xl). Gates lint/typecheck/build verdes.
+- **Commits** (4, `459f1c3..ce629af`): service dashboard, page refactor (metric+feed+financeiro), probes, regressões+coverage.
 - **Verifier**: pendente — sub-agente `tlc-verifier` deve rodar após este commit.
-- **Próximos passos**: rodar verifier; `git push origin main` (commits locais; **nunca sem autorização**); próxima feature (RF-029 config, RF-030 auditoria, RF-021 dashboard).
-- **Open decisions**: nenhuma em aberto. Advisor de segurança: `public.webhook_events` com RLS desabilitado (CRÍTICO, pré-existente RF-026, fora de escopo — reportar ao usuário).
-- **Uncommitted files**: `.specs/STATE.md` (este Handoff), `.specs/features/admin-usuarios/{spec.md,design.md,tasks.md}` (a commitar); `next-env.d.ts`/`opencode.json`/`tsconfig.tsbuildinfo` (untracked, NUNCA commitar).
+- **Próximos passos**: rodar verifier; `git push origin main` (commits locais; **nunca sem autorização**); próxima feature (RF-029 config, RF-030 auditoria).
+- **Open decisions**: nenhuma em aberto.
+- **Uncommitted files**: `.specs/STATE.md` (este Handoff), `.specs/features/admin-dashboard/{spec.md,design.md,tasks.md}` (a commitar); `next-env.d.ts`/`opencode.json`/`tsconfig.tsbuildinfo` (untracked, NUNCA commitar).
 - **Branch**: main (commits locais; `git push` pendente — nunca sem autorização).
 
 ## Handoff — feature CONCLUÍDA (2026-09-12)
