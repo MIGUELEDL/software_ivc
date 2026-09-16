@@ -417,11 +417,11 @@ T11 -> T12
 
 **Done when**:
 
-- [ ] `bash scripts/probes-all.sh` runs all probe suites: auth (19), painel (27), membros (139), liderança (102), eventos (71), patrimonio (67), financeiro (99), relatorios (novo) → all 0 falhas (resíduo painel `membro.semcadastro` limpo via MCP se aparecer)
-- [ ] `npm run lint && npm run typecheck && npm run build` all pass
-- [ ] `docs/coverage-matrix.md` updated: RF-027 row com `admin-relatorios` REL-01..23 → ✅ verified
+- [x] `bash scripts/probes-all.sh` runs all probe suites: auth (19), painel (27), membros (139), liderança (102), eventos (71), patrimonio (67), financeiro (99), relatorios (novo) → all 0 falhas (resíduo painel `membro.semcadastro` limpo via MCP se aparecer)
+- [x] `npm run lint && npm run typecheck && npm run build` all pass
+- [x] `docs/coverage-matrix.md` updated: RF-027 row com `admin-relatorios` REL-01..23 → ✅ verified
 - [ ] `validate_state.py admin-relatorios` 0 errors (após validation.md)
-- [ ] No regressions in existing modules
+- [x] No regressions in existing modules
 
 **Tests**: regression suite (probes-all.sh)
 **Gate**: full
