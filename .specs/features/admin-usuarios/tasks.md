@@ -120,26 +120,10 @@ T10, T11, T12
 
 ### T5: API route — POST /api/admin/usuarios/[id]/senha
 
-**What**: Create route handler for resetting a user's password.
-**Where**: `src/app/api/admin/usuarios/[id]/senha/route.ts`
-**Depends on**: T1
-**Reuses**: `requireAdministrar()` from `src/lib/admin/http.ts`
-**Requirement**: USR-18, USR-19, USR-20, USR-21
-
-**Tools**:
-
-- MCP: NONE
-- Skill: NONE
-
-**Done when**:
-
-- [ ] Uses `requireAdministrar('usuarios')` guard
-- [ ] Calls `redefinirSenha(id)`, returns 200 `{ id, email, temporaryPassword }`
-- [ ] 404 `nao_encontrado` when user doesn't exist
-- [ ] No TypeScript errors
-
-**Tests**: none
-**Gate**: quick
+- [x] Uses `requireAdministrar('usuarios')` guard
+- [x] Calls `redefinirSenha(id)`, returns 200 `{ id, email, temporaryPassword }`
+- [x] 404 `nao_encontrado` when user doesn't exist
+- [x] No TypeScript errors
 
 ---
 
