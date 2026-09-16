@@ -1,4 +1,4 @@
-import { CalendarDays, Church, Package, Users, Wallet } from "lucide-react";
+import { BarChart3, CalendarDays, Church, Package, Users, Wallet } from "lucide-react";
 import Link from "next/link";
 import { getClaims } from "@/lib/auth/claims";
 import { listarLancamentos } from "@/lib/admin/financeiro";
@@ -120,6 +120,22 @@ export default async function AdminPage() {
                     </span>
                     <span className="block font-serif text-sm text-text-dark/60">
                       Controle de receitas, despesas e caixa
+                    </span>
+                  </span>
+                </Link>
+                <Link
+                  href="/admin/relatorios"
+                  className="flex items-center gap-4 rounded-xl bg-bg-gray p-5 hover:bg-primary/5 transition-colors"
+                >
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <BarChart3 size={20} aria-hidden="true" />
+                  </span>
+                  <span>
+                    <span className="block font-sans text-base font-bold text-text-dark">
+                      Relatórios
+                    </span>
+                    <span className="block font-serif text-sm text-text-dark/60">
+                      Exportações e documentos da igreja
                     </span>
                   </span>
                 </Link>

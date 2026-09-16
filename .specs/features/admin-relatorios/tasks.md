@@ -359,9 +359,9 @@ T11 -> T12
 
 **Done when**:
 
-- [ ] Card "Relatórios" with icon, title and subtitle, `<Link href="/admin/relatorios">`
-- [ ] Placed after Financeiro card; layout unchanged for other cards
-- [ ] `npm run lint && npm run typecheck` pass
+- [x] Card "Relatórios" with icon, title and subtitle, `<Link href="/admin/relatorios">`
+- [x] Placed after Financeiro card; layout unchanged for other cards
+- [x] `npm run lint && npm run typecheck` pass
 
 **Tests**: static probes (dash card presence, in T11)
 **Gate**: quick
