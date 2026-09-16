@@ -94,30 +94,14 @@ T10, T11, T12
 
 ### T3: API route — GET/POST /api/admin/usuarios
 
-**What**: Create route handler for listing and creating admin users.
-**Where**: `src/app/api/admin/usuarios/route.ts`
-**Depends on**: T1
-**Reuses**: `authAdmin()` from `src/lib/admin/http.ts`, `requireAdministrar()` from `src/lib/admin/http.ts`, `erroCampos()` from `src/lib/admin/http.ts`
-**Requirement**: USR-01, USR-02, USR-03, USR-04, USR-05, USR-06, USR-07, USR-08, USR-09, USR-10
-
-**Tools**:
-
-- MCP: NONE
-- Skill: NONE
-
-**Done when**:
-
-- [ ] `GET` uses `authAdmin('usuarios')` guard, calls `listarUsuarios({ role })` from searchParams, returns 200 `{ users, total }`
-- [ ] `POST` uses `requireAdministrar('usuarios')` guard, parses JSON `{ email, role }`, validates fields, calls `criarUsuario()`, returns 201 `{ id, email, role, temporaryPassword }`
-- [ ] 400 `dados_invalidos` for empty email/invalid role
-- [ ] 409 `email_em_uso` for duplicate email
-- [ ] 403 `nao_autorizado` for insufficient permissions
-- [ ] 401 `nao_autenticado` for unauthenticated
-- [ ] 500 `erro_interno` fallback with `console.error`
-- [ ] No TypeScript errors
-
-**Tests**: none
-**Gate**: quick
+- [x] `GET` uses `authAdmin('usuarios')` guard, calls `listarUsuarios({ role })` from searchParams, returns 200 `{ users, total }`
+- [x] `POST` uses `requireAdministrar('usuarios')` guard, parses JSON `{ email, role }`, validates fields, calls `criarUsuario()`, returns 201 `{ id, email, role, temporaryPassword }`
+- [x] 400 `dados_invalidos` for empty email/invalid role
+- [x] 409 `email_em_uso` for duplicate email
+- [x] 403 `nao_autorizado` for insufficient permissions
+- [x] 401 `nao_autenticado` for unauthenticated
+- [x] 500 `erro_interno` fallback with `console.error`
+- [x] No TypeScript errors
 
 ---
 
