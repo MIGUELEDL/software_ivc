@@ -385,15 +385,15 @@ T11 -> T12
 
 **Done when**:
 
-- [ ] **Static probes**: migration (documents table + CHECK categories + RLS via `can_access` no anon + bucket privado + storage policies + indexes), service file, constants module (client-safe), API routes, page structure, dash card
-- [ ] **Runtime — exports**: login ADMIN → export financeiro com período → 200 + CSV com BOM `;` e totais; membros/eventos/patrimonio → 200 CSV com cabeçalho esperado; tipo inválido → 400 `tipo_invalido`
-- [ ] **Runtime — RBAC**: FINANCEIRO upload → 201; SECRETARIA lê 200 + upload 403; LIDER lê 200 + delete 403; MEMBRO proxy redirect + 403; anon → 401
-- [ ] **Runtime — upload**: 400 por campo (title vazio, categoria inválida, arquivo não-whitelisted, >10MB)
-- [ ] **Runtime — download/delete**: upload → GET download 307 (follow → 200); delete → 200 `ok:true`; second delete → 404 `nao_encontrado`; download inexistente → 404
-- [ ] **Runtime — listagem/categoria**: GET documentos lista; `?categoria=FINANCEIRO` filtra (REL-11); documento criado presente
-- [ ] Trap EXIT cleanup idempotente (remove documentos criados + storage objects)
-- [ ] Discriminators per role (L-006, L-007, L-008): assert redirect targets, assert specific error bodies
-- [ ] Probe script runs: `bash scripts/probes-admin-relatorios.sh` → all ok, 0 falhas
+- [x] **Static probes**: migration (documents table + CHECK categories + RLS via `can_access` no anon + bucket privado + storage policies + indexes), service file, constants module (client-safe), API routes, page structure, dash card
+- [x] **Runtime — exports**: login ADMIN → export financeiro com período → 200 + CSV com BOM `;` e totais; membros/eventos/patrimonio → 200 CSV com cabeçalho esperado; tipo inválido → 400 `tipo_invalido`
+- [x] **Runtime — RBAC**: FINANCEIRO upload → 201; SECRETARIA lê 200 + upload 403; LIDER lê 200 + delete 403; MEMBRO proxy redirect + 403; anon → 401
+- [x] **Runtime — upload**: 400 por campo (title vazio, categoria inválida, arquivo não-whitelisted, >10MB)
+- [x] **Runtime — download/delete**: upload → GET download 307 (follow → 200); delete → 200 `ok:true`; second delete → 404 `nao_encontrado`; download inexistente → 404
+- [x] **Runtime — listagem/categoria**: GET documentos lista; `?categoria=FINANCEIRO` filtra (REL-11); documento criado presente
+- [x] Trap EXIT cleanup idempotente (remove documentos criados + storage objects)
+- [x] Discriminators per role (L-006, L-007, L-008): assert redirect targets, assert specific error bodies
+- [x] Probe script runs: `bash scripts/probes-admin-relatorios.sh` → all ok, 0 falhas
 
 **Tests**: probes (self-executing)
 **Gate**: full (`npm run lint && npm run typecheck && npm run build && bash scripts/probes-admin-relatorios.sh`)
