@@ -129,26 +129,10 @@ T10, T11, T12
 
 ### T6: API route — GET/PUT /api/admin/usuarios/permissoes
 
-**What**: Create route handler for reading and updating the permissions matrix.
-**Where**: `src/app/api/admin/usuarios/permissoes/route.ts`
-**Depends on**: T2
-**Reuses**: `requireAdministrar()` from `src/lib/admin/http.ts`
-**Requirement**: USR-22, USR-23, USR-24, USR-25, USR-26, USR-27
-
-**Tools**:
-
-- MCP: NONE
-- Skill: NONE
-
-**Done when**:
-
-- [ ] `GET` uses `requireAdministrar('usuarios')` guard, calls `obterMatriz()`, returns 200 `{ matrix }`
-- [ ] `PUT` uses `requireAdministrar('usuarios')` guard, parses JSON `{ updates }`, validates each nivel, calls `atualizarMatriz()`, returns 200 `{ ok: true, updated }`
-- [ ] 400 `nivel_invalido` for invalid nivel values
-- [ ] No TypeScript errors
-
-**Tests**: none
-**Gate**: quick
+- [x] `GET` uses `requireAdministrar('usuarios')` guard, calls `obterMatriz()`, returns 200 `{ matrix }`
+- [x] `PUT` uses `requireAdministrar('usuarios')` guard, parses JSON `{ updates }`, validates each nivel, calls `atualizarMatriz()`, returns 200 `{ ok: true, updated }`
+- [x] 400 `nivel_invalido` for invalid nivel values
+- [x] No TypeScript errors
 
 ---
 
