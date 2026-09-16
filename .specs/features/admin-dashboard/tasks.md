@@ -107,7 +107,7 @@ T5 -> T6
 - [x] `scripts/probes-admin-dashboard.sh` created
 - [x] Static checks: dashboard.ts exists with functions, page.tsx has metric cards, activity feed, financial summary
 - [x] All checks report ok/falha
-- [x] Total ok count: 19 ok / 0 falhas
+- [x] 23 ok / 0 falhas (post-verifier fixes: DASH-07 status badges, DASH-17 access-denied block, 4 new probes)
 
 ---
 
