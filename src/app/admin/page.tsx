@@ -1,6 +1,7 @@
 import { BarChart3, CalendarDays, Church, Package, Users, Wallet } from "lucide-react";
 import Link from "next/link";
 import { getClaims } from "@/lib/auth/claims";
+import { can } from "@/lib/auth/rbac";
 import { listarLancamentos } from "@/lib/admin/financeiro";
 
 function formatarMoeda(valor: number): string {
@@ -12,6 +13,8 @@ function formatarMoeda(valor: number): string {
 
 export default async function AdminPage() {
   const claims = await getClaims();
+  const papel = claims?.role ?? "";
+  const podeUsuarios = await can(papel, "usuarios", "ler");
 
   let lancamentos: Awaited<ReturnType<typeof listarLancamentos>> = [];
   try {
@@ -139,6 +142,7 @@ export default async function AdminPage() {
                     </span>
                   </span>
                 </Link>
+                {podeUsuarios && (
                 <Link
                   href="/admin/usuarios"
                   className="flex items-center gap-4 rounded-xl bg-bg-gray p-5 hover:bg-primary/5 transition-colors"
@@ -155,6 +159,7 @@ export default async function AdminPage() {
                     </span>
                   </span>
                 </Link>
+                )}
               </nav>
 
               <div className="rounded-lg bg-bg-gray p-5">

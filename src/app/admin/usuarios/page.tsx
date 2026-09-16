@@ -116,13 +116,15 @@ export default async function AdminUsuariosPage({
             <span className="font-sans text-sm text-text-dark/60">
               {result.total} usuário(s)
             </span>
-            <Link
-              href="/admin/usuarios/permissoes"
-              className="inline-flex items-center gap-1.5 text-sm font-sans font-bold text-primary hover:text-accent transition-colors"
-            >
-              <Shield size={14} />
-              Matriz de Permissões
-            </Link>
+            {administrador && (
+              <Link
+                href="/admin/usuarios/permissoes"
+                className="inline-flex items-center gap-1.5 text-sm font-sans font-bold text-primary hover:text-accent transition-colors"
+              >
+                <Shield size={14} />
+                Matriz de Permissões
+              </Link>
+            )}
           </div>
 
           {result.users.length === 0 ? (
@@ -147,7 +149,7 @@ export default async function AdminUsuariosPage({
                       Criado em
                     </th>
                     <th className="px-4 py-3 font-sans text-xs font-bold text-text-dark/50 uppercase">
-                      Último acesso
+                      Status
                     </th>
                   </tr>
                 </thead>
@@ -168,10 +170,16 @@ export default async function AdminUsuariosPage({
                       <td className="px-4 py-3 font-sans text-sm text-text-dark/60">
                         {formatarData(u.createdAt)}
                       </td>
-                      <td className="px-4 py-3 font-sans text-sm text-text-dark/60">
-                        {u.lastSignInAt
-                          ? formatarData(u.lastSignInAt)
-                          : "Nunca"}
+                      <td className="px-4 py-3">
+                        <span
+                          className={`inline-block px-2 py-0.5 rounded-full text-xs font-sans font-bold ${
+                            u.lastSignInAt
+                              ? "bg-green-100 text-green-800"
+                              : "bg-gray-100 text-gray-500"
+                          }`}
+                        >
+                          {u.lastSignInAt ? "Ativo" : "Inativo"}
+                        </span>
                       </td>
                     </tr>
                   ))}
