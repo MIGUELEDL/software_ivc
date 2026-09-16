@@ -142,18 +142,16 @@
 
 ## Handoff
 
-- **Feature**: `auth` (autenticação + RBAC) — **IMPLEMENTADA e VERIFICADA** (validation.md PASS, `validate_state.py auth` 0 errors)
-- **Phase / Task**: Fase 9 (MVP) — `RF-008/RF-011/RF-031/RN-002/AD-013` — fundação de sessão para os painéis
-- **Done até agora**: spec `AUTH-01..19` aprovada; design + tasks aprovados; 22 commits `444949f^..HEAD`;
-  - Código: `src/lib/auth/{claims,rbac}.ts`, `src/lib/supabase/server.ts`, `src/app/api/auth/{login,login/admin,logout,trocar-senha}/route.ts`, páginas `/login`, `/login/admin`, `/trocar-senha`, `/painel`, `/admin`, `src/proxy.ts`, `scripts/seed-admin.mjs`.
-  - Fixes no loop verifier (it-1 FAIL → it-4 PASS): AUTH-15 spec align (`5f50cac`), AUTH-18 logout área (`6856d00`), probe commitado `scripts/probes-auth.sh` (`e0feecb`) com discriminação AUTH-11 via `?error=auth_required` (`8612778`) + logout e rotas públicas (`78d3832`). **19 probes ok / 0 falhas**, sensor 5 killed + 1 equivalente.
-  - `docs/coverage-matrix.md` linha `auth` = ✅ verified.
-- **In-progress**: nada em aberto no auth — gate PASS; matrícula na matriz feita.
-- **Next step**: persistir estado (este commit) + `git push origin main`. Depois: próxima feature da Fase 9 — painel membro real (RF-012 avisos, RF-013 QR dízimo, RF-014 cartão, RF-015 perfil) ou painel admin (RF-021..030), usando `src/lib/auth/getClaims()` já pronto.
-- **Blockers**: **`SUPABASE_SERVICE_ROLE_KEY` pendente** — bloqueia `npm run seed:admin`, probe runtime AUTH-10/AUTH-12 e sessões reais (TCM `none` até F10, AD-006). **Nota**: chave anterior fornecida pelo usuário decodifica ref `[REDACTED_PROJECT_REF]` ≠ projeto `[REDACTED_PROJECT_NAME]` (`[REDACTED_PROJECT_REF]`) — rejeitada como segredo de outro ambiente (`.env.local` mantém comentada). Credenciais Mercado Pago e imagens novas seguem pendentes (não bloqueiam auth).
-- **Open decisions**: nenhuma — todas resolvidas/registradas (AD-004 superseded por AD-013; D1..D7 em context.md).
-- **Uncommitted files**: `.specs/STATE.md` (este Handoff), `.specs/features/auth/context.md`, `validation.md` (a commitar aqui), `opencode.json` (untracked, não commitado)
-- **Branch**: main (commits locais; `git push` pendente)
+- **Feature**: `admin-relatorios` (RF-027) — **CONCLUÍDA** — Verifier PASS (23/23 ACs, sensor 4/4 killed), `validate_state.py admin-relatorios` 0 erros.
+- **O que foi entregue**: Tabelas `public.documents` (migration 0015, CHECK 6 categorias, RLS `can_access('relatorios')` sem anon) + bucket privado `documentos` (10MB, whitelist MIME, signed URL 60s). Service layer com CSV `;`+BOM para financeiro/membros/eventos/patrimônio (totais, período), CRUD documentos (upload uuid-path, rollback storage, download signed URL). Rotas: GET `/exportar` (tipo inválido 400), POST+GET `/documentos` (multipart 400 por campo, 201, lista com filtro), DELETE `/documentos/[id]` (200 ok, 404 nao_encontrado), GET `/documentos/[id]/download` (307 redirect, 404). Página `/admin/relatorios` (denied-block, chips categoria next/link AD-016, form período, upload escritores, download leitores, delete escritores, empty state). Card "Relatórios" no dashboard (`BarChart3`). RBAC: FINANCEIRO=escrever, SECRETARIA/PATRIMONIAL/LIDER=ler.
+- **DB**: migration `0015_relatorios_documentos.sql` aplicada no dev `[REDACTED_PROJECT_REF]`.
+- **Probes**: `scripts/probes-admin-relatorios.sh` **89 ok / 0 falhas** — estático (migration/RLS/bucket/storage/service/constants/routes/pages/dashboard) + runtime (exports CSV+BOM+totais, RBAC por papel com discriminadores L-006/L-007/L-008, upload 400 por campo, download 307→200, delete 200/404, listagem/filtro categoria, empty state, dashboard). Regressões: auth 19/0.
+- **Commits** (10, `9eed945..f4e59f2`): migration, constants, service CSV, service docs, export route, docs POST+GET, docs DELETE, docs download, página, card dashboard, probes, regressões+coverage.
+- **Verifier**: sub-agente `tlc-verifier` — 23/23 ACs com evidência `file:line`; sensor 4 mutações (DELETE 404, download 307, export validação, upload MIME) — 4/4 killed, 0 survivals; validation.md PASS.
+- **Próximos passos**: `git push origin main` (10 commits locais; **nunca sem autorização**); próxima feature da Fase 9 (RF-028 usuários, RF-029 config, RF-030 auditoria, RF-021 dashboard).
+- **Open decisions**: nenhuma em aberto. Advisor de segurança: `public.webhook_events` com RLS desabilitado (CRÍTICO, pré-existente RF-026, fora de escopo — reportar ao usuário).
+- **Uncommitted files**: `.specs/STATE.md` (este Handoff), `.specs/features/admin-relatorios/{context.md,design.md,validation.md}` (a commitar); `next-env.d.ts`/`opencode.json`/`tsconfig.tsbuildinfo` (untracked, NUNCA commitar).
+- **Branch**: main (commits locais; `git push` pendente — nunca sem autorização).
 
 ## Handoff — feature CONCLUÍDA (2026-09-12)
 
