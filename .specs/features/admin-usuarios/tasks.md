@@ -176,25 +176,9 @@ T10, T11, T12
 
 ### T10: Dashboard card — "Usuários"
 
-**What**: Add a "Usuários" navigation card to the admin dashboard.
-**Where**: `src/app/admin/page.tsx`
-**Depends on**: T7
-**Reuses**: Card pattern from existing dashboard (Financeiro, Relatórios cards)
-**Requirement**: USR-29
-
-**Tools**:
-
-- MCP: NONE
-- Skill: NONE
-
-**Done when**:
-
-- [ ] "Usuários" card with `Users` icon (lucide-react) linking to `/admin/usuarios`
-- [ ] Card placed after Relatórios card
-- [ ] No TypeScript errors
-
-**Tests**: none
-**Gate**: build
+- [x] "Usuários" card with `Users` icon (lucide-react) linking to `/admin/usuarios`
+- [x] Card placed after Relatórios card
+- [x] No TypeScript errors
 
 ---
 

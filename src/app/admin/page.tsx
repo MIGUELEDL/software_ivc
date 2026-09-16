@@ -139,6 +139,22 @@ export default async function AdminPage() {
                     </span>
                   </span>
                 </Link>
+                <Link
+                  href="/admin/usuarios"
+                  className="flex items-center gap-4 rounded-xl bg-bg-gray p-5 hover:bg-primary/5 transition-colors"
+                >
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <Users size={20} aria-hidden="true" />
+                  </span>
+                  <span>
+                    <span className="block font-sans text-base font-bold text-text-dark">
+                      Usuários
+                    </span>
+                    <span className="block font-serif text-sm text-text-dark/60">
+                      Gestão de usuários e permissões do painel
+                    </span>
+                  </span>
+                </Link>
               </nav>
 
               <div className="rounded-lg bg-bg-gray p-5">
