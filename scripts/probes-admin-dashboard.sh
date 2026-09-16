@@ -33,7 +33,11 @@ check "page.tsx contem resumo financeiro" grep -q "Resumo Financeiro" src/app/ad
 check "page.tsx contem top categorias" grep -q "Top Categorias" src/app/admin/page.tsx
 check "page.tsx contem link modulos" grep -q "Modulos administrativos" src/app/admin/page.tsx
 check "page.tsx usa max-w-6xl" grep -q "max-w-6xl" src/app/admin/page.tsx
-check "page.tsx importa AtividadeItem type" grep -q "AtividadeItem" src/app/admin/page.tsx
+check "page.tsx contem access denied block" grep -q "Acesso Negado" src/app/admin/page.tsx
+check "page.tsx usa podeDashboard" grep -q "podeDashboard" src/app/admin/page.tsx
+check "page.tsx contem StatusBadge" grep -q "StatusBadge" src/app/admin/page.tsx
+check "page.tsx usa STATUS_COLORS" grep -q "STATUS_COLORS" src/app/admin/page.tsx
+check "page.tsx contem podeDashboard check" grep -q "can(papel" src/app/admin/page.tsx
 check "dashboard.ts contem temporizar" grep -q "function temporizar" src/lib/admin/dashboard.ts
 check "page.tsx usa obterMetricas()" grep -q "obterMetricas()" src/app/admin/page.tsx
 check "page.tsx usa obterAtividadeRecente()" grep -q "obterAtividadeRecente()" src/app/admin/page.tsx

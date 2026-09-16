@@ -60,6 +60,20 @@ const STATUS_COLORS: Record<string, string> = {
   DESPESA: "bg-red-100 text-red-800",
 };
 
+function StatusBadge({ label }: { label: string }) {
+  const cls = STATUS_COLORS[label];
+  if (!cls) {
+    return (
+      <span className="font-serif text-xs text-text-dark/50">{label}</span>
+    );
+  }
+  return (
+    <span className={`inline-block rounded px-1.5 py-0.5 text-xs font-bold ${cls}`}>
+      {label}
+    </span>
+  );
+}
+
 function AtividadeIcon({ tipo }: { tipo: AtividadeItem["tipo"] }) {
   switch (tipo) {
     case "membro":
@@ -75,6 +89,7 @@ export default async function AdminPage() {
   const claims = await getClaims();
   const papel = claims?.role ?? "";
   const podeUsuarios = await can(papel, "usuarios", "ler");
+  const podeDashboard = await can(papel, "dashboard", "ler");
 
   const [metricas, atividade, financeiro] = await Promise.all([
     obterMetricas(),
@@ -95,6 +110,20 @@ export default async function AdminPage() {
         </div>
 
         {claims ? (
+          !podeDashboard ? (
+            <div className="rounded-2xl bg-white shadow-xl p-8 text-center">
+              <Shield size={48} className="mx-auto mb-4 text-red-400" />
+              <h2 className="font-sans text-xl font-bold text-text-dark mb-2">
+                Acesso Negado
+              </h2>
+              <p className="font-serif text-sm text-text-dark/60">
+                Voce nao possui permissao para acessar o painel administrativo.
+              </p>
+              <p className="font-serif text-xs text-text-dark/40 mt-2">
+                Papel atual: {claims.role ?? "nenhum"} | Contato: administrador
+              </p>
+            </div>
+          ) : (
           <div className="space-y-8">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {(Object.keys(METRIC_ICONS) as Array<keyof typeof METRIC_ICONS>).map(
@@ -264,9 +293,7 @@ export default async function AdminPage() {
                           <p className="font-sans text-sm text-text-dark truncate">
                             {item.titulo}
                           </p>
-                          <p className="font-serif text-xs text-text-dark/50 truncate">
-                            {item.subtitulo}
-                          </p>
+                          <StatusBadge label={item.subtitulo} />
                         </div>
                         <span className="font-sans text-xs text-text-dark/40 shrink-0">
                           {item.criadoEm}
@@ -347,6 +374,7 @@ export default async function AdminPage() {
               </form>
             </div>
           </div>
+          )
         ) : (
           <p className="text-center font-serif text-text-dark/60">
             Sessao nao disponivel.
