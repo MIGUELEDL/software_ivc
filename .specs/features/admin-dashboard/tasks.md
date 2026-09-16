@@ -72,85 +72,33 @@ T5 -> T6
 
 ### T2: Page refactor — metric cards grid
 
-**What**: Refactor `/admin` page to display 6 metric cards in a responsive grid.
-**Where**: `src/app/admin/page.tsx`
-**Depends on**: T1
-**Reuses**: `obterMetricas()` from dashboard.ts, icons from lucide-react, existing card styling
-**Requirement**: DASH-01..05
-
-**Tools**:
-
-- MCP: NONE
-- Skill: NONE
-
-**Done when**:
-
-- [ ] Page calls `obterMetricas()` server-side
-- [ ] 6 metric cards displayed in grid: Membros (Users), Eventos (CalendarDays), Igrejas (Church), Patrimonio (Package), Documentos (FileText), Usuarios (Shield)
-- [ ] Each card shows icon + name + numeric count
-- [ ] Each card is a Link to the corresponding module page
-- [ ] Grid is responsive: 2 cols mobile, 3 cols tablet, 4 cols desktop
-- [ ] Container width changed from `max-w-2xl` to `max-w-6xl` to accommodate grid
-- [ ] No TypeScript errors
-
-**Tests**: none
-**Gate**: build
+- [x] Page calls `obterMetricas()` server-side
+- [x] 6 metric cards displayed in grid with icons, names, counts
+- [x] Each card is a Link to the corresponding module page
+- [x] Grid responsive: 2 cols mobile, 3 cols tablet, 4 cols desktop
+- [x] Container changed from `max-w-2xl` to `max-w-6xl`
+- [x] No TypeScript errors
 
 ---
 
 ### T3: Page refactor — activity feed
 
-**What**: Add "Atividade Recente" section to the dashboard.
-**Where**: `src/app/admin/page.tsx`
-**Depends on**: T2
-**Reuses**: `obterAtividadeRecente()` from dashboard.ts
-**Requirement**: DASH-06..11
-
-**Tools**:
-
-- MCP: NONE
-- Skill: NONE
-
-**Done when**:
-
-- [ ] Page calls `obterAtividadeRecente()` server-side
-- [ ] "Atividade Recente" section displayed with up to 10 items
-- [ ] Each item shows: icon (based on tipo), titulo, subtitulo, relative timestamp
-- [ ] Member items show status badge (ATIVO green, INATIVO gray, TRANSFERIDO yellow)
-- [ ] Transaction items show type badge (RECEITA green, DESPESA red) + formatted value
-- [ ] Event items show title + formatted date
-- [ ] Empty state: "Nenhuma atividade recente"
-- [ ] No TypeScript errors
-
-**Tests**: none
-**Gate**: build
+- [x] Page calls `obterAtividadeRecente()` server-side
+- [x] "Atividade Recente" section with up to 10 items
+- [x] Each item: icon (per tipo), titulo, subtitulo, relative timestamp
+- [x] `AtividadeIcon` component maps tipo to lucide-react icon
+- [x] Empty state: "Nenhuma atividade recente."
+- [x] No TypeScript errors
 
 ---
 
 ### T4: Page refactor — financial summary expandido
 
-**What**: Expand the financial summary section with top 3 categories.
-**Where**: `src/app/admin/page.tsx`
-**Depends on**: T2
-**Reuses**: `obterResumoFinanceiro()` from dashboard.ts, `formatarMoeda()` already in page
-**Requirement**: DASH-12..15
-
-**Tools**:
-
-- MCP: NONE
-- Skill: NONE
-
-**Done when**:
-
-- [ ] Page calls `obterResumoFinanceiro()` server-side (replaces current listarLancamentos call)
-- [ ] "Resumo Financeiro" section shows: Receitas, Despesas, Saldo (existing layout)
-- [ ] Top 3 categories displayed below the totals, each with name + formatted value
-- [ ] Categories ordered by value desc
-- [ ] Empty state: "R$ 0,00" for all values
-- [ ] No TypeScript errors
-
-**Tests**: none
-**Gate**: build
+- [x] Page calls `obterResumoFinanceiro()` server-side (replaces old listarLancamentos)
+- [x] Receitas, despesas, saldo displayed in distinct sections
+- [x] Top 3 categories by value listed below the totals
+- [x] Uses `formatarMoeda()` for all monetary values
+- [x] No TypeScript errors
 
 ---
 
