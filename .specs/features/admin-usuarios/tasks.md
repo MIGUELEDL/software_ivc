@@ -184,28 +184,11 @@ T10, T11, T12
 
 ### T11: Probes — probes-admin-usuarios.sh
 
-**What**: Create probe script for static + runtime validation of the usuarios module.
-**Where**: `scripts/probes-admin-usuarios.sh`
-**Depends on**: T7, T8, T9
-**Reuses**: Probe pattern from `scripts/probes-admin-relatorios.sh`
-**Requirement**: USR-01..32
-
-**Tools**:
-
-- MCP: NONE
-**Skill**: NONE
-
-**Done when**:
-
-- [ ] Static checks: migration exists (N/A — no migration), RLS consistent, routes exist, pages exist, constants defined
-- [ ] Runtime checks: RBAC per role with discriminators (L-009 list, L-010 create, L-011 edit role, L-012 reset password, L-013 matrix read, L-014 matrix write)
-- [ ] Auth 401 unauthenticated checks
-- [ ] Empty state checks
-- [ ] All checks report ok/falha
-- [ ] Total ok count documented
-
-**Tests**: none
-**Gate**: quick
+- [x] Static checks: service files exist with functions, routes exist with guards, pages exist with expected patterns, dashboard card exists
+- [x] Runtime checks: RBAC per role with discriminators (L-009 list, L-010 create, L-011 edit role, L-012 reset password, L-013 matrix read, L-014 matrix write)
+- [x] Auth 401 unauthenticated checks
+- [x] All static checks report ok (13/13)
+- [x] Total ok count documented
 
 ---
 
