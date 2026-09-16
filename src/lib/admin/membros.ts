@@ -109,7 +109,7 @@ export type CriarMembroResultado = {
  * no servidor, devolvida UMA única vez no retorno da criação (nunca persistida
  * em texto, nunca em URL) e entregue manualmente pela liderança.
  */
-function gerarSenhaId(): string {
+export function gerarSenhaId(): string {
   const letras = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const numeros = "0123456789";
   const todos = letras + numeros;
