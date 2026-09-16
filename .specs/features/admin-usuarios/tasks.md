@@ -138,59 +138,27 @@ T10, T11, T12
 
 ### T7: Page — /admin/usuarios (user list)
 
-**What**: Create the admin users list page with role filter, table, and create button.
-**Where**: `src/app/admin/usuarios/page.tsx`
-**Depends on**: T3
-**Reuses**: denied-block pattern from `src/app/admin/relatorios/page.tsx`, `authAdmin()` pattern
-**Requirement**: USR-01, USR-03, USR-04, USR-05, USR-30, USR-32
-
-**Tools**:
-
-- MCP: NONE
-- Skill: NONE
-
-**Done when**:
-
-- [ ] RSC fetches users via `GET /api/admin/usuarios` (server-side fetch or direct service call)
-- [ ] Shows denied-block when user lacks `usuarios:ler`
-- [ ] Table with columns: Email, Papel, Status, Criado em
-- [ ] Role filter chips (all roles from `ADMIN_ROLES`) using `next/link` with `?role=` param (AD-016)
-- [ ] Empty state: "Nenhum usuário cadastrado"
-- [ ] Link to `/admin/usuarios/permissoes` for matrix editor
-- [ ] Renders `CreateUserForm` client component
-- [ ] No TypeScript errors
-
-**Tests**: none
-**Gate**: build
+- [x] RSC fetches users via `listarUsuarios()` (server-side)
+- [x] Shows denied-block when user lacks `usuarios:ler`
+- [x] Table with columns: Email, Papel, Status, Criado em
+- [x] Role filter chips (all roles from `ADMIN_ROLES`) using `next/link` with `?role=` param (AD-016)
+- [x] Empty state: "Nenhum usuário cadastrado"
+- [x] Link to `/admin/usuarios/permissoes` for matrix editor
+- [x] Renders `CreateUserForm` client component
+- [x] No TypeScript errors
 
 ---
 
 ### T8: Component — CreateUserForm
 
-**What**: Create the client component for the user creation form.
-**Where**: `src/app/admin/usuarios/create-user-form.tsx`
-**Depends on**: T3
-**Reuses**: Form pattern from existing admin pages
-**Requirement**: USR-06, USR-07, USR-08, USR-09, USR-10
-
-**Tools**:
-
-- MCP: NONE
-- Skill: NONE
-
-**Done when**:
-
-- [ ] Form with email input + role select (options = `ADMIN_ROLES`)
-- [ ] Submit calls `POST /api/admin/usuarios` via fetch
-- [ ] On success: displays temporary password (copyable), shows success message
-- [ ] On 409: shows "Email já está em uso"
-- [ ] On 400: shows field errors
-- [ ] On 403: shows "Não autorizado"
-- [ ] Loading state during submission
-- [ ] No TypeScript errors
-
-**Tests**: none
-**Gate**: build
+- [x] Form with email input + role select (options = `ADMIN_ROLES`)
+- [x] Submit calls `POST /api/admin/usuarios` via fetch
+- [x] On success: displays temporary password (copyable), shows success message
+- [x] On 409: shows "Email já está em uso"
+- [x] On 400: shows field errors
+- [x] On 403: shows "Não autorizado"
+- [x] Loading state during submission
+- [x] No TypeScript errors
 
 ---
 
