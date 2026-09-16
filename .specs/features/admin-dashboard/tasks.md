@@ -104,25 +104,10 @@ T5 -> T6
 
 ### T5: Probes — probes-admin-dashboard.sh
 
-**What**: Create probe script for static validation of the dashboard module.
-**Where**: `scripts/probes-admin-dashboard.sh`
-**Depends on**: T4
-**Reuses**: Probe pattern from other admin features
-**Requirement**: DASH-01..20
-
-**Tools**:
-
-- MCP: NONE
-- Skill: NONE
-
-**Done when**:
-
-- [ ] Static checks: dashboard.ts exists with functions, page.tsx has metric cards, activity feed, financial summary
-- [ ] All checks report ok/falha
-- [ ] Total ok count documented
-
-**Tests**: none
-**Gate**: quick
+- [x] `scripts/probes-admin-dashboard.sh` created
+- [x] Static checks: dashboard.ts exists with functions, page.tsx has metric cards, activity feed, financial summary
+- [x] All checks report ok/falha
+- [x] Total ok count: 19 ok / 0 falhas
 
 ---
 
