@@ -304,9 +304,9 @@ T11 -> T12
 
 **Done when**:
 
-- [ ] GET download: documento existe → 307 redirect signed URL; inexistente → 404 `{ error: "nao_encontrado" }`
-- [ ] Leitor consegue baixar (200 no follow); anon → 401
-- [ ] `npm run lint && npm run typecheck` pass
+- [x] GET download: documento existe → 307 redirect signed URL; inexistente → 404 `{ error: "nao_encontrado" }`
+- [x] Leitor consegue baixar (200 no follow); anon → 401
+- [x] `npm run lint && npm run typecheck` pass
 
 **Tests**: runtime probes (download 307/404, leitor 200 — in T11)
 **Gate**: quick
