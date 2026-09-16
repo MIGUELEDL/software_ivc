@@ -85,26 +85,10 @@ T10, T11, T12
 
 ### T2: Service layer — permissoes.ts
 
-**What**: Create `src/lib/admin/permissoes.ts` with permissions matrix functions (read + upsert).
-**Where**: `src/lib/admin/permissoes.ts`
-**Depends on**: None
-**Reuses**: `createAdminClient()` from `src/lib/supabase/admin.ts`, `MODULOS` and `ADMIN_ROLES` from `src/lib/auth/rbac.ts`
-**Requirement**: USR-23, USR-24, USR-25, USR-28
-
-**Tools**:
-
-- MCP: NONE
-- Skill: NONE
-
-**Done when**:
-
-- [ ] `obterMatriz()` queries `permissions` table via service-role, returns `Array<{ role, module, nivel }>`
-- [ ] `atualizarMatriz(updates)` validates each `nivel` in `['ler','escrever','administrar']`, validates each `role` in `ADMIN_ROLES`, validates each `module` in `MODULOS`, upserts via `ON CONFLICT (role, module) DO UPDATE SET nivel = excluded.nivel`
-- [ ] Returns `{ ok: true, updated: number }`
-- [ ] No TypeScript errors
-
-**Tests**: none
-**Gate**: quick
+- [x] `obterMatriz()` queries `permissions` table via service-role, returns `Array<{ role, module, nivel }>`
+- [x] `atualizarMatriz(updates)` validates each `nivel` in `['ler','escrever','administrar']`, validates each `role` in `ADMIN_ROLES`, validates each `module` in `MODULOS`, upserts via `ON CONFLICT (role, module) DO UPDATE SET nivel = excluded.nivel`
+- [x] Returns `{ ok: true, updated: number }`
+- [x] No TypeScript errors
 
 ---
 
