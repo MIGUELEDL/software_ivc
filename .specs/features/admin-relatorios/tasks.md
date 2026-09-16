@@ -330,12 +330,12 @@ T11 -> T12
 
 **Done when**:
 
-- [ ] Guarda `ler` com denied-block + voltar ao painel
-- [ ] Seção Relatórios: form GET (data_inicio/data_fim) + 3 links de export (membros/eventos/patrimônio)
-- [ ] Seção Documentos: chips categoria `next/link` + lista cronológica (título, categoria, tamanho, data, autor) + empty state "Nenhum documento cadastrado"
-- [ ] Form upload multipart visível só p/ escritores (POST `/api/admin/relatorios/documentos`)
-- [ ] Download link p/ todos os leitores; botão excluir p/ escritores
-- [ ] `npm run lint && npm run typecheck && npm run build` pass
+- [x] Guarda `ler` com denied-block + voltar ao painel
+- [x] Seção Relatórios: form GET (data_inicio/data_fim) + 3 links de export (membros/eventos/patrimônio)
+- [x] Seção Documentos: chips categoria `next/link` + lista cronológica (título, categoria, tamanho, data, autor) + empty state "Nenhum documento cadastrado"
+- [x] Form upload multipart visível só p/ escritores (POST `/api/admin/relatorios/documentos`)
+- [x] Download link p/ todos os leitores; botão excluir p/ escritores
+- [x] `npm run lint && npm run typecheck && npm run build` pass
 
 **Tests**: static probes (page structure, in T11)
 **Gate**: build
