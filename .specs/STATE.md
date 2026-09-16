@@ -142,15 +142,15 @@
 
 ## Handoff
 
-- **Feature**: `admin-dashboard` (RF-021) — **EM IMPLEMENTAÇÃO** — 5/6 tasks commitadas (T1-T5), aguardando verifier.
-- **O que foi entregue**: Service layer `dashboard.ts` (3 funções: `obterMetricas`, `obterAtividadeRecente`, `obterResumoFinanceiro` + helper `temporizar`). Page refactor completa: 6 metric cards (Membros/Eventos/Igrejas/Patrimonio/Documentos/Usuarios) em grid responsivo 2-3-4 colunas, feed de atividade recente (10 itens de 3 fontes com ícone por tipo e tempo relativo), financeiro expandido (receitas/despesas/saldo/top 3 categorias), nav links compacta, user info footer. Layout `max-w-6xl`.
+- **Feature**: `admin-dashboard` (RF-021) — **EM IMPLEMENTAÇÃO** — 6/6 tasks commitadas + 2 post-verifier fixes, aguardando verifier final.
+- **O que foi entregue**: Service layer `dashboard.ts` (3 funções: `obterMetricas`, `obterAtividadeRecente`, `obterResumoFinanceiro` + helper `temporizar`). Page refactor completa: 6 metric cards (Membros/Eventos/Igrejas/Patrimonio/Documentos/Usuarios) em grid responsivo 2-3-4 colunas, feed de atividade recente (10 itens de 3 fontes com ícone por tipo, **status badges com cores** (DASH-07 fix)), financeiro expandido (receitas/despesas/saldo/top 3 categorias), nav links compacta, user info footer, **access-denied block explícito** quando sem permissão `dashboard:ler` (DASH-17 fix). Layout `max-w-6xl`.
 - **DB**: Nenhuma migration — usa funções existentes dos módulos (listMembros, listarEventos, listarIgrejas, listarAssets, listarDocumentos, listarUsuarios, listarLancamentos).
-- **Probes**: `scripts/probes-admin-dashboard.sh` **19 ok / 0 falhas** — service (3 funções + helper), page (grid + feed + financeiro + nav + max-w-6xl). Gates lint/typecheck/build verdes.
-- **Commits** (4, `459f1c3..ce629af`): service dashboard, page refactor (metric+feed+financeiro), probes, regressões+coverage.
+- **Probes**: `scripts/probes-admin-dashboard.sh` **23 ok / 0 falhas** — service (3 funções + helper), page (grid + feed + financeiro + nav + max-w-6xl + access-denied + status badges). Gates lint/typecheck/build verdes.
+- **Commits** (6, `459f1c3..5ed643a`): service dashboard, page refactor (metric+feed+financeiro), probes, regressões+coverage, fix DASH-07/DASH-17, docs update.
 - **Verifier**: pendente — sub-agente `tlc-verifier` deve rodar após este commit.
 - **Próximos passos**: rodar verifier; `git push origin main` (commits locais; **nunca sem autorização**); próxima feature (RF-029 config, RF-030 auditoria).
 - **Open decisions**: nenhuma em aberto.
-- **Uncommitted files**: `.specs/STATE.md` (este Handoff), `.specs/features/admin-dashboard/{spec.md,design.md,tasks.md}` (a commitar); `next-env.d.ts`/`opencode.json`/`tsconfig.tsbuildinfo` (untracked, NUNCA commitar).
+- **Uncommitted files**: `.specs/STATE.md` (este Handoff), `.specs/features/admin-dashboard/{spec.md,design.md,tasks.md,validation.md}` (a commitar); `next-env.d.ts`/`opencode.json`/`tsconfig.tsbuildinfo` (untracked, NUNCA commitar).
 - **Branch**: main (commits locais; `git push` pendente — nunca sem autorização).
 
 ## Handoff — feature CONCLUÍDA (2026-09-12)
