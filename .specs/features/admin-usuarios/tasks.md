@@ -107,30 +107,14 @@ T10, T11, T12
 
 ### T4: API route — PATCH /api/admin/usuarios/[id]
 
-**What**: Create route handler for editing a user's role.
-**Where**: `src/app/api/admin/usuarios/[id]/route.ts`
-**Depends on**: T1
-**Reuses**: `requireAdministrar()` from `src/lib/admin/http.ts`
-**Requirement**: USR-11, USR-12, USR-13, USR-14, USR-15, USR-16, USR-17
-
-**Tools**:
-
-- MCP: NONE
-- Skill: NONE
-
-**Done when**:
-
-- [ ] Uses `requireAdministrar('usuarios')` guard
-- [ ] Parses JSON `{ role }`, validates in `ADMIN_ROLES`
-- [ ] Calls `editarPapel(id, role, claims.sub)`, returns 200 `{ id, email, role }`
-- [ ] 404 `nao_encontrado` when user doesn't exist
-- [ ] 403 `auto_modificacao_nao_permitida` for self-change
-- [ ] 403 `super_admin_protegido` for SUPER_ADMIN reassignment
-- [ ] 400 `papel_invalido` for invalid role
-- [ ] No TypeScript errors
-
-**Tests**: none
-**Gate**: quick
+- [x] Uses `requireAdministrar('usuarios')` guard
+- [x] Parses JSON `{ role }`, validates in `ADMIN_ROLES`
+- [x] Calls `editarPapel(id, role, claims.sub)`, returns 200 `{ id, email, role }`
+- [x] 404 `nao_encontrado` when user doesn't exist
+- [x] 403 `auto_modificacao_nao_permitida` for self-change
+- [x] 403 `super_admin_protegido` for SUPER_ADMIN reassignment
+- [x] 400 `papel_invalido` for invalid role
+- [x] No TypeScript errors
 
 ---
 
