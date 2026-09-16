@@ -164,29 +164,13 @@ T10, T11, T12
 
 ### T9: Page — /admin/usuarios/permissoes (matrix editor)
 
-**What**: Create the permissions matrix editor page (SUPER_ADMIN only).
-**Where**: `src/app/admin/usuarios/permissoes/page.tsx`
-**Depends on**: T6
-**Reuses**: denied-block pattern, `requireAdministrar()` guard pattern
-**Requirement**: USR-22, USR-23, USR-24, USR-25, USR-26, USR-27, USR-28
-
-**Tools**:
-
-- MCP: NONE
-- Skill: NONE
-
-**Done when**:
-
-- [ ] RSC page fetches matrix via `GET /api/admin/usuarios/permissoes`
-- [ ] Shows denied-block for non-SUPER_ADMIN
-- [ ] Table: roles as rows, modules as columns, cell = nivel (ler/escrever/administrar/—)
-- [ ] Inline client component (`'use client'`) with selects per cell for nivel editing
-- [ ] Save button calls `PUT /api/admin/usuarios/permissoes` with updated rows
-- [ ] Success/error feedback after save
-- [ ] No TypeScript errors
-
-**Tests**: none
-**Gate**: build
+- [x] RSC page fetches matrix via `obterMatriz()`
+- [x] Shows denied-block for non-SUPER_ADMIN
+- [x] Table: roles as rows, modules as columns, cell = nivel (ler/escrever/administrar/—)
+- [x] `MatrixEditor` client component with inline selects per cell
+- [x] Save button calls `PUT /api/admin/usuarios/permissoes` with updated rows
+- [x] Success/error feedback after save
+- [x] No TypeScript errors
 
 ---
 
