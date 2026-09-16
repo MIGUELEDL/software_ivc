@@ -278,9 +278,9 @@ T11 -> T12
 
 **Done when**:
 
-- [ ] DELETE remove row+objeto → 200 `{ ok: true }`; inexistente → 404 `{ error: "nao_encontrado" }`
-- [ ] Leitor no DELETE → 403 `nao_autorizado`; anon → 401
-- [ ] `npm run lint && npm run typecheck` pass
+- [x] DELETE remove row+objeto → 200 `{ ok: true }`; inexistente → 404 `{ error: "nao_encontrado" }`
+- [x] Leitor no DELETE → 403 `nao_autorizado`; anon → 401
+- [x] `npm run lint && npm run typecheck` pass
 
 **Tests**: runtime probes (delete 200/404/403 — in T11)
 **Gate**: quick
