@@ -106,10 +106,10 @@ T13 -> T14
 
 **Done when**:
 
-- [ ] GET handler with `authAdmin('auditoria')` guard
-- [ ] Query params: data_inicio, data_fim, acao, entidade, offset, limit
-- [ ] Returns 200 with `{ logs, total }`
-- [ ] No TypeScript errors
+- [x] GET handler with `authAdmin('auditoria')` guard
+- [x] Query params: data_inicio, data_fim, acao, entidade, offset, limit
+- [x] Returns 200 with `{ logs, total }`
+- [x] No TypeScript errors
 
 **Tests**: none
 **Gate**: build
