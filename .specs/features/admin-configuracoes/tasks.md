@@ -144,7 +144,7 @@ T6
 
 - [x] "Configuracoes" card added to `/admin/page.tsx` with `Settings` icon
 - [x] `scripts/probes-admin-configuracoes.sh` created with static checks
-- [x] 33 ok / 0 falhas (post-verifier fixes: CFG-03 wa.me link, CFG-04 PIX instructions, CFG-24 fallback badge, 4 new probes)
+- [x] 33 ok / 0 falhas (post-verifier fixes: CFG-03 wa.me link, CFG-04 PIX instructions, CFG-24 fallback badge, CFG-02 valores field, CFG-10 reload pos-save, CFG-24 parentheses, 4 new probes)
 
 **Tests**: none
 **Gate**: build
