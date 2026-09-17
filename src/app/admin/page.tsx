@@ -4,6 +4,7 @@ import {
   Church,
   FileText,
   Package,
+  Settings,
   Shield,
   Users,
   Wallet,
@@ -90,6 +91,7 @@ export default async function AdminPage() {
   const papel = claims?.role ?? "";
   const podeUsuarios = await can(papel, "usuarios", "ler");
   const podeDashboard = await can(papel, "dashboard", "ler");
+  const podeConfiguracoes = await can(papel, "configuracoes", "ler");
 
   const [metricas, atividade, financeiro] = await Promise.all([
     obterMetricas(),
@@ -266,6 +268,24 @@ export default async function AdminPage() {
                     </span>
                     <span className="block font-serif text-xs text-text-dark/60">
                       Permissoes do painel
+                    </span>
+                  </span>
+                </Link>
+              )}
+              {podeConfiguracoes && (
+                <Link
+                  href="/admin/configuracoes"
+                  className="flex items-center gap-4 rounded-xl bg-bg-gray p-4 hover:bg-primary/5 transition-colors"
+                >
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <Settings size={18} aria-hidden="true" />
+                  </span>
+                  <span>
+                    <span className="block font-sans text-sm font-bold text-text-dark">
+                      Configuracoes
+                    </span>
+                    <span className="block font-serif text-xs text-text-dark/60">
+                      Dados da igreja e preferencias
                     </span>
                   </span>
                 </Link>

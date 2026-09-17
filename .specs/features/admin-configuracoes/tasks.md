@@ -142,9 +142,9 @@ T6
 
 **Done when**:
 
-- [ ] "Configuracoes" card added to `/admin/page.tsx` with `Settings` icon
-- [ ] `scripts/probes-admin-configuracoes.sh` created with static checks
-- [ ] Probes report ok/falha count
+- [x] "Configuracoes" card added to `/admin/page.tsx` with `Settings` icon
+- [x] `scripts/probes-admin-configuracoes.sh` created with static checks
+- [x] Probes report ok/falha count: 29 ok / 0 falhas
 
 **Tests**: none
 **Gate**: build
