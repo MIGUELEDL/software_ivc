@@ -64,10 +64,10 @@ T6
 
 **Done when**:
 
-- [ ] `SETTINGS_KEYS` whitelist with 18 keys, types, and defaults
-- [ ] `obterConfiguracoes()` reads from DB, falls back to constants.ts defaults
-- [ ] `atualizarConfiguracoes(updates)` validates keys, upserts, sets `updated_by`
-- [ ] No TypeScript errors
+- [x] `SETTINGS_KEYS` whitelist with 18 keys, types, and defaults
+- [x] `obterConfiguracoes()` reads from DB, falls back to constants.ts defaults
+- [x] `atualizarConfiguracoes(updates)` validates keys, upserts, sets `updated_by`
+- [x] No TypeScript errors
 
 **Tests**: none
 **Gate**: build
