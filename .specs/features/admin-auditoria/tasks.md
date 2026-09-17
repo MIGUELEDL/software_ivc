@@ -335,10 +335,10 @@ T13 -> T14
 
 **Done when**:
 
-- [ ] Card "Auditoria" appears in dashboard
-- [ ] Card links to /admin/auditoria
-- [ ] Card only visible when `can(papel, 'auditoria', 'ler')` is true
-- [ ] No TypeScript errors
+- [x] Card "Auditoria" appears in dashboard
+- [x] Card links to /admin/auditoria
+- [x] Card only visible when `can(papel, 'auditoria', 'ler')` is true
+- [x] No TypeScript errors
 
 **Tests**: none
 **Gate**: build

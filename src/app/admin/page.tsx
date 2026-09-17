@@ -290,6 +290,24 @@ export default async function AdminPage() {
                   </span>
                 </Link>
               )}
+              {await can(papel, "auditoria", "ler") && (
+                <Link
+                  href="/admin/auditoria"
+                  className="flex items-center gap-4 rounded-xl bg-bg-gray p-4 hover:bg-primary/5 transition-colors"
+                >
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <FileText size={18} aria-hidden="true" />
+                  </span>
+                  <span>
+                    <span className="block font-sans text-sm font-bold text-text-dark">
+                      Auditoria
+                    </span>
+                    <span className="block font-serif text-xs text-text-dark/60">
+                      Trilha de acoes administrativas
+                    </span>
+                  </span>
+                </Link>
+              )}
             </nav>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
