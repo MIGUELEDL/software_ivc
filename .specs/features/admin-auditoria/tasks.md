@@ -183,11 +183,12 @@ T13 -> T14
 
 **Done when**:
 
-- [ ] POST /api/admin/membros logs "criar" after success
-- [ ] PATCH /api/admin/membros/[id] logs "editar" after success
-- [ ] DELETE /api/admin/membros/[id] logs "excluir" after success
-- [ ] Each log includes autor, acao, entidade_id, ip, user_agent
-- [ ] No TypeScript errors
+- [x] POST /api/admin/membros logs "criar" after success
+- [x] POST /api/admin/membros/[id]/status logs "editar" after success
+- [x] POST /api/admin/membros/[id]/dados logs "editar" after success
+- [x] DELETE /api/admin/membros/[id] logs "excluir" after success
+- [x] Each log includes autor, acao, entidade_id, ip, user_agent
+- [x] No TypeScript errors
 
 **Tests**: none
 **Gate**: build

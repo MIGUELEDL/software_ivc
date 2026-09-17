@@ -7,6 +7,7 @@ import {
   validarUf,
   lerEndereco,
 } from "@/lib/admin/validacao";
+import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
 
 /**
  * POST /api/admin/membros — criação de membro com conta auth (ADMINMEM-07..12).
@@ -56,6 +57,16 @@ export async function POST(request: Request) {
       whatsapp,
       email,
       ...endereco,
+    });
+
+    const { ip, user_agent } = extrairInfoRequest(request);
+    await registrarAuditoria({
+      autor: auth.sub,
+      acao: "criar",
+      entidade: "membros",
+      entidade_id: membro.id,
+      ip,
+      user_agent,
     });
 
     return NextResponse.json(

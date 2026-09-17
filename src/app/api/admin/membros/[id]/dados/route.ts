@@ -6,6 +6,7 @@ import {
   validarUf,
   lerEndereco,
 } from "@/lib/admin/validacao";
+import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
 
 /**
  * POST /api/admin/membros/[id]/dados — edição de dados textuais
@@ -63,6 +64,15 @@ export async function POST(
       nascimento,
       whatsapp,
       ...endereco,
+    });
+    const { ip, user_agent } = extrairInfoRequest(request);
+    await registrarAuditoria({
+      autor: auth.sub,
+      acao: "editar",
+      entidade: "membros",
+      entidade_id: id,
+      ip,
+      user_agent,
     });
     return NextResponse.json({ member }, { status: 200 });
   } catch (error) {

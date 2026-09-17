@@ -7,6 +7,7 @@ import {
   TRANSICOES,
 } from "@/lib/admin/membros";
 import type { MembroStatus } from "@/lib/admin/membros";
+import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
 
 /**
  * POST /api/admin/membros/[id]/status — ciclo de vida (ADMINMEM-17..19).
@@ -35,6 +36,16 @@ export async function POST(
 
   try {
     const member = await transicionarStatus(id, status as MembroStatus);
+    const { ip, user_agent } = extrairInfoRequest(request);
+    await registrarAuditoria({
+      autor: auth.sub,
+      acao: "editar",
+      entidade: "membros",
+      entidade_id: id,
+      ip,
+      user_agent,
+      payload: { status },
+    });
     return NextResponse.json({ member }, { status: 200 });
   } catch (error) {
     if (error instanceof StatusInvalidoError) {

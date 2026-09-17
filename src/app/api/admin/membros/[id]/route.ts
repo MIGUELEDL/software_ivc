@@ -5,6 +5,7 @@ import {
   MembroComDocumentosError,
   MembroNaoEncontradoError,
 } from "@/lib/admin/membros";
+import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
 
 /**
  * DELETE /api/admin/membros/[id] — hard-delete (ADMINMEM-21..23/34).
@@ -25,6 +26,15 @@ export async function DELETE(
 
   try {
     await excluirMembro(id);
+    const { ip, user_agent } = extrairInfoRequest(_request);
+    await registrarAuditoria({
+      autor: auth.sub,
+      acao: "excluir",
+      entidade: "membros",
+      entidade_id: id,
+      ip,
+      user_agent,
+    });
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     if (error instanceof MembroComDocumentosError) {
