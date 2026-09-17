@@ -235,10 +235,10 @@ T13 -> T14
 
 **Done when**:
 
-- [ ] POST /api/admin/patrimonio logs "criar" after success
-- [ ] PATCH /api/admin/patrimonio/[id] logs "editar" or "baixar" after success
-- [ ] Each log includes autor, acao, entidade_id, ip, user_agent
-- [ ] No TypeScript errors
+- [x] POST /api/admin/assets logs "criar" after success
+- [x] PATCH /api/admin/assets/[id] logs "editar" after success
+- [x] Each log includes autor, acao, entidade_id, ip, user_agent
+- [x] No TypeScript errors
 
 **Tests**: none
 **Gate**: build

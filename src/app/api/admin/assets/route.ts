@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireEscrita, authAdmin, erroCampos } from "@/lib/admin/http";
 import { criarAsset, listarAssets } from "@/lib/admin/assets";
 import { validateAsset } from "@/lib/admin/validacao";
+import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
 
 /**
  * POST /api/admin/assets — cria um bem patrimonial (PAT-04). Guarda de escrita
@@ -38,6 +39,16 @@ export async function POST(request: Request) {
       acquisition_date: resultado.dados.acquisition_date,
       responsible: resultado.dados.responsible,
       observations: resultado.dados.observations,
+    });
+
+    const { ip, user_agent } = extrairInfoRequest(request);
+    await registrarAuditoria({
+      autor: auth.sub,
+      acao: "criar",
+      entidade: "patrimonio",
+      entidade_id: asset.id,
+      ip,
+      user_agent,
     });
 
     return NextResponse.json({ asset }, { status: 201 });

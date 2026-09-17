@@ -6,6 +6,7 @@ import {
   type AssetPatch,
 } from "@/lib/admin/assets";
 import { validateAsset } from "@/lib/admin/validacao";
+import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
 
 /**
  * PATCH /api/admin/assets/[id] — atualiza apenas os campos enviados (PAT-08),
@@ -40,6 +41,16 @@ export async function PATCH(
 
   try {
     const asset = await atualizarAsset(id, resultado.dados as AssetPatch);
+    const { ip, user_agent } = extrairInfoRequest(request);
+    await registrarAuditoria({
+      autor: auth.sub,
+      acao: "editar",
+      entidade: "patrimonio",
+      entidade_id: id,
+      ip,
+      user_agent,
+      payload: resultado.dados as Record<string, unknown>,
+    });
     return NextResponse.json({ asset });
   } catch (error) {
     if (error instanceof BemNaoEncontradoError) {
