@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Settings, Plus, Trash2, Save, X } from "lucide-react";
 import type { Configuracoes, SettingKey } from "@/lib/admin/configuracoes";
 
@@ -79,6 +79,66 @@ function ReadonlyValue({ label, value }: { label: string; value: string }) {
   );
 }
 
+type Valor = { title: string; description: string; color: string };
+
+function ValoresEditor({
+  values,
+  onChange,
+}: {
+  values: Valor[];
+  onChange: (v: Valor[]) => void;
+}) {
+  const update = (i: number, field: keyof Valor, value: string) => {
+    const next = [...values];
+    next[i] = { ...next[i], [field]: value };
+    onChange(next);
+  };
+  return (
+    <div className="space-y-2">
+      <p className="font-sans text-xs font-bold text-text-dark/50 uppercase">
+        Valores
+      </p>
+      {values.map((v, i) => (
+        <div key={i} className="flex items-center gap-2">
+          <input
+            type="text"
+            placeholder="Titulo"
+            className="w-28 rounded-lg border border-gray-200 bg-bg-gray px-2 py-1.5 font-serif text-sm text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
+            value={v.title}
+            onChange={(e) => update(i, "title", e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Descricao"
+            className="flex-1 rounded-lg border border-gray-200 bg-bg-gray px-2 py-1.5 font-serif text-sm text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
+            value={v.description}
+            onChange={(e) => update(i, "description", e.target.value)}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ValoresReadonly({ values }: { values: Valor[] }) {
+  return (
+    <div className="space-y-1">
+      <p className="font-sans text-xs font-bold text-text-dark/50 uppercase">
+        Valores
+      </p>
+      {values.length === 0 ? (
+        <p className="font-serif text-sm text-text-dark/50">Nenhum valor configurado.</p>
+      ) : (
+        values.map((v, i) => (
+          <div key={i} className="font-serif text-sm text-text-dark">
+            <span className="font-bold">{v.title}</span>: {v.description}
+          </div>
+        ))
+      )}
+    </div>
+  );
+}
+
 export default function ConfiguracoesForm({ initial, canEdit }: Props) {
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState<FormData>({ ...initial });
@@ -125,6 +185,7 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
       }
       setFeedback("Configuracoes salvas com sucesso");
       setEditing(false);
+      window.location.reload();
     } catch {
       setFeedback("Erro de conexao");
     } finally {
@@ -168,6 +229,12 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
             </div>
             <TextField label="Missao" value={form["church.mission"] as string} onChange={(v) => set("church.mission", v)} multiline />
             <TextField label="Visao" value={form["church.vision"] as string} onChange={(v) => set("church.vision", v)} multiline />
+            <div className="sm:col-span-2">
+              <ValoresEditor
+                values={form["church.values"] as Array<{ title: string; description: string; color: string }>}
+                onChange={(v) => set("church.values", v)}
+              />
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -184,6 +251,9 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
             </div>
             <ReadonlyValue label="Missao" value={form["church.mission"] as string} />
             <ReadonlyValue label="Visao" value={form["church.vision"] as string} />
+            <div className="sm:col-span-2">
+              <ValoresReadonly values={form["church.values"] as Array<{ title: string; description: string; color: string }>} />
+            </div>
           </div>
         )}
       </Section>

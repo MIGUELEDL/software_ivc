@@ -60,7 +60,7 @@ export default async function AdminConfiguracoesPage() {
           </h1>
           {!fromDb && (
             <span className="rounded bg-yellow-100 px-2 py-0.5 font-sans text-xs font-bold text-yellow-700">
-              padrao
+              (padrao)
             </span>
           )}
         </div>
