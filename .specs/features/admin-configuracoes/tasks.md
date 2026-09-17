@@ -116,11 +116,11 @@ T6
 
 **Done when**:
 
-- [ ] Page renders 5 sections: Dados da Igreja, WhatsApp, PIX, Horarios, Redes Sociais
-- [ ] Guard: `can(papel, 'configuracoes', 'ler')` — 403 card if denied
-- [ ] Edit buttons only when `can(papel, 'configuracoes', 'administrar')`
-- [ ] Schedule items editable (add/remove rows)
-- [ ] Save calls PATCH, cancel reverts
+- [x] Page renders 5 sections: Dados da Igreja, WhatsApp, PIX, Horarios, Redes Sociais
+- [x] Guard: `can(papel, 'configuracoes', 'ler')` — 403 card if denied
+- [x] Edit buttons only when `can(papel, 'configuracoes', 'administrar')`
+- [x] Schedule items editable (add/remove rows)
+- [x] Save calls PATCH, cancel reverts
 
 **Tests**: none
 **Gate**: build
