@@ -131,12 +131,12 @@ T13 -> T14
 
 **Done when**:
 
-- [ ] Server component with RBAC guard `can(papel, 'auditoria', 'ler')`
-- [ ] Table with columns: Data/Hora, Autor, Ação, Entidade, ID, IP
-- [ ] Filters: período (data_inicio/fim), ação (select), entidade (select)
-- [ ] Pagination: 20 items per page
-- [ ] Empty state: "Nenhum log de auditoria encontrado"
-- [ ] No TypeScript errors
+- [x] Server component with RBAC guard `can(papel, 'auditoria', 'ler')`
+- [x] Table with columns: Data/Hora, Autor, Ação, Entidade, ID, IP
+- [x] Filters: período (data_inicio/fim), ação (select), entidade (select)
+- [x] Pagination: 20 items per page
+- [x] Empty state: "Nenhum log de auditoria encontrado"
+- [x] No TypeScript errors
 
 **Tests**: none
 **Gate**: build
