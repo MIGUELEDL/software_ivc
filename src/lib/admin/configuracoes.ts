@@ -48,21 +48,31 @@ export const SETTINGS_KEYS = Object.keys(DEFAULTS) as SettingKey[];
 
 export type Configuracoes = Record<SettingKey, SettingValue>;
 
-export async function obterConfiguracoes(): Promise<Configuracoes> {
+export type ConfiguracoesResult = {
+  settings: Configuracoes;
+  fromDb: boolean;
+};
+
+export async function obterConfiguracoes(): Promise<ConfiguracoesResult> {
   const supabase = await createServerClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("settings")
     .select("key, value");
 
   const result = { ...DEFAULTS };
-  if (data) {
+  let fromDb = false;
+  if (data && data.length > 0) {
+    fromDb = true;
     for (const row of data) {
       if (row.key in result) {
         result[row.key as SettingKey] = row.value as SettingValue;
       }
     }
   }
-  return result;
+  if (error) {
+    console.error("obterConfiguracoes: fallback para constants.ts", error.message);
+  }
+  return { settings: result, fromDb };
 }
 
 export async function atualizarConfiguracoes(

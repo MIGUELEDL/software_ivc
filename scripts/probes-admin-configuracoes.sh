@@ -47,7 +47,11 @@ check "dashboard tem Settings icon" grep -q "Settings" src/app/admin/page.tsx
 check "dashboard tem podeConfiguracoes" grep -q "podeConfiguracoes" src/app/admin/page.tsx
 check "migration tem settings table" grep -q "CREATE TABLE settings" supabase/migrations/0016_settings.sql
 check "migration tem RLS" grep -q "ENABLE ROW LEVEL SECURITY" supabase/migrations/0016_settings.sql
-check "migration tem seed" grep -q "INSERT INTO settings" supabase/migrations/0016_settings.sql
+check "page.tsx tem fromDb flag" grep -q "fromDb" src/app/admin/configuracoes/page.tsx
+check "page.tsx tem badge padrao" grep -q "padrao" src/app/admin/configuracoes/page.tsx
+check "form tem wa.me link" grep -q "wa.me" src/app/admin/configuracoes/configuracoes-form.tsx
+check "form tem instrucoes PIX" grep -q "copia-e-cola" src/app/admin/configuracoes/configuracoes-form.tsx
+check "service retorna fromDb" grep -q "fromDb" src/lib/admin/configuracoes.ts
 
 echo ""
 echo "=== Resultado ==="

@@ -196,8 +196,15 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <ReadonlyValue label="Numero" value={form["whatsapp.number"] as string} />
-            <ReadonlyValue label="Exibicao" value={form["whatsapp.display"] as string} />
+            <ReadonlyValue label="Numero" value={form["whatsapp.display"] as string} />
+            <div>
+              <p className="font-sans text-xs font-bold text-text-dark/50 uppercase">
+                Link wa.me
+              </p>
+              <p className="font-serif text-sm text-primary break-all">
+                https://wa.me/55{form["whatsapp.number"] as string}
+              </p>
+            </div>
           </div>
         )}
       </Section>
@@ -206,7 +213,17 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
         {editing ? (
           <TextField label="Chave PIX" value={form["pix.key"] as string} onChange={(v) => set("pix.key", v)} />
         ) : (
-          <ReadonlyValue label="Chave PIX" value={form["pix.key"] as string} />
+          <div className="space-y-2">
+            <ReadonlyValue label="Chave PIX (CNPJ)" value={form["pix.key"] as string} />
+            <div className="rounded-lg bg-bg-gray p-3">
+              <p className="font-sans text-xs font-bold text-text-dark/50 uppercase mb-1">
+                Como doar
+              </p>
+              <p className="font-serif text-sm text-text-dark/70">
+                Abra o app do banco, escolha PIX copia-e-cola, cole a chave acima e informe o valor desejado.
+              </p>
+            </div>
+          </div>
         )}
       </Section>
 

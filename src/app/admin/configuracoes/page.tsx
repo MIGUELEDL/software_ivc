@@ -39,7 +39,7 @@ export default async function AdminConfiguracoesPage() {
     );
   }
 
-  const configuracoes = await obterConfiguracoes();
+  const { settings: configuracoes, fromDb } = await obterConfiguracoes();
 
   return (
     <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
@@ -58,6 +58,11 @@ export default async function AdminConfiguracoesPage() {
           <h1 className="font-sans text-2xl font-bold text-text-dark">
             Configuracoes
           </h1>
+          {!fromDb && (
+            <span className="rounded bg-yellow-100 px-2 py-0.5 font-sans text-xs font-bold text-yellow-700">
+              padrao
+            </span>
+          )}
         </div>
 
         <ConfiguracoesForm initial={configuracoes} canEdit={admin} />
