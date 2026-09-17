@@ -166,9 +166,9 @@ T6
 
 **Done when**:
 
-- [ ] lint 0 errors, typecheck 0 errors, build success
-- [ ] `coverage-matrix.md` updated: RF-029 row
-- [ ] STATE.md Handoff updated
+- [x] lint 0 errors, typecheck 0 errors, build success
+- [x] `coverage-matrix.md` updated: RF-029 row added
+- [x] STATE.md Handoff updated
 
 **Tests**: none
 **Gate**: build

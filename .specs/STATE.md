@@ -142,15 +142,15 @@
 
 ## Handoff
 
-- **Feature**: `admin-dashboard` (RF-021) — **EM IMPLEMENTAÇÃO** — 6/6 tasks commitadas + 2 post-verifier fixes, aguardando verifier final.
-- **O que foi entregue**: Service layer `dashboard.ts` (3 funções: `obterMetricas`, `obterAtividadeRecente`, `obterResumoFinanceiro` + helper `temporizar`). Page refactor completa: 6 metric cards (Membros/Eventos/Igrejas/Patrimonio/Documentos/Usuarios) em grid responsivo 2-3-4 colunas, feed de atividade recente (10 itens de 3 fontes com ícone por tipo, **status badges com cores** (DASH-07 fix)), financeiro expandido (receitas/despesas/saldo/top 3 categorias), nav links compacta, user info footer, **access-denied block explícito** quando sem permissão `dashboard:ler` (DASH-17 fix). Layout `max-w-6xl`.
-- **DB**: Nenhuma migration — usa funções existentes dos módulos (listMembros, listarEventos, listarIgrejas, listarAssets, listarDocumentos, listarUsuarios, listarLancamentos).
-- **Probes**: `scripts/probes-admin-dashboard.sh` **23 ok / 0 falhas** — service (3 funções + helper), page (grid + feed + financeiro + nav + max-w-6xl + access-denied + status badges). Gates lint/typecheck/build verdes.
-- **Commits** (6, `459f1c3..5ed643a`): service dashboard, page refactor (metric+feed+financeiro), probes, regressões+coverage, fix DASH-07/DASH-17, docs update.
-- **Verifier**: pendente — sub-agente `tlc-verifier` deve rodar após este commit.
-- **Próximos passos**: rodar verifier; `git push origin main` (commits locais; **nunca sem autorização**); próxima feature (RF-029 config, RF-030 auditoria).
+- **Feature**: `admin-configuracoes` (RF-029) — **EM IMPLEMENTAÇÃO** — 6/6 tasks commitadas, aguardando verifier.
+- **O que foi entregue**: Tabela `settings` (key-value JSONB, RLS `can_access('configuracoes', 'administrar')`, seed 18 configs de `constants.ts`). Service `configuracoes.ts` (`obterConfiguracoes` com fallback, `atualizarConfiguracoes` com validacao de whitelist). Rotas `GET/PATCH /api/admin/configuracoes` com guards `authAdmin`/`requireAdministrar`. Pagina `/admin/configuracoes` com 5 secoes (Dados da Igreja, WhatsApp, PIX, Horarios, Redes Sociais), modo view/edit, form client `ConfiguracoesForm`, guard RBAC `configuracoes:ler`. Card "Configuracoes" no dashboard com icone `Settings`.
+- **DB**: migration `0016_settings.sql` aplicada no dev `[REDACTED_PROJECT_REF]`.
+- **Probes**: `scripts/probes-admin-configuracoes.sh` **29 ok / 0 falhas** — service (3 exports), routes (GET/PATCH com guards), pages (page + form com 5 secoes + edit/save/cancel), dashboard card, migration (table/RLS/seed). Gates lint/typecheck/build verdes.
+- **Commits** (6, `624a938..b661b24`): migration, service, routes, page, dashboard+probes.
+- **Verifier**: pendente — sub-agente `tlc-verifier` deve rodar.
+- **Próximos passos**: rodar verifier; `git push origin main` (commits locais; **nunca sem autorização**); próxima feature (RF-030 auditoria).
 - **Open decisions**: nenhuma em aberto.
-- **Uncommitted files**: `.specs/STATE.md` (este Handoff), `.specs/features/admin-dashboard/{spec.md,design.md,tasks.md,validation.md}` (a commitar); `next-env.d.ts`/`opencode.json`/`tsconfig.tsbuildinfo` (untracked, NUNCA commitar).
+- **Uncommitted files**: `.specs/STATE.md` (este Handoff), `.specs/features/admin-configuracoes/{spec.md,design.md,tasks.md}` (a commitar); `next-env.d.ts`/`opencode.json`/`tsconfig.tsbuildinfo` (untracked, NUNCA commitar).
 - **Branch**: main (commits locais; `git push` pendente — nunca sem autorização).
 
 ## Handoff — feature CONCLUÍDA (2026-09-12)
