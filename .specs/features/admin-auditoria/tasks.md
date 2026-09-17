@@ -158,10 +158,10 @@ T13 -> T14
 
 **Done when**:
 
-- [ ] POST handler with `requireAdministrar('auditoria')` guard
-- [ ] Body validation: acao (required), entidade (required), entidade_id (optional), payload (optional)
-- [ ] Returns 201 with `{ log }`
-- [ ] No TypeScript errors
+- [x] POST handler with `requireAdministrar('auditoria')` guard
+- [x] Body validation: acao (required), entidade (required), entidade_id (optional), payload (optional)
+- [x] Returns 201 with `{ ok: true }`
+- [x] No TypeScript errors
 
 **Tests**: none
 **Gate**: build
