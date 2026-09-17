@@ -6,6 +6,7 @@ import {
   SETTINGS_KEYS,
   type SettingKey,
 } from "@/lib/admin/configuracoes";
+import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
 
 export async function GET() {
   const auth = await authAdmin("configuracoes");
@@ -44,6 +45,15 @@ export async function PATCH(request: Request) {
       );
     }
     await atualizarConfiguracoes(raw);
+    const { ip, user_agent } = extrairInfoRequest(request);
+    await registrarAuditoria({
+      autor: auth.sub,
+      acao: "atualizar",
+      entidade: "configuracoes",
+      ip,
+      user_agent,
+      payload: { chaves: Object.keys(raw) },
+    });
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("PATCH /api/admin/configuracoes", error);

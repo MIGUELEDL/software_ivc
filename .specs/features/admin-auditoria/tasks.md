@@ -311,9 +311,9 @@ T13 -> T14
 
 **Done when**:
 
-- [ ] PATCH /api/admin/configuracoes logs "atualizar" after success
-- [ ] Log includes autor, acao, entidade ("configuracoes"), ip, user_agent
-- [ ] No TypeScript errors
+- [x] PATCH /api/admin/configuracoes logs "atualizar" after success
+- [x] Log includes autor, acao, entidade ("configuracoes"), ip, user_agent
+- [x] No TypeScript errors
 
 **Tests**: none
 **Gate**: build
