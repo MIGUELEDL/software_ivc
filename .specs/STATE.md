@@ -142,6 +142,14 @@
 
 ## Handoff
 
+- **Feature**: `admin-relatorios` (RF-027) — **CONCLUIDA E VERIFICADA** — 7/7 tasks commitadas, verifier PASS.
+- **O que foi entregue**: Módulo Relatórios/Documentos no painel admin com (i) exportação CSV de relatórios financeiros (receitas/despesas/caixa) e de gestão (membros/eventos/patrimônio), (ii) upload de documentos com categorias por módulo (6 categorias), listagem com filtros, download via signed URL e exclusão. RBAC via `can_access('relatorios', ...)` — FINANCEIRO escreve; demais leitores lêem/baixam. Migração `0015_relatorios_documentos.sql` com tabela `documents`, bucket Storage `documentos`, RLS e CHECK constraints.
+- **DB**: migration `0015_relatorios_documentos.sql` aplicada no dev `[REDACTED_PROJECT_REF]`.
+- **Probes**: `scripts/probes-admin-relatorios.sh` — estatico (migration/RLS/service/routes/page/dashboard). Gates lint/typecheck/build verdes.
+- **Verifier**: PASS — 7/7 ACs verified.
+
+## Handoff — RF-030 Auditoria CONCLUIDA (2026-09-17)
+
 - **Feature**: `admin-auditoria` (RF-030) — **CONCLUIDA E VERIFICADA** — 15/15 tasks commitadas, probes 59/0, verifier PASS.
 - **O que foi entregue**: Tabela `audit_logs` (autor uuid, acao text, entidade text, entidade_id text, timestamp timestamptz, ip inet, user_agent text, payload jsonb) com RLS via `can_access('auditoria', 'ler')` (SELECT/INSERT) e sem UPDATE/DELETE (imutavel). Service `auditoria.ts` (`registrarAuditoria` com truncamento 10KB, `listarAuditoria` com filtros por data/acao/entidade, `extrairInfoRequest`). Rotas `GET/POST /api/admin/auditoria` com guards `authAdmin`/`requireAdministrar`. Pagina `/admin/auditoria` (read-only) com tabela (Data/Hora, Autor, Acao, Entidade, ID, IP), filtros (periodo, acao, entidade), paginacao (20/pagina), empty state. Instrumentacao de 12 route handlers (membros, eventos, assets, financeiro, usuarios, configuracoes) para gravar logs automaticamente. Card "Auditoria" no dashboard com icone `FileText`. RBAC: `auditoria:ler` apenas SUPER_ADMIN/ADMIN.
 - **DB**: migration `0017_audit_logs.sql` aplicada no dev `[REDACTED_PROJECT_REF]`.
