@@ -50,7 +50,7 @@ export function extrairInfoRequest(request: Request): {
  * @param params.entidade_id - ID do objeto afetado (opcional)
  * @param params.ip - Endereço IP do cliente (opcional)
  * @param params.user_agent - User-Agent do cliente (opcional)
- * @param params.payload - Dados adicionais da ação (opcional)
+ * @param params.payload - Dados adicionais da ação (opcional, truncado para 10KB)
  */
 export async function registrarAuditoria(params: {
   autor?: string;
@@ -63,6 +63,15 @@ export async function registrarAuditoria(params: {
 }): Promise<void> {
   const supabase = await createServerClient();
 
+  // Truncar payload para 10KB se exceder
+  let payload = params.payload ?? null;
+  if (payload) {
+    const payloadStr = JSON.stringify(payload);
+    if (payloadStr.length > 10240) {
+      payload = JSON.parse(payloadStr.slice(0, 10240) + '"}'); // Truncar e fechar JSON
+    }
+  }
+
   const { error } = await supabase.from("audit_logs").insert({
     autor: params.autor ?? null,
     acao: params.acao,
@@ -70,7 +79,7 @@ export async function registrarAuditoria(params: {
     entidade_id: params.entidade_id ?? null,
     ip: params.ip ?? null,
     user_agent: params.user_agent ?? null,
-    payload: params.payload ?? null,
+    payload,
   });
 
   if (error) {
