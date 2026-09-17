@@ -260,11 +260,11 @@ T13 -> T14
 
 **Done when**:
 
-- [ ] POST /api/admin/financeiro logs "criar" after success
-- [ ] PATCH /api/admin/financeiro/[id] logs "editar" after success
-- [ ] POST /api/admin/financeiro/[id]/cancelar logs "cancelar" after success
-- [ ] Each log includes autor, acao, entidade_id, ip, user_agent
-- [ ] No TypeScript errors
+- [x] POST /api/admin/financeiro logs "criar" after success
+- [x] PATCH /api/admin/financeiro/[id] logs "editar" after success
+- [x] POST /api/admin/financeiro/[id]/cancelar logs "cancelar" after success
+- [x] Each log includes autor, acao, entidade_id, ip, user_agent
+- [x] No TypeScript errors
 
 **Tests**: none
 **Gate**: build

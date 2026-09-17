@@ -5,6 +5,7 @@ import {
   LancamentoNaoCancelavelError,
   LancamentoNaoEncontradoError,
 } from "@/lib/admin/financeiro";
+import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
 
 /**
  * POST /api/admin/financeiro/[id]/cancelar — cancela um lançamento PENDENTE
@@ -26,6 +27,15 @@ export async function POST(
 
   try {
     const lancamento = await cancelarLancamento(id);
+    const { ip, user_agent } = extrairInfoRequest(_request);
+    await registrarAuditoria({
+      autor: auth.sub,
+      acao: "cancelar",
+      entidade: "financeiro",
+      entidade_id: id,
+      ip,
+      user_agent,
+    });
     return NextResponse.json({ lancamento });
   } catch (error) {
     if (error instanceof LancamentoNaoCancelavelError) {

@@ -8,6 +8,7 @@ import {
   type LancamentoPatch,
 } from "@/lib/admin/financeiro";
 import { validarLancamento } from "@/lib/admin/validacao";
+import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
 
 /**
  * GET /api/admin/financeiro/[id] — detalhe de um lançamento (FIN-01/AC-6).
@@ -75,6 +76,16 @@ export async function PATCH(
       id,
       resultado.dados as LancamentoPatch
     );
+    const { ip, user_agent } = extrairInfoRequest(request);
+    await registrarAuditoria({
+      autor: auth.sub,
+      acao: "editar",
+      entidade: "financeiro",
+      entidade_id: id,
+      ip,
+      user_agent,
+      payload: resultado.dados as Record<string, unknown>,
+    });
     return NextResponse.json({ lancamento });
   } catch (error) {
     if (error instanceof LancamentoConciliadoError) {

@@ -9,6 +9,7 @@ import {
   type StatusLancamento,
 } from "@/lib/admin/financeiro";
 import { validarLancamento } from "@/lib/admin/validacao";
+import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
 
 /**
  * POST /api/admin/financeiro — cria um lançamento financeiro (FIN-01/AC-3).
@@ -40,6 +41,15 @@ export async function POST(request: Request) {
 
   try {
     const lancamento = await criarLancamento(resultado.dados);
+    const { ip, user_agent } = extrairInfoRequest(request);
+    await registrarAuditoria({
+      autor: auth.sub,
+      acao: "criar",
+      entidade: "financeiro",
+      entidade_id: lancamento.id,
+      ip,
+      user_agent,
+    });
     return NextResponse.json({ lancamento }, { status: 201 });
   } catch (error) {
     if (
