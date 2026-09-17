@@ -385,12 +385,36 @@ T13 -> T14
 
 **Done when**:
 
-- [ ] Handoff section updated with RF-030 status
-- [ ] Commits listed
-- [ ] validate_state.py passes
+- [x] Handoff section updated with RF-030 status
+- [x] Commits listed
+- [x] validate_state.py passes
 
 **Tests**: none
 **Gate**: python
+
+---
+
+### T15: Fix verifier gaps
+
+**What**: Address verifier findings: remove AUD-19/20, add payload truncation.
+**Where**: `src/lib/admin/auditoria.ts`, `.specs/features/admin-auditoria/spec.md`
+**Depends on**: T14
+**Reuses**: None
+**Requirement**: AUD-01, Edge Case 2
+
+**Tools**:
+
+- MCP: NONE
+- Skill: NONE
+
+**Done when**:
+
+- [x] AUD-19/20 removed from traceability table
+- [x] Payload truncation at 10KB implemented
+- [x] No TypeScript errors
+
+**Tests**: none
+**Gate**: build
 
 ---
 
