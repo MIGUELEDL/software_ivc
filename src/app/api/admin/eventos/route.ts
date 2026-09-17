@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireEscrita, authAdmin, erroCampos } from "@/lib/admin/http";
 import { criarEvento, listarEventos } from "@/lib/admin/eventos";
 import { validarEvento } from "@/lib/admin/validacao";
+import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
 
 /**
  * POST /api/admin/eventos — cria evento (EVT-04). Guarda de escrita `eventos`
@@ -35,6 +36,16 @@ export async function POST(request: Request) {
       time: resultado.dados.time!,
       location: resultado.dados.location!,
       visivel: resultado.dados.visivel,
+    });
+
+    const { ip, user_agent } = extrairInfoRequest(request);
+    await registrarAuditoria({
+      autor: auth.sub,
+      acao: "criar",
+      entidade: "eventos",
+      entidade_id: evento.id,
+      ip,
+      user_agent,
     });
 
     return NextResponse.json({ evento }, { status: 201 });

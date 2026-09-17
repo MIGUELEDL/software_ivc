@@ -6,6 +6,7 @@ import {
   type EventoPatch,
 } from "@/lib/admin/eventos";
 import { validarEvento } from "@/lib/admin/validacao";
+import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
 
 /**
  * PATCH /api/admin/eventos/[id] — atualiza apenas os campos enviados
@@ -39,6 +40,16 @@ export async function PATCH(
 
   try {
     const evento = await atualizarEvento(id, resultado.dados as EventoPatch);
+    const { ip, user_agent } = extrairInfoRequest(request);
+    await registrarAuditoria({
+      autor: auth.sub,
+      acao: "editar",
+      entidade: "eventos",
+      entidade_id: id,
+      ip,
+      user_agent,
+      payload: resultado.dados as Record<string, unknown>,
+    });
     return NextResponse.json({ evento });
   } catch (error) {
     if (error instanceof EventoNaoEncontradoError) {
