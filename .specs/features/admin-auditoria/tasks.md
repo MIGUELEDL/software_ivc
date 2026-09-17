@@ -360,10 +360,10 @@ T13 -> T14
 
 **Done when**:
 
-- [ ] Static tests: migration, RLS, service, routes, page
-- [ ] Runtime tests: login, create member, verify log, filters, pagination
-- [ ] EXIT trap for cleanup
-- [ ] Script passes without errors
+- [x] Static tests: migration, RLS, service, routes, page
+- [x] Runtime tests: login, create member, verify log, filters, pagination
+- [x] EXIT trap for cleanup
+- [x] Script passes without errors
 
 **Tests**: none
 **Gate**: bash
