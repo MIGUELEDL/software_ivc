@@ -142,11 +142,11 @@
 
 ## Handoff
 
-- **Feature**: `admin-configuracoes` (RF-029) — **EM IMPLEMENTAÇÃO** — 6/6 tasks commitadas + 3 post-verifier fixes, aguardando verifier final.
-- **O que foi entregue**: Tabela `settings` (key-value JSONB, RLS `can_access('configuracoes', 'administrar')`, seed 18 configs de `constants.ts`). Service `configuracoes.ts` (`obterConfiguracoes` com fallback + flag `fromDb`, `atualizarConfiguracoes` com validacao de whitelist). Rotas `GET/PATCH /api/admin/configuracoes` com guards `authAdmin`/`requireAdministrar`. Pagina `/admin/configuracoes` com 5 secoes (Dados da Igreja, WhatsApp com link wa.me, PIX com instrucoes, Horarios, Redes Sociais), modo view/edit, badge "(padrao)" quando fallback constants.ts, form client `ConfiguracoesForm`, guard RBAC `configuracoes:ler`. Card "Configuracoes" no dashboard com icone `Settings`.
+- **Feature**: `admin-configuracoes` (RF-029) — **EM IMPLEMENTAÇÃO** — 6/6 tasks commitadas + 6 post-verifier fixes (2 rounds), aguardando verifier final.
+- **O que foi entregue**: Tabela `settings` (key-value JSONB, RLS `can_access('configuracoes', 'administrar')`, seed 18 configs de `constants.ts`). Service `configuracoes.ts` (`obterConfiguracoes` com fallback + flag `fromDb`, `atualizarConfiguracoes` com validacao de whitelist). Rotas `GET/PATCH /api/admin/configuracoes` com guards `authAdmin`/`requireAdministrar`. Pagina `/admin/configuracoes` com 5 secoes (Dados da Igreja com valores editaveis, WhatsApp com link wa.me, PIX com instrucoes, Horarios, Redes Sociais), modo view/edit, badge "(padrao)" quando fallback constants.ts, reload apos save, form client `ConfiguracoesForm`, guard RBAC `configuracoes:ler`. Card "Configuracoes" no dashboard com icone `Settings`.
 - **DB**: migration `0016_settings.sql` aplicada no dev `[REDACTED_PROJECT_REF]`.
-- **Probes**: `scripts/probes-admin-configuracoes.sh` **33 ok / 0 falhas** — service (3 exports + fromDb), routes (GET/PATCH com guards), pages (page + form com 5 secoes + edit/save/cancel + wa.me + PIX instructions + padrao badge), dashboard card, migration (table/RLS/seed). Gates lint/typecheck/build verdes.
-- **Commits** (8, `624a938..fd511c7`): migration, service, routes, page, dashboard+probes, docs, fix CFG-03/04/24, docs update.
+- **Probes**: `scripts/probes-admin-configuracoes.sh` **33 ok / 0 falhas** — service (3 exports + fromDb), routes (GET/PATCH com guards), pages (page + form com 5 secoes + edit/save/cancel + wa.me + PIX instructions + padrao badge + valores), dashboard card, migration (table/RLS/seed). Gates lint/typecheck/build verdes.
+- **Commits** (10, `624a938..f84c4fe`): migration, service, routes, page, dashboard+probes, docs, fix round 1 (CFG-03/04/24), docs, fix round 2 (CFG-02/10/24), docs.
 - **Verifier**: pendente — sub-agente `tlc-verifier` deve rodar.
 - **Próximos passos**: rodar verifier; `git push origin main` (commits locais; **nunca sem autorização**); próxima feature (RF-030 auditoria).
 - **Open decisions**: nenhuma em aberto.
