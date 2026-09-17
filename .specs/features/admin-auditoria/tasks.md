@@ -80,11 +80,11 @@ T13 -> T14
 
 **Done when**:
 
-- [ ] Types: `AuditLog`, `AuditoriaFiltros`
-- [ ] `extrairInfoRequest(request)` extracts IP and user_agent
-- [ ] `registrarAuditoria(params)` inserts log
-- [ ] `listarAuditoria(filtros)` returns filtered logs with total
-- [ ] No TypeScript errors
+- [x] Types: `AuditLog`, `AuditoriaFiltros`
+- [x] `extrairInfoRequest(request)` extracts IP and user_agent
+- [x] `registrarAuditoria(params)` inserts log
+- [x] `listarAuditoria(filtros)` returns filtered logs with total
+- [x] No TypeScript errors
 
 **Tests**: none
 **Gate**: build
