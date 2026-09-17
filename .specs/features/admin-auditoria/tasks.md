@@ -422,26 +422,24 @@ T13 -> T14
 
 | Requirement | Tests | Status |
 |-------------|-------|--------|
-| AUD-01 | T1, T2, T3, T5, T6-T11 | Pending |
-| AUD-02 | T1 | Pending |
-| AUD-03 | T1 | Pending |
-| AUD-04 | T1 | Pending |
-| AUD-05 | T1 | Pending |
-| AUD-06 | T1 | Pending |
-| AUD-07 | T3, T4 | Pending |
-| AUD-08 | T3, T4 | Pending |
-| AUD-09 | T3, T4 | Pending |
-| AUD-10 | T3, T4 | Pending |
-| AUD-11 | T3, T4 | Pending |
-| AUD-12 | T3, T4 | Pending |
-| AUD-13 | T4, T12 | Pending |
-| AUD-14 | T4 | Pending |
-| AUD-15 | T4 | Pending |
-| AUD-16 | T4 | Pending |
-| AUD-17 | T4 | Pending |
-| AUD-18 | T6-T11 | Pending |
-| AUD-19 | T6-T11 | Pending |
-| AUD-20 | T6-T11 | Pending |
+| AUD-01 | T1, T2, T3, T5, T6-T11 | ✅ Done |
+| AUD-02 | T1 | ✅ Done |
+| AUD-03 | T1 | ✅ Done |
+| AUD-04 | T1 | ✅ Done |
+| AUD-05 | T1 | ✅ Done |
+| AUD-06 | T1 | ✅ Done |
+| AUD-07 | T3, T4 | ✅ Done |
+| AUD-08 | T3, T4 | ✅ Done |
+| AUD-09 | T3, T4 | ✅ Done |
+| AUD-10 | T3, T4 | ✅ Done |
+| AUD-11 | T3, T4 | ✅ Done |
+| AUD-12 | T3, T4 | ✅ Done |
+| AUD-13 | T4, T12 | ✅ Done |
+| AUD-14 | T4 | ✅ Done |
+| AUD-15 | T4 | ✅ Done |
+| AUD-16 | T4 | ✅ Done |
+| AUD-17 | T4 | ✅ Done |
+| AUD-18 | T6-T11 | ✅ Done |
 
 ---
 
