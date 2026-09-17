@@ -89,12 +89,12 @@ T6
 
 **Done when**:
 
-- [ ] `GET /api/admin/configuracoes` returns `{ settings: { [key]: value } }`
-- [ ] `PATCH /api/admin/configuracoes` accepts partial update, validates keys
-- [ ] GET uses `authAdmin('configuracoes')`
-- [ ] PATCH uses `requireAdministrar('configuracoes')`
-- [ ] Unknown keys return 400 `chave_invalida`
-- [ ] PATCH returns 200 `{ ok: true }`
+- [x] `GET /api/admin/configuracoes` returns `{ settings: { [key]: value } }`
+- [x] `PATCH /api/admin/configuracoes` accepts partial update, validates keys
+- [x] GET uses `authAdmin('configuracoes')`
+- [x] PATCH uses `requireAdministrar('configuracoes')`
+- [x] Unknown keys return 400 `chave_invalida`
+- [x] PATCH returns 200 `{ ok: true }`
 
 **Tests**: none
 **Gate**: build
