@@ -8,6 +8,7 @@ import {
   PapelInvalidoError,
 } from "@/lib/admin/usuarios";
 import { ADMIN_ROLES } from "@/lib/auth/rbac";
+import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
 
 export async function PATCH(
   request: Request,
@@ -25,6 +26,16 @@ export async function PATCH(
   }
   try {
     const result = await editarPapel(id, role, auth.sub);
+    const { ip, user_agent } = extrairInfoRequest(request);
+    await registrarAuditoria({
+      autor: auth.sub,
+      acao: "editar",
+      entidade: "usuarios",
+      entidade_id: id,
+      ip,
+      user_agent,
+      payload: { role },
+    });
     return NextResponse.json(result);
   } catch (error) {
     if (error instanceof NaoEncontradoError) {

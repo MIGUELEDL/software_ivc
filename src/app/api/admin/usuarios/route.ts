@@ -8,6 +8,7 @@ import {
 } from "@/lib/admin/usuarios";
 import { ADMIN_ROLES } from "@/lib/auth/rbac";
 import { validarEmail } from "@/lib/admin/validacao";
+import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
 
 export async function GET(request: Request) {
   const auth = await authAdmin("usuarios");
@@ -48,6 +49,15 @@ export async function POST(request: Request) {
   }
   try {
     const result = await criarUsuario({ email, role });
+    const { ip, user_agent } = extrairInfoRequest(request);
+    await registrarAuditoria({
+      autor: auth.sub,
+      acao: "criar",
+      entidade: "usuarios",
+      entidade_id: result.id,
+      ip,
+      user_agent,
+    });
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
     if (error instanceof EmailEmUsoError) {

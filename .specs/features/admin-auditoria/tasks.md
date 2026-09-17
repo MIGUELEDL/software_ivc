@@ -286,10 +286,10 @@ T13 -> T14
 
 **Done when**:
 
-- [ ] POST /api/admin/usuarios logs "criar" after success
-- [ ] PATCH /api/admin/usuarios/[id] logs "editar" after success
-- [ ] Each log includes autor, acao, entidade_id, ip, user_agent
-- [ ] No TypeScript errors
+- [x] POST /api/admin/usuarios logs "criar" after success
+- [x] PATCH /api/admin/usuarios/[id] logs "editar" after success
+- [x] Each log includes autor, acao, entidade_id, ip, user_agent
+- [x] No TypeScript errors
 
 **Tests**: none
 **Gate**: build
