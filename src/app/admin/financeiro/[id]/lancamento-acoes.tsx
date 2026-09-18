@@ -262,7 +262,7 @@ export function LancamentoAcoes({ lancamento }: { lancamento: Lancamento }) {
               >
                 {TIPOS_LANCAMENTO.map((tipo) => (
                   <option key={tipo} value={tipo}>
-                    {tipo}
+                    {tipo === "RECEITA" ? "ENTRADA" : "SAÍDA"}
                   </option>
                 ))}
               </select>

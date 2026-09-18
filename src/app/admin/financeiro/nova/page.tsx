@@ -189,7 +189,7 @@ export default function AdminFinanceiroNovaPage() {
               <select id="tipo" name="tipo" required className={inputClass}>
                 {TIPOS_LANCAMENTO.map((tipo) => (
                   <option key={tipo} value={tipo}>
-                    {tipo}
+                    {tipo === "RECEITA" ? "ENTRADA" : "SAÍDA"}
                   </option>
                 ))}
               </select>

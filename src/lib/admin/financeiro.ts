@@ -21,6 +21,7 @@ import type {
   FechamentoCaixa,
   TipoLancamento,
   StatusLancamento,
+  MetodoPagamento,
 } from "@/lib/admin/financeiro-types";
 
 // ---------------------------------------------------------------------------
@@ -58,6 +59,7 @@ export class LancamentoNaoCancelavelError extends Error {
 export type LancamentoFiltros = {
   tipo?: TipoLancamento;
   status?: StatusLancamento;
+  metodo?: MetodoPagamento;
   dataInicio?: string;
   dataFim?: string;
   busca?: string;
@@ -95,6 +97,9 @@ export async function listarLancamentos(
   }
   if (filtros.busca !== undefined && filtros.busca.trim() !== "") {
     query = query.ilike("descricao", `%${filtros.busca.trim()}%`);
+  }
+  if (filtros.metodo !== undefined) {
+    query = query.eq("metodo", filtros.metodo);
   }
 
   const { data, error } = await query;

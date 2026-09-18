@@ -80,6 +80,8 @@ export default async function LancamentoDetalhePage({
     valor === "RECEITA"
       ? "bg-green-100 text-green-700"
       : "bg-red-100 text-red-700";
+  const labelTipo = (valor: string) =>
+    valor === "RECEITA" ? "ENTRADA" : "SAÍDA";
   const classeBadgeStatus = (valor: string) =>
     valor === "PENDENTE"
       ? "bg-yellow-100 text-yellow-700"
@@ -119,7 +121,7 @@ export default async function LancamentoDetalhePage({
                 <span
                   className={`inline-flex items-center rounded-full px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wide ${classeBadgeTipo(lancamento.tipo)}`}
                 >
-                  {lancamento.tipo}
+                  {labelTipo(lancamento.tipo)}
                 </span>
                 <span className="font-serif">{lancamento.metodo}</span>
               </p>
