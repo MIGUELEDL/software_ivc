@@ -12,6 +12,8 @@ import {
   type DocumentoDados,
   type DocumentoCategoria,
 } from "@/lib/admin/relatorios-constants";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const SEPARADOR = ";";
 
@@ -225,6 +227,217 @@ export async function gerarCSVPatrimonio(): Promise<{ csv: string; filename: str
   return {
     csv: `\uFEFF${[header.join(SEPARADOR), ...linhas].join("\r\n")}`,
     filename: "relatorio-patrimonio.csv",
+  };
+}
+
+// ---------------------------------------------------------------------------
+// PDF helpers (REL-02..06)
+// ---------------------------------------------------------------------------
+
+function formatarValorPDF(valor: number): string {
+  return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+function formatarDataBR(data: string | null | undefined): string {
+  if (!data) return "—";
+  return new Date(`${data}T00:00:00`).toLocaleDateString("pt-BR");
+}
+
+/**
+ * Gera o relatório financeiro em PDF (REL-02/03): tabela com Data, Tipo,
+ * Metodo, Status, Categoria, Descricao, Valor + linha de totais.
+ */
+export async function gerarPDFFinanceiro(
+  filtros: LancamentoFiltros = {}
+): Promise<{ pdf: Buffer; filename: string }> {
+  const lancamentos = await listarLancamentos(filtros);
+  const doc = new jsPDF({ orientation: "landscape" });
+
+  doc.setFontSize(16);
+  doc.text("Relatório Financeiro", 14, 20);
+  doc.setFontSize(10);
+  doc.text(
+    `Gerado em: ${new Date().toLocaleDateString("pt-BR")} — ${lancamentos.length} lançamento(s)`,
+    14,
+    28
+  );
+
+  const rows = lancamentos.map((l) => [
+    formatarDataBR(l.data),
+    l.tipo === "RECEITA" ? "ENTRADA" : "SAÍDA",
+    l.metodo,
+    l.status,
+    l.categoria ?? "—",
+    l.descricao,
+    formatarValorPDF(l.valor),
+  ]);
+
+  autoTable(doc, {
+    startY: 34,
+    head: [["Data", "Tipo", "Método", "Status", "Categoria", "Descrição", "Valor"]],
+    body: rows,
+    styles: { fontSize: 8 },
+    headStyles: { fillColor: [26, 58, 107] },
+  });
+
+  const receitas = lancamentos
+    .filter((l) => l.tipo === "RECEITA" && l.status !== "CANCELADO")
+    .reduce((soma, l) => soma + l.valor, 0);
+  const despesas = lancamentos
+    .filter((l) => l.tipo === "DESPESA" && l.status !== "CANCELADO")
+    .reduce((soma, l) => soma + l.valor, 0);
+  const saldo = receitas - despesas;
+
+  const table = doc as unknown as { lastAutoTable?: { finalY: number } };
+  const y = (table.lastAutoTable?.finalY ?? 34) + 10;
+  doc.setFontSize(11);
+  doc.text(`Entradas: ${formatarValorPDF(receitas)}`, 14, y);
+  doc.text(`Saídas: ${formatarValorPDF(despesas)}`, 14, y + 7);
+  doc.setFont("helvetica", "bold");
+  doc.text(`Saldo: ${formatarValorPDF(saldo)}`, 14, y + 14);
+
+  const buffer = Buffer.from(doc.output("arraybuffer"));
+  return {
+    pdf: buffer,
+    filename: `relatorio-financeiro-${new Date().toISOString().slice(0, 10)}.pdf`,
+  };
+}
+
+/**
+ * Gera o relatório de membros em PDF (REL-04): tabela com Matrícula, Nome,
+ * Status, Nascimento, WhatsApp, Cidade.
+ */
+export async function gerarPDFMembros(
+  filtros: import("@/lib/admin/membros").MembroFiltros = {}
+): Promise<{ pdf: Buffer; filename: string }> {
+  const membros = await listMembros(filtros);
+  const doc = new jsPDF({ orientation: "landscape" });
+
+  doc.setFontSize(16);
+  doc.text("Relatório de Membros", 14, 20);
+  doc.setFontSize(10);
+  doc.text(
+    `Gerado em: ${new Date().toLocaleDateString("pt-BR")} — ${membros.length} membro(s)`,
+    14,
+    28
+  );
+
+  const rows = membros.map((m) => [
+    m.matricula ?? "—",
+    m.nome,
+    m.status,
+    m.nascimento ? formatarDataBR(m.nascimento) : "—",
+    m.whatsapp ?? "—",
+    m.cidade ?? "—",
+  ]);
+
+  autoTable(doc, {
+    startY: 34,
+    head: [["Matrícula", "Nome", "Status", "Nascimento", "WhatsApp", "Cidade"]],
+    body: rows,
+    styles: { fontSize: 8 },
+    headStyles: { fillColor: [26, 58, 107] },
+  });
+
+  const buffer = Buffer.from(doc.output("arraybuffer"));
+  return {
+    pdf: buffer,
+    filename: "relatorio-membros.pdf",
+  };
+}
+
+/**
+ * Gera o relatório de eventos em PDF (REL-05): tabela com Título, Data,
+ * Hora, Local, Visível, Status.
+ */
+export async function gerarPDFEventos(): Promise<{ pdf: Buffer; filename: string }> {
+  const eventos = await listarEventos();
+  const doc = new jsPDF({ orientation: "landscape" });
+
+  doc.setFontSize(16);
+  doc.text("Relatório de Eventos", 14, 20);
+  doc.setFontSize(10);
+  doc.text(
+    `Gerado em: ${new Date().toLocaleDateString("pt-BR")} — ${eventos.length} evento(s)`,
+    14,
+    28
+  );
+
+  const rows = eventos.map((e) => [
+    e.title,
+    formatarDataBR(e.date),
+    e.time,
+    e.location ?? "—",
+    e.visivel ? "Sim" : "Não",
+    e.status,
+  ]);
+
+  autoTable(doc, {
+    startY: 34,
+    head: [["Título", "Data", "Hora", "Local", "Visível", "Status"]],
+    body: rows,
+    styles: { fontSize: 8 },
+    headStyles: { fillColor: [26, 58, 107] },
+  });
+
+  const buffer = Buffer.from(doc.output("arraybuffer"));
+  return {
+    pdf: buffer,
+    filename: "relatorio-eventos.pdf",
+  };
+}
+
+/**
+ * Gera o relatório de patrimônio em PDF (REL-06): tabela com Nome, Categoria,
+ * Tombo, Local, Valor, Data, Responsável, Status.
+ */
+export async function gerarPDFPatrimonio(): Promise<{ pdf: Buffer; filename: string }> {
+  const assets = await listarAssets();
+  const doc = new jsPDF({ orientation: "landscape" });
+
+  doc.setFontSize(16);
+  doc.text("Relatório de Patrimônio", 14, 20);
+  doc.setFontSize(10);
+  doc.text(
+    `Gerado em: ${new Date().toLocaleDateString("pt-BR")} — ${assets.length} bem(ns)`,
+    14,
+    28
+  );
+
+  const rows = assets.map((a) => [
+    a.name,
+    a.category,
+    a.numero_patrimonio ?? "—",
+    a.location ?? "—",
+    a.acquisition_value !== null ? formatarValorPDF(a.acquisition_value) : "—",
+    a.acquisition_date ? formatarDataBR(a.acquisition_date) : "—",
+    a.responsible ?? "—",
+    a.status,
+  ]);
+
+  autoTable(doc, {
+    startY: 34,
+    head: [
+      [
+        "Nome",
+        "Categoria",
+        "Tombo",
+        "Local",
+        "Valor",
+        "Data Aquisição",
+        "Responsável",
+        "Status",
+      ],
+    ],
+    body: rows,
+    styles: { fontSize: 8 },
+    headStyles: { fillColor: [26, 58, 107] },
+  });
+
+  const buffer = Buffer.from(doc.output("arraybuffer"));
+  return {
+    pdf: buffer,
+    filename: "relatorio-patrimonio.pdf",
   };
 }
 

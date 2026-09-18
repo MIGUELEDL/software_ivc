@@ -1,21 +1,21 @@
 import { NextResponse } from "next/server";
 import { authAdmin } from "@/lib/admin/http";
 import {
-  gerarCSVFinanceiro,
-  gerarCSVMembros,
-  gerarCSVEventos,
-  gerarCSVPatrimonio,
+  gerarPDFFinanceiro,
+  gerarPDFMembros,
+  gerarPDFEventos,
+  gerarPDFPatrimonio,
 } from "@/lib/admin/relatorios";
 import {
   RELATORIO_TIPOS,
 } from "@/lib/admin/relatorios-constants";
 
 /**
- * GET /api/admin/relatorios/exportar — exporta um relatório em CSV (REL-02..06).
+ * GET /api/admin/relatorios/exportar — exporta um relatório em PDF (REL-02..06).
  * Guarda de leitura `relatorios`. Query: `tipo`
  * (`financeiro|membros|eventos|patrimonio`) + `data_inicio`/`data_fim`
- * (financeiro). Response `text/csv; charset=utf-8` com
- * `Content-Disposition: attachment` e BOM `\uFEFF` (REL-08). Tipo inválido
+ * (financeiro). Response `application/pdf` com
+ * `Content-Disposition: attachment` (REL-08). Tipo inválido
  * ou ausente → 400 `{ error: "tipo_invalido" }` (REL-07).
  */
 export async function GET(request: Request) {
@@ -35,24 +35,24 @@ export async function GET(request: Request) {
   const dataFim = searchParams.get("data_fim");
 
   try {
-    let resultado: { csv: string; filename: string };
+    let resultado: { pdf: Buffer; filename: string };
 
     if (tipo === "financeiro") {
-      resultado = await gerarCSVFinanceiro({
+      resultado = await gerarPDFFinanceiro({
         dataInicio: dataInicio ?? undefined,
         dataFim: dataFim ?? undefined,
       });
     } else if (tipo === "membros") {
-      resultado = await gerarCSVMembros();
+      resultado = await gerarPDFMembros();
     } else if (tipo === "eventos") {
-      resultado = await gerarCSVEventos();
+      resultado = await gerarPDFEventos();
     } else {
-      resultado = await gerarCSVPatrimonio();
+      resultado = await gerarPDFPatrimonio();
     }
 
-    return new Response(resultado.csv, {
+    return new Response(new Uint8Array(resultado.pdf), {
       headers: {
-        "Content-Type": "text/csv; charset=utf-8",
+        "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="${resultado.filename}"`,
       },
     });
