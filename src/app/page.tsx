@@ -8,6 +8,7 @@ import LiveBanner from "@/components/LiveBanner";
 import SocialLinks from "@/components/SocialLinks";
 import Footer from "@/components/Footer";
 import { listarIgrejas, listarLideresAtivos } from "@/lib/admin/lideranca";
+import { obterConfiguracoes } from "@/lib/admin/configuracoes";
 import type { Igreja, Lider } from "@/lib/admin/lideranca";
 
 /**
@@ -19,6 +20,8 @@ import type { Igreja, Lider } from "@/lib/admin/lideranca";
 export default async function Home() {
   let lideres: Lider[] = [];
   let igrejas: Igreja[] = [];
+  let scheduleItems: Array<{ day: string; time: string; title: string }> = [];
+  let slogan = "";
 
   try {
     igrejas = await listarIgrejas();
@@ -27,15 +30,23 @@ export default async function Home() {
     console.error("portal: falha ao carregar lideranca do banco", erro);
   }
 
+  try {
+    const { settings } = await obterConfiguracoes();
+    scheduleItems = (settings["schedule.items"] ?? []) as Array<{ day: string; time: string; title: string }>;
+    slogan = (settings["church.slogan"] as string) ?? "";
+  } catch (erro) {
+    console.error("portal: falha ao carregar configuracoes do banco", erro);
+  }
+
   const igreja = igrejas[0] ?? null;
 
   return (
     <>
       <Navbar />
-      <Hero />
+      <Hero slogan={slogan} />
       <About />
       <Leadership church={igreja} leaders={lideres} />
-      <Schedule />
+      <Schedule items={scheduleItems} />
       <Values />
       <LiveBanner />
       <SocialLinks />

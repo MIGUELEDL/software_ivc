@@ -97,9 +97,9 @@ export default async function EventoDetalhePage({
               </span>
               <span
                 className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-sans text-xs font-bold ${
-                  evento.status === "ATIVO"
-                    ? "bg-primary/10 text-primary"
-                    : "bg-red-100 text-red-700"
+                  evento.status === "EM ABERTO"
+                    ? "bg-emerald-500/20 text-emerald-400"
+                    : "bg-white/10 text-white/40"
                 }`}
               >
                 {evento.status}

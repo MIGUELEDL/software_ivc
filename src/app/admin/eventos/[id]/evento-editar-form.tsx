@@ -7,7 +7,7 @@ import type { Evento, EventoStatus } from "@/lib/admin/eventos";
 /**
  * Form de edição de evento (EVT-08). PATCH parcial em
  * `/api/admin/eventos/[id]` com toggle `visivel` (checkbox) e toggle `status`
- * ATIVO/INATIVO (soft-delete — EVT-10/11); sem botão DELETE (EVT-03).
+ * EM ABERTO/CONCLUIDO (soft-delete — EVT-10/11); sem botão DELETE (EVT-03).
  * Validado por campo → 400; 200 → fecha e refresh; 401 → login.
  */
 export function EventoEditarForm({ evento }: { evento: Evento }) {
@@ -19,7 +19,7 @@ export function EventoEditarForm({ evento }: { evento: Evento }) {
   const [status, setStatus] = useState<EventoStatus>(evento.status);
 
   const inputClass =
-    "w-full rounded-lg border border-gray-300 px-4 py-2.5 font-serif text-text-dark focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors";
+    "w-full rounded-lg bg-[#0d1f3c] border border-white/10 px-4 py-2.5 font-serif text-white focus:border-accent focus:ring-1 focus:ring-accent outline-none transition-colors";
 
   if (!aberto) {
     return (
@@ -27,7 +27,7 @@ export function EventoEditarForm({ evento }: { evento: Evento }) {
         <button
           type="button"
           onClick={() => setAberto(true)}
-          className="rounded-lg border-2 border-primary text-primary hover:bg-primary hover:text-white font-sans text-sm font-bold px-5 py-2.5 transition-colors"
+          className="rounded-lg border-2 border-[#c9a84c] text-[#c9a84c] hover:bg-[#c9a84c] hover:text-[#0d1f3c] font-sans text-sm font-bold px-5 py-2.5 transition-colors"
         >
           Editar evento
         </button>
@@ -93,9 +93,9 @@ export function EventoEditarForm({ evento }: { evento: Evento }) {
   return (
     <form
       onSubmit={atualizar}
-      className="rounded-2xl bg-white shadow-xl p-8 sm:p-10 space-y-5 mb-6"
+      className="rounded-2xl bg-[#132744] border border-white/10 shadow-xl p-8 sm:p-10 space-y-5 mb-6"
     >
-      <h2 className="font-sans text-lg font-bold text-primary">
+      <h2 className="font-sans text-lg font-bold text-white">
         Editar evento
       </h2>
 
@@ -111,7 +111,7 @@ export function EventoEditarForm({ evento }: { evento: Evento }) {
       <div>
         <label
           htmlFor="title"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/70 mb-1.5"
         >
           Título
         </label>
@@ -133,7 +133,7 @@ export function EventoEditarForm({ evento }: { evento: Evento }) {
       <div>
         <label
           htmlFor="description"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/70 mb-1.5"
         >
           Descrição (opcional)
         </label>
@@ -155,7 +155,7 @@ export function EventoEditarForm({ evento }: { evento: Evento }) {
         <div>
           <label
             htmlFor="date"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white/70 mb-1.5"
           >
             Data
           </label>
@@ -177,7 +177,7 @@ export function EventoEditarForm({ evento }: { evento: Evento }) {
         <div>
           <label
             htmlFor="time"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white/70 mb-1.5"
           >
             Hora
           </label>
@@ -200,7 +200,7 @@ export function EventoEditarForm({ evento }: { evento: Evento }) {
       <div>
         <label
           htmlFor="location"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/70 mb-1.5"
         >
           Local
         </label>
@@ -220,35 +220,35 @@ export function EventoEditarForm({ evento }: { evento: Evento }) {
       </div>
 
       <div>
-        <span className="block font-sans text-sm font-semibold text-text-dark mb-1.5">
+        <span className="block font-sans text-sm font-semibold text-white/70 mb-1.5">
           Status
         </span>
-        <div className="inline-flex overflow-hidden rounded-full border-2 border-primary">
+        <div className="inline-flex overflow-hidden rounded-full border-2 border-white/10">
           <button
             type="button"
-            onClick={() => setStatus("ATIVO")}
+            onClick={() => setStatus("EM ABERTO")}
             className={`px-4 py-1.5 font-sans text-xs font-bold transition-colors ${
-              status === "ATIVO"
-                ? "bg-green-100 text-green-700"
-                : "text-text-dark/50 hover:text-primary"
+              status === "EM ABERTO"
+                ? "bg-emerald-500/20 text-emerald-400"
+                : "text-white/50 hover:text-white"
             }`}
           >
-            ATIVO
+            EM ABERTO
           </button>
           <button
             type="button"
-            onClick={() => setStatus("INATIVO")}
+            onClick={() => setStatus("CONCLUIDO")}
             className={`px-4 py-1.5 font-sans text-xs font-bold transition-colors ${
-              status === "INATIVO"
-                ? "bg-red-100 text-red-700"
-                : "text-text-dark/50 hover:text-primary"
+              status === "CONCLUIDO"
+                ? "bg-white/10 text-white/70"
+                : "text-white/50 hover:text-white"
             }`}
           >
-            INATIVO
+            CONCLUIDO
           </button>
         </div>
-        <p className="mt-1 text-sm text-text-dark/60 font-serif">
-          INATIVO oculta o evento do portal (soft-delete — o histórico é
+        <p className="mt-1 text-sm text-white/50 font-serif">
+          CONCLUIDO oculta o evento do portal (soft-delete — o histórico é
           preservado).
         </p>
         {camposErro.status && (
@@ -258,12 +258,12 @@ export function EventoEditarForm({ evento }: { evento: Evento }) {
         )}
       </div>
 
-      <label className="flex items-center gap-3 font-serif text-text-dark cursor-pointer">
+      <label className="flex items-center gap-3 font-serif text-white/70 cursor-pointer">
         <input
           type="checkbox"
           name="visivel"
           defaultChecked={evento.visivel}
-          className="h-5 w-5 rounded border-gray-300 text-accent focus:ring-accent"
+          className="h-5 w-5 rounded border-white/10 bg-[#0d1f3c] text-accent focus:ring-accent"
         />
         Visível no portal
         {camposErro.visivel && (
@@ -277,14 +277,14 @@ export function EventoEditarForm({ evento }: { evento: Evento }) {
         <button
           type="submit"
           disabled={enviando}
-          className="rounded-lg bg-accent hover:bg-accent-light disabled:opacity-60 text-bg-dark font-sans font-bold px-6 py-2.5 transition-colors"
+          className="rounded-lg bg-[#c9a84c] hover:bg-[#e0c872] disabled:opacity-60 text-[#0d1f3c] font-sans font-bold px-6 py-2.5 transition-colors"
         >
           {enviando ? "Salvando..." : "Salvar alterações"}
         </button>
         <button
           type="button"
           onClick={() => setAberto(false)}
-          className="rounded-lg border-2 border-primary text-primary hover:bg-primary hover:text-white font-sans text-sm font-bold px-5 py-2.5 transition-colors"
+          className="rounded-lg border-2 border-white/20 text-white/70 hover:bg-white/10 font-sans text-sm font-bold px-5 py-2.5 transition-colors"
         >
           Cancelar
         </button>

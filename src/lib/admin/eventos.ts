@@ -1,6 +1,6 @@
 import { createServerClient } from "@/lib/supabase/server";
 
-export type EventoStatus = "ATIVO" | "INATIVO";
+export type EventoStatus = "EM ABERTO" | "CONCLUIDO";
 
 export type Evento = {
   id: string;
@@ -101,7 +101,7 @@ export async function listarEventosPublicos(): Promise<Evento[]> {
     .from("events")
     .select("*")
     .eq("visivel", true)
-    .eq("status", "ATIVO")
+    .eq("status", "EM ABERTO")
     .order("date", { ascending: true });
 
   if (error) {
@@ -124,7 +124,7 @@ export async function buscarEventoPublico(id: string): Promise<Evento | null> {
     .select("*")
     .eq("id", id)
     .eq("visivel", true)
-    .eq("status", "ATIVO")
+    .eq("status", "EM ABERTO")
     .maybeSingle();
 
   if (error) {
@@ -155,7 +155,7 @@ export async function criarEvento(dados: EventoDados): Promise<Evento> {
       time: dados.time,
       location: dados.location,
       visivel: dados.visivel ?? true,
-      status: "ATIVO",
+      status: "EM ABERTO",
     })
     .select()
     .single();

@@ -5,7 +5,7 @@ import { ChevronDown } from "lucide-react";
 import { CHURCH, SOCIAL } from "@/lib/constants";
 import Image from "next/image";
 
-export default function Hero() {
+export default function Hero({ slogan }: { slogan?: string }) {
   return (
     <section
       id="hero"
@@ -48,7 +48,7 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.5 }}
           className="font-serif text-lg sm:text-xl md:text-2xl text-accent-light max-w-3xl leading-relaxed mb-8"
         >
-          {CHURCH.slogan}
+          {slogan || CHURCH.slogan}
         </motion.p>
 
         <motion.div

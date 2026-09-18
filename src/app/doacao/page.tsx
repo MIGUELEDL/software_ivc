@@ -1,10 +1,26 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PixDonation from "@/components/PixDonation";
-import { PIX_PAYLOAD } from "@/lib/pix";
+import { buildBrCode } from "@/lib/pix";
 import { CHURCH } from "@/lib/constants";
+import { obterConfiguracoes } from "@/lib/admin/configuracoes";
 
-export default function DoacaoPage() {
+export default async function DoacaoPage() {
+  let pixKey = CHURCH.cnpj.replace(/\D/g, "");
+
+  try {
+    const { settings } = await obterConfiguracoes();
+    pixKey = (settings["pix.key"] as string) ?? pixKey;
+  } catch {
+    // fallback to constants
+  }
+
+  const payload = buildBrCode({
+    key: pixKey,
+    receiverName: CHURCH.name,
+    receiverCity: CHURCH.city.split("-")[0].trim(),
+  });
+
   return (
     <>
       <Navbar />
@@ -19,7 +35,7 @@ export default function DoacaoPage() {
               evangelho de Cristo.
             </p>
           </div>
-          <PixDonation payload={PIX_PAYLOAD} />
+          <PixDonation payload={payload} />
         </div>
       </section>
       <Footer />

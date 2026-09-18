@@ -208,12 +208,12 @@ T18
 - Skill: NONE
 
 **Done when**:
-- [ ] Migration drops existing `events_status_check` constraint
-- [ ] Migration adds new CHECK constraint: `status in ('EM ABERTO', 'CONCLUIDO')`
-- [ ] Migration updates existing rows: ATIVO → EM ABERTO, INATIVO → CONCLUIDO
-- [ ] Migration is idempotent (safe to re-run)
-- [ ] Migration applied to dev database
-- [ ] Gate check passes
+- [x] Migration drops existing `events_status_check` constraint
+- [x] Migration adds new CHECK constraint: `status in ('EM ABERTO', 'CONCLUIDO')`
+- [x] Migration updates existing rows: ATIVO → EM ABERTO, INATIVO → CONCLUIDO
+- [x] Migration is idempotent (safe to re-run)
+- [x] Migration applied to dev database
+- [x] Gate check passes
 
 **Tests**: none
 **Gate**: build
@@ -233,12 +233,12 @@ T18
 - Skill: NONE
 
 **Done when**:
-- [ ] `EventoStatus` type changed to `"EM ABERTO" | "CONCLUIDO"`
-- [ ] Event creation form uses dark theme (bg-[#132744] card, dark inputs)
-- [ ] Event edit form uses dark theme
-- [ ] Status toggle in edit form shows "EM ABERTO" (green) / "CONCLUIDO" (gray)
-- [ ] Helper text updated: "CONCLUIDO oculta o evento do portal"
-- [ ] Gate check passes
+- [x] `EventoStatus` type changed to `"EM ABERTO" | "CONCLUIDO"`
+- [x] Event creation form uses dark theme (bg-[#132744] card, dark inputs)
+- [x] Event edit form uses dark theme
+- [x] Status toggle in edit form shows "EM ABERTO" (green) / "CONCLUIDO" (gray)
+- [x] Helper text updated: "CONCLUIDO oculta o evento do portal"
+- [x] Gate check passes
 
 **Tests**: none
 **Gate**: build
@@ -262,9 +262,9 @@ T18
 - Skill: NONE
 
 **Done when**:
-- [ ] Status badges display "EM ABERTO" (emerald) and "CONCLUIDO" (white/10)
-- [ ] Badge values match new EventoStatus type
-- [ ] Gate check passes
+- [x] Status badges display "EM ABERTO" (emerald) and "CONCLUIDO" (white/10)
+- [x] Badge values match new EventoStatus type
+- [x] Gate check passes
 
 **Tests**: none
 **Gate**: build
@@ -284,13 +284,13 @@ T18
 - Skill: NONE
 
 **Done when**:
-- [ ] Config form: "Pastor" label → "Pastor Presidente"
-- [ ] Config form: "Missão" label → "Propósito"
-- [ ] Schedule.tsx: reads schedule items from `obterConfiguracoes()`, falls back to constants
-- [ ] PixDonation.tsx: reads PIX key from `obterConfiguracoes()`, falls back to constants
-- [ ] Hero.tsx: reads slogan from `obterConfiguracoes()`, falls back to constants
-- [ ] constants.ts preserved as fallback (no deletion)
-- [ ] Gate check passes
+- [x] Config form: "Pastor" label → "Pastor Presidente"
+- [x] Config form: "Missão" label → "Propósito"
+- [x] Schedule.tsx: reads schedule items from `obterConfiguracoes()`, falls back to constants
+- [x] PixDonation.tsx: reads PIX key from `obterConfiguracoes()`, falls back to constants
+- [x] Hero.tsx: reads slogan from `obterConfiguracoes()`, falls back to constants
+- [x] constants.ts preserved as fallback (no deletion)
+- [x] Gate check passes
 
 **Tests**: none
 **Gate**: build

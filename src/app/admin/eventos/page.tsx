@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarDays, Eye, MapPin, Pencil, Plus } from "lucide-react";
+import { CalendarDays, Eye, MapPin, Pencil, Plus } from "lucide-react";
 import Link from "next/link";
 import { getClaims } from "@/lib/auth/claims";
 import { can } from "@/lib/auth/rbac";
@@ -18,25 +18,18 @@ export default async function AdminEventosPage() {
 
   if (!leitor) {
     return (
-      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
-        <div className="max-w-2xl mx-auto px-4">
+      <section className="py-8 min-h-[calc(100vh-3.5rem)]">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <div
-            className="rounded-2xl bg-white shadow-xl p-10 text-center"
+            className="bg-[#132744] border border-white/10 rounded-xl p-10 text-center"
             role="alert"
           >
-            <h1 className="font-sans text-2xl font-bold text-primary mb-3">
+            <h1 className="font-sans text-2xl font-bold text-white mb-3">
               Eventos
             </h1>
-            <p className="font-serif text-text-dark/70">
+            <p className="font-serif text-white/60">
               Você não tem permissão para acessar este módulo.
             </p>
-            <Link
-              href="/admin"
-              className="mt-6 inline-flex items-center gap-2 font-sans text-sm font-bold text-primary hover:text-accent transition-colors"
-            >
-              <ArrowLeft size={16} aria-hidden="true" />
-              Voltar ao painel
-            </Link>
           </div>
         </div>
       </section>
@@ -52,14 +45,14 @@ export default async function AdminEventosPage() {
   }
 
   return (
-    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
-      <div className="max-w-4xl mx-auto px-4">
+    <section className="py-8 min-h-[calc(100vh-3.5rem)]">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
           <div>
-            <h1 className="font-sans text-3xl font-bold text-primary mb-2">
+            <h1 className="font-sans text-3xl font-bold text-white mb-2">
               Eventos
             </h1>
-            <p className="font-serif text-base text-text-dark/60">
+            <p className="font-serif text-base text-white/60">
               Agenda da igreja e visibilidade no portal.
             </p>
           </div>
@@ -67,7 +60,7 @@ export default async function AdminEventosPage() {
           {escritor && (
             <Link
               href="/admin/eventos/nova"
-              className="inline-flex items-center gap-2 rounded-full bg-accent hover:bg-accent-light text-white font-sans text-sm font-bold px-5 py-2.5 transition-colors"
+              className="inline-flex items-center gap-2 bg-[#c9a84c] hover:bg-[#e0c872] text-[#0d1f3c] font-sans font-bold rounded-lg px-4 py-2 transition-colors"
             >
               <Plus size={16} aria-hidden="true" />
               Novo evento
@@ -76,22 +69,22 @@ export default async function AdminEventosPage() {
         </div>
 
         {falhaConsulta ? (
-          <div className="rounded-2xl bg-white shadow-xl p-10 text-center">
-            <p className="font-serif text-text-dark/70">
+          <div className="bg-[#132744] border border-white/10 rounded-xl p-10 text-center">
+            <p className="font-serif text-white/60">
               Não foi possível carregar os eventos. Tente novamente mais tarde.
             </p>
           </div>
         ) : eventos.length === 0 ? (
-          <div className="rounded-2xl bg-white shadow-xl p-10 text-center">
-            <p className="font-serif text-base text-text-dark/70">
+          <div className="bg-[#132744] border border-white/10 rounded-xl p-10 text-center">
+            <p className="font-serif text-base text-white/60">
               Nenhum evento cadastrado.
             </p>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-2xl bg-white shadow-xl">
+          <div className="bg-[#132744] border border-white/10 rounded-xl overflow-hidden">
             <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-text-dark/10 font-sans text-xs font-semibold uppercase tracking-wider text-text-dark/50">
+                <tr className="border-b border-white/10 font-sans text-sm font-bold text-white/70 uppercase tracking-wider">
                   <th className="px-6 py-4">Evento</th>
                   <th className="px-6 py-4">Data</th>
                   <th className="px-6 py-4">Local</th>
@@ -103,23 +96,23 @@ export default async function AdminEventosPage() {
                 {eventos.map((evento) => (
                   <tr
                     key={evento.id}
-                    className="border-b border-text-dark/5 last:border-0"
+                    className="bg-[#0d1f3c] border-b border-white/5 last:border-0"
                   >
                     <td className="px-6 py-4">
-                      <p className="flex items-center gap-2 font-sans font-semibold text-text-dark">
-                        <CalendarDays size={16} className="text-primary" aria-hidden="true" />
+                      <p className="flex items-center gap-2 font-sans font-semibold text-white">
+                        <CalendarDays size={16} className="text-[#c9a84c]" aria-hidden="true" />
                         {evento.title}
                       </p>
                     </td>
-                    <td className="px-6 py-4 font-serif text-sm text-text-dark/70">
+                    <td className="px-6 py-4 font-serif text-sm text-white/60">
                       {new Date(evento.date + "T00:00:00").toLocaleDateString(
                         "pt-BR"
                       )}{" "}
                       · {evento.time}
                     </td>
                     <td className="px-6 py-4">
-                      <p className="flex items-center gap-1.5 font-serif text-sm text-text-dark/70">
-                        <MapPin size={14} className="text-primary" aria-hidden="true" />
+                      <p className="flex items-center gap-1.5 font-serif text-sm text-white/60">
+                        <MapPin size={14} className="text-[#c9a84c]" aria-hidden="true" />
                         {evento.location}
                       </p>
                     </td>
@@ -128,17 +121,17 @@ export default async function AdminEventosPage() {
                         <span
                           className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-sans text-xs font-bold ${
                             evento.visivel
-                              ? "bg-green-100 text-green-700"
-                              : "bg-gray-200 text-gray-600"
+                              ? "bg-emerald-500/20 text-emerald-400"
+                              : "bg-white/10 text-white/40"
                           }`}
                         >
                           {evento.visivel ? "Visível" : "Oculto"}
                         </span>
                         <span
                           className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-sans text-xs font-bold ${
-                            evento.status === "ATIVO"
-                              ? "bg-primary/10 text-primary"
-                              : "bg-red-100 text-red-700"
+                            evento.status === "EM ABERTO"
+                              ? "bg-emerald-500/20 text-emerald-400"
+                              : "bg-white/10 text-white/40"
                           }`}
                         >
                           {evento.status}
@@ -149,7 +142,7 @@ export default async function AdminEventosPage() {
                       <div className="flex items-center justify-end gap-3">
                         <Link
                           href={`/admin/eventos/${evento.id}`}
-                          className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-primary hover:text-accent transition-colors"
+                          className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-white/70 hover:text-[#c9a84c] transition-colors"
                         >
                           <Eye size={15} aria-hidden="true" />
                           Detalhes
@@ -157,7 +150,7 @@ export default async function AdminEventosPage() {
                         {escritor && (
                           <Link
                             href={`/admin/eventos/${evento.id}?editar=1`}
-                            className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-primary hover:text-accent transition-colors"
+                            className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-white/70 hover:text-[#c9a84c] transition-colors"
                           >
                             <Pencil size={15} aria-hidden="true" />
                             Editar

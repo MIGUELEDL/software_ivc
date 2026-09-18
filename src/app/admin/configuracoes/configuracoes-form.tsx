@@ -26,12 +26,12 @@ function TextField({
 }) {
   return (
     <div className="space-y-1">
-      <label className="font-sans text-xs font-bold text-text-dark/50 uppercase">
+      <label className="font-sans text-xs font-bold text-white/50 uppercase">
         {label}
       </label>
       {multiline ? (
         <textarea
-          className="w-full rounded-lg border border-gray-200 bg-bg-gray px-3 py-2 font-serif text-sm text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50"
+          className="w-full rounded-lg bg-[#0d1f3c] border border-white/10 px-3 py-2 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30 disabled:opacity-50"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
@@ -40,7 +40,7 @@ function TextField({
       ) : (
         <input
           type="text"
-          className="w-full rounded-lg border border-gray-200 bg-bg-gray px-3 py-2 font-serif text-sm text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50"
+          className="w-full rounded-lg bg-[#0d1f3c] border border-white/10 px-3 py-2 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30 disabled:opacity-50"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
@@ -58,9 +58,9 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl bg-white shadow-xl p-6 space-y-4">
-      <h2 className="font-sans text-lg font-bold text-text-dark flex items-center gap-2">
-        <Settings size={18} className="text-primary" />
+    <div className="rounded-2xl bg-[#132744] border border-white/10 p-6 space-y-4">
+      <h2 className="font-sans text-lg font-bold text-white flex items-center gap-2">
+        <Settings size={18} className="text-[#c9a84c]" />
         {title}
       </h2>
       {children}
@@ -71,10 +71,10 @@ function Section({
 function ReadonlyValue({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="font-sans text-xs font-bold text-text-dark/50 uppercase">
+      <p className="font-sans text-xs font-bold text-white/50 uppercase">
         {label}
       </p>
-      <p className="font-serif text-sm text-text-dark">{value || "—"}</p>
+      <p className="font-serif text-sm text-white">{value || "—"}</p>
     </div>
   );
 }
@@ -95,7 +95,7 @@ function ValoresEditor({
   };
   return (
     <div className="space-y-2">
-      <p className="font-sans text-xs font-bold text-text-dark/50 uppercase">
+      <p className="font-sans text-xs font-bold text-white/50 uppercase">
         Valores
       </p>
       {values.map((v, i) => (
@@ -103,14 +103,14 @@ function ValoresEditor({
           <input
             type="text"
             placeholder="Titulo"
-            className="w-28 rounded-lg border border-gray-200 bg-bg-gray px-2 py-1.5 font-serif text-sm text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="w-28 rounded-lg bg-[#0d1f3c] border border-white/10 px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
             value={v.title}
             onChange={(e) => update(i, "title", e.target.value)}
           />
           <input
             type="text"
             placeholder="Descricao"
-            className="flex-1 rounded-lg border border-gray-200 bg-bg-gray px-2 py-1.5 font-serif text-sm text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="flex-1 rounded-lg bg-[#0d1f3c] border border-white/10 px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
             value={v.description}
             onChange={(e) => update(i, "description", e.target.value)}
           />
@@ -123,14 +123,14 @@ function ValoresEditor({
 function ValoresReadonly({ values }: { values: Valor[] }) {
   return (
     <div className="space-y-1">
-      <p className="font-sans text-xs font-bold text-text-dark/50 uppercase">
+      <p className="font-sans text-xs font-bold text-white/50 uppercase">
         Valores
       </p>
       {values.length === 0 ? (
-        <p className="font-serif text-sm text-text-dark/50">Nenhum valor configurado.</p>
+        <p className="font-serif text-sm text-white/50">Nenhum valor configurado.</p>
       ) : (
         values.map((v, i) => (
-          <div key={i} className="font-serif text-sm text-text-dark">
+          <div key={i} className="font-serif text-sm text-white">
             <span className="font-bold">{v.title}</span>: {v.description}
           </div>
         ))
@@ -205,8 +205,8 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
         <div
           className={`rounded-lg p-3 font-sans text-sm ${
             feedback.includes("Erro")
-              ? "bg-red-50 text-red-700"
-              : "bg-green-50 text-green-700"
+              ? "bg-red-900/30 text-red-400"
+              : "bg-green-900/30 text-green-400"
           }`}
         >
           {feedback}
@@ -222,12 +222,12 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
             <TextField label="Fundacao" value={form["church.foundedDate"] as string} onChange={(v) => set("church.foundedDate", v)} />
             <TextField label="CNPJ" value={form["church.cnpj"] as string} onChange={(v) => set("church.cnpj", v)} />
             <TextField label="Cidade" value={form["church.city"] as string} onChange={(v) => set("church.city", v)} />
-            <TextField label="Pastor" value={form["church.leader"] as string} onChange={(v) => set("church.leader", v)} />
+            <TextField label="Pastor Presidente" value={form["church.leader"] as string} onChange={(v) => set("church.leader", v)} />
             <TextField label="Endereco" value={form["church.address"] as string} onChange={(v) => set("church.address", v)} />
             <div className="sm:col-span-2">
               <TextField label="Sobre" value={form["church.about"] as string} onChange={(v) => set("church.about", v)} multiline />
             </div>
-            <TextField label="Missao" value={form["church.mission"] as string} onChange={(v) => set("church.mission", v)} multiline />
+            <TextField label="Proposito" value={form["church.mission"] as string} onChange={(v) => set("church.mission", v)} multiline />
             <TextField label="Visao" value={form["church.vision"] as string} onChange={(v) => set("church.vision", v)} multiline />
             <div className="sm:col-span-2">
               <ValoresEditor
@@ -244,12 +244,12 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
             <ReadonlyValue label="Fundacao" value={form["church.foundedDate"] as string} />
             <ReadonlyValue label="CNPJ" value={form["church.cnpj"] as string} />
             <ReadonlyValue label="Cidade" value={form["church.city"] as string} />
-            <ReadonlyValue label="Pastor" value={form["church.leader"] as string} />
+            <ReadonlyValue label="Pastor Presidente" value={form["church.leader"] as string} />
             <ReadonlyValue label="Endereco" value={form["church.address"] as string} />
             <div className="sm:col-span-2">
               <ReadonlyValue label="Sobre" value={form["church.about"] as string} />
             </div>
-            <ReadonlyValue label="Missao" value={form["church.mission"] as string} />
+            <ReadonlyValue label="Proposito" value={form["church.mission"] as string} />
             <ReadonlyValue label="Visao" value={form["church.vision"] as string} />
             <div className="sm:col-span-2">
               <ValoresReadonly values={form["church.values"] as Array<{ title: string; description: string; color: string }>} />
@@ -268,10 +268,10 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <ReadonlyValue label="Numero" value={form["whatsapp.display"] as string} />
             <div>
-              <p className="font-sans text-xs font-bold text-text-dark/50 uppercase">
+              <p className="font-sans text-xs font-bold text-white/50 uppercase">
                 Link wa.me
               </p>
-              <p className="font-serif text-sm text-primary break-all">
+              <p className="font-serif text-sm text-[#c9a84c] break-all">
                 https://wa.me/55{form["whatsapp.number"] as string}
               </p>
             </div>
@@ -286,10 +286,10 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
           <div className="space-y-2">
             <ReadonlyValue label="Chave PIX (CNPJ)" value={form["pix.key"] as string} />
             <div className="rounded-lg bg-bg-gray p-3">
-              <p className="font-sans text-xs font-bold text-text-dark/50 uppercase mb-1">
+              <p className="font-sans text-xs font-bold text-white/50 uppercase mb-1">
                 Como doar
               </p>
-              <p className="font-serif text-sm text-text-dark/70">
+              <p className="font-serif text-sm text-white/70">
                 Abra o app do banco, escolha PIX copia-e-cola, cole a chave acima e informe o valor desejado.
               </p>
             </div>
@@ -305,21 +305,21 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
                 <input
                   type="text"
                   placeholder="Dia"
-                  className="w-20 rounded-lg border border-gray-200 bg-bg-gray px-2 py-1.5 font-serif text-sm text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-20 rounded-lg bg-[#0d1f3c] border border-white/10 px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
                   value={item.day}
                   onChange={(e) => updateSchedule(i, "day", e.target.value)}
                 />
                 <input
                   type="text"
                   placeholder="Horario"
-                  className="w-24 rounded-lg border border-gray-200 bg-bg-gray px-2 py-1.5 font-serif text-sm text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-24 rounded-lg bg-[#0d1f3c] border border-white/10 px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
                   value={item.time}
                   onChange={(e) => updateSchedule(i, "time", e.target.value)}
                 />
                 <input
                   type="text"
                   placeholder="Titulo"
-                  className="flex-1 rounded-lg border border-gray-200 bg-bg-gray px-2 py-1.5 font-serif text-sm text-text-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="flex-1 rounded-lg bg-[#0d1f3c] border border-white/10 px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
                   value={item.title}
                   onChange={(e) => updateSchedule(i, "title", e.target.value)}
                 />
@@ -335,7 +335,7 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
             <button
               type="button"
               onClick={addSchedule}
-              className="flex items-center gap-1 font-sans text-xs font-bold text-primary hover:text-accent"
+              className="flex items-center gap-1 font-sans text-xs font-bold text-[#c9a84c] hover:text-[#e0c872]"
             >
               <Plus size={14} /> Adicionar culto
             </button>
@@ -343,10 +343,10 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
         ) : (
           <div className="space-y-2">
             {schedule.length === 0 ? (
-              <p className="font-serif text-sm text-text-dark/50">Nenhum culto configurado.</p>
+                <p className="font-serif text-sm text-white/50">Nenhum culto configurado.</p>
             ) : (
               schedule.map((item, i) => (
-                <div key={i} className="flex items-center gap-3 font-serif text-sm text-text-dark">
+                <div key={i} className="flex items-center gap-3 font-serif text-sm text-white">
                   <span className="font-bold">{item.day}</span>
                   <span>{item.time}</span>
                   <span>{item.title}</span>
@@ -378,13 +378,13 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 font-sans text-sm font-bold text-white hover:bg-accent disabled:opacity-50"
+                className="flex items-center gap-2 rounded-lg bg-[#c9a84c] px-4 py-2 font-sans text-sm font-bold text-[#0d1f3c] hover:bg-[#e0c872] disabled:opacity-50"
               >
                 <Save size={16} /> {saving ? "Salvando..." : "Salvar"}
               </button>
               <button
                 onClick={handleCancel}
-                className="flex items-center gap-2 rounded-lg border-2 border-gray-300 px-4 py-2 font-sans text-sm font-bold text-text-dark/60 hover:border-primary/30"
+                className="flex items-center gap-2 rounded-lg border-2 border-white/10 px-4 py-2 font-sans text-sm font-bold text-white/60 hover:border-[#c9a84c]/30"
               >
                 <X size={16} /> Cancelar
               </button>
@@ -392,7 +392,7 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
           ) : (
             <button
               onClick={() => setEditing(true)}
-              className="flex items-center gap-2 rounded-lg border-2 border-primary px-4 py-2 font-sans text-sm font-bold text-primary hover:bg-primary hover:text-white"
+              className="flex items-center gap-2 rounded-lg border-2 border-[#c9a84c] px-4 py-2 font-sans text-sm font-bold text-[#c9a84c] hover:bg-[#c9a84c] hover:text-[#0d1f3c]"
             >
               Editar
             </button>
