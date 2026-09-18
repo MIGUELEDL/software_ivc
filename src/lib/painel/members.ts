@@ -8,6 +8,10 @@ export type Member = {
   whatsapp: string;
   matricula: string;
   foto_url: string | null;
+  rg: string | null;
+  cpf: string | null;
+  data_batismo: string | null;
+  validade_cartao: string | null;
   criado_em: string;
   atualizado_em: string;
 };

@@ -15,11 +15,11 @@ export function MemberCard({ member }: { member: Member }) {
       id="cartao-membro"
       className="overflow-hidden rounded-2xl bg-white shadow-xl"
     >
-      <div className="flex items-center justify-between bg-bg-dark px-6 py-4">
+      <div className="flex items-center justify-between bg-[#1a3a6b] px-6 py-4">
         <span className="font-sans text-lg font-bold text-white">
           {CHURCH.shortName}
         </span>
-        <span className="font-sans text-xs font-bold uppercase tracking-wider text-accent">
+        <span className="font-sans text-xs font-bold uppercase tracking-wider text-[#c9a84c]">
           Membro
         </span>
       </div>
@@ -34,34 +34,65 @@ export function MemberCard({ member }: { member: Member }) {
           />
         ) : (
           <div
-            className="flex h-24 w-24 shrink-0 items-center justify-center rounded-lg bg-bg-gray"
+            className="flex h-24 w-24 shrink-0 items-center justify-center rounded-lg bg-gray-100"
             aria-label="Foto não enviada"
           >
             <UserRound
-              className="h-10 w-10 text-text-dark/30"
+              className="h-10 w-10 text-gray-300"
               aria-hidden="true"
             />
           </div>
         )}
 
-        <div className="min-w-0">
-          <p className="font-sans text-xs font-semibold uppercase tracking-wider text-text-dark/50">
+        <div className="min-w-0 flex-1">
+          <p className="font-sans text-xs font-semibold uppercase tracking-wider text-gray-500">
             Nome
           </p>
-          <p className="truncate font-sans text-lg font-bold text-text-dark">
+          <p className="truncate font-sans text-lg font-bold text-[#1a3a6b]">
             {member.nome}
           </p>
-          <p className="mt-3 font-sans text-xs font-semibold uppercase tracking-wider text-text-dark/50">
+          <p className="mt-2 font-sans text-xs font-semibold uppercase tracking-wider text-gray-500">
             Matrícula
           </p>
-          <p className="font-sans text-lg font-bold text-primary">
+          <p className="font-sans text-base font-bold text-[#c9a84c]">
             {member.matricula}
           </p>
         </div>
       </div>
 
-      <div className="border-t border-text-dark/10 bg-bg-gray px-6 py-3">
-        <p className="text-center font-serif text-xs text-text-dark/70">
+      <div className="border-t border-gray-200 px-6 py-4 space-y-2">
+        <div className="grid grid-cols-2 gap-2 text-sm">
+          <div>
+            <span className="font-sans text-xs font-semibold uppercase tracking-wider text-gray-500">RG</span>
+            <p className="font-serif text-gray-800">{member.rg || "—"}</p>
+          </div>
+          <div>
+            <span className="font-sans text-xs font-semibold uppercase tracking-wider text-gray-500">CPF</span>
+            <p className="font-serif text-gray-800">{member.cpf || "—"}</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-2 text-sm">
+          <div>
+            <span className="font-sans text-xs font-semibold uppercase tracking-wider text-gray-500">Batismo</span>
+            <p className="font-serif text-gray-800">
+              {member.data_batismo
+                ? new Date(member.data_batismo + "T00:00:00").toLocaleDateString("pt-BR")
+                : "—"}
+            </p>
+          </div>
+          <div>
+            <span className="font-sans text-xs font-semibold uppercase tracking-wider text-gray-500">Validade</span>
+            <p className="font-serif text-gray-800">
+              {member.validade_cartao
+                ? new Date(member.validade_cartao + "T00:00:00").toLocaleDateString("pt-BR")
+                : "—"}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="border-t border-gray-200 bg-gray-50 px-6 py-3">
+        <p className="text-center font-serif text-xs text-gray-500">
           {CHURCH.name}
         </p>
       </div>

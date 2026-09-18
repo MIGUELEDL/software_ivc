@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { MemberCard } from "@/components/MemberCard";
 import { getClaims } from "@/lib/auth/claims";
+import { can } from "@/lib/auth/rbac";
 import type { Member } from "@/lib/painel/members";
 import { getMemberByAuthUid } from "@/lib/painel/members";
 import { PrintButton } from "./print-button";
@@ -19,7 +20,6 @@ export default async function CartaoPage() {
   try {
     member = await getMemberByAuthUid(claims.sub);
   } catch {
-    // Banco indisponível: mostra erro amigável em vez de quebrar a página.
     falhaConsulta = true;
   }
 
@@ -50,10 +50,11 @@ export default async function CartaoPage() {
     );
   }
 
-  // PAINEL-12: sem registro em members, o membro precisa do autocadastro.
   if (!member) {
     redirect("/painel/perfil?primeiro=1");
   }
+
+  const canPrint = await can(claims.role ?? "", "membros", "escrever");
 
   return (
     <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
@@ -77,9 +78,11 @@ export default async function CartaoPage() {
 
         <MemberCard member={member} />
 
-        <div className="mt-6 text-center print:hidden">
-          <PrintButton />
-        </div>
+        {canPrint && (
+          <div className="mt-6 text-center print:hidden">
+            <PrintButton />
+          </div>
+        )}
       </div>
 
       <style>{`

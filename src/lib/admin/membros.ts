@@ -22,6 +22,7 @@ export type MembroAdmin = Member & {
 export type MembroFiltros = {
   q?: string;
   status?: string;
+  mesAniversario?: number;
 };
 
 /**
@@ -47,6 +48,11 @@ export async function listMembros(
 
   if (filtros.status) {
     query = query.eq("status", filtros.status);
+  }
+
+  if (filtros.mesAniversario) {
+    const month = String(filtros.mesAniversario).padStart(2, "0");
+    query = query.filter("nascimento", "like", `%-${month}-%`);
   }
 
   const { data, error } = await query;
