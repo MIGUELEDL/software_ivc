@@ -26,12 +26,12 @@ export default function PixDonation({ payload }: PixDonationProps) {
 
   return (
     <div className="grid md:grid-cols-2 gap-10 items-start">
-      <div className="rounded-2xl bg-white shadow-xl p-8 sm:p-10 flex flex-col items-center text-center">
+      <div className="rounded-2xl bg-[#132744] shadow-xl p-8 sm:p-10 flex flex-col items-center text-center">
         <QrCode className="w-12 h-12 text-accent mb-4" aria-hidden="true" />
-        <h2 className="font-sans text-xl font-bold text-primary mb-2">
+        <h2 className="font-sans text-xl font-bold text-white mb-2">
           Escaneie o QR Code
         </h2>
-        <p className="font-serif text-base text-text-dark/70 mb-8">
+        <p className="font-serif text-base text-white/70 mb-8">
           Abra o app do seu banco, escaneie o código e faça sua doação.
         </p>
         <QRCodeSVG
@@ -44,16 +44,16 @@ export default function PixDonation({ payload }: PixDonationProps) {
         />
       </div>
 
-      <div className="rounded-2xl bg-white shadow-xl p-8 sm:p-10 flex flex-col">
-        <h2 className="font-sans text-xl font-bold text-primary mb-2">
+      <div className="rounded-2xl bg-[#132744] shadow-xl p-8 sm:p-10 flex flex-col">
+        <h2 className="font-sans text-xl font-bold text-white mb-2">
           Ou use o código PIX
         </h2>
-        <p className="font-serif text-base text-text-dark/70 mb-8">
+        <p className="font-serif text-base text-white/70 mb-8">
           Copie o código abaixo e cole no campo PIX do seu app bancário.
         </p>
         <div
           aria-live="polite"
-          className="rounded-lg bg-bg-gray border border-text-dark/10 p-4 mb-6 break-all font-mono text-xs text-text-dark/80"
+          className="rounded-lg bg-[#0d1f3c] border border-white/10 p-4 mb-6 break-all font-mono text-xs text-white/80"
         >
           {payload}
         </div>

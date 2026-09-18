@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description:
     "Proclamando o evangelho de Cristo com fé e amor, e ensinando a Palavra que transforma vidas.",
   icons: {
-    icon: "/logo.png",
+    icon: "/favicon.png",
   },
   openGraph: {
     title: "Igreja Virtude Cristã",

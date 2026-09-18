@@ -45,7 +45,7 @@ export default function Footer() {
                 alt="Logo"
                 width={48}
                 height={48}
-                className="rounded-full border border-accent/50"
+                className="rounded-full"
               />
               <span className="font-sans text-xl font-bold">
                 {CHURCH.shortName}

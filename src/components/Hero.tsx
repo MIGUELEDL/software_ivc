@@ -28,7 +28,7 @@ export default function Hero() {
             alt={`Logo ${CHURCH.name}`}
             width={120}
             height={120}
-            className="mx-auto mb-6 rounded-full shadow-2xl border-2 border-accent/50"
+            className="mx-auto mb-6 rounded-full shadow-2xl"
             preload
           />
         </motion.div>
