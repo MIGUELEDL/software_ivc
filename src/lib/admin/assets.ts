@@ -28,6 +28,21 @@ export class BemNaoEncontradoError extends Error {
 }
 
 // ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Gera o próximo número de patrimônio via RPC `proximo_patrimonio()`.
+ * SECURITY DEFINER — imune a RLS, retorna PAT-NNNN sequencial.
+ */
+export async function proximoPatrimonio(): Promise<string> {
+  const supabase = await createServerClient();
+  const { data, error } = await supabase.rpc("proximo_patrimonio");
+  if (error) throw error;
+  return data as string;
+}
+
+// ---------------------------------------------------------------------------
 // Consultas
 // ---------------------------------------------------------------------------
 
@@ -63,12 +78,14 @@ export async function listarAssets(): Promise<Asset[]> {
 export async function criarAsset(dados: AssetDados): Promise<Asset> {
   const supabase = await createServerClient();
 
+  const numero = dados.numero_patrimonio || await proximoPatrimonio();
+
   const { data, error } = await supabase
     .from("assets")
     .insert({
       name: dados.name,
       category: dados.category,
-      numero_patrimonio: dados.numero_patrimonio ?? null,
+      numero_patrimonio: numero,
       location: dados.location ?? null,
       acquisition_value: dados.acquisition_value ?? null,
       acquisition_date: dados.acquisition_date ?? null,
@@ -84,6 +101,30 @@ export async function criarAsset(dados: AssetDados): Promise<Asset> {
   }
 
   return data as Asset;
+}
+
+/**
+ * Exclui permanentemente um bem (hard-delete). Bem inexistente →
+ * `BemNaoEncontradoError` (404). RLS: apenas ADMIN/SUPER_ADMIN.
+ */
+export async function excluirAsset(id: string): Promise<void> {
+  const supabase = await createServerClient();
+
+  const { data: existente, error: erroLeitura } = await supabase
+    .from("assets")
+    .select("id")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (erroLeitura) throw erroLeitura;
+  if (!existente) throw new BemNaoEncontradoError();
+
+  const { error } = await supabase
+    .from("assets")
+    .delete()
+    .eq("id", id);
+
+  if (error) throw error;
 }
 
 /**
