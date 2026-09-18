@@ -17,7 +17,7 @@ export function LiderancaNovaForm() {
   const [enviando, setEnviando] = useState(false);
 
   const inputClass =
-    "w-full rounded-lg border border-gray-300 px-4 py-2.5 font-serif text-text-dark focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors";
+    "w-full rounded-lg bg-[#0d1f3c] border border-white/10 px-4 py-2.5 font-serif text-white focus:border-accent focus:ring-1 focus:ring-accent outline-none transition-colors";
 
   async function cadastrar(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -34,8 +34,7 @@ export function LiderancaNovaForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: String(dados.get("name") ?? "").trim(),
-          short_name: String(dados.get("short_name") ?? "").trim(),
-          cnpj: String(dados.get("cnpj") ?? "").trim(),
+          cnpj: String(dados.get("cnpj") ?? "").trim() || null,
           address: String(dados.get("address") ?? "").trim(),
           city: String(dados.get("city") ?? "").trim(),
           founded_date:
@@ -77,7 +76,7 @@ export function LiderancaNovaForm() {
   return (
     <form
       onSubmit={cadastrar}
-      className="rounded-2xl bg-white shadow-xl p-8 sm:p-10 space-y-5"
+      className="rounded-2xl bg-[#132744] border border-white/10 shadow-xl p-8 sm:p-10 space-y-5"
     >
       {mensagem && (
         <p
@@ -91,7 +90,7 @@ export function LiderancaNovaForm() {
       <div>
         <label
           htmlFor="name"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/70 mb-1.5"
         >
           Nome da igreja
         </label>
@@ -105,38 +104,15 @@ export function LiderancaNovaForm() {
 
       <div>
         <label
-          htmlFor="short_name"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
-        >
-          Sigla
-        </label>
-        <input
-          id="short_name"
-          name="short_name"
-          type="text"
-          required
-          placeholder="IVC"
-          className={inputClass}
-        />
-        {camposErro.short_name && (
-          <p className="mt-1 text-sm text-red-600 font-serif" role="alert">
-            {camposErro.short_name}
-          </p>
-        )}
-      </div>
-
-      <div>
-        <label
           htmlFor="cnpj"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/70 mb-1.5"
         >
-          CNPJ
+          CNPJ (opcional)
         </label>
         <input
           id="cnpj"
           name="cnpj"
           type="text"
-          required
           inputMode="numeric"
           placeholder="Somente números (14 dígitos)"
           maxLength={14}
@@ -152,7 +128,7 @@ export function LiderancaNovaForm() {
       <div>
         <label
           htmlFor="address"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/70 mb-1.5"
         >
           Endereço completo
         </label>
@@ -174,7 +150,7 @@ export function LiderancaNovaForm() {
       <div>
         <label
           htmlFor="city"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/70 mb-1.5"
         >
           Cidade
         </label>
@@ -196,7 +172,7 @@ export function LiderancaNovaForm() {
       <div>
         <label
           htmlFor="founded_date"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/70 mb-1.5"
         >
           Data de fundação (opcional)
         </label>
@@ -217,7 +193,7 @@ export function LiderancaNovaForm() {
       <button
         type="submit"
         disabled={enviando}
-        className="w-full rounded-lg bg-accent hover:bg-accent-light disabled:opacity-60 text-bg-dark font-sans font-bold py-2.5 transition-colors"
+        className="w-full rounded-lg bg-[#c9a84c] hover:bg-[#e0c872] disabled:opacity-60 text-[#0d1f3c] font-sans font-bold py-2.5 transition-colors"
       >
         {enviando ? "Cadastrando..." : "Cadastrar igreja"}
       </button>
