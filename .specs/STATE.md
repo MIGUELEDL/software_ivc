@@ -246,6 +246,21 @@
 - **Uncommitted files**: `.specs/STATE.md` (este Handoff — a commitar agora); `next-env.d.ts`/`opencode.json`/`tsconfig.tsbuildinfo` (untracked, não commitados); `validation.md` (a escrever pelo Verifier).
 - **Branch**: main (commits locais do RF-025; `git push` pendente — nunca sem autorização).
 
+## Handoff — security-hardening CONCLUÍDO (2026-09-22)
+
+- **Feature**: `security-hardening` — endurecimento de segurança aplicado nos advisors do Supabase do projeto dev `[REDACTED_PROJECT_NAME]` (`[REDACTED_PROJECT_REF]`).
+- **O que foi entregue**:
+  - **ERROR `rls_disabled_in_public` corrigido**: `webhook_events` estava SEM RLS (migration 0014). Migration `0023_security_hardening.sql` habilita RLS + policy `webhook_events_select_financeiro` (SELECT authenticated `can_access('financeiro','ler')`, sem INSERT para anon/authenticated — escrita passa a ser via service-role).
+  - **WARN `anon_security_definer_function_executable` corrigido**: `auth_role`, `can_access`, `proxima_matricula`, `proximo_patrimonio` tinham grant EXPLÍCITO `anon=X` no ACL (não era via `public`) — revogado de `public` e do role `anon`; mantido `authenticated` (necessário: `can_access` usado em todas as policies RLS, sequences nos cadastros). `has_function_privilege('anon',...)` passou a false nas 4.
+  - **Defense-in-depth**: anon perdeu INSERT/UPDATE/DELETE em todas as tabelas de `public` (atuais + `alter default privileges` para futuras).
+  - **Rota webhook** `POST /api/webhooks/mercadopago`: insert em `webhook_events` migrado de `createServerClient` (anon/sessão) para `createAdminClient` (service-role, BYPASSRLS). Validado e2e: POST fake → 200 `{ok:true}` + linha gravada no banco; teste removido.
+- **WARNs mantidos (aceitos por design)**: `authenticated_security_definer_function_executable` (as 4 funções precisam ser executáveis por authenticated — exigência das policies RLS e cadastros); `auth_leaked_password_protection` desativada (toggle de dashboard, sem equivalente SQL — recomenda-se ativar em Authentication > Security).
+- **Proxy da porta**: havia 2 instâncias de `next dev` brigando pela 3000 (404) — mortas; 1 instância limpa up (`setsid`) → home/login 200, APIs admin protegidas 401.
+- **Projeto pausado**: e-mail do Supabase informava pausa do projeto `software_ivc` (`[REDACTED_PROJECT_REF]`, org MIGUELEDL) por inatividade. **Não é usado pelo app** (`.env.local` aponta p/ `[REDACTED_PROJECT_NAME]`). Sem endpoint de DELETE nas ferramentas MCP disponíveis — para remover de vez, deletar no Dashboard (Settings → Delete project) ou aguardar auto-expiração em ~90 dias.
+- **Próximos passos**: ativar leaked password protection no Dashboard; (opcional) corrigir FKs sem índice (advisors performance); `git push origin main` (se autorizado).
+- **Open decisions**: nenhuma em aberto.
+- **Branch**: main (commits locais; push pendente — nunca sem autorização).
+
 ## Handoff — feature admin-financeiro CONCLUÍDA (2026-09-15)
 
 - **Feature**: admin-financeiro (RF-026, FIN-01..12, AC-01..31) — **fechada e provada** — Verifier PASS (31/31 ACs; sensor final 8/8 killed, 0 survivals — 3 sobreviventes do R1 mortos no R3; AD-016/017 resolvem desvios), `validate_state.py admin-financeiro` 0 erros.

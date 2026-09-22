@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
-import { createServerClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
  * POST /api/webhooks/mercadopago — webhook stub do Mercado Pago (FIN-06/07/08,
  * AC-13..19). Sem auth (chamado pelos servidores do MP — AC-18); valida a
  * estrutura do payload e loga **todos** os eventos em `webhook_events`
- * (auditabilidade, AC-19). `webhook_events` não tem RLS (migration 0014),
- * então o INSERT funciona com o client de sessão (createServerClient).
+ * (auditabilidade, AC-19). A escrita usa o client service-role
+ * (`createAdminClient`, BYPASSRLS): `webhook_events` tem RLS sem INSERT para
+ * anon/authenticated (migration 0023) — o evento só entra via service-role.
  *
  * Idempotência (AC-14): `event_id` = campo `id` do body (fallback UUID);
  * UNIQUE violado → 200 `{ ok: true }` sem duplicar.
@@ -17,10 +17,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * `payment.created`/`payment.updated`), cria/atualiza a transação com
  * `external_reference = data.id`. As tabelas `transactions`/`cash_closes` TÊM
  * RLS `can_access('financeiro', ...)` (sem anon) — o webhook não tem sessão de
- * usuário, portanto a escrita usa o client service-role (`createAdminClient`,
- * que ignora RLS). Sem `SUPABASE_SERVICE_ROLE_KEY` configurada, o evento já
- * foi logado e a transação é pulada (stub — MP real ainda não configurado,
- * R-003); o endpoint segue respondendo 200.
+ * usuário, portanto a escrita usa o client service-role (ignora RLS). Sem
+ * service-role disponível, o endpoint responde 200 stub (R-003) sem logar nem
+ * escrever transação (MP real ainda não configurado).
  *
  * Status != "approved" → apenas log, sem transação (AC-17). Sucesso → 200
  * `{ ok: true }` (AC-13). Payload JSON inválido → 400 `{ error:
@@ -43,9 +42,17 @@ export async function POST(request: Request) {
       : globalThis.crypto.randomUUID();
   const eventType = typeof body.type === "string" ? body.type : "unknown";
 
-  const supabase = await createServerClient();
+  let admin: ReturnType<typeof createAdminClient>;
+  try {
+    admin = createAdminClient();
+  } catch {
+    console.error(
+      "POST /api/webhooks/mercadopago — service-role indisponivel, stub sem log"
+    );
+    return NextResponse.json({ ok: true });
+  }
 
-  const { data: evento, error: erroInsert } = await supabase
+  const { data: evento, error: erroInsert } = await admin
     .from("webhook_events")
     .insert({
       event_id: eventId,
@@ -92,8 +99,6 @@ export async function POST(request: Request) {
   // webhook não tem; RLS exige serviço com service-role.
   // -------------------------------------------------------------------------
   try {
-    const admin = createAdminClient();
-
     const { data: existente, error: erroBusca } = await admin
       .from("transactions")
       .select("id")
