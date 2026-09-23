@@ -3,7 +3,7 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 11,
+  "next_id": 14,
   "lessons": [
     {
       "id": "L-001",
@@ -190,6 +190,60 @@
       ],
       "created": "2026-09-14T21:18:05Z",
       "last_seen": "2026-09-14T21:18:05Z"
+    },
+    {
+      "id": "L-011",
+      "key": "surviving_mutant::null coalescing operators in service functions must be unit tested to verify null undefined behavior static probes only check function signatures",
+      "text": "Null coalescing operators (??) in service functions must be unit-tested to verify null/undefined behavior - static probes only check function signatures",
+      "signal": "surviving_mutant",
+      "scope": "service-layer",
+      "status": "candidate",
+      "features": [
+        "admin-auditoria"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "src/lib/admin/auditoria.ts:38 (service-layer)"
+      ],
+      "created": "2026-09-17T05:13:43Z",
+      "last_seen": "2026-09-17T05:13:43Z"
+    },
+    {
+      "id": "L-012",
+      "key": "surviving_mutant::default parameter values pagination limits must be unit tested static probes don t verify default values match spec",
+      "text": "Default parameter values (pagination limits) must be unit-tested - static probes don't verify default values match spec",
+      "signal": "surviving_mutant",
+      "scope": "service-layer",
+      "status": "candidate",
+      "features": [
+        "admin-auditoria"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "src/lib/admin/auditoria.ts:99 (service-layer)"
+      ],
+      "created": "2026-09-17T05:13:51Z",
+      "last_seen": "2026-09-17T05:13:51Z"
+    },
+    {
+      "id": "L-013",
+      "key": "spec_precision_gap::requirement traceability table must have corresponding ac definitions in the spec aud 19 and aud 20 listed without ac text",
+      "text": "Requirement traceability table must have corresponding AC definitions in the spec - AUD-19 and AUD-20 listed without AC text",
+      "signal": "spec_precision_gap",
+      "scope": "spec",
+      "status": "candidate",
+      "features": [
+        "admin-auditoria"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "AUD-19 (spec)"
+      ],
+      "created": "2026-09-17T05:13:55Z",
+      "last_seen": "2026-09-17T05:13:55Z"
     }
   ]
 }

@@ -72,6 +72,24 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - evidence: M4 (EVT-09) validation.md (probes)
 - last seen: 2026-09-14T21:18:05Z
 
+### L-011 - Null coalescing operators (??) in service functions must be unit-tested to verify null/undefined behavior - static probes only check function signatures
+- signal: `surviving_mutant` · recurrence: 1 feature(s) · scope: `service-layer` · harmful: 0
+- features: admin-auditoria
+- evidence: src/lib/admin/auditoria.ts:38 (service-layer)
+- last seen: 2026-09-17T05:13:43Z
+
+### L-012 - Default parameter values (pagination limits) must be unit-tested - static probes don't verify default values match spec
+- signal: `surviving_mutant` · recurrence: 1 feature(s) · scope: `service-layer` · harmful: 0
+- features: admin-auditoria
+- evidence: src/lib/admin/auditoria.ts:99 (service-layer)
+- last seen: 2026-09-17T05:13:51Z
+
+### L-013 - Requirement traceability table must have corresponding AC definitions in the spec - AUD-19 and AUD-20 listed without AC text
+- signal: `spec_precision_gap` · recurrence: 1 feature(s) · scope: `spec` · harmful: 0
+- features: admin-auditoria
+- evidence: AUD-19 (spec)
+- last seen: 2026-09-17T05:13:55Z
+
 ## Quarantined (failed when applied - ignore)
 
 A confirmed lesson that recurred alongside failure. Kept for the maintainer to review.

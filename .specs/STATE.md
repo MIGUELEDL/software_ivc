@@ -140,6 +140,14 @@
 - **Date**: 2026-09-15
 - **Status**: active
 
+### AD-018
+- **Decision**: O código de barras do cartão de membro passa a ser um **Code 128 real (Code Set B, payload = `member.matricula`)** via encoder puro próprio `src/lib/barcode/code128.ts` (tabela canônica de 107 símbolos, start B = 104, checksum **mod 103** com pesos posicionais 1-based antes do stop + barra de terminação) e render **vetorial/proporcional por módulo** no `MemberCard`, substituindo o gradiente decorativo fixo. Sem dependência nova; degradação: `RangeError` fora de ASCII 32–126 → bloco sem barras, matrícula legível mantida.
+- **Reason**: O gradiente anterior codificava dígitos de um hash não escaneáveis; a portaria precisa ler a matrícula (`IVC-NNNN`, dentro do Code Set B). Nenhuma biblioteca injetada (jspdf/qrcode.react já presentes mas desnecessárias); tabela conferida em crifan.com e barcodesinc.com. Opção QR de validação fica para feature futura (qrcode.react já é dependência).
+- **Trade-off**: Encode só Code Set B (sem otimização automática A/B/C) é suficiente para `IVC-NNNN` e mantém o encoder simples; quiet zone de ~8 módulos torna o token levemente mais longo, mas a área do card comporta.
+- **Scope**: `src/lib/barcode/code128.ts`, `Code128Barcode` em `src/components/MemberCard.tsx`, `scripts/probe-barcode.sh`, spec `barcode-membro` (BRC-01..05).
+- **Date**: 2026-09-22
+- **Status**: active
+
 ## Handoff
 
 - **Feature**: `admin-relatorios` (RF-027) — **CONCLUIDA E VERIFICADA** — 7/7 tasks commitadas, verifier PASS.
@@ -160,6 +168,23 @@
 - **Open decisions**: nenhuma em aberto.
 - **Uncommitted files**: `.specs/STATE.md` (este Handoff); `next-env.d.ts`/`opencode.json`/`tsconfig.tsbuildinfo` (untracked, NUNCA commitar).
 - **Branch**: main (commits locais; `git push` pendente — nunca sem autorizacao).
+
+## Handoff — batch restyle painel/admin/portal (2026-09-22)
+
+- **Feature**: restyle dark do painel do membro + páginas admin + portal — **implementado** — gates lint/typecheck sem erros; probe `scripts/probes-admin-eventos.sh` realinhado ao status `EM ABERTO`/`CONCLUIDO`.
+- **O que foi entregue**: painel do membro com layout próprio (`painel/layout.tsx`, `painel-navbar.tsx`) e páginas dashboard/dízimo/perfil/cartão em dark; páginas admin restilizadas (navbar própria `admin-navbar.tsx` + layout `admin/layout.tsx`, auditoria, configuracoes, lideranca, relatorios, usuarios); portal com navbar/cards dark e imagem do culto (`public/img_culto.png`); variáveis CSS `--color-admin-*` em `globals.css`; cartão de membro com visual oficial (modelo Canva do usuário) + impressão ID-1 (85,6×53,98 mm).
+- **Nota**: visual do cartão corrigido pelo usuário; camada de barcode é a feature separada abaixo (AD-018).
+- **Seed demo**: migration `0018_seed_ficticio_demo.sql` (membros fictícios p/ demonstração, sem DELETE) commitada neste batch com registro no ROADMAP (demonstração).
+- **Open decisions**: nenhuma em aberto.
+
+## Handoff — feature barcode-membro (2026-09-22)
+
+- **Feature**: `barcode-membro` (BRC-01..05, AD-018) — **implementada** — probe `scripts/probe-barcode.sh` 4 ok / 0 falhas; `validate_spec.py barcode-membro` 0 erros; `npm run typecheck`/`lint` sem erros (só 5 warnings pré-existentes).
+- **O que foi entregue**: encoder puro Code 128 (`src/lib/barcode/code128.ts`: tabela 107 símbolos, `code128()` com checksum mod 103 e start B, `code128Runs()` com quiet zone e terminação), integração no `MemberCard` (bloco inferior direito vetorial por módulo + matrícula legível abaixo, degradação sem barras em RangeError) e probe determinístico que valida invariantes estruturais, âncoras da fonte e a sequência exata de `IVC-0001` (checksum 10).
+- **Probe**: `scripts/probe-barcode.sh` — 4 ok / 0 falhas. Gates lint/typecheck sem erros.
+- **Com nota**: visual do cartão corrigido pelo usuário (modelo Canva); apenas o barcode foi trocado. Print ID-1 (85,6×53,98 mm) já ativo nas duas páginas de cartão.
+- **Open decisions**: nenhuma em aberto (AD-018 ativa; QR de validação = feature futura).
+- **Branch**: main (commits locais pendentes — se autorizado, commit da feature; `git push` nunca sem autorização).
 
 ## Handoff — feature CONCLUÍDA (2026-09-12)
 
