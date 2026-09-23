@@ -48,5 +48,6 @@ FRENTES do MVP: portal público multirrota (Sobre/História/MV, Liderança, Loca
 
 - Número de WhatsApp da igreja (**D4**) — ✅ resolvido: (83) 99945-0781 (ADR-010)
 - Conta Mercado Pago — CNPJ 68.683.917/0001-71 informado (ADR-011); **credenciais MP a cadastrar** antes do financeiro da Fase 9
+- Seed demo — migration `0018_seed_ficticio_demo.sql` (membros fictícios p/ demonstração, sem DELETE; preserva dados de teste antigos) aplicada em dev e commitada (2026-09-22)
 - Missão/Visão/Valores (MVV) — ✅ aprovado (textos atuais em `constants.ts`)
 - Domínio próprio — decidido: manter `*.vercel.app` enquanto isso (RC-003); próprio quando houver
