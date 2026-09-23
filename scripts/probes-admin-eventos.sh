@@ -62,8 +62,8 @@ if grep -q 'create table if not exists public.events' "$MIG12" \
   && grep -q 'time text not null' "$MIG12" \
   && grep -q 'location text not null' "$MIG12" \
   && grep -q 'visivel boolean not null default true' "$MIG12" \
-  && grep -q "status text not null default 'ATIVO'" "$MIG12" \
-  && grep -q "check (status in ('ATIVO', 'INATIVO'))" "$MIG12"; then
+  && grep -q "status text not null default 'EM ABERTO'" "$MIG12" \
+  && grep -q "check (status in ('EM ABERTO', 'CONCLUIDO'))" "$MIG12"; then
   ok "tabela events com colunas e check da spec (EVT-01)"
 else
   ko "events ausente/incompleta (EVT-01)"
@@ -138,16 +138,16 @@ else
   ko "service: EventoNaoEncontradoError ausente"
 fi
 if grep -q '.eq("visivel", true)' "$SERVICE" \
-  && grep -q '.eq("status", "ATIVO")' "$SERVICE" \
+  && grep -q '.eq("status", "EM ABERTO")' "$SERVICE" \
   && grep -q '.order("date", { ascending: true })' "$SERVICE"; then
-  ok "listarEventosPublicos: filtra visivel+ATIVO, date asc (EVT-12)"
+  ok "listarEventosPublicos: filtra visivel+EM ABERTO, date asc (EVT-12)"
 else
   ko "listarEventosPublicos: filtro/ordem incompleta"
 fi
 if grep -q '.eq("visivel", true)' "$SERVICE" \
-  && grep -q '.eq("status", "ATIVO")' "$SERVICE" \
+  && grep -q '.eq("status", "EM ABERTO")' "$SERVICE" \
   && grep -q '.maybeSingle()' "$SERVICE"; then
-  ok "buscarEventoPublico: filtra visivel+ATIVO (EVT-13/14)"
+  ok "buscarEventoPublico: filtra visivel+EM ABERTO (EVT-13/14)"
 else
   ko "buscarEventoPublico: filtro incompleto"
 fi
@@ -156,9 +156,9 @@ if grep -q '.order("date", { ascending: false })' "$SERVICE"; then
 else
   ko "listarEventos: sem date desc"
 fi
-if grep -q 'status: "ATIVO"' "$SERVICE" \
+if grep -q 'status: "EM ABERTO"' "$SERVICE" \
   && grep -q 'visivel: dados.visivel ?? true' "$SERVICE"; then
-  ok "criarEvento: nasce ATIVO, visivel default true (EVT-04)"
+  ok "criarEvento: nasce EM ABERTO, visivel default true (EVT-04)"
 else
   ko "criarEvento: defaults ausentes"
 fi
@@ -178,9 +178,9 @@ if grep -q 'export function validarEvento' "$VALIDACAO" \
 else
   ko "validarEvento/validarDataEvento ausentes"
 fi
-if grep -q '"ATIVO" && body.status !== "INATIVO"' "$VALIDACAO" \
+if grep -q '"EM ABERTO" && body.status !== "CONCLUIDO"' "$VALIDACAO" \
   && grep -q 'typeof body.visivel !== "boolean"' "$VALIDACAO"; then
-  ok "validarEvento: status ATIVO/INATIVO + visivel booleano (EVT-05)"
+  ok "validarEvento: status EM ABERTO/CONCLUIDO + visivel booleano (EVT-05)"
 else
   ko "validarEvento: validação de status/visivel incompleta"
 fi
@@ -341,16 +341,16 @@ LEFTOVER_B="$(mktemp)"
 trap '
   # restore seed + best-effort ocultar eventos criados
   curl -s -b "$JAR_ADMIN" -X PATCH "$BASE_URL/api/admin/eventos/${SEED_ID}" \
-    -H "Content-Type: application/json" -d "{\"visivel\":true,\"status\":\"ATIVO\"}" -o /dev/null 2>/dev/null || true
+    -H "Content-Type: application/json" -d "{\"visivel\":true,\"status\":\"EM ABERTO\"}" -o /dev/null 2>/dev/null || true
   if [ -s "$LEFTOVER_A" ]; then
     AID="$(cat "$LEFTOVER_A")"
     curl -s -b "$JAR_ADMIN" -X PATCH "$BASE_URL/api/admin/eventos/$AID" \
-      -H "Content-Type: application/json" -d "{\"visivel\":false,\"status\":\"INATIVO\"}" -o /dev/null 2>/dev/null || true
+      -H "Content-Type: application/json" -d "{\"visivel\":false,\"status\":\"CONCLUIDO\"}" -o /dev/null 2>/dev/null || true
   fi
   if [ -s "$LEFTOVER_B" ]; then
     BID="$(cat "$LEFTOVER_B")"
     curl -s -b "$JAR_ADMIN" -X PATCH "$BASE_URL/api/admin/eventos/$BID" \
-      -H "Content-Type: application/json" -d "{\"visivel\":false,\"status\":\"INATIVO\"}" -o /dev/null 2>/dev/null || true
+      -H "Content-Type: application/json" -d "{\"visivel\":false,\"status\":\"CONCLUIDO\"}" -o /dev/null 2>/dev/null || true
   fi
   rm -f "$JAR_ADMIN" "$JAR_SEC" "$JAR_LEITOR" "$JAR_MEMBRO" "$LEFTOVER_A" "$LEFTOVER_B"
 ' EXIT
@@ -593,25 +593,25 @@ if [ -n "$A_ID" ]; then
   fi
 
   # --- status INATIVO cycle (EVT-10/14) ---
-  printf '%s\n' '-- runtime: soft-delete A (status INATIVO, EVT-10/14)'
+  printf '%s\n' '-- runtime: soft-delete A (status CONCLUIDO, EVT-10/14)'
   curl -s -b "$JAR_ADMIN" -X PATCH "$BASE_URL/api/admin/eventos/$A_ID" \
-    -H 'Content-Type: application/json' -d '{"status":"INATIVO"}' -o /dev/null 2>/dev/null || true
+    -H 'Content-Type: application/json' -d '{"status":"CONCLUIDO"}' -o /dev/null 2>/dev/null || true
   portal_inativo="$(curl -s "$BASE_URL/eventos" || true)"
   if printf '%s' "$portal_inativo" | grep -q "$A_TITLE"; then
-    ko "portal contem A com status=INATIVO (EVT-10 quebrado)"
+    ko "portal contem A com status=CONCLUIDO (EVT-10 quebrado)"
   else
-    ok "portal NAO contem A com status=INATIVO (EVT-10)"
+    ok "portal NAO contem A com status=CONCLUIDO (EVT-10)"
   fi
   inactive_http="$(curl -s -L -o /dev/null -w '%{http_code}' "$BASE_URL/eventos/$A_ID" || true)"
   if [ "$inactive_http" -ge 400 ]; then
-    ok "/eventos/A INATIVO -> $inactive_http (EVT-14)"
+    ok "/eventos/A CONCLUIDO -> $inactive_http (EVT-14)"
   else
-    ko "/eventos/A INATIVO -> $inactive_http (esperado >=404)"
+    ko "/eventos/A CONCLUIDO -> $inactive_http (esperado >=404)"
   fi
 
   # restore ATIVO
   curl -s -b "$JAR_ADMIN" -X PATCH "$BASE_URL/api/admin/eventos/$A_ID" \
-    -H 'Content-Type: application/json' -d '{"status":"ATIVO"}' -o /dev/null 2>/dev/null || true
+    -H 'Content-Type: application/json' -d '{"status":"EM ABERTO"}' -o /dev/null 2>/dev/null || true
 fi
 
 # =====================================================================
@@ -653,7 +653,7 @@ if [ -n "${B_ID:-}" ]; then
     -H 'Content-Type: application/json' -d '{"visivel":false}' -o /dev/null 2>/dev/null || true
 fi
 curl -s -b "$JAR_ADMIN" -X PATCH "$BASE_URL/api/admin/eventos/$SEED_ID" \
-  -H 'Content-Type: application/json' -d '{"status":"INATIVO"}' -o /dev/null 2>/dev/null || true
+  -H 'Content-Type: application/json' -d '{"status":"CONCLUIDO"}' -o /dev/null 2>/dev/null || true
 
 portal_empty="$(curl -s "$BASE_URL/eventos" || true)"
 if printf '%s' "$portal_empty" | grep -q 'Em breve avisaremos os próximos eventos'; then
@@ -674,11 +674,11 @@ fi
 
 # restore seed + A + B for clean final state
 curl -s -b "$JAR_ADMIN" -X PATCH "$BASE_URL/api/admin/eventos/$SEED_ID" \
-  -H 'Content-Type: application/json' -d '{"status":"ATIVO","visivel":true}' -o /dev/null 2>/dev/null || true
+  -H 'Content-Type: application/json' -d '{"status":"EM ABERTO","visivel":true}' -o /dev/null 2>/dev/null || true
 [ -n "${A_ID:-}" ] && curl -s -b "$JAR_ADMIN" -X PATCH "$BASE_URL/api/admin/eventos/$A_ID" \
   -H 'Content-Type: application/json' -d '{"visivel":true}' -o /dev/null 2>/dev/null || true
 [ -n "${B_ID:-}" ] && curl -s -b "$JAR_ADMIN" -X PATCH "$BASE_URL/api/admin/eventos/$B_ID" \
-  -H 'Content-Type: application/json' -d '{"visivel":true,"status":"ATIVO"}' -o /dev/null 2>/dev/null || true
+  -H 'Content-Type: application/json' -d '{"visivel":true,"status":"EM ABERTO"}' -o /dev/null 2>/dev/null || true
 
 # confirm seed restored
 portal_restored="$(curl -s "$BASE_URL/eventos" || true)"
