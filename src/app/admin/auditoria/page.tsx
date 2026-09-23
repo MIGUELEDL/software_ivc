@@ -1,5 +1,4 @@
-import { ArrowLeft, FileText } from "lucide-react";
-import Link from "next/link";
+import { FileText } from "lucide-react";
 import { getClaims } from "@/lib/auth/claims";
 import { can } from "@/lib/auth/rbac";
 import { listarAuditoria } from "@/lib/admin/auditoria";
@@ -17,25 +16,18 @@ export default async function AdminAuditoriaPage({
 
   if (!leitor) {
     return (
-      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
-        <div className="max-w-2xl mx-auto px-4">
+      <section className="py-8 min-h-[calc(100vh-3.5rem)]">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <div
-            className="rounded-2xl bg-white shadow-xl p-10 text-center"
+            className="bg-[#132744] border border-white/10 rounded-xl p-10 text-center"
             role="alert"
           >
-            <h1 className="font-sans text-2xl font-bold text-primary mb-3">
+            <h1 className="font-sans text-2xl font-bold text-white mb-3">
               Auditoria
             </h1>
-            <p className="font-serif text-text-dark/70">
-              Voce nao tem permissao para acessar este modulo.
+            <p className="text-white/60">
+              Você não tem permissão para acessar este módulo.
             </p>
-            <Link
-              href="/admin"
-              className="mt-6 inline-flex items-center gap-2 font-sans text-sm font-bold text-primary hover:text-accent transition-colors"
-            >
-              <ArrowLeft size={16} aria-hidden="true" />
-              Voltar ao painel
-            </Link>
           </div>
         </div>
       </section>
@@ -83,20 +75,11 @@ export default async function AdminAuditoriaPage({
   }
 
   return (
-    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="mb-6">
-          <Link
-            href="/admin"
-            className="inline-flex items-center gap-1 font-sans text-xs font-bold text-primary hover:text-accent"
-          >
-            <ArrowLeft size={14} /> Voltar
-          </Link>
-        </div>
-
+    <section className="py-8 min-h-[calc(100vh-3.5rem)]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center gap-3 mb-6">
-          <FileText size={24} className="text-primary" />
-          <h1 className="font-sans text-2xl font-bold text-text-dark">
+          <FileText size={24} className="text-[#c9a84c]" />
+          <h1 className="font-sans text-2xl font-bold text-white">
             Auditoria
           </h1>
         </div>
@@ -108,10 +91,10 @@ export default async function AdminAuditoriaPage({
           entidade={entidade}
         />
 
-        <div className="mt-6 rounded-2xl bg-white shadow-xl overflow-hidden">
+        <div className="mt-6 bg-[#132744] border border-white/10 rounded-xl overflow-hidden">
           {logs.length === 0 ? (
             <div className="p-10 text-center">
-              <p className="font-serif text-text-dark/70">
+              <p className="text-white/60">
                 Nenhum log de auditoria encontrado.
               </p>
             </div>
@@ -120,23 +103,23 @@ export default async function AdminAuditoriaPage({
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
-                    <tr className="border-b border-gray-100">
-                      <th className="px-4 py-3 font-sans text-xs font-bold text-text-dark/60 uppercase">
+                    <tr className="border-b border-white/10">
+                      <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase tracking-wider">
                         Data/Hora
                       </th>
-                      <th className="px-4 py-3 font-sans text-xs font-bold text-text-dark/60 uppercase">
+                      <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase tracking-wider">
                         Autor
                       </th>
-                      <th className="px-4 py-3 font-sans text-xs font-bold text-text-dark/60 uppercase">
-                        Acao
+                      <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase tracking-wider">
+                        Ação
                       </th>
-                      <th className="px-4 py-3 font-sans text-xs font-bold text-text-dark/60 uppercase">
+                      <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase tracking-wider">
                         Entidade
                       </th>
-                      <th className="px-4 py-3 font-sans text-xs font-bold text-text-dark/60 uppercase">
+                      <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase tracking-wider">
                         ID
                       </th>
-                      <th className="px-4 py-3 font-sans text-xs font-bold text-text-dark/60 uppercase">
+                      <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase tracking-wider">
                         IP
                       </th>
                     </tr>
@@ -145,26 +128,26 @@ export default async function AdminAuditoriaPage({
                     {logs.map((log) => (
                       <tr
                         key={log.id}
-                        className="border-b border-gray-50 hover:bg-gray-50"
+                        className="bg-[#0d1f3c] border-b border-white/5 hover:bg-white/5 transition-colors"
                       >
-                        <td className="px-4 py-3 font-sans text-sm text-text-dark">
+                        <td className="px-4 py-3 font-sans text-sm text-white">
                           {formatarData(log.timestamp)}
                         </td>
-                        <td className="px-4 py-3 font-sans text-sm text-text-dark">
+                        <td className="px-4 py-3 font-sans text-sm text-white">
                           {log.autor ?? "Sistema"}
                         </td>
                         <td className="px-4 py-3">
-                          <span className="inline-flex items-center rounded bg-primary/10 px-2 py-0.5 font-sans text-xs font-bold text-primary">
+                          <span className="inline-flex items-center rounded bg-[#c9a84c]/10 px-2 py-0.5 font-sans text-xs font-bold text-[#c9a84c]">
                             {log.acao}
                           </span>
                         </td>
-                        <td className="px-4 py-3 font-sans text-sm text-text-dark">
+                        <td className="px-4 py-3 font-sans text-sm text-white">
                           {log.entidade}
                         </td>
-                        <td className="px-4 py-3 font-sans text-sm text-text-dark/70">
+                        <td className="px-4 py-3 font-sans text-sm text-white/60">
                           {log.entidade_id ?? "-"}
                         </td>
-                        <td className="px-4 py-3 font-sans text-sm text-text-dark/70">
+                        <td className="px-4 py-3 font-sans text-sm text-white/60">
                           {log.ip ?? "-"}
                         </td>
                       </tr>
@@ -174,13 +157,13 @@ export default async function AdminAuditoriaPage({
               </div>
 
               {totalPaginas > 1 && (
-                <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-                  <p className="font-sans text-sm text-text-dark/60">
-                    Pagina {paginaAtual} de {totalPaginas} ({total} registros)
+                <div className="flex items-center justify-between px-4 py-3 border-t border-white/10">
+                  <p className="font-sans text-sm text-white/60">
+                    Página {paginaAtual} de {totalPaginas} ({total} registros)
                   </p>
                   <div className="flex gap-2">
                     {paginaAtual > 1 && (
-                      <Link
+                      <a
                         href={construirUrl({
                           data_inicio,
                           data_fim,
@@ -188,13 +171,13 @@ export default async function AdminAuditoriaPage({
                           entidade,
                           offset: String((paginaAtual - 2) * limit),
                         })}
-                        className="rounded bg-gray-100 px-3 py-1 font-sans text-xs font-bold text-text-dark hover:bg-gray-200"
+                        className="rounded bg-white/10 px-3 py-1 font-sans text-xs font-bold text-white hover:bg-white/20 transition-colors"
                       >
                         Anterior
-                      </Link>
+                      </a>
                     )}
                     {paginaAtual < totalPaginas && (
-                      <Link
+                      <a
                         href={construirUrl({
                           data_inicio,
                           data_fim,
@@ -202,10 +185,10 @@ export default async function AdminAuditoriaPage({
                           entidade,
                           offset: String(paginaAtual * limit),
                         })}
-                        className="rounded bg-gray-100 px-3 py-1 font-sans text-xs font-bold text-text-dark hover:bg-gray-200"
+                        className="rounded bg-white/10 px-3 py-1 font-sans text-xs font-bold text-white hover:bg-white/20 transition-colors"
                       >
-                        Proximo
-                      </Link>
+                        Próximo
+                      </a>
                     )}
                   </div>
                 </div>

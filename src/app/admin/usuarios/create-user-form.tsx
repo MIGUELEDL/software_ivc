@@ -47,8 +47,8 @@ export function CreateUserForm() {
   }
 
   return (
-    <div className="rounded-2xl bg-white shadow-xl p-6">
-      <h2 className="font-sans text-lg font-bold text-primary mb-4 flex items-center gap-2">
+    <div className="rounded-2xl bg-[#132744] border border-white/10 p-6">
+      <h2 className="font-sans text-lg font-bold text-[#c9a84c] mb-4 flex items-center gap-2">
         <UserPlus size={18} />
         Criar Usuário
       </h2>
@@ -59,12 +59,12 @@ export function CreateUserForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="flex-1 px-3 py-2 rounded-lg border border-gray-200 font-sans text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+          className="flex-1 px-3 py-2 rounded-lg bg-[#0d1f3c] border border-white/10 text-white font-sans text-sm focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
         />
         <select
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          className="px-3 py-2 rounded-lg border border-gray-200 font-sans text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+          className="px-3 py-2 rounded-lg bg-[#0d1f3c] border border-white/10 text-white font-sans text-sm focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
         >
           {Object.entries(ROLE_LABELS).map(([value, label]) => (
             <option key={value} value={value}>
@@ -75,32 +75,32 @@ export function CreateUserForm() {
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-2 rounded-lg bg-primary text-white font-sans text-sm font-bold hover:bg-accent transition-colors disabled:opacity-50"
+          className="px-4 py-2 rounded-lg bg-[#c9a84c] text-[#0d1f3c] font-sans text-sm font-bold hover:bg-[#e0c872] transition-colors disabled:opacity-50"
         >
           {loading ? "Criando..." : "Criar"}
         </button>
       </form>
 
       {result?.temporaryPassword && (
-        <div className="mt-4 p-3 rounded-lg bg-green-50 border border-green-200">
-          <p className="font-sans text-sm text-green-800 font-bold mb-1">
+        <div className="mt-4 p-3 rounded-lg bg-green-900/30 border border-green-500/30">
+          <p className="font-sans text-sm text-green-400 font-bold mb-1">
             Usuário criado com sucesso!
           </p>
-          <p className="font-sans text-xs text-green-700">
+          <p className="font-sans text-xs text-green-400">
             Senha temporária:{" "}
-            <code className="bg-green-100 px-1 rounded">
+            <code className="bg-green-900/50 px-1 rounded">
               {result.temporaryPassword}
             </code>
           </p>
-          <p className="font-sans text-xs text-green-600 mt-1">
+          <p className="font-sans text-xs text-green-500 mt-1">
             Guarde esta senha — ela não será exibida novamente.
           </p>
         </div>
       )}
 
       {result?.error && (
-        <div className="mt-4 p-3 rounded-lg bg-red-50 border border-red-200">
-          <p className="font-sans text-sm text-red-800">
+        <div className="mt-4 p-3 rounded-lg bg-red-900/30 border border-red-500/30">
+          <p className="font-sans text-sm text-red-400">
             {result.error === "email_em_uso"
               ? "Este email já está em uso."
               : result.error === "nao_autorizado"

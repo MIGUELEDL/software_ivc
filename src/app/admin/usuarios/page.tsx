@@ -1,5 +1,4 @@
 import {
-  ArrowLeft,
   Users,
   Shield,
   UserPlus,
@@ -43,25 +42,18 @@ export default async function AdminUsuariosPage({
 
   if (!leitor) {
     return (
-      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
-        <div className="max-w-2xl mx-auto px-4">
+      <section className="py-8 min-h-[calc(100vh-3.5rem)]">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <div
-            className="rounded-2xl bg-white shadow-xl p-10 text-center"
+            className="bg-[#132744] border border-white/10 rounded-xl p-10 text-center"
             role="alert"
           >
-            <h1 className="font-sans text-2xl font-bold text-primary mb-3">
+            <h1 className="font-sans text-2xl font-bold text-white mb-3">
               Usuários
             </h1>
-            <p className="font-serif text-text-dark/70">
+            <p className="text-white/60">
               Você não tem permissão para acessar este módulo.
             </p>
-            <Link
-              href="/admin"
-              className="mt-6 inline-flex items-center gap-2 font-sans text-sm font-bold text-primary hover:text-accent transition-colors"
-            >
-              <ArrowLeft size={16} aria-hidden="true" />
-              Voltar ao painel
-            </Link>
           </div>
         </div>
       </section>
@@ -80,11 +72,11 @@ export default async function AdminUsuariosPage({
   ];
 
   return (
-    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
-      <div className="max-w-5xl mx-auto px-4">
+    <section className="py-8 min-h-[calc(100vh-3.5rem)]">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="flex items-center gap-3 mb-8">
-          <Users className="text-primary" size={28} />
-          <h1 className="font-sans text-3xl font-bold text-primary">
+          <Users className="text-[#c9a84c]" size={28} />
+          <h1 className="font-sans text-3xl font-bold text-white">
             Usuários
           </h1>
         </div>
@@ -96,8 +88,8 @@ export default async function AdminUsuariosPage({
               href={r ? `/admin/usuarios?role=${r}` : "/admin/usuarios"}
               className={`px-3 py-1.5 rounded-full text-sm font-sans font-bold transition-colors ${
                 roleParam === r || (!roleParam && !r)
-                  ? "bg-primary text-white"
-                  : "bg-white text-text-dark border border-gray-200 hover:border-primary"
+                  ? "bg-[#c9a84c] text-[#0d1f3c]"
+                  : "bg-white/10 text-white/60 border border-white/10 hover:border-[#c9a84c] hover:text-[#c9a84c]"
               }`}
             >
               {r ? ROLE_LABELS[r] : "Todos"}
@@ -111,15 +103,15 @@ export default async function AdminUsuariosPage({
           </div>
         )}
 
-        <div className="rounded-2xl bg-white shadow-xl overflow-hidden">
-          <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-            <span className="font-sans text-sm text-text-dark/60">
+        <div className="bg-[#132744] border border-white/10 rounded-xl overflow-hidden">
+          <div className="p-4 border-b border-white/10 flex items-center justify-between">
+            <span className="font-sans text-sm text-white/60">
               {result.total} usuário(s)
             </span>
             {administrador && (
               <Link
                 href="/admin/usuarios/permissoes"
-                className="inline-flex items-center gap-1.5 text-sm font-sans font-bold text-primary hover:text-accent transition-colors"
+                className="inline-flex items-center gap-1.5 text-sm font-sans font-bold text-[#c9a84c] hover:text-[#e0c872] transition-colors"
               >
                 <Shield size={14} />
                 Matriz de Permissões
@@ -129,8 +121,8 @@ export default async function AdminUsuariosPage({
 
           {result.users.length === 0 ? (
             <div className="p-10 text-center">
-              <UserPlus className="mx-auto mb-3 text-text-dark/30" size={40} />
-              <p className="font-serif text-text-dark/50">
+              <UserPlus className="mx-auto mb-3 text-white/30" size={40} />
+              <p className="text-white/40">
                 Nenhum usuário cadastrado.
               </p>
             </div>
@@ -138,17 +130,17 @@ export default async function AdminUsuariosPage({
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="border-b border-gray-100">
-                    <th className="px-4 py-3 font-sans text-xs font-bold text-text-dark/50 uppercase">
+                  <tr className="border-b border-white/10">
+                    <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase tracking-wider">
                       Email
                     </th>
-                    <th className="px-4 py-3 font-sans text-xs font-bold text-text-dark/50 uppercase">
+                    <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase tracking-wider">
                       Papel
                     </th>
-                    <th className="px-4 py-3 font-sans text-xs font-bold text-text-dark/50 uppercase">
+                    <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase tracking-wider">
                       Criado em
                     </th>
-                    <th className="px-4 py-3 font-sans text-xs font-bold text-text-dark/50 uppercase">
+                    <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase tracking-wider">
                       Status
                     </th>
                   </tr>
@@ -157,25 +149,25 @@ export default async function AdminUsuariosPage({
                   {result.users.map((u) => (
                     <tr
                       key={u.id}
-                      className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
+                      className="bg-[#0d1f3c] border-b border-white/5 hover:bg-white/5 transition-colors"
                     >
-                      <td className="px-4 py-3 font-sans text-sm text-text-dark">
+                      <td className="px-4 py-3 font-sans text-sm text-white">
                         {u.email}
                       </td>
                       <td className="px-4 py-3">
-                        <span className="inline-block px-2 py-0.5 rounded-full text-xs font-sans font-bold bg-primary/10 text-primary">
+                        <span className="inline-block px-2 py-0.5 rounded-full text-xs font-sans font-bold bg-[#c9a84c]/10 text-[#c9a84c]">
                           {ROLE_LABELS[u.role ?? ""] ?? u.role ?? "—"}
                         </span>
                       </td>
-                      <td className="px-4 py-3 font-sans text-sm text-text-dark/60">
+                      <td className="px-4 py-3 font-sans text-sm text-white/60">
                         {formatarData(u.createdAt)}
                       </td>
                       <td className="px-4 py-3">
                         <span
                           className={`inline-block px-2 py-0.5 rounded-full text-xs font-sans font-bold ${
                             u.lastSignInAt
-                              ? "bg-green-100 text-green-800"
-                              : "bg-gray-100 text-gray-500"
+                              ? "bg-emerald-500/20 text-emerald-400"
+                              : "bg-white/10 text-white/40"
                           }`}
                         >
                           {u.lastSignInAt ? "Ativo" : "Inativo"}
@@ -187,16 +179,6 @@ export default async function AdminUsuariosPage({
               </table>
             </div>
           )}
-        </div>
-
-        <div className="mt-6">
-          <Link
-            href="/admin"
-            className="inline-flex items-center gap-2 font-sans text-sm font-bold text-primary hover:text-accent transition-colors"
-          >
-            <ArrowLeft size={16} />
-            Voltar ao painel
-          </Link>
         </div>
       </div>
     </section>

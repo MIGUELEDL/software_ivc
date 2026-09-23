@@ -19,6 +19,12 @@
   --color-text-dark: #1a1a2e;
   --color-text-light: #ffffff;
 
+  --color-admin-bg: #0a1628;
+  --color-admin-surface: #132744;
+  --color-admin-border: rgba(255, 255, 255, 0.08);
+  --color-admin-text: rgba(255, 255, 255, 0.92);
+  --color-admin-text-muted: rgba(255, 255, 255, 0.5);
+
   --font-sans: "Montserrat", sans-serif;
   --font-serif: "Times New Roman", Times, serif;
 }

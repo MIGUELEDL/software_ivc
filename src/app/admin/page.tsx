@@ -1,7 +1,7 @@
 import {
-  BarChart3,
   CalendarDays,
   Church,
+  ClipboardList,
   FileText,
   Package,
   Settings,
@@ -38,7 +38,7 @@ const METRIC_ICONS = {
 const METRIC_LABELS: Record<string, string> = {
   membros: "Membros",
   eventos: "Eventos",
-  igrejas: "Igrejas",
+  igrejas: "Templos",
   patrimonio: "Patrimonio",
   documentos: "Documentos",
   usuarios: "Usuarios",
@@ -53,23 +53,35 @@ const METRIC_HREF: Record<string, string> = {
   usuarios: "/admin/usuarios",
 };
 
+const NAV_ITEMS = [
+  { href: "/admin/membros", label: "Membros", icon: Users },
+  { href: "/admin/lideranca", label: "Templos", icon: Church },
+  { href: "/admin/eventos", label: "Eventos", icon: CalendarDays },
+  { href: "/admin/patrimonio", label: "Patrimonio", icon: Package },
+  { href: "/admin/financeiro", label: "Financeiro", icon: Wallet },
+  { href: "/admin/relatorios", label: "Relatorios", icon: FileText },
+  { href: "/admin/usuarios", label: "Usuarios", icon: Shield },
+  { href: "/admin/auditoria", label: "Auditoria", icon: ClipboardList },
+  { href: "/admin/configuracoes", label: "Config", icon: Settings },
+];
+
 const STATUS_COLORS: Record<string, string> = {
-  ATIVO: "bg-green-100 text-green-800",
-  INATIVO: "bg-gray-100 text-gray-500",
-  TRANSFERIDO: "bg-yellow-100 text-yellow-800",
-  RECEITA: "bg-green-100 text-green-800",
-  DESPESA: "bg-red-100 text-red-800",
+  ATIVO: "bg-emerald-500/20 text-emerald-400",
+  INATIVO: "bg-white/10 text-white/40",
+  TRANSFERIDO: "bg-amber-500/20 text-amber-400",
+  RECEITA: "bg-emerald-500/20 text-emerald-400",
+  DESPESA: "bg-red-500/20 text-red-400",
 };
 
 function StatusBadge({ label }: { label: string }) {
   const cls = STATUS_COLORS[label];
   if (!cls) {
     return (
-      <span className="font-serif text-xs text-text-dark/50">{label}</span>
+      <span className="font-serif text-xs text-white/40">{label}</span>
     );
   }
   return (
-    <span className={`inline-block rounded px-1.5 py-0.5 text-xs font-bold ${cls}`}>
+    <span className={`inline-block rounded px-1.5 py-0.5 text-[10px] font-bold ${cls}`}>
       {label}
     </span>
   );
@@ -78,11 +90,11 @@ function StatusBadge({ label }: { label: string }) {
 function AtividadeIcon({ tipo }: { tipo: AtividadeItem["tipo"] }) {
   switch (tipo) {
     case "membro":
-      return <Users size={16} className="text-blue-500" />;
+      return <Users size={14} className="text-blue-400" />;
     case "transacao":
-      return <Wallet size={16} className="text-green-600" />;
+      return <Wallet size={14} className="text-emerald-400" />;
     case "evento":
-      return <CalendarDays size={16} className="text-purple-500" />;
+      return <CalendarDays size={14} className="text-purple-400" />;
   }
 }
 
@@ -100,34 +112,34 @@ export default async function AdminPage() {
   ]);
 
   return (
-    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="text-center mb-8">
-          <h1 className="font-sans text-3xl font-bold text-primary mb-2">
-            Area Administrativa
-          </h1>
-          <p className="font-serif text-base text-text-dark/60">
-            Bem-vindo a gestao da IVC
-          </p>
-        </div>
-
+    <section className="py-8 min-h-[calc(100vh-3.5rem)]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {claims ? (
           !podeDashboard ? (
-            <div className="rounded-2xl bg-white shadow-xl p-8 text-center">
+            <div className="rounded-2xl bg-[#132744] border border-white/10 p-10 text-center">
               <Shield size={48} className="mx-auto mb-4 text-red-400" />
-              <h2 className="font-sans text-xl font-bold text-text-dark mb-2">
+              <h2 className="font-sans text-xl font-bold text-white mb-2">
                 Acesso Negado
               </h2>
-              <p className="font-serif text-sm text-text-dark/60">
+              <p className="font-serif text-sm text-white/60">
                 Voce nao possui permissao para acessar o painel administrativo.
               </p>
-              <p className="font-serif text-xs text-text-dark/40 mt-2">
+              <p className="font-serif text-xs text-white/40 mt-2">
                 Papel atual: {claims.role ?? "nenhum"} | Contato: administrador
               </p>
             </div>
           ) : (
           <div className="space-y-8">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div>
+              <h1 className="font-sans text-2xl font-bold text-white mb-1">
+                Dashboard
+              </h1>
+              <p className="font-serif text-sm text-white/50">
+                Visao geral da administracao da IVC
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               {(Object.keys(METRIC_ICONS) as Array<keyof typeof METRIC_ICONS>).map(
                 (key) => {
                   const Icon = METRIC_ICONS[key];
@@ -135,17 +147,17 @@ export default async function AdminPage() {
                     <Link
                       key={key}
                       href={METRIC_HREF[key]}
-                      className="rounded-2xl bg-white shadow-xl p-5 hover:shadow-2xl transition-shadow text-center"
+                      className="rounded-xl bg-[#132744] border border-white/10 p-4 hover:border-[#c9a84c]/40 hover:bg-[#1a3050] transition-all text-center group"
                     >
                       <Icon
-                        size={28}
-                        className="mx-auto mb-2 text-primary"
+                        size={24}
+                        className="mx-auto mb-2 text-[#c9a84c] group-hover:scale-110 transition-transform"
                         aria-hidden="true"
                       />
-                      <p className="font-sans text-2xl font-bold text-text-dark">
+                      <p className="font-sans text-xl font-bold text-white">
                         {metricas[key]}
                       </p>
-                      <p className="font-sans text-xs font-bold text-text-dark/50 uppercase">
+                      <p className="font-sans text-[10px] font-bold text-white/40 uppercase tracking-wider">
                         {METRIC_LABELS[key]}
                       </p>
                     </Link>
@@ -154,186 +166,30 @@ export default async function AdminPage() {
               )}
             </div>
 
-            <nav
-              aria-label="Modulos administrativos"
-              className="rounded-2xl bg-white shadow-xl p-6 space-y-3"
-            >
-              <Link
-                href="/admin/membros"
-                className="flex items-center gap-4 rounded-xl bg-bg-gray p-4 hover:bg-primary/5 transition-colors"
-              >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Users size={18} aria-hidden="true" />
-                </span>
-                <span>
-                  <span className="block font-sans text-sm font-bold text-text-dark">
-                    Membros
-                  </span>
-                  <span className="block font-serif text-xs text-text-dark/60">
-                    Cadastro, situacao e cartoes
-                  </span>
-                </span>
-              </Link>
-              <Link
-                href="/admin/lideranca"
-                className="flex items-center gap-4 rounded-xl bg-bg-gray p-4 hover:bg-primary/5 transition-colors"
-              >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Church size={18} aria-hidden="true" />
-                </span>
-                <span>
-                  <span className="block font-sans text-sm font-bold text-text-dark">
-                    Igrejas & Lideranca
-                  </span>
-                  <span className="block font-serif text-xs text-text-dark/60">
-                    Gestao das igrejas e lideranca
-                  </span>
-                </span>
-              </Link>
-              <Link
-                href="/admin/eventos"
-                className="flex items-center gap-4 rounded-xl bg-bg-gray p-4 hover:bg-primary/5 transition-colors"
-              >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <CalendarDays size={18} aria-hidden="true" />
-                </span>
-                <span>
-                  <span className="block font-sans text-sm font-bold text-text-dark">
-                    Eventos
-                  </span>
-                  <span className="block font-serif text-xs text-text-dark/60">
-                    Agenda da igreja
-                  </span>
-                </span>
-              </Link>
-              <Link
-                href="/admin/patrimonio"
-                className="flex items-center gap-4 rounded-xl bg-bg-gray p-4 hover:bg-primary/5 transition-colors"
-              >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Package size={18} aria-hidden="true" />
-                </span>
-                <span>
-                  <span className="block font-sans text-sm font-bold text-text-dark">
-                    Patrimonio
-                  </span>
-                  <span className="block font-serif text-xs text-text-dark/60">
-                    Inventario dos bens
-                  </span>
-                </span>
-              </Link>
-              <Link
-                href="/admin/financeiro"
-                className="flex items-center gap-4 rounded-xl bg-bg-gray p-4 hover:bg-primary/5 transition-colors"
-              >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Wallet size={18} aria-hidden="true" />
-                </span>
-                <span>
-                  <span className="block font-sans text-sm font-bold text-text-dark">
-                    Financeiro
-                  </span>
-                  <span className="block font-serif text-xs text-text-dark/60">
-                    Receitas, despesas e caixa
-                  </span>
-                </span>
-              </Link>
-              <Link
-                href="/admin/relatorios"
-                className="flex items-center gap-4 rounded-xl bg-bg-gray p-4 hover:bg-primary/5 transition-colors"
-              >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <BarChart3 size={18} aria-hidden="true" />
-                </span>
-                <span>
-                  <span className="block font-sans text-sm font-bold text-text-dark">
-                    Relatorios
-                  </span>
-                  <span className="block font-serif text-xs text-text-dark/60">
-                    Exportacoes e documentos
-                  </span>
-                </span>
-              </Link>
-              {podeUsuarios && (
-                <Link
-                  href="/admin/usuarios"
-                  className="flex items-center gap-4 rounded-xl bg-bg-gray p-4 hover:bg-primary/5 transition-colors"
-                >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    <Shield size={18} aria-hidden="true" />
-                  </span>
-                  <span>
-                    <span className="block font-sans text-sm font-bold text-text-dark">
-                      Usuarios
-                    </span>
-                    <span className="block font-serif text-xs text-text-dark/60">
-                      Permissoes do painel
-                    </span>
-                  </span>
-                </Link>
-              )}
-              {podeConfiguracoes && (
-                <Link
-                  href="/admin/configuracoes"
-                  className="flex items-center gap-4 rounded-xl bg-bg-gray p-4 hover:bg-primary/5 transition-colors"
-                >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    <Settings size={18} aria-hidden="true" />
-                  </span>
-                  <span>
-                    <span className="block font-sans text-sm font-bold text-text-dark">
-                      Configuracoes
-                    </span>
-                    <span className="block font-serif text-xs text-text-dark/60">
-                      Dados da igreja e preferencias
-                    </span>
-                  </span>
-                </Link>
-              )}
-              {await can(papel, "auditoria", "ler") && (
-                <Link
-                  href="/admin/auditoria"
-                  className="flex items-center gap-4 rounded-xl bg-bg-gray p-4 hover:bg-primary/5 transition-colors"
-                >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    <FileText size={18} aria-hidden="true" />
-                  </span>
-                  <span>
-                    <span className="block font-sans text-sm font-bold text-text-dark">
-                      Auditoria
-                    </span>
-                    <span className="block font-serif text-xs text-text-dark/60">
-                      Trilha de acoes administrativas
-                    </span>
-                  </span>
-                </Link>
-              )}
-            </nav>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="rounded-2xl bg-white shadow-xl p-6">
-                <h2 className="font-sans text-lg font-bold text-text-dark mb-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 rounded-xl bg-[#132744] border border-white/10 p-5">
+                <h2 className="font-sans text-sm font-bold text-white/70 uppercase tracking-wider mb-4">
                   Atividade Recente
                 </h2>
                 {atividade.length === 0 ? (
-                  <p className="font-serif text-sm text-text-dark/50">
+                  <p className="font-serif text-sm text-white/40">
                     Nenhuma atividade recente.
                   </p>
                 ) : (
-                  <ul className="space-y-3">
+                  <ul className="space-y-2">
                     {atividade.map((item) => (
                       <li
                         key={`${item.tipo}-${item.id}`}
-                        className="flex items-start gap-3"
+                        className="flex items-center gap-3 rounded-lg bg-[#0d1f3c] px-3 py-2.5"
                       >
                         <AtividadeIcon tipo={item.tipo} />
                         <div className="flex-1 min-w-0">
-                          <p className="font-sans text-sm text-text-dark truncate">
+                          <p className="font-sans text-sm text-white truncate">
                             {item.titulo}
                           </p>
                           <StatusBadge label={item.subtitulo} />
                         </div>
-                        <span className="font-sans text-xs text-text-dark/40 shrink-0">
+                        <span className="font-sans text-xs text-white/30 shrink-0">
                           {item.criadoEm}
                         </span>
                       </li>
@@ -342,46 +198,40 @@ export default async function AdminPage() {
                 )}
               </div>
 
-              <div className="rounded-2xl bg-white shadow-xl p-6">
-                <h2 className="font-sans text-lg font-bold text-text-dark mb-4">
+              <div className="rounded-xl bg-[#132744] border border-white/10 p-5">
+                <h2 className="font-sans text-sm font-bold text-white/70 uppercase tracking-wider mb-4">
                   Resumo Financeiro
                 </h2>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p className="font-sans text-xs font-bold text-text-dark/50 uppercase">
-                      Receitas
-                    </p>
-                    <p className="font-serif text-lg font-bold text-green-700">
+                <div className="space-y-3 mb-4">
+                  <div className="flex justify-between items-baseline">
+                    <span className="font-sans text-xs text-white/40">Receitas</span>
+                    <span className="font-serif text-lg font-bold text-emerald-400">
                       {formatarMoeda(financeiro.receitas)}
-                    </p>
+                    </span>
                   </div>
-                  <div>
-                    <p className="font-sans text-xs font-bold text-text-dark/50 uppercase">
-                      Despesas
-                    </p>
-                    <p className="font-serif text-lg font-bold text-red-700">
+                  <div className="flex justify-between items-baseline">
+                    <span className="font-sans text-xs text-white/40">Despesas</span>
+                    <span className="font-serif text-lg font-bold text-red-400">
                       {formatarMoeda(financeiro.despesas)}
-                    </p>
+                    </span>
                   </div>
-                </div>
-                <div className="rounded-lg bg-bg-gray p-3 mb-4">
-                  <p className="font-sans text-xs font-bold text-text-dark/50 uppercase">
-                    Saldo
-                  </p>
-                  <p className="font-serif text-xl font-bold text-text-dark">
-                    {formatarMoeda(financeiro.saldo)}
-                  </p>
+                  <div className="border-t border-white/10 pt-3 flex justify-between items-baseline">
+                    <span className="font-sans text-xs font-bold text-white/60">Saldo</span>
+                    <span className="font-serif text-xl font-bold text-white">
+                      {formatarMoeda(financeiro.saldo)}
+                    </span>
+                  </div>
                 </div>
                 {financeiro.topCategorias.length > 0 && (
                   <>
-                    <p className="font-sans text-xs font-bold text-text-dark/50 uppercase mb-2">
+                    <p className="font-sans text-[10px] font-bold text-white/40 uppercase tracking-wider mb-2">
                       Top Categorias
                     </p>
                     <ul className="space-y-1">
                       {financeiro.topCategorias.map((cat) => (
                         <li
                           key={cat.categoria}
-                          className="flex justify-between font-serif text-sm text-text-dark/70"
+                          className="flex justify-between font-serif text-xs text-white/50"
                         >
                           <span>{cat.categoria}</span>
                           <span>{formatarMoeda(cat.valor)}</span>
@@ -393,28 +243,39 @@ export default async function AdminPage() {
               </div>
             </div>
 
-            <div className="rounded-2xl bg-white shadow-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div>
-                <p className="font-sans text-sm font-bold text-text-dark">
-                  {claims.email}
-                </p>
-                <p className="font-serif text-xs text-text-dark/50">
-                  {claims.role ?? "Sem papel"}
-                </p>
+            <nav
+              aria-label="Modulos administrativos"
+              className="rounded-xl bg-[#132744] border border-white/10 p-4"
+            >
+              <h2 className="font-sans text-sm font-bold text-white/70 uppercase tracking-wider mb-3 px-2">
+                Modulos
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+                {NAV_ITEMS.filter((item) => {
+                  if (item.href === "/admin/usuarios" && !podeUsuarios) return false;
+                  if (item.href === "/admin/configuracoes" && !podeConfiguracoes) return false;
+                  if (item.href === "/admin/auditoria") return can(papel, "auditoria", "ler");
+                  return true;
+                }).map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="flex items-center gap-3 rounded-lg bg-[#0d1f3c] p-3 hover:bg-[#1a3050] hover:border-[#c9a84c]/30 border border-transparent transition-all group"
+                  >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#c9a84c]/10 text-[#c9a84c] group-hover:bg-[#c9a84c]/20 transition-colors">
+                      <item.icon size={16} aria-hidden="true" />
+                    </span>
+                    <span className="font-sans text-xs font-bold text-white/80 group-hover:text-white transition-colors">
+                      {item.label}
+                    </span>
+                  </Link>
+                ))}
               </div>
-              <form action="/api/auth/logout" method="POST">
-                <button
-                  type="submit"
-                  className="rounded-lg border-2 border-primary text-primary hover:bg-primary hover:text-white font-sans font-bold px-6 py-2 transition-colors"
-                >
-                  Sair
-                </button>
-              </form>
-            </div>
+            </nav>
           </div>
           )
         ) : (
-          <p className="text-center font-serif text-text-dark/60">
+          <p className="text-center font-serif text-white/40">
             Sessao nao disponivel.
           </p>
         )}

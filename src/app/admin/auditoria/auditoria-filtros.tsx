@@ -59,41 +59,41 @@ export default function AuditoriaFiltros({
   }
 
   return (
-    <div className="rounded-2xl bg-white shadow-xl p-6">
-      <h2 className="font-sans text-sm font-bold text-text-dark mb-4">
+    <div className="rounded-2xl bg-[#132744] border border-white/10 p-6">
+      <h2 className="font-sans text-sm font-bold text-white mb-4">
         Filtros
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div>
-          <label className="block font-sans text-xs font-bold text-text-dark/60 mb-1">
+          <label className="block font-sans text-xs font-bold text-white/60 mb-1">
             Data Inicio
           </label>
           <input
             type="date"
             value={inicio}
             onChange={(e) => setInicio(e.target.value)}
-            className="w-full rounded border border-gray-200 px-3 py-2 font-sans text-sm text-text-dark focus:border-primary focus:outline-none"
+            className="w-full rounded bg-[#0d1f3c] border border-white/10 px-3 py-2 font-sans text-sm text-white focus:border-[#c9a84c] focus:outline-none"
           />
         </div>
         <div>
-          <label className="block font-sans text-xs font-bold text-text-dark/60 mb-1">
+          <label className="block font-sans text-xs font-bold text-white/60 mb-1">
             Data Fim
           </label>
           <input
             type="date"
             value={fim}
             onChange={(e) => setFim(e.target.value)}
-            className="w-full rounded border border-gray-200 px-3 py-2 font-sans text-sm text-text-dark focus:border-primary focus:outline-none"
+            className="w-full rounded bg-[#0d1f3c] border border-white/10 px-3 py-2 font-sans text-sm text-white focus:border-[#c9a84c] focus:outline-none"
           />
         </div>
         <div>
-          <label className="block font-sans text-xs font-bold text-text-dark/60 mb-1">
+          <label className="block font-sans text-xs font-bold text-white/60 mb-1">
             Acao
           </label>
           <select
             value={acaoFiltro}
             onChange={(e) => setAcaoFiltro(e.target.value)}
-            className="w-full rounded border border-gray-200 px-3 py-2 font-sans text-sm text-text-dark focus:border-primary focus:outline-none"
+            className="w-full rounded bg-[#0d1f3c] border border-white/10 px-3 py-2 font-sans text-sm text-white focus:border-[#c9a84c] focus:outline-none"
           >
             <option value="">Todas</option>
             {ACOES.map((a) => (
@@ -104,13 +104,13 @@ export default function AuditoriaFiltros({
           </select>
         </div>
         <div>
-          <label className="block font-sans text-xs font-bold text-text-dark/60 mb-1">
+          <label className="block font-sans text-xs font-bold text-white/60 mb-1">
             Entidade
           </label>
           <select
             value={entidadeFiltro}
             onChange={(e) => setEntidadeFiltro(e.target.value)}
-            className="w-full rounded border border-gray-200 px-3 py-2 font-sans text-sm text-text-dark focus:border-primary focus:outline-none"
+            className="w-full rounded bg-[#0d1f3c] border border-white/10 px-3 py-2 font-sans text-sm text-white focus:border-[#c9a84c] focus:outline-none"
           >
             <option value="">Todas</option>
             {ENTIDADES.map((e) => (
@@ -124,13 +124,13 @@ export default function AuditoriaFiltros({
       <div className="flex gap-2 mt-4">
         <button
           onClick={aplicarFiltros}
-          className="rounded bg-primary px-4 py-2 font-sans text-xs font-bold text-white hover:bg-accent transition-colors"
+          className="rounded bg-[#c9a84c] px-4 py-2 font-sans text-xs font-bold text-[#0d1f3c] hover:bg-[#e0c872] transition-colors"
         >
           Aplicar
         </button>
         <button
           onClick={limparFiltros}
-          className="rounded bg-gray-100 px-4 py-2 font-sans text-xs font-bold text-text-dark hover:bg-gray-200"
+          className="rounded bg-white/10 px-4 py-2 font-sans text-xs font-bold text-white hover:bg-white/20"
         >
           Limpar
         </button>
