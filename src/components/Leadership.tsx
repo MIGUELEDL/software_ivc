@@ -40,9 +40,9 @@ export default function Leadership({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6 }}
-            className="max-w-2xl mx-auto rounded-2xl bg-bg-gray shadow-xl p-10 text-center"
+            className="max-w-2xl mx-auto rounded-2xl bg-admin-surface shadow-xl p-10 text-center"
           >
-            <p className="font-serif text-lg text-text-dark/60">
+            <p className="font-serif text-lg text-white/70">
               Em breve, a liderança da{" "}
               {church?.name ?? "igreja"} estará disponível aqui.
             </p>
@@ -58,25 +58,25 @@ export default function Leadership({
             {leaders.map((lider) => (
               <div
                 key={lider.id}
-                className="rounded-2xl bg-bg-gray shadow-xl p-8 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+                className="rounded-2xl bg-admin-surface shadow-xl p-8 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
               >
                 {lider.photo_url ? (
                   <img
                     src={lider.photo_url}
                     alt={lider.name}
-                    className="w-20 h-20 mx-auto mb-6 rounded-full object-cover border-4 border-white shadow"
+                    className="w-25 h-25 mx-auto mb-6 rounded-full object-cover border-4 border-white/20 shadow"
                   />
                 ) : (
-                  <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary via-primary to-accent flex items-center justify-center">
+                  <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary-light via-primary to-accent flex items-center justify-center">
                     <span className="font-sans text-2xl font-bold text-white">
                       {lider.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
                 )}
-                <h3 className="font-sans text-2xl font-bold text-primary mb-2">
+                <h3 className="font-sans text-1xl font-bold text-white mb-2">
                   {lider.name}
                 </h3>
-                <p className="font-serif text-sm text-text-dark/60">
+                <p className="font-serif text-sm text-white/70">
                   {lider.role} — {church?.name ?? "Igreja Virtude Cristã"}
                 </p>
               </div>

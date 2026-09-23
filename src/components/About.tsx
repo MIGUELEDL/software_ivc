@@ -51,14 +51,22 @@ export default function About() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="relative h-80 sm:h-96 rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-primary via-bg-dark to-primary"
+            className="relative h-80 sm:h-90 rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-primary via-bg-dark to-primary"
           >
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#C9A22730_0%,_transparent_70%)]" />
+            <Image
+              src="/img_culto.png"
+              alt=""
+              aria-hidden
+              fill
+              sizes="450px"
+              className="object-cover opacity-5"
+            />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#C9A22730_0%,_transparent_65%)]" />
             <Image
               src="/logo.png"
               alt={`Logo ${CHURCH.name}`}
               fill
-              className="object-contain p-12"
+              className="object-contain p-30 filter drop-shadow-[0_0_15px_rgba(255,255,255,0.35)]"
             />
           </motion.div>
         </div>

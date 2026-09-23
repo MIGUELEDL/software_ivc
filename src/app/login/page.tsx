@@ -19,7 +19,7 @@ export default async function LoginPage({
               alt="Logo IVC"
               width={64}
               height={64}
-              className="mx-auto mb-4 rounded-full"
+              className="mx-auto mb-4"
             />
             <h1 className="font-sans text-3xl font-bold text-white mb-2">
               Entrar

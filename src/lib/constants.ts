@@ -5,7 +5,7 @@ export const CHURCH = {
     "Proclamando o evangelho de Cristo com fé e amor, e ensinando a Palavra que transforma vidas.",
   foundedDate: "07/09/2025",
   cnpj: "68.683.917/0001-71",
-  foundedLocation:
+  foundedLocation: 
     "Rua Quiezinho Fernandes, 213 - Nossa Senhora de Fátima, Santa Luzia - PB",
   city: "Santa Luzia - PB",
   leader: "Pastor Ernandes Nogueira de Lucena",
@@ -58,13 +58,13 @@ export const SCHEDULE = [
 export const NAV_ITEMS = [
   { label: "Início", href: "#hero" },
   { label: "Sobre", href: "#sobre" },
-  { label: "Valores", href: "#valores" },
   { label: "Liderança", href: "#lideranca" },
-  { label: "Clamor 12h", href: "#clamor" },
   { label: "Cultos", href: "#cultos" },
+  { label: "Valores", href: "#valores" },
+  { label: "Clamor 12h", href: "#clamor" },
+  { label: "Redes", href: "#redes" },
   { label: "Eventos", href: "/eventos" },
   { label: "Doação", href: "/doacao" },
-  { label: "Redes", href: "#redes" },
 ] as const;
 
 export type Evento = {
@@ -79,5 +79,5 @@ export type Evento = {
 export const EVENTS: readonly Evento[] = [] as const;
 
 export const PIX = {
-  key: CHURCH.cnpj.replace(/\D/g, ""),
+  key: CHURCH.cnpj,
 } as const;

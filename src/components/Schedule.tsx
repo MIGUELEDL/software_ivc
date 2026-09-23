@@ -46,17 +46,17 @@ export default function Schedule({ items }: { items?: ScheduleItem[] }) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.6, delay: index * 0.15 }}
-                className="rounded-2xl bg-white shadow-xl p-8 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+                className="rounded-2xl bg-admin-surface shadow-xl p-8 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
               >
                 <CalendarDays className="w-10 h-10 mx-auto mb-4 text-accent" />
-                <h3 className="font-sans text-2xl font-bold text-primary mb-2">
+                <h3 className="font-sans text-2xl font-bold text-white mb-2">
                   {service.day}
                 </h3>
-                <p className="inline-flex items-center gap-2 font-sans font-bold text-text-dark/70 mb-3">
+                <p className="inline-flex items-center gap-2 font-sans font-bold text-white/70 mb-3">
                   <Clock size={16} className="text-accent" />
                   {service.time}
                 </p>
-                <p className="font-serif text-base text-text-dark/70">
+                <p className="font-serif text-base text-white/70">
                   {service.title}
                 </p>
               </motion.div>
