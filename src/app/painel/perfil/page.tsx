@@ -32,21 +32,21 @@ export default async function PerfilPage({
     typeof params.matricula === "string" ? params.matricula : "";
 
   return (
-    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
-      <div className="max-w-2xl mx-auto px-4">
+    <section className="py-8 min-h-[calc(100vh-3.5rem)]">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6">
         <Link
           href="/painel"
-          className="inline-flex items-center gap-2 font-sans text-sm font-bold text-primary hover:text-accent mb-6 transition-colors"
+          className="inline-flex items-center gap-2 font-sans text-sm font-bold text-white/60 hover:text-[#c9a84c] mb-6 transition-colors"
         >
           <ArrowLeft size={16} aria-hidden="true" />
           Voltar ao painel
         </Link>
 
         <div className="mb-8">
-          <h1 className="font-sans text-3xl font-bold text-primary mb-2">
+          <h1 className="font-sans text-3xl font-bold text-white mb-2">
             Meus dados
           </h1>
-          <p className="font-serif text-base text-text-dark/60">
+          <p className="font-serif text-base text-white/50">
             {member
               ? "Mantenha suas informações atualizadas."
               : "Complete seu cadastro para receber seu cartão e QR de dízimo."}
@@ -55,7 +55,7 @@ export default async function PerfilPage({
 
         {sucesso === "criado" && (
           <div
-            className="mb-6 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700 font-serif"
+            className="mb-6 rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-4 py-3 text-sm text-emerald-400 font-serif"
             role="status"
           >
             Cadastro realizado com sucesso! Sua matrícula é{" "}
@@ -65,7 +65,7 @@ export default async function PerfilPage({
 
         {sucesso === "salvo" && (
           <div
-            className="mb-6 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700 font-serif"
+            className="mb-6 rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-4 py-3 text-sm text-emerald-400 font-serif"
             role="status"
           >
             Dados salvos com sucesso!
@@ -74,7 +74,7 @@ export default async function PerfilPage({
 
         {sucesso === "foto" && (
           <div
-            className="mb-6 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700 font-serif"
+            className="mb-6 rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-4 py-3 text-sm text-emerald-400 font-serif"
             role="status"
           >
             Foto atualizada com sucesso!
@@ -83,7 +83,7 @@ export default async function PerfilPage({
 
         {erro === "cadastro_duplicado" && (
           <div
-            className="mb-6 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 font-serif"
+            className="mb-6 rounded-lg bg-red-500/15 border border-red-500/30 px-4 py-3 text-sm text-red-400 font-serif"
             role="alert"
           >
             Seu cadastro já existe. Recarregue a página para editar.
@@ -91,7 +91,7 @@ export default async function PerfilPage({
         )}
 
         {primeiro && !member && (
-          <div className="mb-6 rounded-lg bg-accent/10 border border-accent/40 px-4 py-3 text-sm text-text-dark font-serif">
+          <div className="mb-6 rounded-lg bg-[#c9a84c]/10 border border-[#c9a84c]/40 px-4 py-3 text-sm text-[#e0c872] font-serif">
             Para acessar o dízimo pessoal e o cartão, complete seu cadastro
             abaixo.
           </div>
