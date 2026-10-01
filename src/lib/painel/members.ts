@@ -16,11 +16,32 @@ export type Member = {
   atualizado_em: string;
 };
 
+/**
+ * Dados de cadastro do membro. `rg`, `cpf` e `data_batismo` alimentam o
+ * cartão de membro e são **opcionais**: `undefined` ou `null` significam "não
+ * informado" e são gravados como `NULL` — nunca como string vazia (CART-04).
+ *
+ * A lista é uma whitelist: nenhum caller consegue gravar `status`,
+ * `matricula` ou `criado_em` a partir daqui (a policy `members_update_own` é
+ * por linha, sem filtro de coluna — ver Risks & Concerns do design).
+ */
 export type MemberDados = {
   nome: string;
   nascimento: string;
   whatsapp: string;
+  rg?: string | null;
+  cpf?: string | null;
+  data_batismo?: string | null;
 };
+
+/** Colunas de documento graváveis — fonte única da whitelist do member. */
+function colunasDocumento(dados: MemberDados) {
+  return {
+    rg: dados.rg ?? null,
+    cpf: dados.cpf ?? null,
+    data_batismo: dados.data_batismo ?? null,
+  };
+}
 
 /**
  * Busca o membro pelo `auth_user_id` (claims.sub). Retorna null quando não
@@ -80,7 +101,14 @@ export async function createMember(
 
   const { data, error } = await supabase
     .from("members")
-    .insert({ auth_user_id: authUid, ...dados, matricula })
+    .insert({
+      auth_user_id: authUid,
+      nome: dados.nome,
+      nascimento: dados.nascimento,
+      whatsapp: dados.whatsapp,
+      ...colunasDocumento(dados),
+      matricula,
+    })
     .select()
     .single();
 
@@ -92,8 +120,12 @@ export async function createMember(
 }
 
 /**
- * Atualiza nome/nascimento/whatsapp do membro do `authUid` e reanota
- * `atualizado_em`. Erros propagam para o caller.
+ * Atualiza nome/nascimento/whatsapp e os dados de documento do membro do
+ * `authUid` e reanota `atualizado_em`. Erros propagam para o caller.
+ *
+ * A montagem é uma whitelist explícita de colunas (nunca `...dados`) porque a
+ * policy `members_update_own` restringe a linha, não as colunas: espalhar o
+ * objeto permitiria ao membro escrever `status`/`matricula`/`criado_em`.
  */
 export async function updateMember(
   authUid: string,
@@ -103,7 +135,13 @@ export async function updateMember(
 
   const { data, error } = await supabase
     .from("members")
-    .update({ ...dados, atualizado_em: new Date().toISOString() })
+    .update({
+      nome: dados.nome,
+      nascimento: dados.nascimento,
+      whatsapp: dados.whatsapp,
+      ...colunasDocumento(dados),
+      atualizado_em: new Date().toISOString(),
+    })
     .eq("auth_user_id", authUid)
     .select()
     .single();
