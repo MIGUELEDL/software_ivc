@@ -7,6 +7,7 @@ import {
   lerEndereco,
 } from "@/lib/admin/validacao";
 import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
+import { dadosDocumento } from "@/lib/painel/documento";
 
 /**
  * POST /api/admin/membros/[id]/dados — edição de dados textuais
@@ -46,6 +47,18 @@ export async function POST(
     campos.uf = "UF deve ter 2 letras (ex.: PB).";
   }
 
+  // Documento do cartão (CART-01..03, CART-04..07): salvar vazio limpa o
+  // campo para NULL, então a edição aceita remover um dado antes preenchido.
+  const documento = dadosDocumento(
+    {
+      rg: String(formData.get("rg") ?? ""),
+      cpf: String(formData.get("cpf") ?? ""),
+      dataBatismo: String(formData.get("data_batismo") ?? ""),
+    },
+    new Date()
+  );
+  Object.assign(campos, documento.campos);
+
   if (Object.keys(campos).length > 0) {
     return erroCampos(campos);
   }
@@ -64,6 +77,7 @@ export async function POST(
       nascimento,
       whatsapp,
       ...endereco,
+      ...documento.dados,
     });
     const { ip, user_agent } = extrairInfoRequest(request);
     await registrarAuditoria({

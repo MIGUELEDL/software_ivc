@@ -8,6 +8,7 @@ import {
   lerEndereco,
 } from "@/lib/admin/validacao";
 import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
+import { dadosDocumento } from "@/lib/painel/documento";
 
 /**
  * POST /api/admin/membros — criação de membro com conta auth (ADMINMEM-07..12).
@@ -46,6 +47,18 @@ export async function POST(request: Request) {
     campos.uf = "UF deve ter 2 letras (ex.: PB).";
   }
 
+  // Documento do cartão (CART-04..07): mesmo normalizador da edição e do
+  // painel, para que a regra não divirja entre os três pontos de entrada.
+  const documento = dadosDocumento(
+    {
+      rg: String(formData.get("rg") ?? ""),
+      cpf: String(formData.get("cpf") ?? ""),
+      dataBatismo: String(formData.get("data_batismo") ?? ""),
+    },
+    new Date()
+  );
+  Object.assign(campos, documento.campos);
+
   if (Object.keys(campos).length > 0) {
     return erroCampos(campos);
   }
@@ -57,6 +70,7 @@ export async function POST(request: Request) {
       whatsapp,
       email,
       ...endereco,
+      ...documento.dados,
     });
 
     const { ip, user_agent } = extrairInfoRequest(request);
