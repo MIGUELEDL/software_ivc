@@ -7,7 +7,7 @@ import {
   lerEndereco,
 } from "@/lib/admin/validacao";
 import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
-import { lerDocumentoForm } from "@/lib/painel/documento";
+import { comporDadosDocumento } from "@/lib/painel/documento";
 
 /**
  * POST /api/admin/membros/[id]/dados — edição de dados textuais
@@ -48,12 +48,17 @@ export async function POST(
   }
 
   // Documento do cartão (CART-01..03, CART-04..07): salvar vazio limpa o
-  // campo para NULL, então a edição aceita remover um dado antes preenchido.
-  const documento = lerDocumentoForm(formData, new Date());
-  Object.assign(campos, documento.campos);
+  // campo para NULL, então a edição aceita remover um dado antes preenchido. A
+  // mesclagem mora no helper puro, executado pelo probe.
+  const { dados: dadosDocumento, campos: camposDocumento } = comporDadosDocumento(
+    { nome, nascimento, whatsapp, ...endereco },
+    campos,
+    formData,
+    new Date()
+  );
 
-  if (Object.keys(campos).length > 0) {
-    return erroCampos(campos);
+  if (Object.keys(camposDocumento).length > 0) {
+    return erroCampos(camposDocumento);
   }
 
   const existente = await getMembro(id);
@@ -65,13 +70,7 @@ export async function POST(
   }
 
   try {
-    const member = await atualizarDadosMembro(id, {
-      nome,
-      nascimento,
-      whatsapp,
-      ...endereco,
-      ...documento.dados,
-    });
+    const member = await atualizarDadosMembro(id, dadosDocumento);
     const { ip, user_agent } = extrairInfoRequest(request);
     await registrarAuditoria({
       autor: auth.sub,

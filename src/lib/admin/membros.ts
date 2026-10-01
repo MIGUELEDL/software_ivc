@@ -2,7 +2,7 @@ import { createServerClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { generateMatricula } from "@/lib/painel/members";
 import type { Member } from "@/lib/painel/members";
-import { colunasDocumento } from "@/lib/painel/documento";
+import { colunasCriarMembro, colunasEditarMembro } from "@/lib/painel/documento";
 
 /**
  * Membro estendido com o schema admin (0006): ciclo de vida + endereço.
@@ -176,20 +176,7 @@ export async function criarMembro(
 
     const { data: membro, error } = await supabase
       .from("members")
-      .insert({
-        auth_user_id: createdUser.user.id,
-        nome: dados.nome,
-        nascimento: dados.nascimento,
-        whatsapp: dados.whatsapp,
-        matricula,
-        logradouro: dados.logradouro ?? null,
-        numero: dados.numero ?? null,
-        bairro: dados.bairro ?? null,
-        cidade: dados.cidade ?? null,
-        uf: dados.uf ?? null,
-        cep: dados.cep ?? null,
-        ...colunasDocumento(dados),
-      })
+      .insert(colunasCriarMembro(dados, createdUser.user.id, matricula))
       .select()
       .single();
 
@@ -238,19 +225,7 @@ export async function atualizarDadosMembro(
 
   const { data, error } = await supabase
     .from("members")
-    .update({
-      nome: dados.nome,
-      nascimento: dados.nascimento,
-      whatsapp: dados.whatsapp,
-      logradouro: dados.logradouro ?? null,
-      numero: dados.numero ?? null,
-      bairro: dados.bairro ?? null,
-      cidade: dados.cidade ?? null,
-      uf: dados.uf ?? null,
-      cep: dados.cep ?? null,
-      ...colunasDocumento(dados),
-      atualizado_em: new Date().toISOString(),
-    })
+    .update(colunasEditarMembro(dados, new Date().toISOString()))
     .eq("id", id)
     .select()
     .single();

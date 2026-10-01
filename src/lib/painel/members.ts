@@ -1,5 +1,5 @@
 import { createServerClient } from "@/lib/supabase/server";
-import { colunasDocumento } from "@/lib/painel/documento";
+import { colunasCriarMembro, colunasPerfil } from "@/lib/painel/documento";
 
 export type Member = {
   id: string;
@@ -93,14 +93,7 @@ export async function createMember(
 
   const { data, error } = await supabase
     .from("members")
-    .insert({
-      auth_user_id: authUid,
-      nome: dados.nome,
-      nascimento: dados.nascimento,
-      whatsapp: dados.whatsapp,
-      ...colunasDocumento(dados),
-      matricula,
-    })
+    .insert(colunasCriarMembro(dados, authUid, matricula))
     .select()
     .single();
 
@@ -127,13 +120,7 @@ export async function updateMember(
 
   const { data, error } = await supabase
     .from("members")
-    .update({
-      nome: dados.nome,
-      nascimento: dados.nascimento,
-      whatsapp: dados.whatsapp,
-      ...colunasDocumento(dados),
-      atualizado_em: new Date().toISOString(),
-    })
+    .update(colunasPerfil(dados, new Date().toISOString()))
     .eq("auth_user_id", authUid)
     .select()
     .single();

@@ -8,7 +8,7 @@ import {
   lerEndereco,
 } from "@/lib/admin/validacao";
 import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
-import { lerDocumentoForm } from "@/lib/painel/documento";
+import { comporDadosDocumento } from "@/lib/painel/documento";
 
 /**
  * POST /api/admin/membros — criação de membro com conta auth (ADMINMEM-07..12).
@@ -48,23 +48,23 @@ export async function POST(request: Request) {
   }
 
   // Documento do cartão (CART-04..07): mesmo normalizador da edição e do
-  // painel, para que a regra não divirja entre os três pontos de entrada.
-  const documento = lerDocumentoForm(formData, new Date());
-  Object.assign(campos, documento.campos);
+  // painel, para que a regra não divirja entre os três pontos de entrada. A
+  // mesclagem dos dados e dos erros por campo mora no helper puro, que o probe
+  // executa — escrever o spread aqui dentro deixaria o gate incapaz de perceber
+  // a remoção dele.
+  const { dados: dadosDocumento, campos: camposDocumento } = comporDadosDocumento(
+    { nome, nascimento, whatsapp, email, ...endereco },
+    campos,
+    formData,
+    new Date()
+  );
 
-  if (Object.keys(campos).length > 0) {
-    return erroCampos(campos);
+  if (Object.keys(camposDocumento).length > 0) {
+    return erroCampos(camposDocumento);
   }
 
   try {
-    const { membro, senhaTemporaria } = await criarMembro({
-      nome,
-      nascimento,
-      whatsapp,
-      email,
-      ...endereco,
-      ...documento.dados,
-    });
+    const { membro, senhaTemporaria } = await criarMembro(dadosDocumento);
 
     const { ip, user_agent } = extrairInfoRequest(request);
     await registrarAuditoria({

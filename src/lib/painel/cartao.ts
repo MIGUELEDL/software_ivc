@@ -79,8 +79,10 @@ export function camposCartao(
     id: member.matricula,
     name: member.nome,
     baptismDate: fmtData(member.data_batismo),
-    // `??` e não `||`: os três campos são nullable e vazio é ausência de dado,
-    // não um valor a exibir (CART-08).
+    // `??` basta aqui, diferente de `colunasDocumento`, que grava: ali `""`
+    // seria persistido e é um estado distinto de `NULL`, então precisa de `||`.
+    // Na leitura, a coluna nunca chega vazia — o caminho de escrita já converteu
+    // para `NULL` — e `??` transforma só a ausência no travessão de CART-08.
     cpf: member.cpf ?? VAZIO,
     rg: member.rg ?? VAZIO,
     // Coluna `validade_cartao` deliberadamente ignorada: ela guarda o

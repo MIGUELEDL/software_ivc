@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getClaims } from "@/lib/auth/claims";
-import { lerDocumentoForm } from "@/lib/painel/documento";
+import { comporDadosDocumento } from "@/lib/painel/documento";
 import {
   createMember,
   getMemberByAuthUid,
@@ -49,15 +49,17 @@ function validarFormulario(formData: FormData) {
 
   // Documento do cartão (CART-04..07): o mesmo normalizador serve à criação e
   // à edição, então "salvar vazio" limpa o campo para NULL nos dois caminhos.
-  // A leitura das chaves do FormData mora em `lerDocumentoForm` para ser
-  // exercitável — as três actions usam exatamente estas chaves.
-  const documento = lerDocumentoForm(formData, new Date());
-  Object.assign(campos, documento.campos);
-
-  return {
-    dados: { nome, nascimento, whatsapp, ...documento.dados },
+  // A leitura das chaves do FormData e a mesclagem dos erros por campo morrem
+  // em `comporDadosDocumento` para serem exercitáveis — as três actions
+  // precisam exatamente desta mesclagem.
+  const { dados, campos: todosCampos } = comporDadosDocumento(
+    { nome, nascimento, whatsapp },
     campos,
-  };
+    formData,
+    new Date()
+  );
+
+  return { dados, campos: todosCampos };
 }
 
 export async function POST(request: Request) {

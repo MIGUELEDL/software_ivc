@@ -165,6 +165,13 @@ export type DadosDocumento = {
   data_batismo: string | null;
 };
 
+/** Mesma forma, aceitando ausência (`undefined`) — como os payloads do form. */
+export type DadosDocumentoParcial = {
+  rg?: string | null;
+  cpf?: string | null;
+  data_batismo?: string | null;
+};
+
 /**
  * Colunas de documento para insert/update. Recebe o payload já validado e
  * devolve **apenas** as três colunas, convertendo ausente para `NULL`.
@@ -176,11 +183,7 @@ export type DadosDocumento = {
  * Testar o contrato desta função prova a barreira; ler o `update` só prova que
  * alguém leu.
  */
-export function colunasDocumento(dados: {
-  rg?: string | null;
-  cpf?: string | null;
-  data_batismo?: string | null;
-}): DadosDocumento {
+export function colunasDocumento(dados: DadosDocumentoParcial): DadosDocumento {
   // `||` e não `??`: `""` também é ausência de dado. Com `??` uma string vazia
   // escaparia para a coluna, e `''` e `NULL` são estados distintos lá — é o
   // que CART-04 exige não acontecer.
@@ -188,6 +191,125 @@ export function colunasDocumento(dados: {
     rg: dados.rg || null,
     cpf: dados.cpf || null,
     data_batismo: dados.data_batismo || null,
+  };
+}
+
+/** Campos que o autoedição de perfil aceita, mais os de documento. */
+export type DadosPerfil = DadosDocumentoParcial & {
+  nome: string;
+  nascimento: string;
+  whatsapp: string;
+};
+
+/**
+ * Objeto exato entregue ao `.update()` do autoedição de perfil.
+ *
+ * Existe para que a composição seja *executável* pelo probe, não apenas
+ * legível. A versão anterior escrevia o objeto literal dentro do service, e um
+ * guard estático que procurasse `colunasDocumento` continuaria verde se alguém
+ * apagasse o spread — o token ficaria no arquivo, o dado deixaria de chegar ao
+ * banco. Testando esta função, remover o spread falha.
+ *
+ * `atualizadoEm` é injetado pelo mesmo motivo de `hoje` nos módulos puros: o
+ * valor é observável e o teste não pode depender do relógio.
+ */
+export function colunasPerfil(
+  dados: DadosPerfil,
+  atualizadoEm: string
+): DadosPerfil & { atualizado_em: string } {
+  return {
+    nome: dados.nome,
+    nascimento: dados.nascimento,
+    whatsapp: dados.whatsapp,
+    ...colunasDocumento(dados),
+    atualizado_em: atualizadoEm,
+  };
+}
+
+/** Campos que o cadastro admin aceita, mais endereço e documento. */
+export type DadosMembro = DadosDocumentoParcial & {
+  nome: string;
+  nascimento: string;
+  whatsapp: string;
+  logradouro?: string | null;
+  numero?: string | null;
+  bairro?: string | null;
+  cidade?: string | null;
+  uf?: string | null;
+  cep?: string | null;
+};
+
+/** Colunas textuais de endereço, compartilhadas por create e edit. */
+function colunasEndereco(dados: DadosMembro) {
+  return {
+    logradouro: dados.logradouro ?? null,
+    numero: dados.numero ?? null,
+    bairro: dados.bairro ?? null,
+    cidade: dados.cidade ?? null,
+    uf: dados.uf ?? null,
+    cep: dados.cep ?? null,
+  };
+}
+
+/**
+ * Objeto exato entregue ao `.insert()` do cadastro admin (CART-01). `authUserId`
+ * e `matricula` são injetados porque são gerados fora do payload do formulário.
+ */
+export function colunasCriarMembro(
+  dados: DadosMembro,
+  authUserId: string,
+  matricula: string
+): Record<string, unknown> {
+  return {
+    auth_user_id: authUserId,
+    nome: dados.nome,
+    nascimento: dados.nascimento,
+    whatsapp: dados.whatsapp,
+    matricula,
+    ...colunasEndereco(dados),
+    ...colunasDocumento(dados),
+  };
+}
+
+/** Objeto exato entregue ao `.update()` da edição admin (CART-02). */
+export function colunasEditarMembro(
+  dados: DadosMembro,
+  atualizadoEm: string
+): Record<string, unknown> {
+  return {
+    nome: dados.nome,
+    nascimento: dados.nascimento,
+    whatsapp: dados.whatsapp,
+    ...colunasEndereco(dados),
+    ...colunasDocumento(dados),
+    atualizado_em: atualizadoEm,
+  };
+}
+
+/**
+ * Junta o documento ao payload e ao mapa de erros que a rota já montou.
+ *
+ * É a etapa que uma rota faz a cada `POST`: `lerDocumentoForm`, mesclar os
+ * erros por campo e mesclar os dados normalizados. Deixando a mesclaragem
+ * escrita dentro do handler, um guard que procurasse `lerDocumentoForm` no
+ * arquivo continuaria verde se alguém apagasse o spread dos dados ou o
+ * `Object.assign` dos erros — o token ficaria, o efeito sumiria, e o gate não
+ * distinguiria. Aqui a composição é executada pelo probe, então as duas
+ * remoções falham.
+ *
+ * Não muta os argumentos: devolve os dois maps mesclados.
+ */
+export function comporDadosDocumento<T extends object>(
+  dadosBase: T,
+  camposBase: Record<string, string>,
+  formData: FormData,
+  hoje: Date
+): { dados: T & DadosDocumento; campos: Record<string, string> } {
+  const documento = lerDocumentoForm(formData, hoje);
+
+  return {
+    dados: { ...dadosBase, ...documento.dados },
+    campos: { ...camposBase, ...documento.campos },
   };
 }
 
