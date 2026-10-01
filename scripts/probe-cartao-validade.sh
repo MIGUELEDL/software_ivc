@@ -151,6 +151,14 @@ assert.strictEqual(V.calcularValidadeCartao("2030-06-15", new Date(2026, 9, 1)),
 // rollover de ano bissexto em member real
 assert.strictEqual(V.calcularValidadeCartao("2024-02-29", new Date(2025, 2, 1)), "2026-02-28", "29/02/2024 com hoje 01/03/2025 -> 28/02/2026");
 
+// ── CART-11: criado_em chega como timestamptz ISO, não como data civil
+assert.strictEqual(V.calcularValidadeCartao("2026-09-13T14:22:31.123Z", HOJE), "2027-09-13", "ISO com Z aceito");
+assert.strictEqual(V.calcularValidadeCartao("2026-09-13T00:30:00-03:00", HOJE), "2027-09-13", "ISO com offset aceito");
+assert.strictEqual(V.calcularValidadeCartao("2026-09-13T23:30:00-03:00", HOJE), "2027-09-13", "ISO 23:30 -03:00 aceito");
+assert.strictEqual(V.dataCivil("2026-09-13T00:30:00-03:00"), "2026-09-13", "dataCivil com offset");
+assert.strictEqual(V.dataCivil("lixo"), null, "dataCivil lixo -> null");
+assert.strictEqual(V.dataCivil(null), null, "dataCivil null -> null");
+
 // ── CART-12: entrada inválida -> null
 assert.strictEqual(V.calcularValidadeCartao(null, HOJE), null, "null -> null");
 assert.strictEqual(V.calcularValidadeCartao(undefined, HOJE), null, "undefined -> null");

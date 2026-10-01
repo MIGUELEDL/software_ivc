@@ -70,11 +70,49 @@ export function aniversario(criadoIso: string, anos: number): string | null {
  * Devolve `null` quando `criadoEm` é ausente ou não é uma data válida — o
  * cartão então exibe `—` em vez de quebrar (CART-12).
  */
+/**
+ * Converte um `timestamptz` (o `criado_em`, serializado como ISO com offset)
+ * na data civil `YYYY-MM-DD` **no calendário local**, usando os mesmos
+ * getters que `calcularValidadeCartao` aplica a `hoje`.
+ *
+ * Importante: os dois lados da comparação passam por cá, então mesmo num
+ * servidor UTC com `criado_em` gravado em -03:00, o dia do registro e o dia de
+ * hoje vêm do mesmo fuso e não há deslocamento de um dia na fronteira
+ * (CART-11).
+ *
+ * Devolve `null` para entrada ausente ou não parseável.
+ */
+export function dataCivil(iso: string | null | undefined): string | null {
+  if (!iso) {
+    return null;
+  }
+
+  const data = new Date(iso);
+
+  if (Number.isNaN(data.getTime())) {
+    return null;
+  }
+
+  return formatar(data.getFullYear(), data.getMonth() + 1, data.getDate());
+}
+
 export function calcularValidadeCartao(
   criadoEm: string | null | undefined,
   hoje: Date
 ): string | null {
-  if (!criadoEm || !FORMATO_DATA.test(criadoEm)) {
+  if (!criadoEm) {
+    return null;
+  }
+
+  // Aceita as duas formas que o dado assume: `YYYY-MM-DD` (já civil, usado nos
+  // testes e no backfill) e o ISO completo do `timestamptz` `criado_em` lido
+  // do banco. Só o segundo passa por `dataCivil` — reinterpretar uma data já
+  // civil como UTC a deslocaria para o dia anterior em fusos negativos.
+  const civil = FORMATO_DATA.test(criadoEm)
+    ? criadoEm
+    : dataCivil(criadoEm);
+
+  if (civil === null || !FORMATO_DATA.test(civil)) {
     return null;
   }
 
@@ -88,7 +126,7 @@ export function calcularValidadeCartao(
   // inconsistente) não deve ser "corrigido" para hoje: a validade passa a
   // contar a partir daquela data.
   for (let anos = 1; anos <= 200; anos += 1) {
-    const candidato = aniversario(criadoEm, anos);
+    const candidato = aniversario(civil, anos);
 
     if (candidato === null) {
       return null;

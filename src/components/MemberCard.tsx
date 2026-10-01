@@ -2,6 +2,7 @@ import Image from "next/image";
 import { CHURCH } from "@/lib/constants";
 import type { Member } from "@/lib/painel/members";
 import { code128, code128Runs } from "@/lib/barcode/code128";
+import { calcularValidadeCartao } from "@/lib/painel/validade";
 
 function fmtData(v: string | null | undefined) {
   return v ? new Date(v + "T00:00:00").toLocaleDateString("pt-BR") : "—";
@@ -49,13 +50,19 @@ function Code128Barcode({ value }: { value: string }) {
  * `id="cartao-membro"` é o hook da regra `@media print` das páginas.
  */
 export function MemberCard({ member }: { member: Member }) {
+  // A validade exibida é o ciclo corrente calculado de `criado_em`, não a
+  // coluna `validade_cartao`: ela guarda só o ciclo-base (registro + 1 ano) e
+  // um trigger não renova sozinho, porque só dispara em escrita (CART-09..11).
+  // Component é de servidor, então `new Date()` aqui é o dia da renderização.
+  const validadeCiclo = calcularValidadeCartao(member.criado_em, new Date());
+
   const campos = {
     id: member.matricula,
     name: member.nome,
     baptismDate: fmtData(member.data_batismo),
     cpf: member.cpf || "—",
     rg: member.rg || "—",
-    validity: fmtData(member.validade_cartao),
+    validity: fmtData(validadeCiclo),
     photo: member.foto_url || undefined,
   };
 
