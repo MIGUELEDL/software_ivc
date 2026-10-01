@@ -49,12 +49,18 @@ function Code128Barcode({ value }: { value: string }) {
  * (independem do DPI da tela); dados 100% dinâmicos via `Member`.
  * `id="cartao-membro"` é o hook da regra `@media print` das páginas.
  */
-export function MemberCard({ member }: { member: Member }) {
+export function MemberCard({
+  member,
+  hoje,
+}: {
+  member: Member;
+  /** Injetável para teste; o render normal usa o dia da requisição. */
+  hoje?: Date;
+}) {
   // A validade exibida é o ciclo corrente calculado de `criado_em`, não a
   // coluna `validade_cartao`: ela guarda só o ciclo-base (registro + 1 ano) e
   // um trigger não renova sozinho, porque só dispara em escrita (CART-09..11).
-  // Component é de servidor, então `new Date()` aqui é o dia da renderização.
-  const validadeCiclo = calcularValidadeCartao(member.criado_em, new Date());
+  const validadeCiclo = calcularValidadeCartao(member.criado_em, hoje ?? new Date());
 
   const campos = {
     id: member.matricula,
