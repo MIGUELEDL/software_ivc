@@ -2,6 +2,7 @@ import { createServerClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { generateMatricula } from "@/lib/painel/members";
 import type { Member } from "@/lib/painel/members";
+import { colunasDocumento } from "@/lib/painel/documento";
 
 /**
  * Membro estendido com o schema admin (0006): ciclo de vida + endereço.
@@ -107,19 +108,6 @@ export type CriarMembroDados = {
   cpf?: string | null;
   data_batismo?: string | null;
 };
-
-/** Colunas de documento graváveis — mesma whitelist do service do painel. */
-function colunasDocumento(dados: {
-  rg?: string | null;
-  cpf?: string | null;
-  data_batismo?: string | null;
-}) {
-  return {
-    rg: dados.rg ?? null,
-    cpf: dados.cpf ?? null,
-    data_batismo: dados.data_batismo ?? null,
-  };
-}
 
 export type CriarMembroResultado = {
   membro: MembroAdmin;

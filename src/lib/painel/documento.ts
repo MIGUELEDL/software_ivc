@@ -137,11 +137,59 @@ export type DadosDocumentoEntrada = {
   dataBatismo: string;
 };
 
+/**
+ * Lê o trio de um `FormData` de cadastro (as três actions usam as mesmas
+ * chaves) e devolve o mesmo `{ dados, campos }` do restante da validação.
+ *
+ * Fica aqui, e não em cada route, porque `FormData` é um objeto simples: dá
+ * para exercitar a extração das chaves em teste, o que antes só se provava
+ * lendo o código da rota.
+ */
+export function lerDocumentoForm(
+  formData: FormData,
+  hoje: Date
+): { dados: DadosDocumento; campos: Record<string, string> } {
+  return dadosDocumento(
+    {
+      rg: String(formData.get("rg") ?? ""),
+      cpf: String(formData.get("cpf") ?? ""),
+      dataBatismo: String(formData.get("data_batismo") ?? ""),
+    },
+    hoje
+  );
+}
+
 export type DadosDocumento = {
   rg: string | null;
   cpf: string | null;
   data_batismo: string | null;
 };
+
+/**
+ * Colunas de documento para insert/update. Recebe o payload já validado e
+ * devolve **apenas** as três colunas, convertendo ausente para `NULL`.
+ *
+ * Existe como função exportada (e não como helper privado duplicado em cada
+ * service) porque a whitelist é a barreira de segurança da feature:
+ * `members_update_own` restringe a linha, não as colunas, então é a montagem
+ * daqui que impede um membro de escrever `status`, `matricula` ou `criado_em`.
+ * Testar o contrato desta função prova a barreira; ler o `update` só prova que
+ * alguém leu.
+ */
+export function colunasDocumento(dados: {
+  rg?: string | null;
+  cpf?: string | null;
+  data_batismo?: string | null;
+}): DadosDocumento {
+  // `||` e não `??`: `""` também é ausência de dado. Com `??` uma string vazia
+  // escaparia para a coluna, e `''` e `NULL` são estados distintos lá — é o
+  // que CART-04 exige não acontecer.
+  return {
+    rg: dados.rg || null,
+    cpf: dados.cpf || null,
+    data_batismo: dados.data_batismo || null,
+  };
+}
 
 /**
  * Agrega os três campos e monta a mensagem de erro por campo, no mesmo

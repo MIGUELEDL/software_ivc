@@ -7,7 +7,7 @@ import {
   lerEndereco,
 } from "@/lib/admin/validacao";
 import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
-import { dadosDocumento } from "@/lib/painel/documento";
+import { lerDocumentoForm } from "@/lib/painel/documento";
 
 /**
  * POST /api/admin/membros/[id]/dados — edição de dados textuais
@@ -49,14 +49,7 @@ export async function POST(
 
   // Documento do cartão (CART-01..03, CART-04..07): salvar vazio limpa o
   // campo para NULL, então a edição aceita remover um dado antes preenchido.
-  const documento = dadosDocumento(
-    {
-      rg: String(formData.get("rg") ?? ""),
-      cpf: String(formData.get("cpf") ?? ""),
-      dataBatismo: String(formData.get("data_batismo") ?? ""),
-    },
-    new Date()
-  );
+  const documento = lerDocumentoForm(formData, new Date());
   Object.assign(campos, documento.campos);
 
   if (Object.keys(campos).length > 0) {

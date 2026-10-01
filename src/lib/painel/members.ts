@@ -1,4 +1,5 @@
 import { createServerClient } from "@/lib/supabase/server";
+import { colunasDocumento } from "@/lib/painel/documento";
 
 export type Member = {
   id: string;
@@ -33,15 +34,6 @@ export type MemberDados = {
   cpf?: string | null;
   data_batismo?: string | null;
 };
-
-/** Colunas de documento graváveis — fonte única da whitelist do member. */
-function colunasDocumento(dados: MemberDados) {
-  return {
-    rg: dados.rg ?? null,
-    cpf: dados.cpf ?? null,
-    data_batismo: dados.data_batismo ?? null,
-  };
-}
 
 /**
  * Busca o membro pelo `auth_user_id` (claims.sub). Retorna null quando não

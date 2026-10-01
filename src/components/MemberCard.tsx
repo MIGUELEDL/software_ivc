@@ -2,11 +2,7 @@ import Image from "next/image";
 import { CHURCH } from "@/lib/constants";
 import type { Member } from "@/lib/painel/members";
 import { code128, code128Runs } from "@/lib/barcode/code128";
-import { calcularValidadeCartao } from "@/lib/painel/validade";
-
-function fmtData(v: string | null | undefined) {
-  return v ? new Date(v + "T00:00:00").toLocaleDateString("pt-BR") : "—";
-}
+import { camposCartao } from "@/lib/painel/cartao";
 
 /** Código de barras Code 128 real da matrícula (módulos proporcionais). */
 function Code128Barcode({ value }: { value: string }) {
@@ -49,28 +45,11 @@ function Code128Barcode({ value }: { value: string }) {
  * (independem do DPI da tela); dados 100% dinâmicos via `Member`.
  * `id="cartao-membro"` é o hook da regra `@media print` das páginas.
  */
-export function MemberCard({
-  member,
-  hoje,
-}: {
-  member: Member;
-  /** Injetável para teste; o render normal usa o dia da requisição. */
-  hoje?: Date;
-}) {
-  // A validade exibida é o ciclo corrente calculado de `criado_em`, não a
-  // coluna `validade_cartao`: ela guarda só o ciclo-base (registro + 1 ano) e
-  // um trigger não renova sozinho, porque só dispara em escrita (CART-09..11).
-  const validadeCiclo = calcularValidadeCartao(member.criado_em, hoje ?? new Date());
-
-  const campos = {
-    id: member.matricula,
-    name: member.nome,
-    baptismDate: fmtData(member.data_batismo),
-    cpf: member.cpf || "—",
-    rg: member.rg || "—",
-    validity: fmtData(validadeCiclo),
-    photo: member.foto_url || undefined,
-  };
+export function MemberCard({ member }: { member: Member }) {
+  // Todo o conteúdo vem de `camposCartao`, módulo puro coberto pelo probe —
+  // inclusive a validade, que ele calcula do `criado_em` com o dia da requisição.
+  // Aqui fica só a geometria ID-1, que não se altera.
+  const campos = camposCartao(member, new Date());
 
   return (
     <div id="cartao-membro" className="member-card relative aspect-[85.6/53.98] w-full select-none overflow-hidden bg-[#dce6f8] text-black

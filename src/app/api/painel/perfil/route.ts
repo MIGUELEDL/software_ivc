@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getClaims } from "@/lib/auth/claims";
-import { dadosDocumento } from "@/lib/painel/documento";
+import { lerDocumentoForm } from "@/lib/painel/documento";
 import {
   createMember,
   getMemberByAuthUid,
@@ -49,15 +49,9 @@ function validarFormulario(formData: FormData) {
 
   // Documento do cartão (CART-04..07): o mesmo normalizador serve à criação e
   // à edição, então "salvar vazio" limpa o campo para NULL nos dois caminhos.
-  // `hoje` injetado mantém o limite de data futura determinístico.
-  const documento = dadosDocumento(
-    {
-      rg: String(formData.get("rg") ?? ""),
-      cpf: String(formData.get("cpf") ?? ""),
-      dataBatismo: String(formData.get("data_batismo") ?? ""),
-    },
-    new Date()
-  );
+  // A leitura das chaves do FormData mora em `lerDocumentoForm` para ser
+  // exercitável — as três actions usam exatamente estas chaves.
+  const documento = lerDocumentoForm(formData, new Date());
   Object.assign(campos, documento.campos);
 
   return {
