@@ -103,7 +103,23 @@ export type CriarMembroDados = {
   cidade?: string | null;
   uf?: string | null;
   cep?: string | null;
+  rg?: string | null;
+  cpf?: string | null;
+  data_batismo?: string | null;
 };
+
+/** Colunas de documento graváveis — mesma whitelist do service do painel. */
+function colunasDocumento(dados: {
+  rg?: string | null;
+  cpf?: string | null;
+  data_batismo?: string | null;
+}) {
+  return {
+    rg: dados.rg ?? null,
+    cpf: dados.cpf ?? null,
+    data_batismo: dados.data_batismo ?? null,
+  };
+}
 
 export type CriarMembroResultado = {
   membro: MembroAdmin;
@@ -184,6 +200,7 @@ export async function criarMembro(
         cidade: dados.cidade ?? null,
         uf: dados.uf ?? null,
         cep: dados.cep ?? null,
+        ...colunasDocumento(dados),
       })
       .select()
       .single();
@@ -214,12 +231,16 @@ export type MembroDadosAdmin = {
   cidade?: string | null;
   uf?: string | null;
   cep?: string | null;
+  rg?: string | null;
+  cpf?: string | null;
+  data_batismo?: string | null;
 };
 
 /**
- * Atualiza os dados textuais do membro (nome/nascimento/whatsapp/endereço) e
- * reanota `atualizado_em` (ADMINMEM-14..16). E-mail não é aceito (ADMINMEM-16:
- * inalterável nesta feature). Erros de banco propagam para o handler mapear.
+ * Atualiza os dados textuais do membro (nome/nascimento/whatsapp/endereço),
+ * os dados de documento do cartão e reanota `atualizado_em` (ADMINMEM-14..16,
+ * CART-01..03). E-mail não é aceito (ADMINMEM-16: inalterável nesta feature).
+ * Erros de banco propagam para o handler mapear.
  */
 export async function atualizarDadosMembro(
   id: string,
@@ -239,6 +260,7 @@ export async function atualizarDadosMembro(
       cidade: dados.cidade ?? null,
       uf: dados.uf ?? null,
       cep: dados.cep ?? null,
+      ...colunasDocumento(dados),
       atualizado_em: new Date().toISOString(),
     })
     .eq("id", id)
