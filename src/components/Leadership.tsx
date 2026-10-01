@@ -58,7 +58,7 @@ export default function Leadership({
             {leaders.map((lider) => (
               <div
                 key={lider.id}
-                className="rounded-2xl bg-admin-surface shadow-xl p-8 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+                className="rounded-2xl bg-primary shadow-xl p-8 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
               >
                 {lider.photo_url ? (
                   <img
