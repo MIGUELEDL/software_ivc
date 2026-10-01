@@ -1,12 +1,19 @@
 #!/usr/bin/env bash
 #
-# Probes por AC da feature cartao-valididade-anual (CART-01..CART-14).
+# Probes por AC da feature cartao-valididade-anual (CART-01..CART-16).
 # Uso: bash scripts/probe-cartao-validade.sh   (node + npx via nvm — PATH ativado)
 #
-# Estático: services/rotas/card usam as regras de documento e o cálculo rolante.
-# Runtime (node): valida os módulos puros compilados — normalização/rejeição de
-# RG, CPF e data de batismo (CART-04..07) e o cálculo de validade com clamp
-# 29/02, limite inclusivo e created_at futuro (CART-09..12).
+# Runtime (node): executa os módulos puros compilados — normalização/rejeição de
+# RG, CPF e data de batismo (CART-04..07), o cálculo de validade com clamp
+# 29/02, limite inclusivo e criado_em futuro (CART-09..12), o mapper do cartão
+# (CART-08) e os payloads gravados em insert/update (CART-01..03).
+# Estático: só o wiring que o runtime não alcança — os formulários têm os inputs,
+# o MemberCard liga o retorno do mapper ao JSX, e a rota compõe via o helper.
+#
+# Banco: a migration NÃO é verificada aqui. Ela roda de verdade, num Postgres
+# efêmero, em `scripts/probe-cartao-db.sh` (CART-13, CART-14, CART-16) — guard
+# textual sobre `.sql` aceitava `+ 0` anos, `at time zone 'UTC'` e backfill com
+# data arbitrária. Rode com `--com-db` para incluir.
 #
 set -euo pipefail
 
@@ -32,6 +39,8 @@ fi
 # 2 e 3, que inclui rotas, MemberCard e migration.
 SOMENTE_DOMINIO=0
 [ "${1:-}" = "--domain" ] && SOMENTE_DOMINIO=1
+COM_DB=0
+[ "${1:-}" = "--com-db" ] && COM_DB=1
 
 PASS=0
 FAIL=0
@@ -45,18 +54,31 @@ if [ "$SOMENTE_DOMINIO" -eq 0 ]; then
 # Sem isso um grep de token é satisfeito pelo import (`import { civilDe }`) ou
 # por uma frase no cabeçalho da migration, e o gate passa enquanto o
 # comportamento some — foi exatamente o que o sensor de mutação pegou.
+#
+# A primeira versão só removia `--` (comentário de SQL) e deixava `//` e
+# `/* */` passarem intactos nos arquivos TS/TSX: um `/* camposCartao(...) */`
+# satisfazia o guard. Aqui removemos os três dialects. O `(?<!:)` antes do `//`
+# preserva `http://` dentro de string, senão o stripper comeria URLs.
 sem_comentarios() {
-  sed -e 's|--[^\n]*||' "$1" | sed -e '/^[[:space:]]*$/d'
+  perl -0777 -pe 's{/\*.*?\*/}{}gs; s{^[ \t]*//[^\n]*}{}gm; s{[ \t]+//[^\n]*}{}g; s{--[^\n]*}{}g' "$1" \
+    | sed -e '/^[[:space:]]*$/d'
 }
 
-# `chama` exige o símbolo em posição de uso, não em import. Captura a saída
-# antes de filtrar em vez de encadear `grep -q`: com `pipefail`, o `grep -q`
-# fecha o pipe cedo, o `sed` upstream morre por SIGPIPE e o guard fica flaky
-# (passava num arquivo e falhava no outro sem mudança no código).
+# `chama` exige o símbolo em posição de uso, não em import — e exige que o
+# RESULTADO seja usado. Uma chamada solta (`camposCartao(m, new Date());`) ou
+# código morto (`if (false) camposCartao(...)`) deixa o gate verde sem nenhum
+# comportamento: o token existe, o efeito não. Por isso o padrão só aceita
+# atribuição, retorno, encadeamento de propriedade ou spread — as quatro formas
+# em que o valor calculado realmente chega a algum lugar.
+#
+# Captura a saída antes de filtrar em vez de encadear `grep -q`: com `pipefail`,
+# o `grep -q` fecha o pipe cedo, o `sed` upstream morre por SIGPIPE e o guard
+# fica flaky (passava num arquivo e falhava no outro sem mudança no código).
 chama() {
   local codigo
   codigo="$(sem_comentarios "$1" | grep -Ev '^[[:space:]]*import([\\{[:space:]]|.* from )')" || true
-  printf '%s' "$codigo" | grep -cE '(^|[^[:alnum:]_])'"$2"'[[:space:]]*\(' >/dev/null
+  printf '%s' "$codigo" | grep -cE \
+    '(=|return|=>|:|\.\.\.)[[:space:]]*(const[[:space:]]+)?(\?)?\(?[A-Za-z0-9_]*\b'"$2"'[[:space:]]*\(' >/dev/null
 }
 
 # Mesmo cuidado de `chama` para busca literal: captura antes de casar.
@@ -66,6 +88,28 @@ contem() {
   printf '%s' "$codigo" | grep -qF "$2"
 }
 
+# `ligada` é o guard mais forte do arquivo: exige que o resultado do símbolo seja
+# atribuído a uma variável E que essa mesma variável seja a interpolada no JSX.
+# Sem a segunda metade, `const _descartado = camposCartao(...)` satisfazia o
+# guard `chama` (tem `=` antes da chamada) enquanto o cartão renderizava um
+# objeto fixo — o token existia, o efeito não.
+ligada() {
+  local codigo
+  local var
+  codigo="$(sem_comentarios "$1" | grep -Ev '^[[:space:]]*import([\\{[:space:]]|.* from )')" || true
+
+  # Extrai o nome da variável que recebe o símbolo: `const campos = f(...)`,
+  # `campos = f(...)` ou encadeado `a = b = f(...)`.
+  for var in $(printf '%s' "$codigo" | perl -ne '
+    while (/(?:const\s+)?([A-Za-z0-9_]+)\s*=\s*'"$2"'\s*\(/g) { print "$1\n" }
+  ' | sort -u); do
+    if printf '%s' "$codigo" | grep -qE '\{[[:space:]]*'"$var"'\.'; then
+      return 0
+    fi
+  done
+  return 1
+}
+
 # --- CART-04: rota e services produzem as colunas de documento
 for rota in "$PERFIL" "$ADMIN_CREATE" "$ADMIN_EDIT"; do
   case "$rota" in
@@ -73,19 +117,43 @@ for rota in "$PERFIL" "$ADMIN_CREATE" "$ADMIN_EDIT"; do
     *membros/\[id\]*) nome="admin/membros/[id]/dados/route.ts" ;;
     *) nome="admin/membros/route.ts" ;;
   esac
-  if chama "$rota" 'lerDocumentoForm'; then
-    ok "CART-04 $nome le o documento do form"
+  if chama "$rota" 'comporDadosDocumento'; then
+    ok "CART-04 $nome compoe o documento no payload via helper puro"
   else
-    ko "CART-04 $nome sem chamada a lerDocumentoForm"
+    ko "CART-04 $nome sem chamada a comporDadosDocumento"
   fi
 done
+
+# --- CART-01/02/03: o payload gravado é o objeto devolvido pela função pura
+# O guard exige o símbolo como ARGUMENTO de `.insert(`/`.update(`: basta estar
+# no arquivo não prova que é o objeto enviado ao banco. A semântica da
+# composição (quais colunas, e que status/matricula/criado_em ficam de fora) é
+# verificada por execução no bloco node; aqui prova-se só o caminho.
+gravando() {
+  local codigo
+  codigo="$(sem_comentarios "$1" | grep -Ev '^[[:space:]]*import([\\{[:space:]]|.* from )')" || true
+  printf '%s' "$codigo" | grep -qE '\.(insert|update)\([[:space:]]*'"$2"'[[:space:]]*\('
+}
+
 for svc in "$ROOT/src/lib/painel/members.ts" "$ADMIN_LIB"; do
-  if chama "$svc" 'colunasDocumento'; then
-    ok "CART-04 $(basename "$svc") monta as colunas via whitelist"
-  else
-    ko "CART-04 $(basename "$svc") sem chamada a colunasDocumento"
-  fi
+  for fn in colunasCriarMembro colunasPerfil colunasEditarMembro; do
+    if gravando "$svc" "$fn"; then
+      ok "CART-04 $(basename "$svc") grava via $fn"
+    fi
+  done
 done
+
+if gravando "$ROOT/src/lib/painel/members.ts" 'colunasPerfil' \
+  && gravando "$ROOT/src/lib/painel/members.ts" 'colunasCriarMembro'; then
+  ok "CART-03 autoedicao de perfil grava via colunasPerfil"
+else
+  ko "CART-03 autoedicao de perfil nao grava via colunasPerfil"
+fi
+if gravando "$ADMIN_LIB" 'colunasCriarMembro' && gravando "$ADMIN_LIB" 'colunasEditarMembro'; then
+  ok "CART-01/02 admin grava create e edit via as funcoes de payload"
+else
+  ko "CART-01/02 admin nao grava create/edit via as funcoes de payload"
+fi
 
 # --- CART-01/02/03: cada formulario aceita os tres campos e envia o trio
 # Rótulo do AC conforme o formulário: criação/edição no admin (CART-01/02) e
@@ -117,10 +185,10 @@ for alvo in "$PERFIL_FORM" "$ADMIN_NOVO" "$ADMIN_EDICAO"; do
 done
 
 # --- CART-09/11: MemberCard consome o mapa testavel, não a coluna crua
-if chama "$UI_CARD" 'camposCartao'; then
-  ok "CART-09 MemberCard monta os campos via camposCartao"
+if ligada "$UI_CARD" 'camposCartao'; then
+  ok "CART-09 MemberCard renderiza a variavel devolvida por camposCartao"
 else
-  ko "CART-09 MemberCard sem chamada a camposCartao"
+  ko "CART-09 MemberCard nao liga o retorno de camposCartao ao JSX"
 fi
 if contem "$UI_CARD" 'validade_cartao'; then
   ko "CART-09 MemberCard ainda le a coluna bruta validade_cartao"
@@ -268,12 +336,16 @@ assert.strictEqual(V.calcularValidadeCartao("2026-09-13T23:30:00-03:00", HOJE), 
 assert.strictEqual(V.dataCivil("2026-09-13T00:30:00-03:00"), "2026-09-13", "dataCivil com offset -03:00");
 assert.strictEqual(V.dataCivil("2026-09-13T23:30:00-03:00"), "2026-09-13", "dataCivil 23:30 -03:00 não vira dia 14");
 assert.strictEqual(V.dataCivil("2026-09-14T00:30:00Z"), "2026-09-13", "dataCivil 00:30Z é dia anterior no Brasil");
-// o cálculo NÃO pode variar com o TZ do processo (Vercel roda UTC)
-const sobUtc = process.env.TZ; process.env.TZ = "UTC";
-assert.strictEqual(V.calcularValidadeCartao("2026-09-13T23:30:00-03:00", new Date("2027-09-14T00:30:00-03:00")), "2028-09-13", "rolagem estável em TZ=UTC");
-process.env.TZ = "Asia/Tokyo";
-assert.strictEqual(V.calcularValidadeCartao("2026-09-13T23:30:00-03:00", new Date("2027-09-14T00:30:00-03:00")), "2028-09-13", "rolagem estável em TZ=Asia/Tokyo");
-process.env.TZ = sobUtc;
+// O cálculo NÃO pode variar com o TZ do processo (Vercel roda UTC).
+// NÃO dá para provar isso mutando `process.env.TZ` aqui: `Intl.DateTimeFormat`
+// resolve e memoiza a zona na construção do módulo, e `validade.ts` já foi
+// require()ado acima — a mutação não teria efeito e a asserção seria verde por
+// acidente. Quem prova é a matriz externa do gate:
+//   for tz in UTC Asia/Tokyo Pacific/Kiritimati Europe/Lisbon; do
+//     TZ=$tz bash scripts/probe-cartao-validade.sh
+// e, do lado do SQL, `probe-cartao-db.sh` roda a mesma função sob `set timezone`
+// de UTC e de Asia/Tokyo.
+assert.strictEqual(V.calcularValidadeCartao("2026-09-13T23:30:00-03:00", new Date("2027-09-14T00:30:00-03:00")), "2028-09-13", "cálculo fixo no calendário civil (TZ矩阵 no gate)");
 assert.strictEqual(V.dataCivil("lixo"), null, "dataCivil lixo -> null");
 assert.strictEqual(V.dataCivil(null), null, "dataCivil null -> null");
 
@@ -315,6 +387,109 @@ assert.deepStrictEqual(
   ["cpf", "data_batismo", "rg"],
   "whitelist barra colunas sensiveis (status/matricula/criado_em)"
 );
+
+// ── CART-01/02/03: o objeto EXATO entregue ao .insert()/.update()
+const completo = {
+  nome: "Miguel Ernandes", nascimento: "2004-12-28", whatsapp: "84999766852",
+  logradouro: "Rua A", numero: "12", bairro: "Centro", cidade: "Santa Luzia",
+  uf: "PB", cep: "58900000",
+  rg: "12.345.678-9", cpf: "12345678909", data_batismo: "2020-05-10",
+};
+const ATUALIZADO = "2026-10-01T12:00:00.000Z";
+
+// CART-01: cadastro admin. As três colunas de documento têm de estar no objeto.
+const pCreate = D.colunasCriarMembro(completo, "uuid-1", "IVC-0001");
+assert.deepStrictEqual(
+  [pCreate.rg, pCreate.cpf, pCreate.data_batismo],
+  ["12.345.678-9", "12345678909", "2020-05-10"],
+  "CART-01 create admin leva rg/cpf/batismo ao insert"
+);
+assert.strictEqual(pCreate.auth_user_id, "uuid-1", "CART-01 create leva o auth_user_id");
+assert.strictEqual(pCreate.matricula, "IVC-0001", "CART-01 create leva a matricula gerada");
+assert.strictEqual(pCreate.logradouro, "Rua A", "CART-01 create preserva o endereco");
+assert.strictEqual(pCreate.cep, "58900000", "CART-01 create preserva o cep");
+
+// CART-02: edicao admin.
+const pEdit = D.colunasEditarMembro(completo, ATUALIZADO);
+assert.deepStrictEqual(
+  [pEdit.rg, pEdit.cpf, pEdit.data_batismo],
+  ["12.345.678-9", "12345678909", "2020-05-10"],
+  "CART-02 edit admin leva rg/cpf/batismo ao update"
+);
+assert.strictEqual(pEdit.atualizado_em, ATUALIZADO, "CART-02 edit reanota atualizado_em");
+
+// CART-03: autoedicao. `status`, `matricula` e `criado_em`Jamais entram — e o
+// teste passa `dados` com essas chaves, então um `...dados` no service seria
+// pego aqui, não por um guard que só lê o texto.
+const pPerfil = D.colunasPerfil({ ...completo, status: "ATIVO", matricula: "IVC-0001", criado_em: "2020-01-01" }, ATUALIZADO);
+assert.deepStrictEqual(
+  Object.keys(pPerfil).sort(),
+  ["atualizado_em", "cpf", "data_batismo", "nascimento", "nome", "rg", "whatsapp"],
+  "CART-03 autoedicao grava exatamente 7 colunas, sem status/matricula/criado_em"
+);
+assert.deepStrictEqual(
+  [pPerfil.rg, pPerfil.cpf, pPerfil.data_batismo],
+  ["12.345.678-9", "12345678909", "2020-05-10"],
+  "CART-03 autoedicao leva rg/cpf/batismo ao update"
+);
+for (const proibida of ["status", "matricula", "criado_em", "id", "validade_cartao"]) {
+  assert.strictEqual(
+    proibida in pPerfil, false,
+    `CART-03 autoedicao nao escreve ${proibida} (AD-019)`
+  );
+}
+
+// documento vazio no autoedicao limpa a coluna (CART-04 no caminho do update)
+const pPerfilLimpo = D.colunasPerfil({ nome: "X", nascimento: "2000-01-01", whatsapp: "84" }, ATUALIZADO);
+assert.deepStrictEqual(
+  [pPerfilLimpo.rg, pPerfilLimpo.cpf, pPerfilLimpo.data_batismo],
+  [null, null, null],
+  "CART-04 autoedicao sem documento limpa as tres colunas"
+);
+const pCreateLimpo = D.colunasCriarMembro({ nome: "X", nascimento: "2000-01-01", whatsapp: "84" }, "u", "IVC-0002");
+assert.strictEqual(pCreateLimpo.cidade, null, "CART-04 create sem endereco grava NULL, nao ausente");
+assert.strictEqual("logradouro" in pCreateLimpo, true, "coluna presente mesmo vazia (evita depender do default do banco)");
+
+// ── CART-01/02/03: a MESCLAGEM que cada rota faz antes de chamar o service
+// Se uma rota parasse de mesclar os dados (`...documento.dados`) ou de mesclar
+// os erros por campo (`Object.assign(campos, ...)`), um guard que só procurasse
+// `lerDocumentoForm` no arquivo continuaria verde. Aqui a mesclagem é executada.
+const baseDados = { nome: "Miguel", nascimento: "2004-12-28", whatsapp: "84999766852" };
+const baseErros = { nome: "Informe seu nome completo." };
+
+const mOk = D.comporDadosDocumento(
+  baseDados, baseErros,
+  fd({ rg: "12.345.678-9", cpf: "12345678909", data_batismo: "2020-05-10" }),
+  HOJE
+);
+assert.deepStrictEqual(
+  [mOk.dados.rg, mOk.dados.cpf, mOk.dados.data_batismo],
+  ["12.345.678-9", "12345678909", "2020-05-10"],
+  "CART-01 rota compoe o documento no payload"
+);
+assert.strictEqual(mOk.dados.nome, "Miguel", "a mesclagem preserva os campos da rota");
+assert.strictEqual(mOk.campos.nome, "Informe seu nome completo.", "a mesclagem preserva os erros ja montados");
+
+const mErro = D.comporDadosDocumento(
+  baseDados, baseErros,
+  fd({ cpf: "123" }),
+  HOJE
+);
+assert.deepStrictEqual(
+  Object.keys(mErro.campos).sort(), ["cpf", "nome"],
+  "CART-05 erros de documento e da rota convivem no mesmo 400"
+);
+assert.strictEqual(typeof mErro.campos.cpf, "string", "erro de documento presente no mapa");
+
+const mLimpo = D.comporDadosDocumento(baseDados, {}, fd({}), HOJE);
+assert.deepStrictEqual(
+  [mLimpo.dados.rg, mLimpo.dados.cpf, mLimpo.dados.data_batismo],
+  [null, null, null],
+  "CART-04 rota sem documento leva NULL, nao string vazia"
+);
+assert.deepStrictEqual(mLimpo.campos, {}, "FormData sem documento nao gera erro");
+assert.deepStrictEqual(baseDados, { nome: "Miguel", nascimento: "2004-12-28", whatsapp: "84999766852" }, "comporDadosDocumento nao muta o payload da rota");
+assert.deepStrictEqual(baseErros, { nome: "Informe seu nome completo." }, "comporDadosDocumento nao muta o mapa de erros da rota");
 
 // ── CART-08/09/11: o que o cartao EXIBE, com hoje injetado
 const base = {
@@ -377,6 +552,19 @@ console.log("ok");
     ok "CART-04..07/09..12 runtime node: normalização, rejeições e validade rolante"
   else
     ko "CART-04..07/09..12 runtime node falhou (detalhes acima)"
+  fi
+fi
+
+# --- CART-13/14/16: a migration, executada de verdade --------------------
+# Fora do `--domain` porque precisa de container. `set -e` está ativo: o exit 2
+# de um SKIP (sem Docker/imagem) é proposital, para que a camada que decide se o
+# gate é suficiente veja que a tier não rodou.
+if [ "$SOMENTE_DOMINIO" -eq 0 ] && [ "$COM_DB" -eq 1 ]; then
+  if bash "$ROOT/scripts/probe-cartao-db.sh"; then
+    ok "CART-13/14/16 runtime postgres: trigger, backfill e fuso"
+  else
+    status=$?
+    ko "CART-13/14/16 tier postgres nao passou (exit $status)"
   fi
 fi
 
