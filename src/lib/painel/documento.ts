@@ -1,8 +1,9 @@
 /**
  * Normalização e validação dos dados de documento do cartão de membro
- * (CART-04..CART-07). Módulo puro: nenhuma dependência, nenhum I/O e
- * nenhuma chamada a `new Date()` — `hoje` é sempre injetado pelo caller
- * para que o comportamento seja determinístico em teste.
+ * (CART-04..CART-07). Módulo puro: sem I/O e sem relógio próprio — `hoje` é
+ * sempre injetado pelo caller para que o comportamento seja determinístico em
+ * teste. Só depende de `civilDe`, o calendário civil compartilhado com o
+ * cálculo de validade.
  *
  * Convenção: campo **vazio** é válido e resolve para `""`; o caller converte
  * `""` em `null` antes de gravar, porque `NULL` e `""` são estados distintos
@@ -10,6 +11,8 @@
  */
 
 export type Resultado<T> = { ok: true; valor: T } | { ok: false; erro: string };
+
+import { civilDe } from "./validade";
 
 const SOMENTE_DIGITOS = /^\d+$/;
 
@@ -101,18 +104,24 @@ export function normalizarDataBatismo(
   }
 
   const [ano, mes, dia] = bruto.split("-").map(Number);
-  const data = new Date(ano, mes - 1, dia);
 
-  // Rejeita overflow de calendário (ex.: 2026-02-30 vira 01/03 e passaria).
+  // Validação de calendário por round-trip em UTC: `new Date(y, m, d)` depende
+  // do fuso do processo, então num servidor em UTC+14 a checagem de overflow
+  // (2026-02-30 -> 01/03) poderia escapar.
+  const data = new Date(Date.UTC(ano, mes - 1, dia));
+
   if (
-    data.getFullYear() !== ano ||
-    data.getMonth() !== mes - 1 ||
-    data.getDate() !== dia
+    data.getUTCFullYear() !== ano ||
+    data.getUTCMonth() !== mes - 1 ||
+    data.getUTCDate() !== dia
   ) {
     return { ok: false, erro: "Informe uma data de batismo válida." };
   }
 
-  if (data.getTime() > hoje.getTime()) {
+  // Comparação de dias civis, não de instantes: uma data é "futura" quando está
+  // depois do dia de hoje no calendário da igreja. Usar `Date` aqui faria o
+  // resultado variar com o TZ do deploy.
+  if (bruto > civilDe(hoje)) {
     return {
       ok: false,
       erro: "A data de batismo não pode ser futura.",

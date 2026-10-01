@@ -24,6 +24,14 @@
 
 const FORMATO_DATA = /^\d{4}-\d{2}-\d{2}$/;
 
+/**
+ * Fuso civil da igreja (Santa Luzia-PB). O cálculo é ancorado aqui em vez do
+ * fuso do processo: em produção a Vercel roda UTC, então "o dia local" mudaria
+ * conforme o deploy e o mesmo membro veria a validade virar de um dia para o
+ * outro. O trigger SQL usa o mesmo fuso — as duas fontes não podem divergir.
+ */
+const FUSO_CIVIL = "America/Sao_Paulo";
+
 function diasNoMes(ano: number, mes: number): number {
   // `new Date(ano, mes, 0)` devolve o último dia do mês `mes` (1-based).
   return new Date(ano, mes, 0).getDate();
@@ -31,6 +39,20 @@ function diasNoMes(ano: number, mes: number): number {
 
 function formatar(ano: number, mes: number, dia: number): string {
   return `${String(ano).padStart(4, "0")}-${String(mes).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+}
+
+// `en-CA` formata como ISO (YYYY-MM-DD) — evita montar a string à mão e
+// funciona igual em qualquer ICU do runtime.
+const FORMATADOR_CIVIL = new Intl.DateTimeFormat("en-CA", {
+  timeZone: FUSO_CIVIL,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+/** `YYYY-MM-DD` do instante no fuso civil da igreja (independente do TZ do processo). */
+export function civilDe(data: Date): string {
+  return FORMATADOR_CIVIL.format(data);
 }
 
 /**
@@ -93,7 +115,7 @@ export function dataCivil(iso: string | null | undefined): string | null {
     return null;
   }
 
-  return formatar(data.getFullYear(), data.getMonth() + 1, data.getDate());
+  return civilDe(data);
 }
 
 export function calcularValidadeCartao(
@@ -116,11 +138,7 @@ export function calcularValidadeCartao(
     return null;
   }
 
-  const hojeIso = formatar(
-    hoje.getFullYear(),
-    hoje.getMonth() + 1,
-    hoje.getDate()
-  );
+  const hojeIso = civilDe(hoje);
 
   // Um registro é sempre criado no passado, mas um `criado_em` futuro (dado
   // inconsistente) não deve ser "corrigido" para hoje: a validade passa a

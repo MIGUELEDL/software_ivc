@@ -84,7 +84,10 @@ const assert = require("assert");
 const D = require(process.env.DOC_J);
 const V = require(process.env.VAL_J);
 
-const HOJE = new Date(2026, 9, 1); // 2026-10-01, calendário local
+// Instantes construídos com deslocamento explícito de -03:00 (fuso civil da
+// igreja) para que o dia civil esperado não dependa do TZ da máquina de teste.
+const d = (y, m, dia) => new Date(`${y}-${String(m).padStart(2, "0")}-${String(dia).padStart(2, "0")}T12:00:00-03:00`);
+const HOJE = d(2026, 10, 1); // 2026-10-01 no calendário civil
 
 // ── CART-05: CPF
 assert.strictEqual(D.normalizarCpf("12345678909").valor, "12345678909", "CPF cru");
@@ -137,25 +140,33 @@ assert.strictEqual(V.aniversario("2024-02-29", 2), "2026-02-28", "29/02 + 2 anos
 assert.strictEqual(V.aniversario("2023-02-28", 1), "2024-02-28", "28/02 + 1 ano = 28/02");
 
 // ── CART-09/11: rolagem com limite inclusivo
-assert.strictEqual(V.calcularValidadeCartao("2026-09-13", new Date(2026, 9, 1)), "2027-09-13", "mesmo ano -> +1 ano");
-assert.strictEqual(V.calcularValidadeCartao("2026-09-13", new Date(2027, 8, 13)), "2027-09-13", "1 dia antes -> ainda +1");
-assert.strictEqual(V.calcularValidadeCartao("2026-09-13", new Date(2027, 8, 14)), "2028-09-13", "1 dia depois -> +2 (renovou)");
-assert.strictEqual(V.calcularValidadeCartao("2026-09-13", new Date(2027, 8, 13)), "2027-09-13", "limite inclusivo no próprio dia");
-assert.strictEqual(V.calcularValidadeCartao("2026-09-13", new Date(2031, 0, 1)), "2031-09-13", "ciclo ainda corrente em 2031 -> 2031-09-13");
-assert.strictEqual(V.calcularValidadeCartao("2026-09-13", new Date(2031, 8, 14)), "2032-09-13", "5 anos depois -> +6 (renovou)");
-assert.strictEqual(V.calcularValidadeCartao("2026-01-01", new Date(2026, 0, 1)), "2027-01-01", "registro hoje -> +1 ano");
+assert.strictEqual(V.calcularValidadeCartao("2026-09-13", d(2026,10,1)), "2027-09-13", "mesmo ano -> +1 ano");
+assert.strictEqual(V.calcularValidadeCartao("2026-09-13", d(2027,9,13)), "2027-09-13", "1 dia antes -> ainda +1");
+assert.strictEqual(V.calcularValidadeCartao("2026-09-13", d(2027,9,14)), "2028-09-13", "1 dia depois -> +2 (renovou)");
+assert.strictEqual(V.calcularValidadeCartao("2026-09-13", d(2027,9,13)), "2027-09-13", "limite inclusivo no próprio dia");
+assert.strictEqual(V.calcularValidadeCartao("2026-09-13", d(2031,1,1)), "2031-09-13", "ciclo ainda corrente em 2031 -> 2031-09-13");
+assert.strictEqual(V.calcularValidadeCartao("2026-09-13", d(2031,9,14)), "2032-09-13", "5 anos depois -> +6 (renovou)");
+assert.strictEqual(V.calcularValidadeCartao("2026-01-01", d(2026,1,1)), "2027-01-01", "registro hoje -> +1 ano");
 
 // created_at futuro: não é "corrigido" para hoje
-assert.strictEqual(V.calcularValidadeCartao("2030-06-15", new Date(2026, 9, 1)), "2031-06-15", "criado_em futuro conta a partir dele");
+assert.strictEqual(V.calcularValidadeCartao("2030-06-15", d(2026,10,1)), "2031-06-15", "criado_em futuro conta a partir dele");
 
 // rollover de ano bissexto em member real
-assert.strictEqual(V.calcularValidadeCartao("2024-02-29", new Date(2025, 2, 1)), "2026-02-28", "29/02/2024 com hoje 01/03/2025 -> 28/02/2026");
+assert.strictEqual(V.calcularValidadeCartao("2024-02-29", d(2025,3,1)), "2026-02-28", "29/02/2024 com hoje 01/03/2025 -> 28/02/2026");
 
 // ── CART-11: criado_em chega como timestamptz ISO, não como data civil
 assert.strictEqual(V.calcularValidadeCartao("2026-09-13T14:22:31.123Z", HOJE), "2027-09-13", "ISO com Z aceito");
 assert.strictEqual(V.calcularValidadeCartao("2026-09-13T00:30:00-03:00", HOJE), "2027-09-13", "ISO com offset aceito");
 assert.strictEqual(V.calcularValidadeCartao("2026-09-13T23:30:00-03:00", HOJE), "2027-09-13", "ISO 23:30 -03:00 aceito");
-assert.strictEqual(V.dataCivil("2026-09-13T00:30:00-03:00"), "2026-09-13", "dataCivil com offset");
+assert.strictEqual(V.dataCivil("2026-09-13T00:30:00-03:00"), "2026-09-13", "dataCivil com offset -03:00");
+assert.strictEqual(V.dataCivil("2026-09-13T23:30:00-03:00"), "2026-09-13", "dataCivil 23:30 -03:00 não vira dia 14");
+assert.strictEqual(V.dataCivil("2026-09-14T00:30:00Z"), "2026-09-13", "dataCivil 00:30Z é dia anterior no Brasil");
+// o cálculo NÃO pode variar com o TZ do processo (Vercel roda UTC)
+const sobUtc = process.env.TZ; process.env.TZ = "UTC";
+assert.strictEqual(V.calcularValidadeCartao("2026-09-13T23:30:00-03:00", new Date("2027-09-14T00:30:00-03:00")), "2028-09-13", "rolagem estável em TZ=UTC");
+process.env.TZ = "Asia/Tokyo";
+assert.strictEqual(V.calcularValidadeCartao("2026-09-13T23:30:00-03:00", new Date("2027-09-14T00:30:00-03:00")), "2028-09-13", "rolagem estável em TZ=Asia/Tokyo");
+process.env.TZ = sobUtc;
 assert.strictEqual(V.dataCivil("lixo"), null, "dataCivil lixo -> null");
 assert.strictEqual(V.dataCivil(null), null, "dataCivil null -> null");
 
@@ -169,8 +180,8 @@ assert.strictEqual(V.aniversario("nao-data", 1), null, "aniversario inválido ->
 
 // determinismo
 assert.strictEqual(
-  V.calcularValidadeCartao("2026-09-13", new Date(2026, 9, 1)),
-  V.calcularValidadeCartao("2026-09-13", new Date(2026, 9, 1)),
+  V.calcularValidadeCartao("2026-09-13", d(2026,10,1)),
+  V.calcularValidadeCartao("2026-09-13", d(2026,10,1)),
   "determinismo"
 );
 console.log("ok");
