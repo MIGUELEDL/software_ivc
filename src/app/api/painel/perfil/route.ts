@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getClaims } from "@/lib/auth/claims";
+import { dadosDocumento } from "@/lib/painel/documento";
 import {
   createMember,
   getMemberByAuthUid,
@@ -46,7 +47,23 @@ function validarFormulario(formData: FormData) {
     campos.whatsapp = "Informe seu WhatsApp para contato.";
   }
 
-  return { dados: { nome, nascimento, whatsapp }, campos };
+  // Documento do cartão (CART-04..07): o mesmo normalizador serve à criação e
+  // à edição, então "salvar vazio" limpa o campo para NULL nos dois caminhos.
+  // `hoje` injetado mantém o limite de data futura determinístico.
+  const documento = dadosDocumento(
+    {
+      rg: String(formData.get("rg") ?? ""),
+      cpf: String(formData.get("cpf") ?? ""),
+      dataBatismo: String(formData.get("data_batismo") ?? ""),
+    },
+    new Date()
+  );
+  Object.assign(campos, documento.campos);
+
+  return {
+    dados: { nome, nascimento, whatsapp, ...documento.dados },
+    campos,
+  };
 }
 
 export async function POST(request: Request) {
