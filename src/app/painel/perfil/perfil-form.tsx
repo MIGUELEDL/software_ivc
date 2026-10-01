@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { Member } from "@/lib/painel/members";
+import { civilDe } from "@/lib/painel/validade";
 
 type PerfilFormProps = {
   member: Member | null;
@@ -197,6 +198,78 @@ export function PerfilForm({ member }: PerfilFormProps) {
             </p>
           )}
         </div>
+
+        <fieldset className="space-y-5 border-t border-white/10 pt-5">
+          <legend className="font-sans text-sm font-semibold text-white/70">
+            Dados do cartão (opcional)
+          </legend>
+          <p className="font-serif text-sm text-white/50">
+            Deixe em branco o que você ainda não quiser informar no cartão.
+          </p>
+
+          <div>
+            <label htmlFor="rg" className={labelClass}>
+              RG
+            </label>
+            <input
+              id="rg"
+              name="rg"
+              type="text"
+              maxLength={20}
+              placeholder="12.345.678-9"
+              defaultValue={member?.rg ?? ""}
+              className={inputClass}
+            />
+            {camposErro.rg && (
+              <p className="mt-1 text-sm text-red-400 font-serif" role="alert">
+                {camposErro.rg}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="cpf" className={labelClass}>
+              CPF
+            </label>
+            <input
+              id="cpf"
+              name="cpf"
+              type="text"
+              inputMode="numeric"
+              placeholder="000.000.000-00"
+              defaultValue={member?.cpf ?? ""}
+              className={inputClass}
+            />
+            <p className="mt-1 font-serif text-xs text-white/40">
+              11 dígitos. A máscara é convertida e os dígitos verificadores não
+              são conferidos.
+            </p>
+            {camposErro.cpf && (
+              <p className="mt-1 text-sm text-red-400 font-serif" role="alert">
+                {camposErro.cpf}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="data_batismo" className={labelClass}>
+              Data de batismo
+            </label>
+            <input
+              id="data_batismo"
+              name="data_batismo"
+              type="date"
+              max={civilDe(new Date())}
+              defaultValue={member?.data_batismo ?? ""}
+              className={`${inputClass} [color-scheme:dark]`}
+            />
+            {camposErro.data_batismo && (
+              <p className="mt-1 text-sm text-red-400 font-serif" role="alert">
+                {camposErro.data_batismo}
+              </p>
+            )}
+          </div>
+        </fieldset>
 
         {member && (
           <p className="font-serif text-sm text-white/50">

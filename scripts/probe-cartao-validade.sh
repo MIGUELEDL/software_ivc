@@ -16,6 +16,9 @@ VAL="$ROOT/src/lib/painel/validade.ts"
 CARD="$ROOT/src/components/MemberCard.tsx"
 PERFIL="$ROOT/src/app/api/painel/perfil/route.ts"
 ADMIN_LIB="$ROOT/src/lib/admin/membros.ts"
+PERFIL_FORM="$ROOT/src/app/painel/perfil/perfil-form.tsx"
+ADMIN_NOVO="$ROOT/src/app/admin/membros/novo/membro-novo-form.tsx"
+ADMIN_EDICAO="$ROOT/src/app/admin/membros/[id]/page.tsx"
 
 if ! command -v node >/dev/null 2>&1; then
   export PATH="$HOME/.nvm/versions/node/v$(cat "$ROOT/.nvmrc").0/bin:$PATH"
@@ -42,6 +45,29 @@ fi
 if ! grep -q 'rg\?: string | null' "$ROOT/src/lib/painel/members.ts"; then
   ko "CART-04 MemberDados nao declara rg opcional"
 fi
+if ! grep -q 'cpf\?: string | null' "$ROOT/src/lib/painel/members.ts"; then
+  ko "CART-04 MemberDados nao declara cpf opcional"
+fi
+if ! grep -q 'data_batismo\?: string | null' "$ROOT/src/lib/painel/members.ts"; then
+  ko "CART-04 MemberDados nao declara data_batismo opcional"
+fi
+
+# --- CART-01/02/03: os tres formularios aceitam os dados do cartao
+for alvo in "$PERFIL_FORM" "$ADMIN_NOVO" "$ADMIN_EDICAO"; do
+  nome="$(basename "$(dirname "$alvo")")/$(basename "$alvo")"
+  for campo in rg cpf data_batismo; do
+    if grep -q "name=\"$campo\"" "$alvo"; then
+      ok "CART-01 $nome tem input $campo"
+    else
+      ko "CART-01 $nome sem input $campo"
+    fi
+  done
+  if grep -q 'dadosDocumento' "$alvo" || grep -q 'civilDe' "$alvo"; then
+    ok "CART-06 $nome limita a data de batismo no calendario civil"
+  else
+    ko "CART-06 $nome sem limite de data de batismo"
+  fi
+done
 
 # --- CART-09/11: MemberCard usa o cálculo rolante, não a coluna crua ---
 if ! grep -q 'calcularValidadeCartao' "$CARD"; then

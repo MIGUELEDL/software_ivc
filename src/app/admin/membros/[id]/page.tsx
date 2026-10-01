@@ -9,6 +9,7 @@ import {
   TRANSICOES,
 } from "@/lib/admin/membros";
 import { RemoverDocumentoButton, HardDeleteButton } from "./membro-detalhe-acoes";
+import { civilDe } from "@/lib/painel/validade";
 
 const STATUS_LABEL: Record<string, string> = {
   ATIVO: "Ativo",
@@ -248,6 +249,73 @@ export default async function MembroDetalhePage({
                   className={inputClass}
                 />
               </div>
+
+              <fieldset className="rounded-lg border border-text-dark/10 p-4 space-y-4">
+                <legend className="font-sans text-sm font-semibold text-text-dark px-1">
+                  Dados do cartão (opcional)
+                </legend>
+
+                <p className="font-serif text-sm text-text-dark/60">
+                  Apagar o conteúdo de um campo limpa o dado do cartão.
+                </p>
+
+                <div>
+                  <label
+                    htmlFor="rg"
+                    className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                  >
+                    RG
+                  </label>
+                  <input
+                    id="rg"
+                    name="rg"
+                    type="text"
+                    maxLength={20}
+                    placeholder="12.345.678-9"
+                    defaultValue={membro.rg ?? ""}
+                    className={inputClass}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="cpf"
+                    className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                  >
+                    CPF
+                  </label>
+                  <input
+                    id="cpf"
+                    name="cpf"
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="000.000.000-00"
+                    defaultValue={membro.cpf ?? ""}
+                    className={inputClass}
+                  />
+                  <p className="mt-1 font-serif text-xs text-text-dark/50">
+                    11 dígitos. A máscara é convertida e os dígitos verificadores
+                    não são conferidos.
+                  </p>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="data_batismo"
+                    className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                  >
+                    Data de batismo
+                  </label>
+                  <input
+                    id="data_batismo"
+                    name="data_batismo"
+                    type="date"
+                    max={civilDe(new Date())}
+                    defaultValue={membro.data_batismo ?? ""}
+                    className={inputClass}
+                  />
+                </div>
+              </fieldset>
 
               <fieldset className="rounded-lg border border-text-dark/10 p-4 space-y-4">
                 <legend className="font-sans text-sm font-semibold text-text-dark px-1">

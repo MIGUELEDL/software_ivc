@@ -3,6 +3,7 @@
 import { Check, Copy, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { civilDe } from "@/lib/painel/validade";
 
 type MembroCriado = {
   id: string;
@@ -251,6 +252,85 @@ export function MembroNovoForm() {
           </p>
         )}
       </div>
+
+      <fieldset className="rounded-lg border border-text-dark/10 p-4 space-y-4">
+        <legend className="font-sans text-sm font-semibold text-text-dark px-1">
+          Dados do cartão (opcional)
+        </legend>
+
+        <p className="font-serif text-sm text-text-dark/60">
+          Campos em branco ficam sem valor no cartão do membro.
+        </p>
+
+        <div>
+          <label
+            htmlFor="rg"
+            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          >
+            RG
+          </label>
+          <input
+            id="rg"
+            name="rg"
+            type="text"
+            maxLength={20}
+            placeholder="12.345.678-9"
+            className={inputClass}
+          />
+          {camposErro.rg && (
+            <p className="mt-1 text-sm text-red-600 font-serif" role="alert">
+              {camposErro.rg}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label
+            htmlFor="cpf"
+            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          >
+            CPF
+          </label>
+          <input
+            id="cpf"
+            name="cpf"
+            type="text"
+            inputMode="numeric"
+            placeholder="000.000.000-00"
+            className={inputClass}
+          />
+          <p className="mt-1 font-serif text-xs text-text-dark/50">
+            11 dígitos. A máscara é convertida e os dígitos verificadores não são
+            conferidos.
+          </p>
+          {camposErro.cpf && (
+            <p className="mt-1 text-sm text-red-600 font-serif" role="alert">
+              {camposErro.cpf}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label
+            htmlFor="data_batismo"
+            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          >
+            Data de batismo
+          </label>
+          <input
+            id="data_batismo"
+            name="data_batismo"
+            type="date"
+            max={civilDe(new Date())}
+            className={inputClass}
+          />
+          {camposErro.data_batismo && (
+            <p className="mt-1 text-sm text-red-600 font-serif" role="alert">
+              {camposErro.data_batismo}
+            </p>
+          )}
+        </div>
+      </fieldset>
 
       <fieldset className="rounded-lg border border-text-dark/10 p-4 space-y-4">
         <legend className="font-sans text-sm font-semibold text-text-dark px-1">
