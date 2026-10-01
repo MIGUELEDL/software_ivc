@@ -148,6 +148,33 @@
 - **Date**: 2026-09-22
 - **Status**: active
 
+### AD-019
+- **Decision**: O autoedit de perfil **não** pode escrever a linha inteira. `members_update_own` (RLS) restringe a **linha**, não as **colunas**, então um `update` com o objeto do form inteiro escreveria `status`, `matricula` e `criado_em` — escalonamento de privilégio. Os três services (`painel/members.ts`, `admin/membros.ts` e as rotas) passam a montar explicitamente apenas `{...payload, ...colunasDocumento(dados)}`; nada mais da linha entra no update.
+- **Reason**: A RLS é o único controle entre o token do membro e a própria linha dele, e ela não conhece colunas. Sem whitelist no service, qualquer campo novo adicionado ao objeto do form viraria escrita em massa. `colunasDocumento` também usa `||` e não `??`: `""` também é ausência de dado, e `''` e `NULL` são estados distintos na coluna.
+- **Trade-off**: Campo novo exige tocar o service; é o custo de não confiar na RLS para granularidade. Ganho: `status` e `matricula` ficam fora do alcance do autoedit por construção, não por convenção.
+- **Scope**: `src/lib/painel/documento.ts` (`colunasDocumento`), `src/lib/painel/members.ts`, `src/lib/admin/membros.ts`, `src/app/api/painel/perfil/route.ts`, `src/app/api/admin/membros/route.ts`, `src/app/api/admin/membros/[id]/dados/route.ts`.
+- **Date**: 2026-09-23
+- **Status**: active
+
+### AD-020
+- **Decision**: A validade é calculada no **calendário civil fixo `America/Sao_Paulo`**, tanto no TypeScript (`civilDe`) quanto no SQL (`at time zone`), e não no fuso da máquina/sessão.
+- **Reason**: A spec original pedia "data civil local do servidor", mas o servidor de produção roda em UTC: `criado_em = 2026-09-13T02:01Z` (IVC-0001) seria lido como 13/09 em UTC e como 12/09 no Brasil, e o cartão impresso erraria o dia da validade conforme o ambiente. Fixar o fuso também elimina a divergência entre o cálculo da aplicação e o `timestamptz` gravado pelo trigger. O probe fixa `hoje` e roda em vários `TZ` para provar que o resultado não depende do ambiente.
+- **Trade-off**: Um membro no exterior tem o aniversário avaliado no calendário da igreja — que é o comportamento desejado para um documento civil em papel. O custo é que `America/Sao_Paulo` aparece em três lugares (TS, migration, spec) e precisa continuar alinhado.
+- **Scope**: `src/lib/painel/validade.ts`, `supabase/migrations/0024_validade_cartao.sql`, spec/design de `cartao-valididade-anual` (CART-16).
+- **Date**: 2026-09-23
+- **Status**: active
+
+## Handoff — feature cartao-valididade-anual (2026-09-23)
+
+- **Feature**: `cartao-valididade-anual` (CART-01..16, AD-019, AD-020) — **implementada, Verifier em curso** — probe `scripts/probe-cartao-validade.sh` 26 ok / 0 falhas; `npm run typecheck` sem erros; `npm run lint` 0 erros / 5 warnings pré-existentes.
+- **O que foi entregue**: RG, CPF e data de batismo em `/painel/perfil`, cadastro e edição admin, com normalização (`cpf` só dígitos e exatamente 11 sem validação de DV; `rg` ≤ 20 e sem controles; batismo `YYYY-MM-DD`, data real e não futura). `src/lib/painel/documento.ts` (`normalizar*`, `dadosDocumento`, `lerDocumentoForm`, `colunasDocumento`), `src/lib/painel/validade.ts` (ciclo rolante com 29/02→28/02 e limite inclusivo) e `src/lib/painel/cartao.ts` (`fmtData`, `camposCartao`). `MemberCard` passou a ler o row atual e a calcular a validade de `criado_em` em vez de exibir a coluna crua.
+- **DB**: migration `0024_validade_cartao.sql` (função `members_ciclo_base`, trigger `members_validade_cartao`, backfill só de `NULL`) **aplicada** no dev `[REDACTED_PROJECT_REF]` após autorização explícita. 11/11 linhas preenchidas; assinatura dos registros preservada (`2e34606d4d538eba96d6274a92f743a5`); teste em transação confirmou que o trigger reverte validade forjada e clampa 29/02.
+- **Correções pós-Verifier**: `colunasDocumento` usava `??` e vazava `""` para a coluna (agora `||`); `fmtData` imprimia "30/02/2026" para data inexistente (agora valida por round-trip UTC); o `MemberCard` perdeu o prop `hoje?`, que era flexibilidade morta — a injeção de data vive no mapper puro `camposCartao`, que é o ponto testado; os guards do probe capturam a saída antes de casar, porque com `pipefail` um `grep -q` encadeado fecha o pipe cedo e mata o `sed` upstream por SIGPIPE (o probe falhava de forma flaky num arquivo e passava no outro sem mudança no código).
+- **Spec/design**: reconciliados com o código — fuso fixo documentado (CART-16), AC de data ilegível rastreado (CART-15), exemplo do IVC-0001 corrigido para 12/09/2027 (o instante é 12/09 no Brasil) e traceability completa em 16/16.
+- **Nota de auditoria**: a função `members_ciclo_base` foi criada remotamente antes da pergunta sobre autorização; o fato foi disclosed e o usuário aprovou depois a aplicação da migration completa (trigger + backfill). Nada foi revertido.
+- **Open decisions**: nenhuma.
+- **Branch**: main (commits locais; `git push` nunca sem autorização).
+
 ## Handoff
 
 - **Feature**: `admin-relatorios` (RF-027) — **CONCLUIDA E VERIFICADA** — 7/7 tasks commitadas, verifier PASS.
