@@ -73,7 +73,7 @@ das outras Story funciona.
 2. WHEN an admin edits a member's `rg`, `cpf` or `data_batismo` THEN the system SHALL persist the new value so the card reflects it on the next render
 3. WHEN the member edits their own `rg`, `cpf` or `data_batismo` in `/painel/perfil` THEN the system SHALL persist the new value on their own row
 4. IF `rg`, `cpf` or `data_batismo` are left blank in a form THEN the system SHALL persist `NULL` for that field (never an empty string)
-5. IF `cpf` is supplied with non-digit characters THEN the system SHALL persist the digit-only form when exactly 11 digits remain and SHALL reject the input otherwise
+5. IF `cpf` is supplied with non-digit characters THEN the system SHALL persist the digit-only form when exactly 11 digits remain and SHALL reject the input otherwise, including when 11 digits are followed by a control character
 6. IF `data_batismo` is later than the current date THEN the system SHALL reject the save and SHALL NOT write the row
 7. IF `rg` exceeds 20 characters THEN the system SHALL reject the save and SHALL NOT write the row
 8. WHEN the member card renders THEN the system SHALL display `rg`, `cpf` and `data_batismo` read from the current member row, with `—` shown for each `NULL` field
@@ -99,8 +99,8 @@ RG/CPF preenchidos).
 3. WHEN an anniversary has already passed THEN the system SHALL roll the validity forward to the next anniversary with no manual action, no database write and no administrator intervention
 4. IF the registration date falls on February 29 THEN the system SHALL clamp the anniversary to February 28 of the target year
 5. WHEN any row in `members` is inserted or updated THEN a trigger SHALL set `validade_cartao` to the registration date plus 1 year
-6. WHEN the migration runs against existing rows THEN it SHALL backfill `validade_cartao` for every row whose value is `NULL`, leaving all other columns and all non-`NULL` values untouched
-7. IF the member's registration date is missing or unparseable THEN the card SHALL render `—` for validity and SHALL NOT crash
+6. WHEN the migration runs against existing rows THEN it SHALL backfill `validade_cartao` with the same cycle-base the trigger computes — `criado_em` plus one calendar year on the `America/Sao_Paulo` civil calendar, with February 29 clamped to February 28 — for every row whose value is `NULL`, and SHALL leave all other columns and all non-`NULL` values untouched
+7. IF the member's registration date is absent or unparseable — empty string, a value in the wrong format, or a date that does not exist — THEN the card SHALL render `—` for validity and SHALL NOT crash
 8. WHEN the validity is computed in the application or in the database THEN the system SHALL interpret the registration timestamp on the `America/Sao_Paulo` civil calendar, so that the same `criado_em` yields the same validity regardless of the runtime `TZ` and regardless of whether the calculation runs in TypeScript or in SQL
 
 **Independent Test**: `scripts/probe-cartao-validade.sh` verde. O IVC-0001 tem
@@ -151,29 +151,10 @@ os ACs de "data ilegível" e de fuso não tinham requirement rastreável).
 
 ---
 
-------------|-------|-------|--------|
-| CART-01 | P1: Cadastro alimenta o cartão | Design | Pending |
-| CART-02 | P1: Cadastro alimenta o cartão | Design | Pending |
-| CART-03 | P1: Cadastro alimenta o cartão | Design | Pending |
-| CART-04 | P1: Cadastro alimenta o cartão | Design | Pending |
-| CART-05 | P1: Cadastro alimenta o cartão | Design | Pending |
-| CART-06 | P1: Cadastro alimenta o cartão | Design | Pending |
-| CART-07 | P1: Cadastro alimenta o cartão | Design | Pending |
-| CART-08 | P1: Cadastro alimenta o cartão | Design | Pending |
-| CART-09 | P2: Validade anual automática | Design | Pending |
-| CART-10 | P2: Validade anual automática | Design | Pending |
-| CART-11 | P2: Validade anual automática | Design | Pending |
-| CART-12 | P2: Validade anual automática | Design | Pending |
-| CART-13 | P2: Validade anual automática | Design | Pending |
-| CART-14 | P2: Validade anual automática | Design | Pending |
-
-**Coverage:** 14 total, 0 mapped to tasks, 14 unmapped ⚠️
-
----
-
 ## Success Criteria
 
-- [ ] `scripts/probe-cartao-validade.sh` verde (persistência admin/painel, normalização, regras de rejeição, cálculo rolante, clamp 29/02, limite inclusivo, backfill)
+- [ ] `scripts/probe-cartao-validade.sh` verde (persistência admin/painel, normalização, regras de rejeição, cálculo rolante, clamp 29/02, limite inclusivo, payload de insert/update)
+- [ ] `bash scripts/probe-cartao-validade.sh --com-db` verde — a migration executada num Postgres efêmero (ciclo-base, trigger, backfill, fuso e acordo TS x SQL). Sem Docker a tier faz SKIP com exit 2, o que é visível no gate em vez de virar verde silencioso
 - [ ] `npm run typecheck` e `npm run lint` sem erros
 - [ ] Migration aplicada sem perda: contagem de `members` antes = depois, e `rg`/`cpf`/`data_batismo`/`criado_em`/`matricula` inalterados nos 11 registros existentes
 - [ ] Membro com RG/CPF/batismo preenchidos vê os três valores no cartão, e a alteração aparece sem reiniciar a aplicação

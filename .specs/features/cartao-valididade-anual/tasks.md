@@ -19,10 +19,11 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 | ---------- | ------------------ | -------------------- | ---------------- | ----------- |
 | `src/lib/painel/documento.ts` (domain: normalização/validação) | unit | All branches; 1:1 a CART-04..07; edge cases: máscara, vazio, futuro, caractere de controle, >20 chars | `scripts/probe-cartao-validade.sh` | `npm run typecheck && npm run lint && bash scripts/probe-cartao-validade.sh` |
 | `src/lib/painel/validade.ts` (domain: aniversário + rolagem) | unit | All branches; CART-09..12; 29/02 clamp, limite inclusivo, criado_em futuro, inválido | `scripts/probe-cartao-validade.sh` | idem acima |
-| Services (`painel/members.ts`, `admin/membros.ts`) | integration | Happy + edge + error; CART-01..04 | `scripts/probe-cartao-validade.sh` | idem acima |
-| Routes (`/api/painel/perfil`, `/api/admin/membros`) | integration | Happy + edge + error (400, 409, 500); CART-01..08 | `scripts/probe-cartao-validade.sh` | idem acima |
+| Payload de insert/update (`colunasCriarMembro`, `colunasPerfil`, `colunasEditarMembro` em `documento.ts`) | integration | Colunas exatas do `.insert()`/`.update()`; `status`/`matricula`/`criado_em` nunca entram; vazio vira `NULL`; CART-01..04 | `scripts/probe-cartao-validade.sh` | idem acima |
+| Mesclagem da rota (`comporDadosDocumento`) | integration | Dados e erros por campo mesclados no payload da rota; sem mutar os argumentos; CART-01..05 | `scripts/probe-cartao-validade.sh` | idem acima |
+| Wiring (services, rotas, formulários, `MemberCard`) | integration | Só o caminho que o runtime não alcança: input presente, payload helper é o argumento de `.insert(`/`.update(`, retorno do mapper ligado ao JSX | `scripts/probe-cartao-validade.sh` | idem acima |
 | `MemberCard` (render) | integration | Validade calculada no mapper puro `camposCartao(member, hoje)` com `hoje` injetado no teste; demais campos lidos do row | `scripts/probe-cartao-validade.sh` | idem acima |
-| Migration `0024_validade_cartao.sql` | none | — (DDL + backfill idempotente, verificado por gate de build) | — | build gate only |
+| Migration `0024_validade_cartao.sql` | integration | Executada num Postgres efêmero: ciclo-base, clamp, trigger de insert/update, validade forjada, backfill derivado de `criado_em`, idempotência, e acordo TS x SQL em 8 instantes de fronteira; CART-12..14, CART-16 | `scripts/probe-cartao-db.sh` | `bash scripts/probe-cartao-validade.sh --com-db` (tier faz SKIP com exit 2 sem Docker) |
 
 ## Gate Check Commands
 
@@ -120,7 +121,7 @@ Dependências entre fases: T4,T5 dependem de T1; T6 de T4; T7,T7b de T5; T8 de T
 
 #### T3: Criar `scripts/probe-cartao-validade.sh`
 
-**What**: Probe determinístico com asserções `node` inline sobre os módulos compilados via `npx tsc`, cobrindo todos os ramos de `documento.ts` e `validade.ts`, mais asserções estáticas de que services/rotas/card usam as regras.
+**What**: Probe determinístico com asserções `node` inline sobre os módulos compilados via `npx tsc`, cobrindo todos os ramos de `documento.ts`, `validade.ts` e `cartao.ts`, os payloads gravados e a mesclagem das rotas. As asserções estáticas ficam só no que o runtime não alcança (inputs dos formulários, símbolo como argumento de `.insert(`/`.update(`, retorno do mapper ligado ao JSX) — guard textual por token não prova comportamento, e é o que o sensor de mutação já reprovou duas vezes. A camada de banco mora em `scripts/probe-cartao-db.sh`, acionada por `--com-db`.
 **Where**: `scripts/probe-cartao-validade.sh`
 **Depends on**: T1, T2
 **Reuses**: `scripts/probe-barcode.sh` (formato, `mktemp -d`, `trap`, exit code)
@@ -232,7 +233,7 @@ Dependências entre fases: T4,T5 dependem de T1; T6 de T4; T7,T7b de T5; T8 de T
 
 #### T7b: Atualizar rota de edição de membro (admin)
 
-**What**: `PATCH`/`PUT /api/admin/membros/[id]/dados` valida o trio antes de `atualizarDadosMembro`, devolvendo 400 com `campos` por campo inválido.
+**What**: `POST /api/admin/membros/[id]/dados` valida o trio antes de `atualizarDadosMembro`, devolvendo 400 com `campos` por campo inválido.
 **Where**: `src/app/api/admin/membros/[id]/dados/route.ts`
 **Depends on**: T5
 **Reuses**: Padrões de validação admin
@@ -298,9 +299,11 @@ Dependências entre fases: T4,T5 dependem de T1; T6 de T4; T7,T7b de T5; T8 de T
 - [x] Trigger ignora `validade_cartao` vindo do cliente
 - [x] `npm run build` sem erros
 - [x] Gate build passa
+- [x] Roda de verdade num Postgres efêmero: `+ 0` anos, `at time zone 'UTC'`,
+      backfill com data arbitrária e o clamp de 29/02 removido falham a probe
 
-**Tests**: none
-**Gate**: build
+**Tests**: integration (a migration é executada, não lida)
+**Gate**: full (`--com-db`)
 
 ---
 

@@ -147,7 +147,11 @@ returns date language sql immutable as $$
   end;
 $$;
 
--- 2) trigger BEFORE INSERT OR UPDATE — writes only on INSERT / quando criado_em muda
+-- 2) trigger BEFORE INSERT OR UPDATE — reescreve a coluna em TODO insert e
+--    update, não só quando `criado_em` muda. O valor é função pura de
+--    `criado_em`, então reescrever é idempotente; e reescrever é justamente o
+--    que impede o membro de escolher o próprio ciclo-base, já que
+--    `members_update_own` restringe a LINHA e não as colunas.
 create or replace function public.members_set_validade()
 returns trigger language plpgsql as $$
 begin
