@@ -419,5 +419,54 @@ else
   rm -f /tmp/probe-ts.$$ /tmp/probe-sql.$$
 fi
 
+# --- "no partial write": um UPDATE que o trigger rejeita nao deixa estado ---
+#
+# A spec pede (spec.md, CART-02) que um save que falhe no meio deixe a row com
+# os valores ANTERIORES. A R8 marcou este item como AC sem assert: o probe
+# exercitava o caminho feliz e a rejeição isolada, mas nunca os dois juntos —
+# nunca um UPDATE que mudava duas colunas, era rejeitado no meio, e conferia
+# que a PRIMEIRA coluna não tinha mudado.
+#
+# A recusa vem de uma violação de `NOT NULL`, e não do trigger. Escrevi
+# primeiro que o trigger estouraria o ano: `date` no Postgres vai até 5874897,
+# e `criado_em` nunca passa de 294276, então `make_date(294277, …)` cabe e o
+# UPDATE era ACEITO — o teste passava medindo o oposto do que dizia.
+#
+# O que o AC quer é atomicidade de statement, e ela não depende do trigger:
+# o UPDATE abaixo muda `nome` (que é NOT NULL) e `cpf` no mesmo comando, é
+# rejeitado no meio, e `cpf` tem de continuar como estava. Se a atomicidade
+# não valesse, `cpf` ficaria "99999999999" e a row meio gravada.
+sql >/dev/null <<'SQL'
+insert into public.members (matricula, nome, cpf, criado_em)
+values ('IVC-PARCIAL', 'NOME-ORIGINAL', '11122233344', '2020-01-15 12:00:00+00');
+SQL
+
+antesParcial="$(valor "select nome from public.members where matricula = 'IVC-PARCIAL';")"
+if [ "$antesParcial" != "NOME-ORIGINAL" ]; then
+  ko "CART-02 seed da row de partial write saiu errado: $antesParcial"
+fi
+
+if sqlp -c "update public.members
+           set nome = null,
+               cpf = '99999999999'
+         where matricula = 'IVC-PARCIAL';" >/dev/null 2>&1; then
+  ko "CART-02 o UPDATE nao deveria ter sido aceito: nome e NOT NULL"
+else
+  ok "CART-02 UPDATE que viola NOT NULL e rejeitado"
+fi
+
+depoisParcial="$(valor "select nome from public.members where matricula = 'IVC-PARCIAL';")"
+cpfParcial="$(valor "select cpf from public.members where matricula = 'IVC-PARCIAL';")"
+if [ "$depoisParcial" = "NOME-ORIGINAL" ]; then
+  ok "CART-02 no partial write: a coluna que disparou o erro nao mudou"
+else
+  ko "CART-02 partial write: nome passou de NOME-ORIGINAL para $depoisParcial"
+fi
+if [ "$cpfParcial" = "11122233344" ]; then
+  ok "CART-02 no partial write: a outra coluna do mesmo UPDATE tambem nao mudou"
+else
+  ko "CART-02 partial write: cpf foi para $cpfParcial — o statement nao foi atomico"
+fi
+
 printf '== Resumo postgres: %s ok / %s falhas ==\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]

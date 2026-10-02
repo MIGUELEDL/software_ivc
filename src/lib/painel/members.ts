@@ -1,5 +1,7 @@
 import { createServerClient } from "@/lib/supabase/server";
 import { colunasCriarMembro, colunasPerfil } from "@/lib/painel/documento";
+import { comoCliente } from "@/lib/painel/gravacao";
+import type { DepsEscritaMember } from "@/lib/painel/gravacao";
 import type { DadosProntos } from "@/lib/painel/documento";
 
 export type Member = {
@@ -55,7 +57,7 @@ export async function getMemberByAuthUid(
     throw error;
   }
 
-  return data;
+  return data as Member;
 }
 
 /**
@@ -97,10 +99,11 @@ export async function generateMatricula(): Promise<string> {
  */
 export async function createMember(
   authUid: string,
-  dados: DadosProntos<MemberDados>
+  dados: DadosProntos<MemberDados>,
+  deps: DepsEscritaMember = {}
 ): Promise<Member> {
-  const supabase = await createServerClient();
-  const matricula = await generateMatricula();
+  const supabase = deps.cliente ?? comoCliente(await createServerClient());
+  const matricula = deps.matricula ?? (await generateMatricula());
 
   const { data, error } = await supabase
     .from("members")
@@ -112,7 +115,11 @@ export async function createMember(
     throw error;
   }
 
-  return data;
+  // `ClienteEscrita` apaga o tipo da row de propósito — o mesmo cliente serve
+  // aos quatro caminhos e o probe injeta um fake que devolve `unknown`. A
+  // forma da row é garantida pelos builders de coluna, que são allowlist
+  // fechada; aqui o cast só recupera o que o cliente real tipava.
+  return data as Member;
 }
 
 /**
@@ -125,9 +132,10 @@ export async function createMember(
  */
 export async function updateMember(
   authUid: string,
-  dados: DadosProntos<MemberDados>
+  dados: DadosProntos<MemberDados>,
+  deps: Pick<DepsEscritaMember, "cliente"> = {}
 ): Promise<Member> {
-  const supabase = await createServerClient();
+  const supabase = deps.cliente ?? comoCliente(await createServerClient());
 
   const { data, error } = await supabase
     .from("members")
@@ -140,5 +148,8 @@ export async function updateMember(
     throw error;
   }
 
-  return data;
+  // Mesmo contrato apagado de `createMember`: a forma da row vem da
+  // allowlist fechada de `colunasPerfil`, o cast só recupera a tipagem que o
+  // cliente real fornecia.
+  return data as Member;
 }

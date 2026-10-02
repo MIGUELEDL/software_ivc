@@ -4,6 +4,8 @@ import { generateMatricula } from "@/lib/painel/members";
 import type { Member } from "@/lib/painel/members";
 import { colunasCriarMembro, colunasEditarMembro } from "@/lib/painel/documento";
 import type { DadosProntos } from "@/lib/painel/documento";
+import { comoCliente } from "@/lib/painel/gravacao";
+import type { DepsEscritaAdmin } from "@/lib/painel/gravacao";
 
 /**
  * Membro estendido com o schema admin (0006): ciclo de vida + endereço.
@@ -154,41 +156,60 @@ export function gerarSenhaId(): string {
  * nulo sem que ninguem tenha olhado o formulario.
  */
 export async function criarMembro(
-  dados: DadosProntos<CriarMembroDados>
+  dados: DadosProntos<CriarMembroDados>,
+  deps: DepsEscritaAdmin = {}
 ): Promise<CriarMembroResultado> {
-  const admin = createAdminClient();
   const senhaTemporaria = gerarSenhaId();
 
-  const { data: createdUser, error: createError } =
-    await admin.auth.admin.createUser({
-      email: dados.email,
-      password: senhaTemporaria,
-      email_confirm: true,
-      app_metadata: { role: "MEMBRO", force_password_change: true },
+  // O `id` do usuário sai de uma função injetável em vez do cliente admin
+  // inteiro: o contrato de teste precisa de um id, não da superfície inteira
+  // do `auth.admin`. O comportamento de produção é o mesmo `createUser` de
+  // antes, só que agora por dentro destas duas funções.
+  const removerAuthUser =
+    deps.removerAuthUser ??
+    (async (id: string) => {
+      const admin = createAdminClient();
+      await admin.auth.admin.deleteUser(id);
     });
 
-  if (createError) {
-    if (
-      createError.code === "user_already_exists" ||
-      (createError.message ?? "").includes("already")
-    ) {
-      throw new EmailEmUsoError();
-    }
-    throw createError;
-  }
+  const criarAuthUser =
+    deps.criarAuthUser ??
+    (async (email: string, senha: string) => {
+      const admin = createAdminClient();
+      const { data: createdUser, error: createError } =
+        await admin.auth.admin.createUser({
+          email,
+          password: senha,
+          email_confirm: true,
+          app_metadata: { role: "MEMBRO", force_password_change: true },
+        });
 
-  if (!createdUser.user) {
-    throw new Error("criar_usuario_auth_falhou");
-  }
+      if (createError) {
+        if (
+          createError.code === "user_already_exists" ||
+          (createError.message ?? "").includes("already")
+        ) {
+          throw new EmailEmUsoError();
+        }
+        throw createError;
+      }
 
-  const supabase = await createServerClient();
+      if (!createdUser.user) {
+        throw new Error("criar_usuario_auth_falhou");
+      }
+
+      return createdUser.user.id;
+    });
+
+  const authUserId = await criarAuthUser(dados.email, senhaTemporaria);
+  const supabase = deps.cliente ?? comoCliente(await createServerClient());
 
   try {
-    const matricula = await generateMatricula();
+    const matricula = deps.matricula ?? (await generateMatricula());
 
     const { data: membro, error } = await supabase
       .from("members")
-      .insert(colunasCriarMembro(dados, createdUser.user.id, matricula))
+      .insert(colunasCriarMembro(dados, authUserId, matricula))
       .select()
       .single();
 
@@ -200,7 +221,7 @@ export async function criarMembro(
   } catch (erroInsert) {
     // Rollback 2-passos: sem linha em members, a conta auth recém-criada é
     // removida — nada de estado parcial (design, sec. Erros).
-    await admin.auth.admin.deleteUser(createdUser.user.id).catch(() => {
+    await removerAuthUser(authUserId).catch(() => {
       // log server-side; sem estado persistente a reconciliar nesta iteração
       console.error("rollback criarMembro: falha ao remover auth user", erroInsert);
     });
@@ -231,9 +252,10 @@ export type MembroDadosAdmin = {
  */
 export async function atualizarDadosMembro(
   id: string,
-  dados: DadosProntos<MembroDadosAdmin>
+  dados: DadosProntos<MembroDadosAdmin>,
+  deps: Pick<DepsEscritaAdmin, "cliente"> = {}
 ): Promise<MembroAdmin> {
-  const supabase = await createServerClient();
+  const supabase = deps.cliente ?? comoCliente(await createServerClient());
 
   const { data, error } = await supabase
     .from("members")

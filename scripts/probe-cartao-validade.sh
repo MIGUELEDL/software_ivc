@@ -281,9 +281,18 @@ gravando() {
   # E o parametro `dados` nao pode ser reatribuido nem ter propriedade
   # alterada. Sem esta regra, `dados = { ...dados, rg: null }` preserva o
   # argumento LITERAL `dados` e passa na amarra de valor acima — foi
-  # exatamente o que G7/G8/G11/G12 fizeram na R7, produzindo payload
+  # exatamente o que G7/G8/G11 fizeram na R7, produzindo payload
   # byte-identico ao do mutante morto G1. `Object.freeze`/`Readonly` nao
   # pegam isso: `Readonly` congela as PROPRIEDADES, nao a ligacao.
+  #
+  # CORRECAO (medida na R8): esta regra nao pega a escrita por indice com
+  # `as` — G12a — porque `[A-Za-z_]` nao casa a ASPA de `"rg"`. Eu escrevi que
+  # pegava, e nao pegava. A R8 classificou o sobrevivente como "benigno"
+  # (o `Object.freeze` lancaria `TypeError`), e essa leitura tambem estava errada
+  # para o service: o objeto CONGELADO e o `dados`, e nao a row devolvida pelo
+  # builder. `colunasEditarMembro(...)` volta um objeto solto, entao a escrita
+  # passa e a row grava `NULL`. Hoje quem pega G12a e a tier que EXECUTA o
+  # service, onde o payload capturado tem `rg === null` e a probe diz nao.
   #
   # Esta regra vai em PERL, e nao em `grep -E`: `(?!=|>)` e lookahead, e o
   # `grep -E` nao tem lookahead — la `?` quantifica o grupo, a regra vira outra
@@ -436,6 +445,9 @@ trap 'rm -rf "$TMP"' EXIT
 # `@ts-expect-error` e satisfeito; sem ele (Readonly removido), o compilador
 # reclama do `@ts-expect-error` nao usado. Nos dois casos o resultado e o mesmo
 # — verde quando o congelamento existe, vermelho quando sumiu.
+MEMBERS="$ROOT/src/lib/painel/members.ts"
+ADMIN="$ROOT/src/lib/admin/membros.ts"
+GRAVACAO="$ROOT/src/lib/painel/gravacao.ts"
 DOC_REL="$(realpath --relative-to="$TMP" "$DOC")"
 DOC_REL="${DOC_REL%.ts}"
 cat >"$TMP/readonly.ts" <<TS
@@ -1097,6 +1109,294 @@ console.log("ok");
     ok "CART-04..07/09..12 runtime node: normalização, rejeições e validade rolante"
   else
     ko "CART-04..07/09..12 runtime node falhou (detalhes acima)"
+  fi
+fi
+
+# --- CART-01/02/03: o SERVICE executado, e o payload que ele manda -------
+#
+# Esta é a tier que a R8 pediu, e ela existe por uma medição, não por
+# estética. As três tiers anteriores provavam coisas diferentes:
+#
+#   EXECUÇÃO (a5a368b)  os VALORES que os BUILDERS produzem
+#   COMPILAÇÃO          que não dá para escrever no payload pronto
+#   TEXTO (persistido,  que o service passe o parâmetro que recebeu
+#          gravando)
+#
+# Nenhuma delas executa o service. E a R8 mediu o que acontece quando o
+# service mente depois de passar por todas:
+#
+#   .update({ ...colunasEditarMembro(dados, iso), rg: null, cpf: null })
+#
+# O primeiro argumento ainda é o literal `dados` — a amarra de valor do
+# `gravando` está satisfeita. O `colunasEditarMembro` está nomeado — os
+# guards de construção estão satisfeitos. `Object.freeze` não protege nada
+# aqui, porque o objeto literal é NOVO. E a tier de execução dos builders
+# nunca roda o service. Resultado medido: `tsc` limpo, `lint` limpo, `build`
+# limpo, as 34 probes verdes — e a row gravando `NULL`.
+#
+# Um passo, nos quatro caminhos. Fechar isso com guarda textual não é
+# possível por construção: o que falta não é a forma da chamada, é a
+# ausência de escrita. Então o cliente do Supabase virou parâmetro injetável
+# (`src/lib/painel/gravacao.ts`) e o service é EXECUTADO aqui, com um fake
+# que captura o payload. A afirmação passa a ser "a row que o service grava
+# tem estes valores" — que é o que o AC pede, não "a chamada parece certa".
+
+# `tsc` só resolve o alias `@/` lendo um tsconfig, e a CLI não aceita
+# `--paths`. Geramos um próprio, com `baseUrl` na raiz do repo.
+cat >"$TMP/tsconfig.svc.json" <<TS
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmitOnError": true,
+    "baseUrl": "$ROOT",
+    "paths": { "@/*": ["src/*"] },
+    "rootDir": "$ROOT/src",
+    "outDir": "$TMP/svc"
+  },
+  "files": [
+    "$MEMBERS", "$ADMIN", "$GRAVACAO", "$DOC"
+  ]
+}
+TS
+
+if ! npx tsc -p "$TMP/tsconfig.svc.json" >"$TMP/tsc.svc.log" 2>&1; then
+  ko "compilacao dos services p/ execucao falhou (ver $TMP/tsc.svc.log)"
+  tail -5 "$TMP/tsc.svc.log"
+else
+  MEM_JS="$TMP/svc/lib/painel/members.js"
+  ADM_JS="$TMP/svc/lib/admin/membros.js"
+  if [ ! -f "$MEM_JS" ] || [ ! -f "$ADM_JS" ]; then
+    ko "services compilados nao encontrados (members=$MEM_JS admin=$ADM_JS)"
+  else
+    if SVC="$TMP/svc" MEM_JS="$MEM_JS" ADM_JS="$ADM_JS" node -e '
+const assert = require("assert");
+const path = require("path");
+const Module = require("module");
+
+// O grafo de imports do service é raso (documento, gravacao, supabase/server,
+// supabase/admin), mas dois deles não podem ser carregados fora do Next:
+// `createServerClient` puxa `next/headers` e `createAdminClient` puxa as
+// variáveis de ambiente. E o alias `@/` não existe em runtime.
+//
+// Os dois são resolvidos por um hook de `Module._load`, e o hook é onde mora
+// a AFIRMAÇÃO de que a injeção é real: `createServerClient` e
+// `createAdminClient` lançam se forem chamados. Se algum caminho de escrita
+// ainda depender do Supabase de verdade, a execução estoura aqui — e isso é
+// um erro do teste, não um teste que passa por acidente.
+const svc = process.env.SVC;
+const cargaReal = Module._load;
+const chamadas = [];
+
+Module._load = function (req, pai, isMain) {
+  if (req === "@/lib/supabase/server") {
+    return {
+      createServerClient() {
+        chamadas.push("createServerClient");
+        throw new Error("createServerClient foi chamado: a injeção nao chegou neste caminho");
+      },
+    };
+  }
+  if (req === "@/lib/supabase/admin") {
+    return {
+      createAdminClient() {
+        chamadas.push("createAdminClient");
+        throw new Error("createAdminClient foi chamado: a injeção nao chegou neste caminho");
+      },
+    };
+  }
+  if (req.startsWith("@/")) {
+    // "@/lib/painel/documento" -> "$SVC/lib/painel/documento". Aponta para o
+    // JS emitido, não para o .ts do repo: o Node não compila TypeScript, e
+    // Aponta para o JS emitido, não para o .ts do repo: o Node não compila
+    // TypeScript, e o que precisa rodar aqui é o service mutado.
+    return cargaReal(path.join(svc, req.slice(2)), pai, isMain);
+  }
+  return cargaReal(req, pai, isMain);
+};
+
+const M = require(process.env.MEM_JS);
+const A = require(process.env.ADM_JS);
+const D = require(path.join(svc, "lib/painel/documento.js"));
+
+// Cliente falso que captura o payload e o devolve. `eq` e `select` existem
+// para a cadeia `.insert().select().single()` e `.update().eq().select().single()`
+// não explodir; o que interessa é o payload do verbo.
+function clienteFake(rotulo) {
+  const capturado = { rotulo, verbo: null, tabela: null, payload: null, eq: null };
+  const cadeia = {
+    eq(coluna, valor) { capturado.eq = [coluna, valor]; return cadeia; },
+    select() { return cadeia; },
+    async single() { return { data: { ok: true }, error: null }; },
+  };
+  return {
+    capturado,
+    from(tabela) {
+      capturado.tabela = tabela;
+      const verbo = (nome) => (payload) => {
+        capturado.verbo = nome;
+        capturado.payload = payload;
+        return cadeia;
+      };
+      return { insert: verbo("insert"), update: verbo("update") };
+    },
+  };
+}
+
+// Um membro real o suficiente para o service falar com o builder.
+const BASE = {
+  nome: "Maria de Souza",
+  nascimento: "1990-05-20",
+  whatsapp: "+5581999990000",
+  email: "maria@example.com",
+};
+
+const trioBruto = { rg: "12.345.678-9", cpf: "123.456.789-00", data_batismo: "1985-03-01" };
+
+function formComTrio() {
+  const fd = new FormData();
+  fd.set("nome", BASE.nome);
+  fd.set("nascimento", BASE.nascimento);
+  fd.set("whatsapp", BASE.whatsapp);
+  fd.set("email", BASE.email);
+  fd.set("rg", trioBruto.rg);
+  fd.set("cpf", trioBruto.cpf);
+  fd.set("data_batismo", trioBruto.data_batismo);
+  return fd;
+}
+
+// O que o service DEVE mandar: o trio como o builder o compôs. RG mantém a
+// máscara (CART-07: o formato varia por estado, normalizar seria inventar
+// regra); CPF perde a máscara (CART-03: só os 11 dígitos); data sai em ISO.
+const TRIO_ESPERADO = D.comporDadosDocumento({}, {}, formComTrio(), new Date()).dados;
+
+function assertTrio(capturado, rotulo) {
+  assert.strictEqual(capturado.verbo !== null, true, rotulo + ": o service nao chamou insert/update");
+  assert.strictEqual(capturado.tabela, "members", rotulo + ": foi para members");
+  // Literais, e nao "o que o composer devolveu": comparar a row com a saida
+  // do composer so prova que ninguem mexeu no caminho, nao que o valor e o
+  // certo. O RG e a MASK, porque CART-07 diz que o formato muda por estado e
+  // normalizar seria inventar regra; o CPF e so os 11 digitos (CART-03).
+  assert.deepStrictEqual(capturado.payload.rg, trioBruto.rg, rotulo + ": o rg chega ao banco com a mascara que o formulario tem");
+  assert.deepStrictEqual(capturado.payload.cpf, "12345678900", rotulo + ": o cpf chega ao banco so com os 11 digitos");
+  assert.deepStrictEqual(capturado.payload.data_batismo, TRIO_ESPERADO.data_batismo, rotulo + ": a data de batismo que chega ao banco e a do formulario");
+  assert.deepStrictEqual(
+    capturado.payload.data_batismo, TRIO_ESPERADO.data_batismo,
+    rotulo + ": a data de batismo que chega ao banco e a do formulario"
+  );
+}
+
+// ── caminho 1: painel, cadastro (createMember → insert)
+(async () => {
+  const c = clienteFake("createMember");
+  // `.dados`, e nao o envelope `{ ok, dados }`: e o envelope que os services
+  // recebem, e passar o envelope inteiro faz `dados.rg` dar `undefined` e
+  // `colunasDocumento` virar `null` — o que a PRIMEIRA versao deste teste fez,
+  // e o tier pegou. Um teste que passa o objeto errado falha com a mensagem
+  // errada, e e por isso que ele precisa executar o service de verdade.
+  const pronto1 = D.comporDadosDocumento({}, {}, formComTrio(), new Date());
+  assert.strictEqual(pronto1.ok, true, "createMember: composicao ok");
+  const dados = pronto1.dados;
+  await M.createMember("auth-uid-1", dados, { cliente: c, matricula: "M-0001" });
+  assertTrio(c.capturado, "createMember");
+  assert.strictEqual(c.capturado.payload.auth_user_id, "auth-uid-1", "createMember: auth_user_id");
+  assert.strictEqual(c.capturado.payload.matricula, "M-0001", "createMember: matricula injetada");
+
+  // ── caminho 2: painel, autoedição (updateMember → update)
+  const c2 = clienteFake("updateMember");
+  await M.updateMember("auth-uid-1", dados, { cliente: c2 });
+  assertTrio(c2.capturado, "updateMember");
+  assert.deepStrictEqual(c2.capturado.eq, ["auth_user_id", "auth-uid-1"], "updateMember: filtra pelo auth_uid");
+
+  // ── caminho 3: admin, cadastro (criarMembro → insert)
+  const c3 = clienteFake("criarMembro");
+  const pronto3 = D.comporDadosDocumento(
+    { email: BASE.email },
+    {},
+    formComTrio(),
+    new Date()
+  );
+  assert.strictEqual(pronto3.ok, true, "criarMembro: composicao ok");
+  const dadosAdmin = pronto3.dados;
+  const r = await A.criarMembro(dadosAdmin, {
+    cliente: c3,
+    matricula: "M-0002",
+    criarAuthUser: async () => "auth-uid-2",
+    removerAuthUser: async () => { chamadas.push("rollback"); },
+  });
+  assert.strictEqual(r.membro.ok, true, "criarMembro: devolve o membro");
+  assert.strictEqual(c3.capturado.payload.matricula, "M-0002", "criarMembro: matricula injetada");
+  assertTrio(c3.capturado, "criarMembro");
+
+  // ── caminho 4: admin, edição (atualizarDadosMembro → update)
+  const c4 = clienteFake("atualizarDadosMembro");
+  await A.atualizarDadosMembro("membro-9", dados, { cliente: c4 });
+  assertTrio(c4.capturado, "atualizarDadosMembro");
+  assert.deepStrictEqual(c4.capturado.eq, ["id", "membro-9"], "atualizarDadosMembro: filtra pelo id");
+
+  // ── CART-04: campo vazio e AUSENCIA, e ausencia nao e string vazia.
+  // A R8 marcou "sem escrita no banco" como provado so por ausencia de
+  // chamada — e ausencia de chamada nao prova nada sobre o valor. Aqui a
+  // prova e o valor capturado: trio em branco tem de chegar `null`, nunca
+  // `""`, porque `''` e `NULL` sao estados DISTINTOS na coluna.
+  const cVazio = clienteFake("vazio");
+  const fdVazio = new FormData();
+  fdVazio.set("nome", BASE.nome);
+  fdVazio.set("nascimento", BASE.nascimento);
+  fdVazio.set("whatsapp", BASE.whatsapp);
+  fdVazio.set("rg", "");
+  fdVazio.set("cpf", "");
+  fdVazio.set("data_batismo", "");
+  const prontoVazioSvc = D.comporDadosDocumento({}, {}, fdVazio, new Date());
+  assert.strictEqual(prontoVazioSvc.ok, true, "trio em branco e Ausencia, nao erro");
+  await M.updateMember("auth-uid-1", prontoVazioSvc.dados, { cliente: cVazio });
+  for (const coluna of ["rg", "cpf", "data_batismo"]) {
+    assert.strictEqual(
+      cVazio.capturado.payload[coluna], null,
+      "trio em branco: " + coluna + " chega como NULL, nao como string vazia"
+    );
+  }
+
+  // ── O rollback 2-passos continua valendo COM a injeção
+  const c5 = clienteFake("criarMembro-rollback");
+  const removidos = [];
+  const c5b = clienteFake("x");
+  await assert.rejects(
+    () => A.criarMembro(dadosAdmin, {
+      cliente: {
+        from() {
+          return {
+            insert() { return { select() { return { single: async () => ({ data: null, error: new Error("boom") }) } } } },
+            update() { return { select() { return { single: async () => ({ data: null, error: null }) } } } },
+          };
+        },
+      },
+      matricula: "M-0003",
+      criarAuthUser: async () => "auth-uid-3",
+      removerAuthUser: async (id) => { removidos.push(id); },
+    }),
+    /boom/,
+    "criarMembro: erro do insert propaga"
+  );
+  assert.deepStrictEqual(removidos, ["auth-uid-3"], "criarMembro: o rollback remove o auth user criado");
+  void c5; void c5b;
+
+  // Nenhum caminho pode ter tocado o Supabase de verdade (o hook lançaria).
+  assert.deepStrictEqual(chamadas.filter((c) => c.startsWith("create")), [], "nenhum caminho chamou o Supabase real");
+  console.log("ok");
+})().catch((e) => {
+  console.error(e && e.message ? e.message : e);
+  process.exit(1);
+});
+'; then
+      ok "CART-01/02/03 service executado: os 4 caminhos de escrita mandam o trio do formulario"
+    else
+      ko "CART-01/02/03 service executado falhou (detalhes acima)"
+    fi
   fi
 fi
 
