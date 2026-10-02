@@ -1,5 +1,6 @@
 import { createServerClient } from "@/lib/supabase/server";
 import { colunasCriarMembro, colunasPerfil } from "@/lib/painel/documento";
+import type { DadosProntos } from "@/lib/painel/documento";
 
 export type Member = {
   id: string;
@@ -84,9 +85,19 @@ export async function generateMatricula(): Promise<string> {
  * Cria o registro do membro ligado ao `authUid`, gerando a matrícula.
  * Erros (ex.: unique violation 23505) propagam para o caller mapear (409).
  */
+/**
+ * Mesmo contrato do service admin (`0d4d1a4`, AD-024): o que chega aqui não é
+ * "os dados do membro", é o ramo `ok: true` de `comporDadosDocumento`.
+ *
+ * `MemberDados` declara `rg`/`cpf`/`data_batismo` opcionais porque é o tipo da
+ * ENTRADA da rota, antes da validação. No service a opacidade não tem razão: as
+ * três chaves já foram decididas. Abertas, elas deixavam passar
+ * `{ nome, nascimento, whatsapp }` e gravar a row com documento nulo sem ninguém
+ * ter olhado o formulário.
+ */
 export async function createMember(
   authUid: string,
-  dados: MemberDados
+  dados: DadosProntos<MemberDados>
 ): Promise<Member> {
   const supabase = await createServerClient();
   const matricula = await generateMatricula();
@@ -114,7 +125,7 @@ export async function createMember(
  */
 export async function updateMember(
   authUid: string,
-  dados: MemberDados
+  dados: DadosProntos<MemberDados>
 ): Promise<Member> {
   const supabase = await createServerClient();
 
