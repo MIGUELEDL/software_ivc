@@ -197,6 +197,13 @@
 - **Date**: 2026-10-01
 - **Status**: active
 
+### AD-025
+- **Decision**: TS e SQL passam a concordar no **ano de 5 dígitos** (`criado_em` de 9999 → ciclo-base `10000-12-31`). `FORMATO_DATA` aceita 4 a 6 dígitos e a comparação de datas é **numérica** por ano/mes/dia, não lexical. `infinity` permanece `null` no TS.
+- **Reason**: medido no Postgres efêmero — o trigger grava `make_date(ano+1, …)` e devolvia `10000-12-31`, enquanto o TS devolvia `—`. Duas causas independentes: o formato recusava 5 dígitos, e a comparação era lexical, onde `"10000-12-31" >= "2026-01-01"` é **falso** porque `"1"` ordena antes de `"2"` (o candidato era sempre considerado passado, o laço de 200 anos rodava inteiro e devolvia `null`). Divergência sobre dado já gravado: o cartão de um membro real mostrava uma coisa e a coluna outra. Decisão do usuário entre três saídas possíveis: alinhar o TS ao SQL.
+- **Consequência**: `infinity` diverge de propósito — o SQL **erra** (`cannot convert infinity to integer`), o que aborta o INSERT, então não existe linha persistida com `infinity` e o `null` do TS é a degradação segura do mesmo evento. O gate prende o caso alcançável (ano de 5 dígitos), não o inalcançável. **Resíduo conhecido**: o `Date` do JavaScript topsa em 275760 e o `date` do Postgres em 5874897 — a janela 275761..5874896 ainda diverge e nenhum dos dois lados pode fechá-la; documentado em `validade.ts`.
+- **Date**: 2026-10-01
+- **Status**: active
+
 ## Handoff — feature cartao-valididade-anual — PAUSADO para nova sessão (2026-10-01)
 
 - **Estado**: implementação **completa e com gates locais verdes**, aguardando a 5ª rodada do Verifier. **NÃO está validado**: `validation.md` ainda contém o FAIL da R4.
