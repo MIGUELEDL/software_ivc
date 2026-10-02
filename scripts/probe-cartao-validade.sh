@@ -686,6 +686,152 @@ for (const invalido of ["2026-00-15", "2026-13-01", "2026-01-00", "2026-01-32"])
     "data inexistente " + invalido + " -> null, nao uma data com mes/dia 00"
   );
 }
+
+// --- CART-01/02/03/04: BARREIRA DE VALOR POR EXECUCAO ------------------------
+//
+// Aqui esta a mudanca de metodo que a R7 pediu, depois de sete rodadas em que
+// o gate so olhava TEXTO e cada vez achava um buraco novo da mesma familia:
+// `persistido` aceitou wrapper, `gravando` aceitou wrapper, `gravando` aceitou
+// reatribuicao do parametro. Guarda textual nao certifica barreira de valor.
+//
+// O que cada camada passa a garantir, e nao e demais:
+//   - EXECUCAO (este bloco): os VALORES que chegam na row, de FormData ate
+//     `colunas*`. Se o spread de `colunasDocumento` sumir, se um campo for
+//     trocado por `null`, se o builder deixar de projetar o trio — aqui falha.
+//   - COMPILACAO: escrita em propriedade do payload pronto (V9/V10/G11/G12).
+//   - TEXTO (o `persistido` e o `gravando` que sobraram): so a LIGACAO — que o
+//     service passe o parametro que recebeu, e nao um reatribuido. E o unico
+//     resto que execucao nao alcanca sem injetar o cliente Supabase.
+// O que o FORMULARIO digita, e o que o PAYLOAD e a ROW carregam. Sao coisas
+// diferentes de proposito, e a tier de execucao mediu qual: o CPF perde a
+// mascara (so digitos) e o RG NAO — CART-07 diz que o formato de RG varia por
+// estado, entao normalizar seria inventar regra. Eu assertei o RG como
+// '123456789' na primeira versao deste bloco e o probe falhou com
+// '12.345.678-9'. Guardar o valor NORMALIZADO e a asercao mais forte: prova
+// que a row carrega o que a normalizacao produziu, nao o que foi digitado.
+const TRIO_DIGITADO = { rg: "12.345.678-9", cpf: "529.982.247-25", data_batismo: "1990-05-04" };
+const TRIO_NORMALIZADO = { rg: "12.345.678-9", cpf: "52998224725", data_batismo: "1990-05-04" };
+
+function formDoTrio(extra) {
+  const fd = new FormData();
+  fd.set("nome", "Maria de Teste");
+  fd.set("nascimento", "1990-05-04");
+  fd.set("whatsapp", "(83) 99999-0000");
+  fd.set("rg", TRIO_DIGITADO.rg);
+  fd.set("cpf", TRIO_DIGITADO.cpf);
+  fd.set("data_batismo", TRIO_DIGITADO.data_batismo);
+  for (const [k, v] of Object.entries(extra || {})) fd.set(k, v);
+  return fd;
+}
+
+const BASE_CADASTRO = {
+  nome: "Maria de Teste",
+  nascimento: "1990-05-04",
+  whatsapp: "(83) 99999-0000",
+  status: "ATIVO",
+  matricula: "M-2026-0001",
+};
+const BASE_PERFIL = { nome: "Maria de Teste", nascimento: "1990-05-04", whatsapp: "(83) 99999-0000" };
+
+// 1. A composicao aceita o trio e ENTREGA os tres valores.
+const prontoCadastro = D.comporDadosDocumento(BASE_CADASTRO, {}, formDoTrio(), HOJE);
+assert.strictEqual(prontoCadastro.ok, true, "composicao do cadastro aceita o trio");
+const dadosCadastro = prontoCadastro.dados;
+
+// 2. O payload pronto e congelado de verdade em runtime (V9 morre no probe, nao
+// so no tipo) e resiste a escrita mesmo em modo sloppy.
+assert.strictEqual(Object.isFrozen(dadosCadastro), true, "payload pronto e Object.freeze em runtime");
+try {
+  dadosCadastro.rg = "999.999.999-9";
+} catch (_e) { /* modo strict lanca; sloppy ignora. Os dois sao o efeito certo */ }
+assert.strictEqual(
+  dadosCadastro.rg, TRIO_NORMALIZADO.rg,
+  "o payload ja carrega o normalizado, e escrever nele nao muda o valor"
+);
+
+// 3. EXECUTAR os tres builders e conferir a ROW, campo a campo. Esta e a
+// assercao que nenhuma guarda textual sobre a chamada fazia.
+const rowCadastro = D.colunasCriarMembro(dadosCadastro, "uid-1", "M-2026-0001");
+for (const [coluna, valor] of Object.entries(TRIO_NORMALIZADO)) {
+  assert.strictEqual(
+    rowCadastro[coluna], valor,
+    "row de cadastro carrega " + coluna + " = " + valor + " (barreira por EXECUCAO)"
+  );
+}
+assert.strictEqual(rowCadastro.auth_user_id, "uid-1", "row de cadastro leva o auth_user_id injetado");
+assert.strictEqual(rowCadastro.matricula, "M-2026-0001", "row de cadastro leva a matricula injetada");
+
+const rowEditar = D.colunasEditarMembro(dadosCadastro, "2026-10-01T12:00:00.000Z");
+for (const [coluna, valor] of Object.entries(TRIO_NORMALIZADO)) {
+  assert.strictEqual(
+    rowEditar[coluna], valor,
+    "row de edicao admin carrega " + coluna + " = " + valor + " (barreira por EXECUCAO)"
+  );
+}
+assert.strictEqual(
+  rowEditar.atualizado_em, "2026-10-01T12:00:00.000Z",
+  "row de edicao leva o atualizado_em injetado"
+);
+
+const prontoPerfil = D.comporDadosDocumento(BASE_PERFIL, {}, formDoTrio(), HOJE);
+assert.strictEqual(prontoPerfil.ok, true, "composicao do perfil aceita o trio");
+const rowPerfil = D.colunasPerfil(prontoPerfil.dados, "2026-10-01T12:00:00.000Z");
+for (const [coluna, valor] of Object.entries(TRIO_NORMALIZADO)) {
+  assert.strictEqual(
+    rowPerfil[coluna], valor,
+    "row de perfil carrega " + coluna + " = " + valor + " (barreira por EXECUCAO)"
+  );
+}
+
+// 4. O builder e uma projecao FIEL: campo fora do trio nao vaza para a row, e o
+// trio some se a composicao falhar. E o que separa "o payload tem os valores"
+// de "a row tem os valores".
+// Medido, nao suposto: campo VAZIO nao e erro (vira `null`, que e o que
+// CART-04 quer), e o CPF nao valida checksum — so a contagem de digitos. O
+// caso que falha e o que tem 3 digitos.
+// Precedencia: o documento do formulario tem prioridade sobre o que veio na
+// base. Nos call sites reais a base nunca traz `rg`, entao inverter a ordem
+// dos spreads e um mutante EQUIVALENTE (medido: X6 sobrevivia). Mas a ordem
+// e semantica, nao detalhe: se algum dia a base trouxer um documento velho,
+// e o formulario tem de ganhar. Travado aqui para que a inversao nao passe
+// por "indiferente" ate o dia em que deixar de ser.
+const comDocumentoNaBase = D.comporDadosDocumento(
+  Object.assign({}, BASE_CADASTRO, { rg: "VEIO-DA-BASE", cpf: "VEIO-DA-BASE" }),
+  {},
+  formDoTrio(),
+  HOJE
+);
+assert.strictEqual(comDocumentoNaBase.ok, true, "base com documento nao quebra a composicao");
+assert.strictEqual(
+  comDocumentoNaBase.dados.rg, TRIO_NORMALIZADO.rg,
+  "o documento do formulario tem PRECEDENCIA sobre o que veio na base"
+);
+assert.strictEqual(
+  comDocumentoNaBase.dados.cpf, TRIO_NORMALIZADO.cpf,
+  "a precedencia vale para os tres campos, nao so para o rg"
+);
+
+const prontoVazio = D.comporDadosDocumento(BASE_CADASTRO, {}, formDoTrio({ rg: "" }), HOJE);
+assert.strictEqual(prontoVazio.ok, true, "rg vazio e ausencia, nao erro: vira null");
+assert.strictEqual(prontoVazio.dados.rg, null, "rg vazio some do payload em vez de ir como ''");
+
+const prontoRuim = D.comporDadosDocumento(BASE_CADASTRO, {}, formDoTrio({ cpf: "123" }), HOJE);
+assert.strictEqual(prontoRuim.ok, false, "cpf de 3 digitos faz a composicao falhar");
+assert.ok(prontoRuim.campos.cpf, "a composicao devolve o mapa de erros do campo");
+assert.strictEqual(
+  prontoRuim.dados, undefined,
+  "o ramo de erro NAO tem dados — e o que impede gravar row com campo invalido"
+);
+
+const rowInesperado = D.colunasCriarMembro(
+  Object.assign({}, dadosCadastro, { rg: null }),
+  "uid-1",
+  "M-2026-0001"
+);
+assert.strictEqual(
+  rowInesperado.rg, null,
+  "se o payload chegar sem rg, a row fica sem rg — o builder nao inventa valor"
+);
 assert.strictEqual(
   V.calcularValidadeCartao("1700-01-01", HOJE), "2027-01-01",
   "criado_em de 326 anos atrás também"
