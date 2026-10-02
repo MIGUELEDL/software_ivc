@@ -204,41 +204,36 @@
 - **Date**: 2026-10-01
 - **Status**: active
 
-## Handoff — feature cartao-valididade-anual — PAUSADO para nova sessão (2026-10-01)
+## Handoff — feature cartao-valididade-anual — implementar, ver R5 (2026-10-01)
 
-- **Estado**: implementação **completa e com gates locais verdes**, aguardando a 5ª rodada do Verifier. **NÃO está validado**: `validation.md` ainda contém o FAIL da R4.
-- **Onde o código para**: o último commit que toca `src/`, `scripts/` ou `supabase/` é **`0d4d1a4`**. Tudo depois disso é `docs(cartao)` — AD-024, handoff e correções deste registro. Branch `main`, **nada pushed** (`git rev-list --count origin/main..HEAD` para o número exato; `git push` nunca sem autorização).
-  - **Não confie em nenhum SHA absoluto escrito aqui**: um handoff que declara o próprio HEAD fica errado no mesmo commit que o escreve — foi o que aconteceu duas vezes nesta sessão. Use `git log --oneline -1` e `git log -1 --oneline -- src/ scripts/ supabase/`.
-- **Os seis commits desta sessão** (a4a39d1 → a812ade; o anterior era `aeda946`):
-  - `a4a39d1` `refactor(cartao): torna a composicao um contrato de tipo para as rotas` — união discriminada, `Object.freeze`, remoção de `temErros`, `persistido` reescrito, asserção de compilação do `Readonly`.
-  - `c16ea60` `test(cartao): deriva do gate a contagem de instantes de fronteira` — a mensagem dizia "8 instantes" com 9 fixtures na lista; a contagem agora vem de `grep -c` sobre `FIXTURES`.
-  - `0d4d1a4` `refactor(admin): so aceita o payload ja validado no cadastro de membro` — `DadosProntos<CriarMembroDados>`/`DadosProntos<MembroDadosAdmin>`.
-  - `e6596a0`, `bf65a83`, `a812ade` — `docs(cartao)`: AD-024, delimitação da cobertura real do build, AD-021 marcada parcialmente supersedada, linha faltante na matriz.
-- **Gates medidos no HEAD** (suíte completa rodada de uma vez depois de `0d4d1a4`):
+- **Estado**: implementação **completa**, gates locais verdes, **aguardando a R5 do Verifier**. `validation.md` ainda é o FAIL da R4 — por isso `validate_state.py` falha, de propósito.
+- **Onde o código para**: o último commit que toca `src/`, `scripts/` ou `supabase/` é **`e18fcb4`**. Branch `main`, **nada pushed** (`git rev-list --count origin/main..HEAD` para o número; `git push` nunca sem autorização).
+  - **Não confie em SHA absoluto escrito aqui** — um handoff que declara o próprio HEAD fica errado no commit que o escreve. Use `git log`.
+- **O que a R4 deixou e esta sessão resolveu**:
+  - `cartao_em`/`criado_em` absurdo → **AD-025**, commit `4a42ba4`. TS e SQL agora concordam no ano de 5 dígitos. Causa raiz: a comparação era **lexical** e `"10000-12-31" >= "2026-01-01"` é falso. `infinity` diverge de propósito (o SQL erra e aborta o INSERT, logo a linha não existe); resíduo 275761..5874896 acima do teto do `Date` do JS está documentado.
+  - T4 (`src/lib/painel/members.ts`) → **`e18fcb4`**: `createMember`/`updateMember` recebem `DadosProntos<T>`, igual aos services admin. M19 medido.
+  - Contagem de "8 instantes" → **derivada da lista** (`c16ea60`), hoje são 10.
+- **ORDEM DE TRABALHO**: o passo 1 (`build`) e o passo 3 (regressão) já estão feitos e verdes neste HEAD. O que falta é só:
+  1. **Dispatchar o Verifier (R5)** em worktree isolado (`git worktree add /tmp/opencode/sc` + `ln -s` do `node_modules`; `git worktree prune` no fim). Autor ≠ verificador. **Ele escreve `validation.md`; você não.**
+  2. Se PASS: linha `verified` em `docs/coverage-matrix.md` e início de `landing-visual-hero`.
+  - Se FAIL: o protocolo manda escalar em vez de iterar. A R5 é **exceção autorizada pelo usuário** ao limite de 3 ciclos — registre isso no relatório.
+- **Gates medidos neste HEAD** (suíte completa):
   - `npm run typecheck` — sem erros;
   - `npm run lint` — 0 erros / 5 warnings pré-existentes;
-  - `npm run build` — **verde**, rodada após `0d4d1a4` (a lacuna de cobertura que restava nesta sessão está fechada; build já tinha passado com o conteúdo de `a4a39d1`).
+  - `npm run build` — verde;
   - `bash scripts/probe-cartao-validade.sh` — `34 ok / 0 falhas`;
   - `bash scripts/probe-cartao-validade.sh --com-db` — `35 ok / 0 falhas` (`21 ok / 0` no Postgres efêmero);
-  - matriz TZ `UTC`, `Asia/Tokyo`, `Pacific/Kiritimati`, `Europe/Lisbon` — `2 ok / 0 falhas` cada.
-- **Mutação medida (11 mutantes, todos mortos)** em `/tmp/opencode/sc` (worktree com `node_modules` symlinked):
-  - **morrem no compilador** — V1/V2/V3 (`return` do 400 removido nas três rotas), V7 (composição com outra base), V10 (`Readonly` removido do tipo), V13 (payload sem o trio de documento: `TS2345 missing rg, cpf, data_batismo`);
-  - **morrem no probe** — V4/V4b/V4c (`{ ...pronto.dados }` para o service), V5b/V5c (`new FormData()`), V6/V6b (mapa de erros da base trocado por `{}`), V8 (`createMember` com `base.dados`), V9 (`Object.freeze` removido), V11 (guarda do `ok` invertida).
-- **ORDEM DE TRABALHO DA PRÓXIMA SESSÃO** (não pule etapas nem reordene):
-  1. Fechar o item 1 da lista abaixo (`criado_em` absurdo) — é a decisão de domínio que **precisa do usuário**, e o gap com maior chance de reprovar a R5. Apresente as duas saídas; não escolha sozinho.
-  2. T4 (`src/lib/painel/members.ts`) — tipar `updateMember`/`createMember` com `DadosProntos<T>` e medir o mutante.
-  3. Regressão: `npm run typecheck && npm run lint && npm run build` e `bash scripts/probe-cartao-validade.sh --com-db`. Tudo já está verde neste HEAD; se algo quebrar, a mudança dos passos 1–2 é a suspecta.
-  4. Dispatchar o Verifier (R5) em worktree isolado. **Ele escreve `validation.md`; você não.**
-  5. Só com PASS: linha `verified` na matriz e início de `landing-visual-hero`.
-- **O que o R4 deixou em aberto e a próxima sessão deve fechar**:
-  1. **`criado_em` absurdo**: TS e SQL divergem para `year >= 10000` e `infinity` (`src/lib/painel/validade.ts:146,153` — TS devolve `—`; o SQL erra ou devolve data). Decidir entre restringir o domínio no types (`Date` válido) ou alinhar as duas pontas, e registrar a decisão.
-  2. **Claim obsoleta no R4**: o relatório afirma que "os 7 mutantes" estão mortos. Sete nomes estão mortos, a **classe** não. Não repetir a formulação.
-  3. **T4 (`src/lib/painel/members.ts`)**: `updateMember`/`createMember` ainda recebem o tipo de entrada amplo, ao contrário de T5. O `Readonly`/spread do payload do perfil é coberto só pelo guard do probe. É o próximo passo natural da AD-024.
-  4. **AD-023** (probes fora do CI) continua **pendente de decisão do usuário**, junto com a política de `git push`.
-- **Pendência de documentação (não é bug)**: `docs/coverage-matrix.md` não tem linha para `cartao-valididade-anual`, e a regra do próprio arquivo diz que nenhuma feature é declarada pronta sem linha `verified` respaldada por `validation.md`. Como a feature ainda não tem PASS, a linha entra **depois** do Verifier, com `🔧 in progress` se o Orchestrator preferir sinalizar antes. Nota: `barcode-membro` e `admin-auditoria` também não têm linha — lacuna **pré-existente**, não introduzida aqui; corrigir as três de uma vez, não só esta.
-- **Rodadas do Verifier**: R1 FAIL (13/21 sobreviveram; guards textuais aceitando código morto) → R2 FAIL (9/16 ACs, 12/21 sobreviveram; o guard de `MemberCard` existia mas `chama` viajava por exigir só um `=` antes do símbolo) → R3 FAIL (31/39 mortos, 7 sobreviveram; bug real de `\n`/`\t` no fim passando pelo `trim()`; a ligação entre composição e gravação atravessava duas camadas) → R4 FAIL (11/16 completas, 5 parciais; 27/35 mortos, 7 sobreviveram + 1 equivalente). **R5 é uma exceção autorizada pelo usuário** ao limite de 3 ciclos do protocolo — registrar isso no relatório.
-- **Não editado por decisão**: `.specs/features/cartao-valididade-anual/validation.md` é do Verifier; o autor não o sobrescreve nem o versiona.
-- **Branch**: main, commits locais, `git push` nunca sem autorização.
+  - matriz TZ `UTC`, `Asia/Tokyo`, `Pacific/Kiritimati`, `Europe/Lisbon` — `2 ok / 0` cada.
+- **Mutação medida, 17 mutantes, todos mortos** (worktree isolado com `node_modules` symlinked):
+  - **morrem no compilador** — V1/V2/V3 (`return` do 400 removido nas 3 rotas), V7 (composição com outra base), V10 (`Readonly` removido), V13 (payload sem o trio no admin: `TS2345`), **M19** (payload sem o trio no painel: `TS2345`).
+  - **morrem no probe** — V4/V4b/V4c (`{ ...pronto.dados }`), V5b/V5c (`new FormData()`), V6/V6b (mapa de erros da base trocado por `{}`), V8 (`createMember` com `base.dados`), V9 (`Object.freeze` removido), V11 (guarda do `ok` invertida), M14 (`FORMATO_DATA` a 4 dígitos), M15 (comparação volta a lexical), M16/M17 (`compararDatas` parcial), M18 (fuso civil → UTC).
+- **DB**: migration `0024_validade_cartao.sql` (função `members_ciclo_base`, trigger `members_validade_cartao`, backfill só de `NULL`) **aplicada** no dev `[REDACTED_PROJECT_REF]` após autorização explícita. 11/11 linhas preenchidas; assinatura preservada (`2e34606d4d538eba96d6274a92f743a5`); teste em transação confirmou que o trigger reverte validade forjada e clampa 29/02. **Não reaplicar nem escrever remotamente.**
+- **Rodadas do Verifier**: R1 FAIL (13/21 sobreviveram) → R2 FAIL (9/16 ACs, 12/21 sobreviveram) → R3 FAIL (9/16 completas, 1 GAP; 31/39 mortos; bug real de `\n`/`\t` no fim passando pelo `trim()`) → R4 FAIL (11/16 completas, 5 parciais; 27/35 mortos, 7 sobreviveram + 1 equivalente).
+  - Cuidado de linguagem: o R4 escreveu "os 7 mutantes mortos". Sete **nomes** estão mortos; a **classe** não. Não repetir.
+- **Pendências que você deve SURFACER, não assumir**: **AD-023** (probes fora do CI — `.github/workflows/ci.yml` roda lint/typecheck/build e nenhum `probe*.sh`; é condição pré-existente) e a **política de `git push`**. Nenhuma das duas tem dono implícito.
+- **Pendência de documentação**: `docs/coverage-matrix.md` não tem linha para esta feature; entra depois do PASS. `barcode-membro` e `admin-auditoria` também não têm — lacuna **pré-existente**, corrigir as três juntas.
+- **AD-021** está marcada *superseded (parcialmente)* por AD-024: o texto original cita `temErros`, que não existe mais. O que segue vigente da AD-021: guard `persistido`, `FormData` como 3º argumento, mapa de erros da rota como 2º, controle antes do `trim`.
+- **Não editado por decisão**: `validation.md` é do Verifier; o autor não o sobrescreve nem o versiona.
 
 ## Handoff
 
