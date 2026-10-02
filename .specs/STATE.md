@@ -200,39 +200,31 @@
 ### AD-025
 - **Decision**: TS e SQL passam a concordar no **ano de 5 dígitos** (`criado_em` de 9999 → ciclo-base `10000-12-31`). `FORMATO_DATA` aceita 4 a 6 dígitos e a comparação de datas é **numérica** por ano/mes/dia, não lexical. `infinity` permanece `null` no TS.
 - **Reason**: medido no Postgres efêmero — o trigger grava `make_date(ano+1, …)` e devolvia `10000-12-31`, enquanto o TS devolvia `—`. Duas causas independentes: o formato recusava 5 dígitos, e a comparação era lexical, onde `"10000-12-31" >= "2026-01-01"` é **falso** porque `"1"` ordena antes de `"2"` (o candidato era sempre considerado passado, o laço de 200 anos rodava inteiro e devolvia `null`). Divergência sobre dado já gravado: o cartão de um membro real mostrava uma coisa e a coluna outra. Decisão do usuário entre três saídas possíveis: alinhar o TS ao SQL.
-- **Consequência**: `infinity` diverge de propósito — o SQL **erra** (`cannot convert infinity to integer`), o que aborta o INSERT, então não existe linha persistida com `infinity` e o `null` do TS é a degradação segura do mesmo evento. O gate prende o caso alcançável (ano de 5 dígitos), não o inalcançável. **Resíduo conhecido**: o `Date` do JavaScript topsa em 275760 e o `date` do Postgres em 5874897 — a janela 275761..5874896 ainda diverge e nenhum dos dois lados pode fechá-la; documentado em `validade.ts`.
+- **Consequência**: `infinity` diverge de propósito — o SQL **erra** (`cannot convert infinity to integer`), o que aborta o INSERT, então não existe linha persistida com `infinity` e o `null` do TS é a degradação segura do mesmo evento. O gate prende o caso alcançável (ano de 5 dígitos), não o inalcançável.
+- **Janela residual — números MEDIDOS, não estimados** (R5): `criado_em` é `timestamptz`, cujo teto é **294276-12-31** — o `5874897` que eu havia escrito é o teto do `date`, que o `make_date` alcança mas que **não** é o gargalo aqui. Residual real: **275761..294276**, onde o `Date` do JS não parseia e o Postgres ainda aceita. Não é fechável sem trocar o transporte (texto civil), então segue documentado em `validade.ts` em vez de fingido no gate.
+- **Janela BAIXA — fechada** (R5): o laço de candidatos tinha teto fixo de **200 anos**, então um `criado_em` mais antigo devolvia `null` enquanto o trigger já tinha gravado o ciclo-base — divergência sobre dado **já persistido**, do mesmo tipo da do ano de 5 dígitos, e fechável (é aritmética, não teto de runtime). Medido: `1800-06-01` → TS `null` / SQL `1801-06-01`. O número de passos agora é derivado (`anoHoje - anoCivil + 1`, exato: o aniversário k tem ano `anoCivil + k`). Esta era a omissão real da AD-025: ela falava da janela alta e calava da baixa.
 - **Date**: 2026-10-01
 - **Status**: active
 
-## Handoff — feature cartao-valididade-anual — implementar, ver R5 (2026-10-01)
+## Handoff — feature cartao-valididade-anual — R5 FAIL, remediação feita (2026-10-01)
 
-- **Estado**: implementação **completa**, gates locais verdes, **aguardando a R5 do Verifier**. `validation.md` ainda é o FAIL da R4 — por isso `validate_state.py` falha, de propósito.
-- **Onde o código para**: o último commit que toca `src/`, `scripts/` ou `supabase/` é **`e18fcb4`**. Branch `main`, **nada pushed** (`git rev-list --count origin/main..HEAD` para o número; `git push` nunca sem autorização).
+- **Estado**: implementação completa e gates locais verdes, mas **a R5 foi FAIL** e a feature **NÃO está verificada**. `validation.md` é o relatório da R5 — por isso `validate_state.py` falha, de propósito. Não adicionei linha em `docs/coverage-matrix.md` ainda.
+- **Onde o código para**: último commit que toca `src/`, `scripts/` ou `supabase/` é **`f14d1f9`**. Branch `main`, **nada pushed**.
   - **Não confie em SHA absoluto escrito aqui** — um handoff que declara o próprio HEAD fica errado no commit que o escreve. Use `git log`.
-- **O que a R4 deixou e esta sessão resolveu**:
-  - `cartao_em`/`criado_em` absurdo → **AD-025**, commit `4a42ba4`. TS e SQL agora concordam no ano de 5 dígitos. Causa raiz: a comparação era **lexical** e `"10000-12-31" >= "2026-01-01"` é falso. `infinity` diverge de propósito (o SQL erra e aborta o INSERT, logo a linha não existe); resíduo 275761..5874896 acima do teto do `Date` do JS está documentado.
-  - T4 (`src/lib/painel/members.ts`) → **`e18fcb4`**: `createMember`/`updateMember` recebem `DadosProntos<T>`, igual aos services admin. M19 medido.
-  - Contagem de "8 instantes" → **derivada da lista** (`c16ea60`), hoje são 10.
-- **ORDEM DE TRABALHO**: o passo 1 (`build`) e o passo 3 (regressão) já estão feitos e verdes neste HEAD. O que falta é só:
-  1. **Dispatchar o Verifier (R5)** em worktree isolado (`git worktree add /tmp/opencode/sc` + `ln -s` do `node_modules`; `git worktree prune` no fim). Autor ≠ verificador. **Ele escreve `validation.md`; você não.**
-  2. Se PASS: linha `verified` em `docs/coverage-matrix.md` e início de `landing-visual-hero`.
-  - Se FAIL: o protocolo manda escalar em vez de iterar. A R5 é **exceção autorizada pelo usuário** ao limite de 3 ciclos — registre isso no relatório.
-- **Gates medidos neste HEAD** (suíte completa):
-  - `npm run typecheck` — sem erros;
-  - `npm run lint` — 0 erros / 5 warnings pré-existentes;
-  - `npm run build` — verde;
-  - `bash scripts/probe-cartao-validade.sh` — `34 ok / 0 falhas`;
-  - `bash scripts/probe-cartao-validade.sh --com-db` — `35 ok / 0 falhas` (`21 ok / 0` no Postgres efêmero);
-  - matriz TZ `UTC`, `Asia/Tokyo`, `Pacific/Kiritimati`, `Europe/Lisbon` — `2 ok / 0` cada.
-- **Mutação medida, 17 mutantes, todos mortos** (worktree isolado com `node_modules` symlinked):
-  - **morrem no compilador** — V1/V2/V3 (`return` do 400 removido nas 3 rotas), V7 (composição com outra base), V10 (`Readonly` removido), V13 (payload sem o trio no admin: `TS2345`), **M19** (payload sem o trio no painel: `TS2345`).
-  - **morrem no probe** — V4/V4b/V4c (`{ ...pronto.dados }`), V5b/V5c (`new FormData()`), V6/V6b (mapa de erros da base trocado por `{}`), V8 (`createMember` com `base.dados`), V9 (`Object.freeze` removido), V11 (guarda do `ok` invertida), M14 (`FORMATO_DATA` a 4 dígitos), M15 (comparação volta a lexical), M16/M17 (`compararDatas` parcial), M18 (fuso civil → UTC).
-- **DB**: migration `0024_validade_cartao.sql` (função `members_ciclo_base`, trigger `members_validade_cartao`, backfill só de `NULL`) **aplicada** no dev `[REDACTED_PROJECT_REF]` após autorização explícita. 11/11 linhas preenchidas; assinatura preservada (`2e34606d4d538eba96d6274a92f743a5`); teste em transação confirmou que o trigger reverte validade forjada e clampa 29/02. **Não reaplicar nem escrever remotamente.**
-- **Rodadas do Verifier**: R1 FAIL (13/21 sobreviveram) → R2 FAIL (9/16 ACs, 12/21 sobreviveram) → R3 FAIL (9/16 completas, 1 GAP; 31/39 mortos; bug real de `\n`/`\t` no fim passando pelo `trim()`) → R4 FAIL (11/16 completas, 5 parciais; 27/35 mortos, 7 sobreviveram + 1 equivalente).
-  - Cuidado de linguagem: o R4 escreveu "os 7 mutantes mortos". Sete **nomes** estão mortos; a **classe** não. Não repetir.
-- **Pendências que você deve SURFACER, não assumir**: **AD-023** (probes fora do CI — `.github/workflows/ci.yml` roda lint/typecheck/build e nenhum `probe*.sh`; é condição pré-existente) e a **política de `git push`**. Nenhuma das duas tem dono implícito.
-- **Pendência de documentação**: `docs/coverage-matrix.md` não tem linha para esta feature; entra depois do PASS. `barcode-membro` e `admin-auditoria` também não têm — lacuna **pré-existente**, corrigir as três juntas.
-- **AD-021** está marcada *superseded (parcialmente)* por AD-024: o texto original cita `temErros`, que não existe mais. O que segue vigente da AD-021: guard `persistido`, `FormData` como 3º argumento, mapa de erros da rota como 2º, controle antes do `trim`.
+- **O que a R5 achou e o que este HEAD já corrigiu** (`f14d1f9`, um commit):
+  - **Teto de 200 anos (bug real, dado já gravado)** — o laço de candidatos tinha limite arbitrário; `1800-06-01` devolvia `null` no TS enquanto a coluna tinha `1801-06-01`. Passos agora derivados. Era a **janela baixa**, que a AD-025 não mencionava.
+  - **Wrapper no payload** — o `persistido` aceitava `service(f(pronto.dados))` (o `[^)]*?` parava no primeiro `)`, o do wrapper). Medido na R5: A1b/A1c/A1d gravavam `rg = null` com tudo verde. Argumentos da chamada agora quebrados por profundidade de ()[]{} e o último tem de ser **exatamente** `pronto.dados`.
+  - **Corpo do 400** — o guard via que a rota montava um 400, não que o corpo era o erro; `erroCampos({})` passava (A2/A2b). Agora exige `pronto.campos` no arquivo da rota.
+  - **Contagem stale** — `tasks.md` dizia 9 boundary instants; a lista tem 11 (contagem derivada no script, então o gate sempre esteve certo).
+  - **AD-025 com números estimados** — residual real é **275761..294276** (`timestamptz`), não 275761..5874896 (`date`). Corrigido acima com medição própria.
+- **Mutação medida neste HEAD** (worktree isolado, `node_modules` symlinked, scratch removido): A1b, A2, A2b, A3 (teto volta a 200) e M15 (comparação lexical) **mortos**. O A4 que o `+ 2` do primeiro rascunho deixou passar é mutante **EQUIVALENTE** — não foi mascara de gate, era folga real no código; por isso `+ 1`, que é exato.
+- **Gates medidos neste HEAD** (suíte completa): `npm run typecheck` sem erros; `npm run lint` 0 erros / 5 warnings pré-existentes; `npm run build` verde; `probe-cartao-validade.sh` **34 ok / 0**; `--com-db` **35 ok / 0** (**21 ok / 0** no Postgres efêmero, cross-check agora com 11 instantes); matriz TZ `UTC`, `Asia/Tokyo`, `Pacific/Kiritimati`, `Europe/Lisbon` **2 ok / 0** cada.
+- **DB**: migration `0024_validade_cartao.sql` aplicada no dev `[REDACTED_PROJECT_REF]` (11/11 linhas, assinatura `2e34606d4d538eba96d6274a92f743a5`). **Não reaplicar nem escrever remotamente.**
+- **Rodadas do Verifier**: R1 FAIL → R2 FAIL → R3 FAIL → R4 FAIL → **R5 FAIL** (12/16 ACs completas, 4 parciais — `CART-01`, `CART-02`, `CART-03`, `CART-16`; 41 mutações, 5 sobreviveram). A R5 foi **exceção autorizada pelo usuário** ao limite de 3 ciclos.
+- **DECISÃO QUE É DO USUÁRIO, não minha**: as 5 lacunas da R5 foram corrigidas neste HEAD, mas **o veredito continua FAIL até um Verifier independente rodar de novo**. Rodar uma **R6** é uma **nova rodada acima do limite de 3 ciclos** — já houve uma exceção. Não dispatched sem autorização explícita. Se o usuário não autorizar: escalar como o protocolo manda, a feature fica sem `verified`, e a linha no coverage-matrix **não** entra.
+- **Pendências que você deve SURFACER, não assumir**: **AD-023** (probes fora do CI — `.github/workflows/ci.yml` roda lint/typecheck/build e nenhum `probe*.sh`; condição pré-existente, sem dono) e a **política de `git push`**. Nenhuma tem dono implícito.
+- **Pendência de documentação**: `docs/coverage-matrix.md` sem linha para esta feature (entra depois do PASS). `barcode-membro` e `admin-auditoria` também não têm — lacuna **pré-existente**, corrigir as três juntas.
+- **AD-021** segue *superseded (parcialmente)* por AD-024: o texto original cita `temErros`, que não existe mais. Vigente da AD-021: guard `persistido`, `FormData` como 3º argumento, mapa de erros da rota como 2º, controle antes do `trim`.
 - **Não editado por decisão**: `validation.md` é do Verifier; o autor não o sobrescreve nem o versiona.
 
 ## Handoff
