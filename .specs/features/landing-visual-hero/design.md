@@ -158,7 +158,13 @@ visual e está especificada.
 | Cores de rede social | Mantidas literais | Identidade de terceiro, fora da paleta institucional |
 | Navbar ao rolar | `bg-bg-dark/80 backdrop-blur-md` | Evita a faixa branca sobre seções marinho |
 
-> **Decisão de nível de projeto a registrar como AD-021:** a Landing Page passa
+> **Decisão de nível de projeto a registrar no log:** a Landing Page passa
 > a ter **um primitive de seção** (`SectionShell`) como padrão obrigatório para
 > qualquer seção nova; fundos não são declarados por seção, e o glow do Hero é
 > definido uma única vez por token.
+>
+> **Número da AD: alocar o próximo livre ao registrar, não fixar aqui.** Este
+> documentoCitava AD-021, que já estava tomado — AD-021 é a decisão de guards
+> estruturais do `cartao-valididade-anual`, hoje marcada como *superseded* por
+> AD-024. Registrar a decisão do `SectionShell` como AD-021 faria o log dizer que
+> duas decisões não relacionadas são a mesma.
