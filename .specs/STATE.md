@@ -200,7 +200,8 @@
 ## Handoff — feature cartao-valididade-anual — PAUSADO para nova sessão (2026-10-01)
 
 - **Estado**: implementação **completa e com gates locais verdes**, aguardando a 5ª rodada do Verifier. **NÃO está validado**: `validation.md` ainda contém o FAIL da R4.
-- **HEAD**: `a812ade` — main, **28 commits à frente do origin/main, nada pushed**; `git push` nunca sem autorização.
+- **Onde o código para**: o último commit que toca `src/`, `scripts/` ou `supabase/` é **`0d4d1a4`**. Tudo depois disso é `docs(cartao)` — AD-024, handoff e correções deste registro. Branch `main`, **nada pushed** (`git rev-list --count origin/main..HEAD` para o número exato; `git push` nunca sem autorização).
+  - **Não confie em nenhum SHA absoluto escrito aqui**: um handoff que declara o próprio HEAD fica errado no mesmo commit que o escreve — foi o que aconteceu duas vezes nesta sessão. Use `git log --oneline -1` e `git log -1 --oneline -- src/ scripts/ supabase/`.
 - **Os seis commits desta sessão** (a4a39d1 → a812ade; o anterior era `aeda946`):
   - `a4a39d1` `refactor(cartao): torna a composicao um contrato de tipo para as rotas` — união discriminada, `Object.freeze`, remoção de `temErros`, `persistido` reescrito, asserção de compilação do `Readonly`.
   - `c16ea60` `test(cartao): deriva do gate a contagem de instantes de fronteira` — a mensagem dizia "8 instantes" com 9 fixtures na lista; a contagem agora vem de `grep -c` sobre `FIXTURES`.
