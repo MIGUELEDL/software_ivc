@@ -20,6 +20,51 @@ jobs:
       - run: npm run typecheck
       - run: npm run build
 
+  # AD-023 (parcial): a barreira de valor do cartao de validade era a UNICA
+  # evidencia executavel da feature, e ela vivia FORA do CI. A R10 mediu o
+  # preco: trocar `process.exit(1)` por `console.log(TOKEN)` no catch da tier
+  # auto-certificava o sucesso dela, e tres mutantes que morrem com o harness
+  # intacto viravam verdes — sem ninguem ver, porque ninguem rodava. Um gate
+  # que pode apodrecer em silencio nao e gate.
+  cartao:
+    name: Probe cartao-valididade (dominio + postgres + matriz de fuso)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+
+      # Dominio: sem Docker. Inclui a tier que EXECUTA os 4 services de escrita
+      # e as 3 rotas, com o token e o canario.
+      - name: Probe de dominio
+        run: npm run probe:cartao
+
+      # Com Postgres: `--com-db` sobe um container efemero e roda a migration
+      # 0024 de verdade (trigger, backfill, fuso, atomicidade).
+      - name: Probe com Postgres efemero
+        run: npm run probe:cartao:db
+
+      # O calculo e civil e NAO pode variar com o TZ do processo (Vercel roda
+      # UTC). Rodar so em UTC deixaria passar um `toISOString()` disfarçado.
+      - name: Matriz de fuso
+        run: |
+          for tz in UTC Asia/Tokyo Pacific/Kiritimati Europe/Lisbon; do
+            echo "== TZ=$tz"
+            TZ="$tz" npm run probe:cartao --silent -- --domain
+          done
+
+      # O container efemero declara VOLUME no PGDATA: sem esta checagem, cada
+      # execucao deixa um volume anonimo para tras. Foi assim que 11 se
+      # acumularam entre R1 e R6.
+      - name: Sem volume vazado
+        run: |
+          n="$(docker volume ls -q --filter dangling=true | wc -l)"
+          echo "volumes dangling: $n"
+          [ "$n" -eq 0 ] || { echo "a probe vazou volume"; exit 1; }
+
   specs:
     name: Spec structural gates (validate_spec / validate_state)
     runs-on: ubuntu-latest

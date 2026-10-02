@@ -387,6 +387,18 @@ if ligada "$UI_CARD" 'camposCartao'; then
 else
   ko "CART-09 MemberCard nao liga o retorno de camposCartao ao JSX"
 fi
+
+# A R10 trocou `new Date()` por `new Date(2030, 0, 1)` e o probe ficou em
+# 36/0: nada atesta o RELOGIO. E o relogio e o que decide a validade mostrada
+# — congelar a data e o jeito mais barato de fazer todo mundo ver a validade
+# errada. Nao da para executar o componente aqui (e JSX), entao a atestaçao e
+# de texto, e por isso que ela exige o `new Date()` CRU: tanto faz sem
+# argumentos quanto com argumentos errados que nao seja uma data fixa.
+if perl -0777 -ne 'exit(/camposCartao\s*\([^)]*?,\s*new Date\s*\(\s*\)\s*\)/s ? 0 : 1)' "$UI_CARD"; then
+  ok "CART-09 MemberCard passa o relogio real (new Date()) para camposCartao"
+else
+  ko "CART-09 MemberCard nao passa new Date() cru para camposCartao — a validade pode estar congelada"
+fi
 if contem "$UI_CARD" 'validade_cartao'; then
   ko "CART-09 MemberCard ainda le a coluna bruta validade_cartao"
 else
@@ -537,6 +549,28 @@ assert.strictEqual(D.normalizarDataBatismo("2026-10-01", HOJE).ok, true, "batism
 assert.strictEqual(D.normalizarDataBatismo("2026-10-02", HOJE).ok, false, "batismo futuro rejeitado");
 assert.strictEqual(D.normalizarDataBatismo("2026-02-30", HOJE).ok, false, "overflow 02-30 rejeitado");
 assert.strictEqual(D.normalizarDataBatismo("2026-13-01", HOJE).ok, false, "mês 13 rejeitado");
+assert.strictEqual(D.normalizarDataBatismo("0000-01-01", HOJE).ok, false, "ano 0 rejeitado (Date.UTC(0) e 1900)");
+// O round-trip de ANO é Comparison de ano, mes e dia; 02-30 e 13-01 pegam
+// pelo dia e pelo mês, então a única peça que só o ano testemunha é o ano
+// ZERO. `Date.UTC(0, …)` devolve 1900 — o deslocamento clássico do `Date` — e
+// `getUTCFullYear()` discorda de 0 sem mais nada discordar.
+assert.strictEqual(D.normalizarDataBatismo("0000-01-01", HOJE).ok, false, "ano 0 rejeitado (Date.UTC(0) e 1900)");
+
+// Janela 0000-0099: por causa do mesmo deslocamento, TODOS os anos de dois
+// dígitos são rejeitados, inclusive o 99. É superestrito — um batismo no ano
+// 99 é irreal, mas o round-trip rejeita por um motivo que não é "data
+// inválida". Fica registrado, e não corrigido: mexer nisso é mudança de
+// comportamento de produção para um caso inalcançável, e a decisão é de quem
+// mantém o módulo, não de um probe.
+assert.strictEqual(D.normalizarDataBatismo("0099-06-15", HOJE).ok, false, "ano 0099 cai na janela do deslocamento do Date");
+
+// E a diferença entre os DOIS formatos, que a AD-025 separa e que o probe
+// devia deixar explícita: a data de batismo é digitada pelo usuário e tem 4
+// dígitos; a coluna `validade_cartao` é DERIVADA de `criado_em` e precisa de
+// 4 a 6, senão `10000-12-31` sai da trigger e o cartão mostra `—` para uma
+// data que a coluna tem. Os dois asserts juntos são o contrato.
+assert.strictEqual(D.normalizarDataBatismo("10000-12-31", HOJE).ok, false, "batismo com 5 digitos: formato de entrada e YYYY-MM-DD");
+assert.strictEqual(C.fmtData("10000-12-31"), "31/12/10000", "…e a coluna derivada, com 5 digitos, imprime");
 assert.strictEqual(D.normalizarDataBatismo("2020-05-10\n", HOJE).ok, false, "batismo + \\n no fim rejeitado");
 assert.strictEqual(D.normalizarDataBatismo("2020-05-10\r\n", HOJE).ok, false, "batismo + \\r\\n no fim rejeitado");
 assert.strictEqual(D.normalizarDataBatismo("10/05/2020", HOJE).ok, false, "formato DD/MM/YYYY rejeitado");
@@ -1083,6 +1117,29 @@ assert.strictEqual(C.fmtData("2026-09-13"), "13/09/2026", "fmtData pt-BR");
 assert.strictEqual(C.fmtData(null), "—", "fmtData null");
 assert.strictEqual(C.fmtData("13/09/2026"), "—", "fmtData formato errado -> —");
 assert.strictEqual(C.fmtData("2026-02-30"), "—", "fmtData data inexistente -> —");
+
+// O round-trip compara ANO, MES e DIA, e a R10 mostrou que tirar a comparação
+// do ANO sobrevivia em `fmtData` e em `normalizarDataBatismo`: 02-30 e 13-01
+// pegam pelo dia e pelo mês, então nenhuma das duas comparacoes de dia/mês
+// reveals a falta do ano. O caso que so o ANO pega e o ano ZERO: `Date.UTC(0,
+// …)` devolve 1900, o deslocamento clássico do `Date`, entao `getUTCFullYear()`
+// discorda de 0 sem que nada mais discorde.
+//
+// Inalcançavel pelo Postgres (`make_date` rejeita ano 0), o que é a NOTA: o
+// assert fixa o codigo, não o dado. Um dia `make_date` aceitar ano 0 e o
+// check vira o que segura o cartao de mentir.
+assert.strictEqual(C.fmtData("0000-01-01"), "—", "fmtData ano 0 -> — (Date.UTC(0) e 1900)");
+assert.strictEqual(C.fmtData("2026-1-1"), "—", "fmtData sem zero a esquerda -> —");
+// O filtro `\d{4,6}` e o que segura o ano de 3 dígitos, e o round-trip NÃO
+// segura: `Date.UTC(999, …)` devolve 999 mesmo, então `999-12-31` passaria
+// pelos dois e o cartão imprimiria "31/12/999". Só o filtro pega.
+assert.strictEqual(C.fmtData("999-12-31"), "—", "fmtData ano de 3 digitos -> —");
+assert.strictEqual(C.fmtData("0099-12-31"), "—", "fmtData ano de 4 digitos com zero a esquerda -> —");
+assert.strictEqual(C.fmtData("2026-12-311"), "—", "fmtData com dia a mais -> —");
+
+// E o outro lado do round-trip, o que o docblock de cartao.ts:48-52 promete e
+// ninguem atestado: o ano de 5 dígitos SOBREVIVE ao `Date` e e impresso.
+assert.strictEqual(C.fmtData("10000-12-31"), "31/12/10000", "fmtData ano de 5 digitos faz round-trip");
 // Ano de 5 digitos no cartao: o trigger deriva `10000-12-31` (AD-025) e o
 // cartao mostrava `—` para a data que a coluna tem. Medido na R6. Agora o
 // round-trip em UTC e a unica coisa que pode recusar.
@@ -1451,11 +1508,23 @@ function assertTrio(capturado, rotulo) {
 
   console.log("TIER-SERVICE-EXECUTADA");
 })().catch((e) => {
-  console.error(e && e.message ? e.message : e);
+  // O VENENO vem ANTES de qualquer `process.exit`. A R10 mediu por que a
+  // ordem importa: trocar `process.exit(1)` por `console.log(TOKEN)` deixava
+  // a tier se auto-certificar — o `catch` imprimia o token de sucesso sem
+  // nenhuma assercao ter rodado, e tres mutantes que morrem com o harness
+  // intacto (rollback do auth, "auth nunca criado", verbo trocado) viravam
+  // verdes. O token sozinho e barato demais para provar que a tier rodou ate
+  // o fim; e por isso que o shell tambem REJEITA este marcador. Um no que
+  // sai por qualquer caminho que nao seja "todas as asercoes passaram" tem
+  // de levar o corpo inteiro para tras.
+  console.log("TIER-VENENO " + (e && e.message ? e.message : String(e)));
   process.exit(1);
 });
 ' 2>&1)"; then
       case "$saida_svc" in
+        *TIER-VENENO*)
+          ko "CART-01/02/03 a tier de service falhou (veneno no corpo)"
+          printf '%s\n' "$saida_svc" ;;
         *TIER-SERVICE-EXECUTADA*)
           ok "CART-01/02/03 service executado: os 4 caminhos mandam o trio do formulario" ;;
         *)
@@ -1644,11 +1713,23 @@ function zera() { for (const k of Object.keys(chamadas)) chamadas[k] = 0; }
 
   console.log("TIER-ROTA-EXECUTADA");
 })().catch((e) => {
-  console.error(e && e.message ? e.message : e);
+  // O VENENO vem ANTES de qualquer `process.exit`. A R10 mediu por que a
+  // ordem importa: trocar `process.exit(1)` por `console.log(TOKEN)` deixava
+  // a tier se auto-certificar — o `catch` imprimia o token de sucesso sem
+  // nenhuma assercao ter rodado, e tres mutantes que morrem com o harness
+  // intacto (rollback do auth, "auth nunca criado", verbo trocado) viravam
+  // verdes. O token sozinho e barato demais para provar que a tier rodou ate
+  // o fim; e por isso que o shell tambem REJEITA este marcador. Um no que
+  // sai por qualquer caminho que nao seja "todas as asercoes passaram" tem
+  // de levar o corpo inteiro para tras.
+  console.log("TIER-VENENO " + (e && e.message ? e.message : String(e)));
   process.exit(1);
 });
 ' 2>&1)"; then
       case "$saida_rota" in
+        *TIER-VENENO*)
+          ko "CART-05/06/07 a tier de rota falhou (veneno no corpo)"
+          printf '%s\n' "$saida_rota" ;;
         *TIER-ROTA-EXECUTADA*)
           ok "CART-05/06/07 rota executada: campo invalido responde 400 sem escrever" ;;
         *)
