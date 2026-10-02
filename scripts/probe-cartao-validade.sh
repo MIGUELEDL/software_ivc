@@ -439,6 +439,11 @@ fi # fim do bloco de integração (--domain pula)
 # --- CART-04..07 + CART-09..12: runtime node sobre os módulos puros ---
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
+
+# O emitido da tier de services/rotas fica em $TMP, entao o `require("next/server")`
+# das rotas nao acha `node_modules` subindo a arvore. O symlink resolve: e o
+# mesmo node_modules do repo, sem copia.
+ln -sfn "$ROOT/node_modules" "$TMP/node_modules"
 # Assercao de TEMPO DE COMPILACAO do `Readonly` do payload pronto. O probe roda
 # o `tsc` de qualquer jeito; o que ele acrescenta e o arquivo `readonly.ts`, que
 # tenta escrever no payload. Com o tipo correto, a escrita e erro e o
@@ -854,7 +859,7 @@ assert.strictEqual(
   "criado_em no mesmo ano, aniversario ainda depois de hoje"
 );
 
-// ── CART-12: entrada inválida -> null
+// ── CART-15: entrada inválida -> null (o clamp de 29/02 e o CART-12)
 assert.strictEqual(V.calcularValidadeCartao(null, HOJE), null, "null -> null");
 assert.strictEqual(V.calcularValidadeCartao(undefined, HOJE), null, "undefined -> null");
 assert.strictEqual(V.calcularValidadeCartao("", HOJE), null, "vazio -> null");
@@ -1058,11 +1063,13 @@ const c4 = C.camposCartao(base, d(2027,9,12));
 assert.strictEqual(c4.validity, "12/09/2027", "CART-10 limite inclusivo no cartao");
 assert.strictEqual(C.camposCartao(base, d(2027,9,11)).validity, "12/09/2027", "CART-10 vespera ainda e o ciclo atual");
 
-// criado_em inutilizavel -> "—" sem crash (CART-12 / P2 AC-7)
+// criado_em inutilizavel -> "—" sem crash. CART-15, e nao CART-12: a R9
+// marcou este bloco com o id errado. CART-12 e o clamp de 29/02 para 28/02;
+// "criado_em ausente ou invalido vira —" e o CART-15, e o AC-7 do P2.
 const c5 = C.camposCartao({ ...base, criado_em: "" }, d(2026,10,1));
-assert.strictEqual(c5.validity, "—", "CART-12 criado_em vazio -> —");
+assert.strictEqual(c5.validity, "—", "CART-15 criado_em vazio -> —");
 const c6 = C.camposCartao({ ...base, criado_em: "lixo" }, d(2026,10,1));
-assert.strictEqual(c6.validity, "—", "CART-12 criado_em invalido -> —");
+assert.strictEqual(c6.validity, "—", "CART-15 criado_em invalido -> —");
 // "AUSENTE" e não só "ilegível": a coluna é nullable no schema, então `null` e
 // `undefined` são estados reais do row, não valores que o tipo proíbe.
 const c7 = C.camposCartao({ ...base, criado_em: null }, d(2026,10,1));
@@ -1173,7 +1180,14 @@ else
   if [ ! -f "$MEM_JS" ] || [ ! -f "$ADM_JS" ]; then
     ko "services compilados nao encontrados (members=$MEM_JS admin=$ADM_JS)"
   else
-    if SVC="$TMP/svc" MEM_JS="$MEM_JS" ADM_JS="$ADM_JS" node -e '
+    # Lacuna 4 da R9: a tier nao se autoverificava. Inserir `process.exit(0)`
+    # nela a transformava em no-op e o probe continuava em 35/0 — ou seja, um
+    # gate que pode deixar de existir sem ninguem notar. Duas trancas:
+    # (a) o no precisa IMPRIMIR um token proprio, e o shell exige o token; sem
+    #     ele a tier nao rodou ate o fim e o probe falha. (b) dentro do no, um
+    #     CANARIO que corrompe o payload capturado e exige que `assertTrio`
+    #     RECUSE — se o checker aceitasse lixo, a tier seria inerte.
+    if saida_svc="$(SVC="$TMP/svc" MEM_JS="$MEM_JS" ADM_JS="$ADM_JS" node -e '
 const assert = require("assert");
 const path = require("path");
 const Module = require("module");
@@ -1338,6 +1352,31 @@ function assertTrio(capturado, rotulo) {
   assertTrio(c4.capturado, "atualizarDadosMembro");
   assert.deepStrictEqual(c4.capturado.eq, ["id", "membro-9"], "atualizarDadosMembro: filtra pelo id");
 
+  // ── CART-02: key-set EXATO da edicao admin. A R9 mostrou que tirar
+  // `nome`, `nascimento`, `whatsapp` ou o bloco de endereco inteiro de
+  // `colunasEditarMembro` sobrevivia com o probe em 35/0 — a edicao virava
+  // no-op silencioso. O caminho de perfil tem key-set exato conferido
+  // (probe:933); o admin nao tinha. Key-set, e nao so os tres campos do
+  // trio: o AC e sobre a row inteira que a edicao admin escreve.
+  assert.deepStrictEqual(
+    Object.keys(c4.capturado.payload).sort(),
+    [
+      "atualizado_em", "bairro", "cep", "cidade", "cpf", "data_batismo",
+      "logradouro", "nascimento", "nome", "numero", "rg", "uf", "whatsapp",
+    ],
+    "atualizarDadosMembro: a row tem exatamente as colunas da edicao admin"
+  );
+
+  // ── CART-01/02: o VERBO. A R9 mostrou que `verbo !== null` e satisfeito por
+  // "insert" OU "update": trocar o insert do createMember por update, e o
+  // update do atualizarDadosMembro por insert, passavam. `createMembro` era
+  // pego so por acaso, pelo fixture de rollback. O verbo e parte do AC — o
+  // que o service faz com a row e o que a policy le.
+  assert.strictEqual(c.capturado.verbo, "insert", "createMember: usa INSERT");
+  assert.strictEqual(c2.capturado.verbo, "update", "updateMember: usa UPDATE");
+  assert.strictEqual(c3.capturado.verbo, "insert", "criarMembro: usa INSERT");
+  assert.strictEqual(c4.capturado.verbo, "update", "atualizarDadosMembro: usa UPDATE");
+
   // ── CART-04: campo vazio e AUSENCIA, e ausencia nao e string vazia.
   // A R8 marcou "sem escrita no banco" como provado so por ausencia de
   // chamada — e ausencia de chamada nao prova nada sobre o valor. Aqui a
@@ -1360,6 +1399,7 @@ function assertTrio(capturado, rotulo) {
       "trio em branco: " + coluna + " chega como NULL, nao como string vazia"
     );
   }
+  assert.strictEqual(cVazio.capturado.verbo, "update", "trio em branco: a edicao continua sendo UPDATE");
 
   // ── O rollback 2-passos continua valendo COM a injeção
   const c5 = clienteFake("criarMembro-rollback");
@@ -1387,15 +1427,237 @@ function assertTrio(capturado, rotulo) {
 
   // Nenhum caminho pode ter tocado o Supabase de verdade (o hook lançaria).
   assert.deepStrictEqual(chamadas.filter((c) => c.startsWith("create")), [], "nenhum caminho chamou o Supabase real");
-  console.log("ok");
+
+  // ── CANARIO: o checker precisa RECUSAR payload corrompido. Sem isto, uma
+  // `assertTrio` que sobstituisse o valor esperado pelo valor capturado
+  // passaria com qualquer coisa — e a tier viraria teatro.
+  const cCanario = clienteFake("canario");
+  cCanario.capturado = { rotulo: "x", verbo: "update", tabela: "members", payload: { rg: null, cpf: "12345678900", data_batismo: TRIO_ESPERADO.data_batismo } };
+  let canarioRecusou = false;
+  try { assertTrio(cCanario.capturado, "canario"); } catch (e) { canarioRecusou = true; }
+  assert.strictEqual(canarioRecusou, true, "canario: o checker precisa recusar rg null");
+
+  const cCanario2 = clienteFake("canario2");
+  cCanario2.capturado = { rotulo: "x", verbo: "update", tabela: "members", payload: { rg: trioBruto.rg, cpf: "123.456.789-00", data_batismo: TRIO_ESPERADO.data_batismo } };
+  let canarioRecusou2 = false;
+  try { assertTrio(cCanario2.capturado, "canario2"); } catch (e) { canarioRecusou2 = true; }
+  assert.strictEqual(canarioRecusou2, true, "canario: o checker precisa recusar cpf com mascara");
+
+  const cCanario3 = clienteFake("canario3");
+  cCanario3.capturado = { rotulo: "x", verbo: "insert", tabela: "outra_tabela", payload: { rg: trioBruto.rg, cpf: "12345678900", data_batismo: TRIO_ESPERADO.data_batismo } };
+  let canarioRecusou3 = false;
+  try { assertTrio(cCanario3.capturado, "canario3"); } catch (e) { canarioRecusou3 = true; }
+  assert.strictEqual(canarioRecusou3, true, "canario: o checker precisa recusar outra tabela");
+
+  console.log("TIER-SERVICE-EXECUTADA");
 })().catch((e) => {
   console.error(e && e.message ? e.message : e);
   process.exit(1);
 });
-'; then
-      ok "CART-01/02/03 service executado: os 4 caminhos de escrita mandam o trio do formulario"
+' 2>&1)"; then
+      case "$saida_svc" in
+        *TIER-SERVICE-EXECUTADA*)
+          ok "CART-01/02/03 service executado: os 4 caminhos mandam o trio do formulario" ;;
+        *)
+          ko "CART-01/02/03 a tier de service rodou sem emitir o token (pode ter saido cedo)"
+          printf '%s\n' "$saida_svc" ;;
+      esac
     else
       ko "CART-01/02/03 service executado falhou (detalhes acima)"
+      printf '%s\n' "$saida_svc"
+    fi
+  fi
+fi
+
+# --- CART-05/06/07: a ROTA executada, e o "sem escrever" atestado -------
+#
+# Lacuna da R9, e é a mais substantiva das cinco: os ACs dizem "rejeita
+# **sem escrever**", e nada atestava a segunda metade. O `return` do 400
+# segura por TIPO — tirar o `return` deixa de compilar, porque `pronto.dados`
+# não existe no ramo de erro da união — e isso é bom, mas é uma barreira de
+#compilação, não uma prova de comportamento: nada executava a rota para
+# mostrar que o service NÃO é chamado quando o campo é inválido.
+#
+# Aqui a rota é executada de verdade, com os colaboradores stubados. O que
+# se mede não é a resposta — é a **ausência da chamada**: `criarMembro`,
+# `updateMember`, `createMember` e `atualizarDadosMembro` recebem um stub que
+# CONTA. Campo inválido é resposta 400 e contador em zero. Essa é a
+# asserção que faltava.
+
+# As rotas entram no MESMO programa de compilacao das services: `files` do
+# tsconfig e reescrito com os caminhos absolutos das tres rotas.
+python3 - "$TMP/tsconfig.svc.json" "$ROOT" <<'PY'
+import json, sys
+cfgp, root = sys.argv[1], sys.argv[2]
+cfg = json.load(open(cfgp))
+cfg["files"] += [
+    root + "/src/app/api/admin/membros/route.ts",
+    root + "/src/app/api/admin/membros/[id]/dados/route.ts",
+    root + "/src/app/api/painel/perfil/route.ts",
+]
+json.dump(cfg, open(cfgp, "w"), indent=2)
+PY
+
+if ! npx tsc -p "$TMP/tsconfig.svc.json" >"$TMP/tsc.route.log" 2>&1; then
+  ko "compilacao das rotas p/ execucao falhou (ver $TMP/tsc.route.log)"
+  tail -5 "$TMP/tsc.route.log"
+else
+  R_ADMIN="$TMP/svc/app/api/admin/membros/route.js"
+  R_DADOS="$TMP/svc/app/api/admin/membros/[id]/dados/route.js"
+  R_PERFIL="$TMP/svc/app/api/painel/perfil/route.js"
+  if [ ! -f "$R_ADMIN" ] || [ ! -f "$R_DADOS" ] || [ ! -f "$R_PERFIL" ]; then
+    ko "rotas compiladas nao encontradas"
+  else
+    if saida_rota="$(SVC="$TMP/svc" R_ADMIN="$R_ADMIN" R_DADOS="$R_DADOS" R_PERFIL="$R_PERFIL" node -e '
+const assert = require("assert");
+const path = require("path");
+const Module = require("module");
+const { NextResponse } = require("next/server");
+
+const svc = process.env.SVC;
+const cargaReal = Module._load;
+const chamadas = { criarMembro: 0, atualizarDadosMembro: 0, updateMember: 0, createMember: 0, auditoria: 0 };
+
+// Stub do service: CONTA em vez de gravar. E o que torna o "sem escrever"
+// observavel — se o contador mexe, alguem escreveu.
+const criarMembro = async (dados) => { chamadas.criarMembro++; return { membro: { id: "m-1" }, senhaTemporaria: "s" }; };
+const atualizarDadosMembro = async (id, dados) => { chamadas.atualizarDadosMembro++; return { id, ...dados }; };
+const updateMember = async (uid, dados) => { chamadas.updateMember++; return { id: "m-1", ...dados }; };
+const createMember = async (uid, dados) => { chamadas.createMember++; return { id: "m-1", ...dados }; };
+
+class EmailEmUsoError extends Error {}
+
+Module._load = function (req, pai, isMain) {
+  if (req === "@/lib/supabase/server" || req === "@/lib/supabase/admin") {
+    return { createServerClient() { throw new Error("Supabase real chamado na rota"); },
+             createAdminClient() { throw new Error("Supabase real chamado na rota"); } };
+  }
+  if (req === "@/lib/admin/membros") {
+    return { criarMembro, atualizarDadosMembro, getMembro: async () => ({ id: "m-1", nome: "Maria", nascimento: "1990-05-20" }), EmailEmUsoError };
+  }
+  if (req === "@/lib/painel/members") {
+    return { createMember, updateMember, getMemberByAuthUid: async () => null, generateMatricula: async () => "M-0001" };
+  }
+  if (req === "@/lib/admin/http") {
+    return {
+      requireEscrita: async () => ({ sub: "admin-1" }),
+      erroCampos: (campos) => NextResponse.json({ error: "campos_invalidos", campos }, { status: 400 }),
+    };
+  }
+  if (req === "@/lib/admin/auditoria") {
+    return {
+      registrarAuditoria: async () => { chamadas.auditoria++; },
+      extrairInfoRequest: () => ({ ip: "127.0.0.1", user_agent: "probe" }),
+    };
+  }
+  if (req === "@/lib/auth/claims") {
+    return { getClaims: async () => ({ sub: "u-1" }) };
+  }
+  if (req.startsWith("@/")) {
+    return cargaReal(path.join(svc, req.slice(2)), pai, isMain);
+  }
+  return cargaReal(req, pai, isMain);
+};
+
+const adminRoute = require(process.env.R_ADMIN);
+const dadosRoute = require(process.env.R_DADOS);
+const perfilRoute = require(process.env.R_PERFIL);
+
+function reqPost(campos) {
+  const fd = new FormData();
+  for (const [k, v] of Object.entries(campos)) fd.set(k, v);
+  return new Request("http://probe/api/x", { method: "POST", body: fd });
+}
+
+const OK = {
+  nome: "Maria de Souza",
+  nascimento: "1990-05-20",
+  whatsapp: "(83) 99999-0000",
+  email: "maria@example.com",
+  rg: "12.345.678-9",
+  cpf: "123.456.789-00",
+  data_batismo: "1985-03-01",
+};
+
+function zera() { for (const k of Object.keys(chamadas)) chamadas[k] = 0; }
+
+(async () => {
+  // ── POST /api/admin/membros, campo INVÁLIDO: 400 e NADA escrito
+  // RG de 25 caracteres estoura o limite de CART-06; data de batismo no
+  // futuro viola CART-06 tambem. Os dois tem de responder 400 com o
+  // contador de escrita em ZERO.
+  const casosRuins = [
+    // CART-07 (RG > 20 caracteres) e CART-06 (controle / data futura): cada
+    // caso cita o AC, porque a R9 apontou que a tier nova citava CART-05/06/07
+    // no rotulo e nenhum assert apontava para o id.
+    ["CART-07 rg longo demais", { ...OK, rg: "1".repeat(25) }],
+    ["CART-06 rg com controle", { ...OK, rg: "12.345.678-9\n" }],
+    ["CART-06 data de batismo futura", { ...OK, data_batismo: "2999-01-01" }],
+    ["CART-05 cpf curto", { ...OK, cpf: "123" }],
+  ];
+  for (const [rotulo, campos] of casosRuins) {
+    zera();
+    const res = await adminRoute.POST(reqPost(campos));
+    assert.strictEqual(res.status, 400, "admin POST com " + rotulo + ": 400");
+    assert.strictEqual(chamadas.criarMembro, 0, "admin POST com " + rotulo + ": NAO escreveu");
+    assert.strictEqual(chamadas.auditoria, 0, "admin POST com " + rotulo + ": nao auditou");
+  }
+
+  // e o caminho feliz escreve exatamente UMA vez
+  zera();
+  const resOk = await adminRoute.POST(reqPost(OK));
+  assert.strictEqual(resOk.status, 201, "admin POST valido: 201");
+  assert.strictEqual(chamadas.criarMembro, 1, "admin POST valido: gravou uma vez");
+
+  // ── POST /api/admin/membros/[id]/dados, mesmo contrato
+  for (const [rotulo, campos] of casosRuins) {
+    zera();
+    const res2 = await dadosRoute.POST(
+      new Request("http://probe/api/admin/membros/m-1/dados", { method: "POST", body: (() => { const fd = new FormData(); for (const [k, v] of Object.entries(campos)) fd.set(k, v); return fd; })() }),
+      { params: Promise.resolve({ id: "m-1" }) }
+    );
+    assert.strictEqual(res2.status, 400, "admin dados com " + rotulo + ": 400");
+    assert.strictEqual(chamadas.atualizarDadosMembro, 0, "admin dados com " + rotulo + ": NAO escreveu");
+  }
+  zera();
+  const resDados = await dadosRoute.POST(
+    new Request("http://probe/api/admin/membros/m-1/dados", { method: "POST", body: (() => { const fd = new FormData(); for (const [k, v] of Object.entries(OK)) fd.set(k, v); return fd; })() }),
+    { params: Promise.resolve({ id: "m-1" }) }
+  );
+  assert.strictEqual(resDados.status, 200, "admin dados valido: 200");
+  assert.strictEqual(chamadas.atualizarDadosMembro, 1, "admin dados valido: gravou uma vez");
+
+  // ── POST /api/painel/perfil: cadastro e autoedicao, com e sem membro
+  for (const [rotulo, campos] of casosRuins) {
+    zera();
+    const r = await perfilRoute.POST(reqPost(campos));
+    assert.strictEqual(r.status, 400, "perfil com " + rotulo + ": 400");
+    assert.strictEqual(chamadas.createMember, 0, "perfil com " + rotulo + ": NAO escreveu (cadastro)");
+    assert.strictEqual(chamadas.updateMember, 0, "perfil com " + rotulo + ": NAO escreveu (autoedicao)");
+  }
+  zera();
+  const rOk = await perfilRoute.POST(reqPost(OK));
+  // O stub de `getMemberByAuthUid` devolve null, entao cai no cadastro.
+  assert.strictEqual(rOk.status, 201, "perfil valido sem membro: 201 (cadastro)");
+  assert.strictEqual(chamadas.createMember, 1, "perfil valido: gravou uma vez");
+  assert.strictEqual(chamadas.updateMember, 0, "perfil valido: nao foi autoedicao");
+
+  console.log("TIER-ROTA-EXECUTADA");
+})().catch((e) => {
+  console.error(e && e.message ? e.message : e);
+  process.exit(1);
+});
+' 2>&1)"; then
+      case "$saida_rota" in
+        *TIER-ROTA-EXECUTADA*)
+          ok "CART-05/06/07 rota executada: campo invalido responde 400 sem escrever" ;;
+        *)
+          ko "CART-05/06/07 a tier de rota rodou sem emitir o token (pode ter saido cedo)"
+          printf '%s\n' "$saida_rota" ;;
+      esac
+    else
+      ko "CART-05/06/07 rota executada falhou (detalhes acima)"
+      printf '%s\n' "$saida_rota"
     fi
   fi
 fi
