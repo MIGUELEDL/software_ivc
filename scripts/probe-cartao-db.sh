@@ -37,8 +37,13 @@ FIXTURES='2026-09-13T02:01:52+00:00
 2026-01-01T00:30:00+00:00
 2028-02-29T12:00:00-03:00
 2026-03-01T02:00:00+00:00
+2024-03-01T02:30:00+00:00
 2025-12-31T23:30:00-02:00'
 
+# O nono instante existe para um fuso do clamp: 2024-03-01T02:30Z é 29/02 em
+# São Paulo e 01/03 em UTC, então só ele exercita o `least(...)` de 29 contra
+# os 28 dias de fevereiro do ano-alvo. Sem ele, trocar o fuso DESSA ocorrência
+# continuava passando — `least(28, 31)` dá 28 de qualquer jeito.
 printf '== Probes cartao-valididade-anual [postgres efemero] ==\n'
 
 if [ ! -f "$MIGRACAO" ]; then
@@ -130,6 +135,10 @@ create table public.members (
   id               bigserial primary key,
   matricula        text not null unique,
   nome             text not null,
+  nascimento       text,
+  cpf              text,
+  rg               text,
+  data_batismo     date,
   criado_em        timestamptz,
   atualizado_em    timestamptz,
   validade_cartao  date
@@ -241,17 +250,44 @@ fi
 # valor certo e a asserção de preservação viraria verde sem provar nada.
 sql >/dev/null <<'SQL'
 drop trigger members_validade_cartao on public.members;
-insert into public.members (matricula, nome, criado_em, validade_cartao) values
-  ('IVC-B1', 'Backfill A', '2026-02-28 02:00:00+00', null),
-  ('IVC-B2', 'Backfill B', '2024-02-29 12:00:00+00', null),
-  ('IVC-B3', 'Preservada',  '2020-01-01 12:00:00-03', '2019-01-01');
+insert into public.members (matricula, nome, nascimento, cpf, rg, data_batismo, criado_em, atualizado_em, validade_cartao) values
+  ('IVC-B1', 'Backfill A', '2004-12-28', '12345678909', '12.345.678-9', '2010-01-03', '2026-02-28 02:00:00+00', '2026-02-01 00:00:00+00', null),
+  ('IVC-B2', 'Backfill B', '1999-05-05', '98765432100', '98.765.432-1', '2015-06-06', '2024-02-29 12:00:00+00', '2024-01-01 00:00:00+00', null),
+  ('IVC-B3', 'Preservada',  '1980-03-03', '11122233344', '11.222.333-4', '2001-07-07', '2020-01-01 12:00:00-03', '2020-01-01 00:00:00+00', '2019-01-01');
 SQL
+
+# Snapshot de TUDO que não é `validade_cartao`, para o backfill ser obrigado a
+# ser um update de uma coluna só. Sem isso, um backfill que também gravasse
+# `nome` ou `atualizado_em` passava o gate inteiro: contagem e a coluna de
+# interesse continuavam iguais.
+# O `order by` vai DENTRO do agregado: um `order by matricula` no nível de
+# consulta não garante a ordem do `string_agg`, e a comparação de snapshot
+# precisa ser determinística.
+SNAP_SQL="select coalesce(string_agg(matricula || '|' || nome || '|' || coalesce(nascimento,'~') || '|' || coalesce(cpf,'~') || '|' || coalesce(rg,'~') || '|' || coalesce(data_batismo::text,'~') || '|' || coalesce(criado_em::text,'~') || '|' || coalesce(atualizado_em::text,'~'), '\\n' order by matricula), '') from public.members;"
+antesSnapshot="$(valor "$SNAP_SQL")"
+
+# A query de snapshot precisa ter rodado. Sem esta checagem, uma coluna
+# inexistente faria `valor()` devolver o texto do erro — e o gate compararia o
+# erro com ele mesmo, dando verde para qualquer backfill. Foi exatamente o que
+# aconteceu na 3a rodada: o snapshot citava colunas que a tabela do probe não
+# tinha, e um backfill que também escrevia `nome` e `atualizado_em` passava.
+case "$antesSnapshot" in
+  ""|*"ERROR"*|*"error:"*) ko "CART-14 snapshot das colunas nao pode ser lido: $antesSnapshot" ;;
+  *) ok "CART-14 snapshot das colunas legivel antes do backfill" ;;
+esac
 
 if ! docker exec -i "$CONT" psql -U postgres -d probe -v ON_ERROR_STOP=1 \
     <"$MIGRACAO" >/dev/null 2>&1; then
   ko "CART-14 backfill da migration roda sem erro"
 else
   ok "CART-14 backfill da migration roda sem erro"
+fi
+
+depoisSnapshot="$(valor "$SNAP_SQL")"
+if [ "$antesSnapshot" = "$depoisSnapshot" ]; then
+  ok "CART-14 backfill nao altera nenhuma outra coluna"
+else
+  ko "CART-14 backfill mexeu fora de validade_cartao: [$antesSnapshot] -> [$depoisSnapshot]"
 fi
 
 r=$(valor "select validade_cartao::text from public.members where matricula = 'IVC-B1';")
@@ -279,11 +315,23 @@ else
 fi
 
 # Idempotência: rodar de novo não muda nada nem a contagem.
+#
+# O exit code da reexecução é conferido, não só o resultado. Sem isso, uma
+# migration que NÃO é idempotente — sem `drop trigger if exists`, por exemplo —
+# falhava no meio e mesmo assim a tier reportava verde, porque o bloco só
+# comparava a contagem e o valor de IVC-B3, que a falha não alcançava.
 antes="$(valor 'select count(*)::text from public.members;')"
-docker exec -i "$CONT" psql -U postgres -d probe -v ON_ERROR_STOP=1 <"$MIGRACAO" >/dev/null 2>&1
+if docker exec -i "$CONT" psql -U postgres -d probe -v ON_ERROR_STOP=1 \
+    <"$MIGRACAO" >/dev/null 2>&1; then
+  reexecOk=1
+  ok "CART-14 reexecutar a migration nao falha"
+else
+  reexecOk=0
+  ko "CART-14 reexecutar a migration falhou — a migration nao e idempotente"
+fi
 depois="$(valor 'select count(*)::text from public.members;')"
 r="$(valor "select validade_cartao::text from public.members where matricula = 'IVC-B3';")"
-if [ "$antes" = "$depois" ] && [ "$r" = "2019-01-01" ]; then
+if [ "$reexecOk" -eq 1 ] && [ "$antes" = "$depois" ] && [ "$r" = "2019-01-01" ]; then
   ok "CART-14 reexecutar a migration e idempotente ($depois linhas)"
 else
   ko "CART-14 reexecucao mudou dados: $antes -> $depois, B3=$r"
