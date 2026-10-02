@@ -181,17 +181,52 @@ persistido() {
       continue
     fi
 
-    # (b) todos os serviços recebem o identificador cru como último argumento
+    # (b) o ÚLTIMO argumento de cada serviço é o payload PRONTO, literal.
+    #
+    # A versão anterior aceitava `service(f(pronto.dados))`: o `[^)]*?` parava
+    # no primeiro `)`, que era o do wrapper, então o mutante que embrulha o
+    # payload numa função que zera o documento passava com typecheck, lint,
+    # build e todas as probes verdes — gravando `rg = null`. Medido na R5
+    # (A1b/A1c/A1d sobreviveram). Agora os argumentos da chamada são quebrados
+    # contando profundidade de ()[]{} e o último tem de ser EXATAMENTE
+    # `pronto.dados`: nada de wrapper, nada de spread, nada de sufixo.
     contagem="$(printf '%s' "$codigo" | perl -0777 -ne '
+      sub topo {
+        my ($s) = @_;
+        my (@p, $cur, $d);
+        $d = 0; $cur = "";
+        for my $ch (split //, $s) {
+          $d++ if $ch =~ /[(\[{]/;
+          $d-- if $ch =~ /[)\]}]/;
+          if ($ch eq "," && $d == 0) { push @p, $cur; $cur = ""; next }
+          $cur .= $ch;
+        }
+        push @p, $cur;
+        return map { my $x = $_; $x =~ s/\A\s+|\s+\z//g; $x } @p;
+      }
       my ($c, $l) = (0, 0);
-      $c++ while /\b(?:'"$servicos"')[(]/g;
-      $l++ while /\b(?:'"$servicos"')[(][^)]*?(?<![.\w])'"$var"'\.dados\s*\)/g;
+      while (/\b(?:'"$servicos"')\s*[(]((?:[^()]++|\((?:[^()]++|\([^()]*\))*\))*)\s*\)/gs) {
+        $c++;
+        my @a = topo($1);
+        next unless @a >= 1;
+        $l++ if $a[-1] eq "'"$var"'.dados";
+      }
       print "$c $l";
     ')"
     [ "${contagem%% *}" -ge 1 ] 2>/dev/null || continue
     [ "${contagem%% *}" = "${contagem##* }" ] || continue
 
-    # (c) o estreitamento do `ok` vem antes da gravação
+    # (c) o 400 devolvido tem que carregar o mapa de erros da composição.
+    #
+    # A R4 mediu A2/A2b sobrevivendo com `erroCampos({})` e `campos: {}`: o guard
+    # via que a rota montava um 400, não que o corpo do 400 era o erro. Um 400
+    # vazio é o pior dos dois mundos — não grava a row E não diz por quê.
+    resposta400="$(printf '%s' "$codigo" | grep -nE "$var"'\.campos' | head -1 | cut -d: -f1)"
+    if [ -z "$resposta400" ]; then
+      continue
+    fi
+
+    # (d) o estreitamento do `ok` vem antes da gravação
     linhaOk="$(printf '%s' "$codigo" | grep -nE '!\s*'"$var"'\.ok' | head -1 | cut -d: -f1)"
     linhaServico="$(printf '%s' "$codigo" | grep -nE '\b('"$servicos"')[(]' | head -1 | cut -d: -f1)"
     if [ -n "$linhaOk" ] && [ -n "$linhaServico" ] && [ "$linhaOk" -lt "$linhaServico" ]; then
@@ -527,6 +562,23 @@ assert.strictEqual(
 assert.strictEqual(
   V.calcularValidadeCartao("9999-01-01T00:00:00+00:00", HOJE), "9999-12-31",
   "ano de 4 dígitos segue igual (controle de não-regressão)"
+);
+
+// A janela BAIXA é fechável e foi fechada: o número de candidatos vem da
+// distância entre os anos, não de um teto arbitrário. Medido: `1800-06-01` dava
+// `null` aqui enquanto o trigger tinha gravado `1801-06-01` na coluna.
+assert.strictEqual(
+  V.calcularValidadeCartao("1800-06-01", HOJE), "2027-06-01",
+  "criado_em de 226 anos atrás ainda acha o aniversário corrente"
+);
+assert.strictEqual(
+  V.calcularValidadeCartao("1700-01-01", HOJE), "2027-01-01",
+  "criado_em de 326 anos atrás também"
+);
+// O teto fixo de 200 mataria estes dois; um `+ 2` insuficiente também.
+assert.strictEqual(
+  V.calcularValidadeCartao("2020-12-31", HOJE), "2026-12-31",
+  "criado_em no mesmo ano, aniversario ainda depois de hoje"
 );
 
 // ── CART-12: entrada inválida -> null

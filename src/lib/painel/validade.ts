@@ -176,10 +176,27 @@ export function calcularValidadeCartao(
 
   const hojeIso = civilDe(hoje);
 
+  // O número de candidatos é derivado da distância entre os anos, nunca um teto
+  // arbitrário. Um teto fixo de 200 (AD-025) fazia um `criado_em` mais antigo
+  // devolver `null` — enquanto o trigger já tinha gravado `1801-06-01` para um
+  // registro de 1800. Era divergência sobre dado gravado, do mesmo tipo da do ano
+  // de 5 dígitos, e na janela baixa ela é fechável: aqui não há teto de runtime,
+  // só aritmética de ano.
+  const anoCivil = Number(civil.slice(0, civil.indexOf("-")));
+  const anoHoje = Number(hojeIso.slice(0, hojeIso.indexOf("-")));
+
+  // `passos` é o maior `anos` que pode ser o vencedor, e ele é exato: o
+  // aniversário k tem ano `anoCivil + k`, então o maior k ainda capaz de
+  // alcançar o ano de hoje é `anoHoje - anoCivil + 1`. Folga aqui é mutante
+  // EQUIVALENTE — o gate não distingue `+1` de `+2`, e um `+9` silencioso
+  // seria o mesmo teto arbitrário que o bug corrigido veio tirar.
+  const passos = Math.max(1, anoHoje - anoCivil + 1);
+
   // Um registro é sempre criado no passado, mas um `criado_em` futuro (dado
   // inconsistente) não deve ser "corrigido" para hoje: a validade passa a
-  // contar a partir daquela data.
-  for (let anos = 1; anos <= 200; anos += 1) {
+  // contar a partir daquela data. Nesse caso `passos` é 1 e o primeiro
+  // aniversário é o candidato — o mesmo comportamento de antes.
+  for (let anos = 1; anos <= passos; anos += 1) {
     const candidato = aniversario(civil, anos);
 
     if (candidato === null) {

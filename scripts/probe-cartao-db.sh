@@ -39,7 +39,8 @@ FIXTURES='2026-09-13T02:01:52+00:00
 2026-03-01T02:00:00+00:00
 2024-03-01T02:30:00+00:00
 2025-12-31T23:30:00-02:00
-9999-12-31T23:59:59+00:00'
+9999-12-31T23:59:59+00:00
+1800-06-01T12:00:00-03:00'
 
 # O nono instante existe para um fuso do clamp: 2024-03-01T02:30Z é 29/02 em
 # São Paulo e 01/03 em UTC, então só ele exercita o `least(...)` de 29 contra
@@ -52,6 +53,10 @@ FIXTURES='2026-09-13T02:01:52+00:00
 # Medido: SQL devolvia `10000-12-31` e o TS devolvia `—` para o mesmo registro.
 # Sem este fixture o cross-check não enxerga a divergência, porque nenhum dos
 # outros nove instantes passa de 4 dígitos.
+#
+# O décimo primeiro (ano 1800) fecha a janela BAIXA, que é fechável: um
+# `criado_em` de 1800-06-01 tem ciclo-base `1801-06-01` no trigger, e o TS
+# devolvia `—` porque o laço de candidatos tinha teto fixo de 200 anos.
 printf '== Probes cartao-valididade-anual [postgres efemero] ==\n'
 
 if [ ! -f "$MIGRACAO" ]; then
