@@ -208,26 +208,23 @@
 - **Date**: 2026-10-01
 - **Status**: active
 
-## Handoff — feature cartao-valididade-anual — R7 FAIL, remediado, VEREDITO ESCALADO (2026-10-01)
+## Handoff — feature cartao-valididade-anual — refactor de metodo feito (2026-10-01)
 
-- **Estado**: implementação completa, gates locais verdes, **mas NÃO verificada**. A R7 foi FAIL. **Não despachei R8.** `validation.md` é o relatório da R7; `validate_state.py` continua falhando, de propósito.
-- **Onde o código para**: último commit que toca `src/`, `scripts/` ou `supabase/` é **`dd6b89b`**. Branch `main`, **nada pushed**. Use `git log`.
-- **CONVERGÊNCIA: a estratégia não está convergindo, e isso é um achado.** Sete rodadas; as últimas três (R5, R6, R7) foram atrás de *qualidade de guarda de teste*, e cada uma achou um buraco novo **da mesma família**: `persistido` aceita wrapper → `gravando` aceita wrapper → `gravando` aceita rebinding do parâmetro. Uma **guarda textual não certifica barreira de valor**: `dados = { ...dados, rg: null }` preserva o argumento literal `dados` e passa em qualquer regra que olhe para a chamada. A correção estrutural que a própria R7 nomeou é **executar o payload numa tier de teste** (extrair um `payloadDeGravacao` puro e asserir os valores), não mais um padrão sobre o texto. Isso é refatoração de service, não mais um regex — decisão de escopo, e por isso do usuário.
-- **Duas asserções que hold the line agora:** `Readonly` pega escrita em propriedade e o compilador pega `dados.rg = null`; o que faltava era a **ligação**, agora proibida textualmente. E o guard estava **quebrado na primeira tentativa desta rodada** — usei `(?!=|>)`, que é lookahead, num `grep -E`; lá `?` quantifica o grupo e o grep avisa. O guard estava no arquivo, no lugar certo, e não disparava. Medir mutante depois de escrever o guard é o que pegou isso.
-- **O que a R7 achou e este HEAD corrigiu** (`dd6b89b`):
-  - **Rebinding do payload** (o buraco que eu tinha declarado fechado): G7..G12.
-  - **Data que não existe sem assert**: mes 00 / dia 00 — `N6` emitia `2027-00-15`, `N7` emitia `2027-01-00`.
-  - **Ano de 6 dígitos sem assert**: com só o caso de 5, `\d{4,5}` passava (`N4`, 388 divergências).
-  - **Janela residual**: agora medida no gate, escrita como regra.
-  - **Vazamento meu**: `probe-cartao-db.sh` deixava **1 volume anônimo por execução** (a imagem declara VOLUME no PGDATA; `--rm` limpa o container, não volume). **11 acumulados de R1..R6** na máquina, removidos; agora `--tmpfs`, medido 0 vazamento.
-- **Mutação medida neste HEAD** (worktree isolado, removido): G7/G8/G9/G10 morrem no probe; G12 morre no compilador; N6/N6b/N4 e W1 (transição falsificada) morrem no probe. **10/10.**
-- **Gates medidos neste HEAD**: typecheck sem erros; lint 0 erros / 5 warnings pré-existentes; build verde; probe **34 ok / 0**; `--com-db` **35 ok / 0** (**21 ok / 0** Postgres); TZ `UTC`, `Asia/Tokyo`, `Pacific/Kiritimati`, `Europe/Lisbon` **2 ok / 0** cada; **0 volumes vazados**.
+- **Estado**: implementação completa, gates locais verdes, **ainda sem veredito PASS**. Refactor estrutural feito a pedido da R7; re-verificação despachada em seguida. `validation.md` é do Verifier — não versionado, não editado pelo autor.
+- **Onde o código para**: último commit que toca `src/`, `scripts/` ou `supabase/` é **`a5a368b`**. Branch `main`, **nada pushed**. Use `git log`.
+- **A mudança de método, e por quê**: sete rodadas; R5/R6/R7 foram atrás de *guarda textual* e cada uma achou um buraco da mesma família (`persistido` aceita wrapper → `gravando` aceita wrapper → `gravando` aceita reatribuição do parâmetro). **Guarda textual não certifica barreira de valor** — `dados = { ...dados, rg: null }` preserva o argumento literal e passa em qualquer regra que olhe a chamada. Agora cada camada garante o que consegue:
+  - **EXECUÇÃO** (`a5a368b`): os **valores** que chegam na row, de `FormData` até `colunas*`. Os três builders (`colunasCriarMembro`, `colunasEditarMembro`, `colunasPerfil`) já eram puros e exportados em `documento.ts` — a tier é barata.
+  - **COMPILAÇÃO**: escrita em propriedade do payload pronto (`Readonly`).
+  - **TEXTO** (o resto do `persistido`/`gravando`): só a **ligação** — que o service passe o parâmetro que recebeu. É o único resto que execução não alcança sem injetar o cliente Supabase; ficou registrado como tal, não escondido.
+- **Mutação medida neste HEAD** (worktree isolado, removido): X1/X2/X3 (spread do documento removido nos três builders), X4 (trio zerado) e X5 (`Object.freeze` removido, que antes morria "por construção") **morrem no probe**. X6 — inverter a ordem dos spreads — era **EQUIVALENTE** nos call sites reais (a base nunca traz documento), mas a ordem é semântica, então há assert de precedência (formulário ganha da base) e X6 morre também. **7/7.**
+- **O que a execução mediu e eu tinha suposto**: o CPF perde a máscara (só dígitos) e o RG **não** — CART-07 diz que o formato de RG varia por estado, normalizar seria inventar regra; campo **vazio não é erro**, vira `null` (é o que CART-04 quer), e o que falha é CPF de 3 dígitos; o ramo de erro **não tem `.dados`**.
+- **Gates medidos neste HEAD**: typecheck sem erros; lint 0 erros / 5 warnings pré-existentes; build verde; probe **34 ok / 0**; `--com-db` **35 ok / 0** (**21 ok / 0** Postgres); TZ `UTC`, `Asia/Tokyo`, `Pacific/Kiritimati`, `Europe/Lisbon` **2 ok / 0** cada; **0 volumes vazados**; `validate_spec` 0/0.
+- **Vazamento corrigido**: `probe-cartao-db.sh` deixava 1 volume anônimo por execução (a imagem declara `VOLUME` no PGDATA; `--rm` limpa o container, não volume). 11 acumulados de R1..R6 removidos; `--tmpfs` no PGDATA, medido 0 vazamento.
 - **DB**: migration `0024_validade_cartao.sql` aplicada no dev `[REDACTED_PROJECT_REF]` (11/11 linhas, assinatura `2e34606d4d538eba96d6274a92f743a5`). **Não reaplicar nem escrever remotamente.**
-- **Rodadas**: R1..R7, todas FAIL. R5, R6 e R7 foram **exceções autorizadas pelo usuário** acima do limite de 3 ciclos.
-- **DECISÃO DO USUÁRIO — três saídas, nenhuma minha**: (a) autorizar R8 e aceitar que a verificação segue por padrão sob medida; (b) autorizar o **refactor estrutural** (tier de execução do payload) e só então re-verificar — é o que a R7 pediu, e é o que tem chance de convergir; (c) aceitar o risco e registrar `verified` por decisão do usuário, com a nota de que **não há PASS de Verifier**. Recomendo (b).
+- **Rodadas**: R1..R7, todas FAIL. R5, R6 e R7 foram exceções autorizadas pelo usuário acima do limite de 3 ciclos. A R8 foi autorizada pelo usuário junto com o refactor.
+- **Se a R8 ainda falhar**: não há plano de texto restante. O próximo passo estrutural seria **injetar o cliente Supabase** nos quatro caminhos de escrita para executar o service inteiro — refatoração maior, e decisão do usuário.
 - **Pendências de superfície, não AC**: **AD-023** (probes fora do CI, sem dono) e política de `git push`.
 - **Pendência de documentação**: `docs/coverage-matrix.md` sem linha para esta feature. `barcode-membro` e `admin-auditoria` também — lacuna **pré-existente**, corrigir as três juntas.
-- **Não editado por decisão**: `validation.md` é do Verifier.
 
 ## Handoff
 
