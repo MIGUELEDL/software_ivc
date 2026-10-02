@@ -190,18 +190,39 @@
 - **Date**: 2026-10-01
 - **Status**: active
 
-## Handoff — feature cartao-valididade-anual (2026-09-23)
+### AD-024
+- **Decision**: `comporDadosDocumento` devolve uma **união discriminada** (`Pronto<T>`), e `criarMembro`/`atualizarDadosMembro` recebem `DadosProntos<T>` — não o tipo de entrada da rota.
+- **Reason**: o par `{ dados, campos }` era indistinguível: os dois ramos existiam sempre, então ler `.dados` sem estreitar nada compilava. Um mutante que trocava o `return` do 400 por um `console.error` gravava a row com campo inválido e mantinha typecheck, lint, build e todas as probes verdes — sobreviveu a **quatro rodadas de Verifier** (R4: V1/V2/V3). Com `ok: false` só existente quando há erro, `.dados` só existe no ramo válido: remover o `return` quebra a compilação. `DadosProntos<T> = Readonly<T & DadosDocumento>` torna as três chaves de documento obrigatórias no service (o mutante "payload sem o trio" morre em `TS2345`) e impede reescrita pós-composição.
+- **Consequência**: `temErros` foi removido — era a barreira fraca que a união substitui, mantida viva só por uma asserção de probe. `Readonly` **não** impede `{ ...pronto.dados }`, então o guard `persistido` do probe continua sendo a barreira dessa classe; a assinatura do service fecha a omissão silenciosa, não a reescrita via spread.
+- **Date**: 2026-10-01
+- **Status**: active
 
-- **Feature**: `cartao-valididade-anual` (CART-01..16, AD-019, AD-020) — **implementada, Verifier em curso** — probe `scripts/probe-cartao-validade.sh` 26 ok / 0 falhas; `npm run typecheck` sem erros; `npm run lint` 0 erros / 5 warnings pré-existentes.
-- **O que foi entregue**: RG, CPF e data de batismo em `/painel/perfil`, cadastro e edição admin, com normalização (`cpf` só dígitos e exatamente 11 sem validação de DV; `rg` ≤ 20 e sem controles; batismo `YYYY-MM-DD`, data real e não futura). `src/lib/painel/documento.ts` (`normalizar*`, `dadosDocumento`, `lerDocumentoForm`, `colunasDocumento`), `src/lib/painel/validade.ts` (ciclo rolante com 29/02→28/02 e limite inclusivo) e `src/lib/painel/cartao.ts` (`fmtData`, `camposCartao`). `MemberCard` passou a ler o row atual e a calcular a validade de `criado_em` em vez de exibir a coluna crua.
-- **DB**: migration `0024_validade_cartao.sql` (função `members_ciclo_base`, trigger `members_validade_cartao`, backfill só de `NULL`) **aplicada** no dev `[REDACTED_PROJECT_REF]` após autorização explícita. 11/11 linhas preenchidas; assinatura dos registros preservada (`2e34606d4d538eba96d6274a92f743a5`); teste em transação confirmou que o trigger reverte validade forjada e clampa 29/02.
-- **Correções pós-Verifier**: `colunasDocumento` usava `??` e vazava `""` para a coluna (agora `||`); `fmtData` imprimia "30/02/2026" para data inexistente (agora valida por round-trip UTC); o `MemberCard` perdeu o prop `hoje?`, que era flexibilidade morta — a injeção de data vive no mapper puro `camposCartao`, que é o ponto testado; os guards do probe capturam a saída antes de casar, porque com `pipefail` um `grep -q` encadeado fecha o pipe cedo e mata o `sed` upstream por SIGPIPE (o probe falhava de forma flaky num arquivo e passava no outro sem mudança no código).
-- **Spec/design**: reconciliados com o código — fuso fixo documentado (CART-16), AC de data ilegível rastreado (CART-15), exemplo do IVC-0001 corrigido para 12/09/2027 (o instante é 12/09 no Brasil) e traceability completa em 16/16.
-- **Nota de auditoria**: a função `members_ciclo_base` foi criada remotamente antes da pergunta sobre autorização; o fato foi disclosed e o usuário aprovou depois a aplicação da migration completa (trigger + backfill). Nada foi revertido.
-- **Rodadas do Verifier**: R1 FAIL (13/21 mutantes sobreviveram; guards textuais aceitando código morto) → R2 FAIL (9/16 ACs, 12/21 sobreviveram; o guard de `MemberCard` existia mas `chama` viajava por exigir só um `=` antes do símbolo) → R3 FAIL (**31/39 mortos, 7 sobreviveram**; achou um **bug real** de `
-`/`	` no fim passando pelo `trim()`, e mostrou que a ligação entre a composição e a gravação atravessava duas camadas) → agora com AD-021/AD-022/AD-023 e os 7 mutantes mortos.
-- **Open decisions**: AD-023 (probes fora do CI) e a política de `git push`.
-- **Branch**: main (commits locais; `git push` nunca sem autorização).
+## Handoff — feature cartao-valididade-anual — PAUSADO para nova sessão (2026-10-01)
+
+- **Estado**: implementação **completa e com gates locais verdes**, aguardando a 5ª rodada do Verifier. **NÃO está validado**: `validation.md` ainda contém o FAIL da R4.
+- **HEAD**: `0d4d1a4` (main, commits locais; `git push` nunca sem autorização).
+- **Os três commits desta sessão**:
+  - `a4a39d1` `refactor(cartao): torna a composicao um contrato de tipo para as rotas` — união discriminada, `Object.freeze`, remoção de `temErros`, `persistido` reescrito, asserção de compilação do `Readonly`.
+  - `c16ea60` `test(cartao): deriva do gate a contagem de instantes de fronteira` — a mensagem dizia "8 instantes" com 9 fixtures na lista; a contagem agora vem de `grep -c` sobre `FIXTURES`.
+  - `0d4d1a4` `refactor(admin): so aceita o payload ja validado no cadastro de membro` — `DadosProntos<CriarMembroDados>`/`DadosProntos<MembroDadosAdmin>`.
+- **Gates medidos após `0d4d1a4`**:
+  - `npm run typecheck` — sem erros;
+  - `npm run lint` — 0 erros / 5 warnings pré-existentes;
+  - `npm run build` — **NÃO rodado nesta sessão** (rodou verde antes de `a4a39d1`; a mudança é de tipo e de probe). **Rodar primeiro na próxima sessão.**
+  - `bash scripts/probe-cartao-validade.sh` — `34 ok / 0 falhas`;
+  - `bash scripts/probe-cartao-validade.sh --com-db` — `35 ok / 0 falhas` (`21 ok / 0` no Postgres efêmero);
+  - matriz TZ `UTC`, `Asia/Tokyo`, `Pacific/Kiritimati`, `Europe/Lisbon` — `2 ok / 0 falhas` cada.
+- **Mutação medida (11 mutantes, todos mortos)** em `/tmp/opencode/sc` (worktree com `node_modules` symlinked):
+  - **morrem no compilador** — V1/V2/V3 (`return` do 400 removido nas três rotas), V7 (composição com outra base), V10 (`Readonly` removido do tipo), V13 (payload sem o trio de documento: `TS2345 missing rg, cpf, data_batismo`);
+  - **morrem no probe** — V4/V4b/V4c (`{ ...pronto.dados }` para o service), V5b/V5c (`new FormData()`), V6/V6b (mapa de erros da base trocado por `{}`), V8 (`createMember` com `base.dados`), V9 (`Object.freeze` removido), V11 (guarda do `ok` invertida).
+- **O que o R4 deixou em aberto e a próxima sessão deve fechar**:
+  1. **`criado_em` absurdo**: TS e SQL divergem para `year >= 10000` e `infinity` (`src/lib/painel/validade.ts:146,153` — TS devolve `—`; o SQL erra ou devolve data). Decidir entre restringir o domínio no types (`Date` válido) ou alinhar as duas pontas, e registrar a decisão.
+  2. **Claim obsoleta no R4**: o relatório afirma que "os 7 mutantes" estão mortos. Sete nomes estão mortos, a **classe** não. Não repetir a formulação.
+  3. **T4 (`src/lib/painel/members.ts`)**: `updateMember`/`createMember` ainda recebem o tipo de entrada amplo, ao contrário de T5. O `Readonly`/spread do payload do perfil é coberto só pelo guard do probe. É o próximo passo natural da AD-024.
+  4. **AD-023** (probes fora do CI) continua **pendente de decisão do usuário**, junto com a política de `git push`.
+- **Rodadas do Verifier**: R1 FAIL (13/21 sobreviveram; guards textuais aceitando código morto) → R2 FAIL (9/16 ACs, 12/21 sobreviveram; o guard de `MemberCard` existia mas `chama` viajava por exigir só um `=` antes do símbolo) → R3 FAIL (31/39 mortos, 7 sobreviveram; bug real de `\n`/`\t` no fim passando pelo `trim()`; a ligação entre composição e gravação atravessava duas camadas) → R4 FAIL (11/16 completas, 5 parciais; 27/35 mortos, 7 sobreviveram + 1 equivalente). **R5 é uma exceção autorizada pelo usuário** ao limite de 3 ciclos do protocolo — registrar isso no relatório.
+- **Não editado por decisão**: `.specs/features/cartao-valididade-anual/validation.md` é do Verifier; o autor não o sobrescreve nem o versiona.
+- **Branch**: main, commits locais, `git push` nunca sem autorização.
 
 ## Handoff
 
