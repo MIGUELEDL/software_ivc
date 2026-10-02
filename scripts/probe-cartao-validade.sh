@@ -278,6 +278,28 @@ gravando() {
   # mutantes sobreviveram assim, gravando `rg = cpf = data_batismo = NULL`.
   # Mesma amarra de valor que o `persistido` recebeu: argumentos quebrados por
   # profundidade de ()[]{} e comparados com igualdade exata.
+  # E o parametro `dados` nao pode ser reatribuido nem ter propriedade
+  # alterada. Sem esta regra, `dados = { ...dados, rg: null }` preserva o
+  # argumento LITERAL `dados` e passa na amarra de valor acima — foi
+  # exatamente o que G7/G8/G11/G12 fizeram na R7, produzindo payload
+  # byte-identico ao do mutante morto G1. `Object.freeze`/`Readonly` nao
+  # pegam isso: `Readonly` congela as PROPRIEDADES, nao a ligacao.
+  #
+  # Esta regra vai em PERL, e nao em `grep -E`: `(?!=|>)` e lookahead, e o
+  # `grep -E` nao tem lookahead — la `?` quantifica o grupo, a regra vira outra
+  # coisa, e o `grep` avisa "warning: ? at start of expression". Foi assim que
+  # G7..G10 sobreviveram na primeira tentativa desta rodada: o guard estava no
+  # arquivo, no lugar certo, e nao disparava. Sem `$` na classe de caracteres
+  # de propósito — dentro de um regex do Perl `$]` interpola como a versao do
+  # interpretador e o `[^` fica desbalanceado.
+  if printf '%s' "$codigo" | perl -0777 -ne '
+    exit(0) if /\bdados\b(?:\s*[.[]\s*[A-Za-z_][A-Za-z0-9_]*\s*[]]?)*\s*=(?!=|>)/;
+    exit(0) if /(?:\+\+|--)\s*\bdados\b/;
+    exit(0) if /\bdados\b\s*(?:\+=|-=|\?\?=)/;
+    exit 1;
+  '; then
+    return 1
+  fi
   printf '%s' "$codigo" | perl -0777 -ne '
     sub topo {
       my ($s) = @_;
@@ -620,6 +642,50 @@ assert.strictEqual(
   V.aniversario("9999-12-31", 1), "10000-12-31",
   "ano de 5 digitos continua sendo derivado, nao cortado"
 );
+// A janela residual NAO e um intervalo, e e por isso que o prose errou tres
+// vezes (R5, R6, R7). `diasNoMes` pergunta o ULTIMO dia do mes, entao o `Date`
+// quebra no MES em que esse ultimo dia passa do teto -- nao no ano. Medido:
+// ano 275760, cujo teto e `+275760-09-13T00:00:00.000Z`; meses 1..8 passam e
+// 9..12 falham. Este bloco mede e afirma a TRANSICAO. Se a semantica do `Date`
+// mudar, o gate se move com ela em vez de o texto ficar errado em silencio.
+const ANO_TETO = 275760;
+const mesesRepresentaveis = [];
+for (let mes = 1; mes <= 12; mes += 1) {
+  const ultimoDia = new Date(ANO_TETO, mes, 0);
+  if (!Number.isNaN(ultimoDia.getDate())) {
+    mesesRepresentaveis.push(mes);
+  }
+}
+assert.deepStrictEqual(
+  mesesRepresentaveis, [1, 2, 3, 4, 5, 6, 7, 8],
+  "o Date representa o ano " + ANO_TETO + " so ate agosto: meses 1..8 passam, 9..12 nao"
+);
+const civilDoAnoAnterior = (mes) =>
+  String(ANO_TETO - 1) + "-" + String(mes).padStart(2, "0") + "-15";
+for (const mes of [1, 8]) {
+  assert.strictEqual(
+    V.aniversario(civilDoAnoAnterior(mes), 1),
+    ANO_TETO + "-" + String(mes).padStart(2, "0") + "-15",
+    "somar 1 ano ate o mes " + mes + " do ano-teto ainda e representavel"
+  );
+}
+for (const mes of [9, 12]) {
+  assert.strictEqual(
+    V.aniversario(civilDoAnoAnterior(mes), 1), null,
+    "somar 1 ano ate o mes " + mes + " do ano-teto devolve null, nao data com NaN"
+  );
+}
+
+// Mes 00 / dia 00: o formato `\d{2}` aceita, e a clausula do contrato que a
+// spec nomeia e "data que nao existe". Medido na R7 — N6 emitia "2027-00-15"
+// e N7 emitia "2027-01-00", e nao havia assert nenhum segurando essa parte:
+// o cartao ainda mostrava `—` por acaso, nao por guarda.
+for (const invalido of ["2026-00-15", "2026-13-01", "2026-01-00", "2026-01-32"]) {
+  assert.strictEqual(
+    V.aniversario(invalido, 1), null,
+    "data inexistente " + invalido + " -> null, nao uma data com mes/dia 00"
+  );
+}
 assert.strictEqual(
   V.calcularValidadeCartao("1700-01-01", HOJE), "2027-01-01",
   "criado_em de 326 anos atrás também"
@@ -862,6 +928,16 @@ assert.strictEqual(
 assert.strictEqual(
   C.fmtData("275760-09-14"), "—",
   "fmtData acima do teto do Date continua recusando"
+);
+// O limite de 6 digitos tambem precisa de assert: com so o caso de 5 digitos,
+// `\d{4,5}` passava (medido na R7 como N4, 388 divergencias de comportamento).
+assert.strictEqual(
+  C.fmtData("100000-12-31"), "31/12/100000",
+  "fmtData aceita o ano de 6 digitos que o FORMATO_DATA aceita"
+);
+assert.strictEqual(
+  C.fmtData("1000000-12-31"), "—",
+  "fmtData recusa o ano de 7 digitos, acima do FORMATO_DATA"
 );
 
 // determinismo

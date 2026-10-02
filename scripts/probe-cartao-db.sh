@@ -79,7 +79,13 @@ if ! docker image inspect "$IMAGEM" >/dev/null 2>&1; then
   exit 2
 fi
 
+# `--tmpfs` no PGDATA é obrigatório, não cosmetic. A imagem declara VOLUME
+# nesse caminho, então cada `docker run` criava um volume anônimo que
+# `--rm` não remove (o --rm limpa o container, não volumes). Medido na R7:
+# 1 volume por execução, 11 acumulados de R1..R6. A sonda de banco é
+# efêmera por definição; deixar volume para trás é lixo no host de quem roda.
 CONT="$(docker run --rm -d \
+  --tmpfs /var/lib/postgresql/data:rw,noexec,nosuid,size=256m \
   -e POSTGRES_PASSWORD=probe \
   -e POSTGRES_DB=probe \
   "$IMAGEM" 2>/dev/null)"

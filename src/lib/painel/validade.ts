@@ -30,13 +30,23 @@
  * dois lados discordando sobre dado já gravado, que é a forma mais cara de
  * divergir.
  *
- * O teto real é o do `Date` do JavaScript, medido: `new Date(8640000000000000)`
- * é `+275760-09-13T00:00:00.000Z`. Ou seja, **o ano 275760 só é representável
- * até 13 de setembro** — a janela começa *dentro* dele, não em 275761. Do lado
- * do Postgres, `criado_em` é `timestamptz` e estoura em 294276 (o 5874897 que
- * eu citei antes é o teto do `date`, que o `make_date` alcança mas não é o
- * gargalo). Resíduo conhecido: de 275760-09-14 a 294276-12-31 o TS devolve
- * `null` porque não tem como representar a data. Ver `aniversario`.
+ * ## Resíduo conhecido: a janela NÃO é um intervalo
+ *
+ * Quatro rodadas de verificação (R5, R6, R7 e a R8) documentaram esta janela
+ * por texto, e **todas erraram** — porque ela não é uma faixa. `diasNoMes`
+ * pergunta o *último dia do mês*, então o `Date` quebra no **mês** em que esse
+ * último dia passa do teto, não no ano. Por isso a regra, não a faixa:
+ *
+ * - **TS**: `Date` medido até `+275760-09-13T00:00:00.000Z`. No ano 275760 os
+ *   meses 1..8 são representáveis e 9..12 não. Acima de 275760, nada.
+ * - **SQL**: `criado_em` é `timestamptz` e aceita até `294276-12-31` (o 5874897
+ *   que eu citei duas vezes é o teto do `date`, que o `make_date` alcança mas não
+ *   é o gargalo).
+ *
+ * Onde os dois discordam, o TS devolve `null` porque não tem como representar a
+ * data. **Não fechável** sem trocar o transporte (texto civil), e por isso
+ * `probe-cartao-validade.sh` mede a transição em vez de confiar numa frase: o
+ * gate se move se a semântica do `Date` mudar, o texto não. Ver `aniversario`.
  */
 const FORMATO_DATA = /^\d{4,6}-\d{2}-\d{2}$/;
 
