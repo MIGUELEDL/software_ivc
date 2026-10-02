@@ -208,7 +208,7 @@
 - **Gates medidos após `0d4d1a4`**:
   - `npm run typecheck` — sem erros;
   - `npm run lint` — 0 erros / 5 warnings pré-existentes;
-  - `npm run build` — **NÃO rodado nesta sessão** (rodou verde antes de `a4a39d1`; a mudança é de tipo e de probe). **Rodar primeiro na próxima sessão.**
+  - `npm run build` — rodou **verde com a união discriminada já no working tree**, ou seja, cobrindo o conteúdo de `a4a39d1`; **não rodou** após `c16ea60` (bash + tasks.md) nem após `0d4d1a4` (assinaturas do service admin), que são as duas pontas em falta de cobertura formal. **Rodar primeiro na próxima sessão.**
   - `bash scripts/probe-cartao-validade.sh` — `34 ok / 0 falhas`;
   - `bash scripts/probe-cartao-validade.sh --com-db` — `35 ok / 0 falhas` (`21 ok / 0` no Postgres efêmero);
   - matriz TZ `UTC`, `Asia/Tokyo`, `Pacific/Kiritimati`, `Europe/Lisbon` — `2 ok / 0 falhas` cada.
