@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { generateMatricula } from "@/lib/painel/members";
 import type { Member } from "@/lib/painel/members";
 import { colunasCriarMembro, colunasEditarMembro } from "@/lib/painel/documento";
+import type { DadosProntos } from "@/lib/painel/documento";
 
 /**
  * Membro estendido com o schema admin (0006): ciclo de vida + endereço.
@@ -141,8 +142,19 @@ export function gerarSenhaId(): string {
  * órfão em auth.users nem linha sem conta. Erro `user_already_exists` vira
  * `EmailEmUsoError` para o caller responder 409 sem criar nada.
  */
+/**
+ * O que estas duas funções aceitam não é "os dados do membro": é o ramo
+ * `ok: true` de `comporDadosDocumento` (AD-024).
+ *
+ * `CriarMembroDados`/`MembroDadosAdmin` declaram `rg`/`cpf`/`data_batismo`
+ * como opcionais porque são o *entrada* da rota, antes da validação. Aqui eles
+ * já foram decididos: chegar a esta função com a chave ausente é impossivel
+ * por construcao, e nao por convencao de quem escreve a chamada. Um service
+ * que aceita o tipo amplo aceita `{ email }` — que grava a row com documento
+ * nulo sem que ninguem tenha olhado o formulario.
+ */
 export async function criarMembro(
-  dados: CriarMembroDados
+  dados: DadosProntos<CriarMembroDados>
 ): Promise<CriarMembroResultado> {
   const admin = createAdminClient();
   const senhaTemporaria = gerarSenhaId();
@@ -219,7 +231,7 @@ export type MembroDadosAdmin = {
  */
 export async function atualizarDadosMembro(
   id: string,
-  dados: MembroDadosAdmin
+  dados: DadosProntos<MembroDadosAdmin>
 ): Promise<MembroAdmin> {
   const supabase = await createServerClient();
 
