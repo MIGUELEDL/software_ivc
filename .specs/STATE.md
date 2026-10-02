@@ -172,7 +172,7 @@
 - **Trade-off**: Um alias semanticamente correto (`const alias = dados; service(..., alias)`) é reprovado, e a tier de banco reprova o snapshot se alguma coluna citada não existir na tabela mínima. O preço é uma refatoração de uma linha virar alteração de gate; a alternativa já custou três rodadas.
 - **Scope**: `scripts/probe-cartao-validade.sh` (guard `persistido`), `src/lib/painel/documento.ts` (`temErros` + ordem da checagem de controle), `src/app/api/painel/perfil/route.ts` (`validarCamposBase` separado da composição), `src/lib/painel/cartao.ts` (`criado_em` anulável).
 - **Date**: 2026-10-01
-- **Status**: active
+- **Status**: superseded (parcialmente) por **AD-024** — `temErros` não existe mais (`a4a39d1`), e a guarda de 400 deixou de ser um símbolo observável: passou a ser o estreitamento de `Pronto<T>`, que quebra a compilação. O texto acima fica como registro do que se decidiu na época; a parte ainda vigente é o guard `persistido`, o `FormData` como 3º argumento, o mapa de erros da rota como 2º argumento, e o controle conferido antes do `trim`.
 
 ### AD-022
 - **Decision**: O backfill da migration é provado por **snapshot de todas as outras colunas** antes e depois, e a **reexecução tem o exit code conferido** — não só a contagem e o valor de uma linha. A tabela mínima do probe passou a ter `nascimento`, `cpf`, `rg` e `data_batismo`, e o snapshot é validado como legível antes de ser comparado.
@@ -220,6 +220,7 @@
   2. **Claim obsoleta no R4**: o relatório afirma que "os 7 mutantes" estão mortos. Sete nomes estão mortos, a **classe** não. Não repetir a formulação.
   3. **T4 (`src/lib/painel/members.ts`)**: `updateMember`/`createMember` ainda recebem o tipo de entrada amplo, ao contrário de T5. O `Readonly`/spread do payload do perfil é coberto só pelo guard do probe. É o próximo passo natural da AD-024.
   4. **AD-023** (probes fora do CI) continua **pendente de decisão do usuário**, junto com a política de `git push`.
+- **Pendência de documentação (não é bug)**: `docs/coverage-matrix.md` não tem linha para `cartao-valididade-anual`, e a regra do próprio arquivo diz que nenhuma feature é declarada pronta sem linha `verified` respaldada por `validation.md`. Como a feature ainda não tem PASS, a linha entra **depois** do Verifier, com `🔧 in progress` se o Orchestrator preferir sinalizar antes. Nota: `barcode-membro` e `admin-auditoria` também não têm linha — lacuna **pré-existente**, não introduzida aqui; corrigir as três de uma vez, não só esta.
 - **Rodadas do Verifier**: R1 FAIL (13/21 sobreviveram; guards textuais aceitando código morto) → R2 FAIL (9/16 ACs, 12/21 sobreviveram; o guard de `MemberCard` existia mas `chama` viajava por exigir só um `=` antes do símbolo) → R3 FAIL (31/39 mortos, 7 sobreviveram; bug real de `\n`/`\t` no fim passando pelo `trim()`; a ligação entre composição e gravação atravessava duas camadas) → R4 FAIL (11/16 completas, 5 parciais; 27/35 mortos, 7 sobreviveram + 1 equivalente). **R5 é uma exceção autorizada pelo usuário** ao limite de 3 ciclos do protocolo — registrar isso no relatório.
 - **Não editado por decisão**: `.specs/features/cartao-valididade-anual/validation.md` é do Verifier; o autor não o sobrescreve nem o versiona.
 - **Branch**: main, commits locais, `git push` nunca sem autorização.
