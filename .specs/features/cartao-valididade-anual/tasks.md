@@ -21,7 +21,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 | `src/lib/painel/validade.ts` (domain: aniversário + rolagem) | unit | All branches; CART-09..12; 29/02 clamp, limite inclusivo, criado_em futuro, inválido | `scripts/probe-cartao-validade.sh` | idem acima |
 | Payload de insert/update (`colunasCriarMembro`, `colunasPerfil`, `colunasEditarMembro` em `documento.ts`) | integration | Colunas exatas do `.insert()`/`.update()`; `status`/`matricula`/`criado_em` nunca entram; vazio vira `NULL`; CART-01..04 | `scripts/probe-cartao-validade.sh` | idem acima |
 | Mesclagem da rota (`comporDadosDocumento`) | integration | Dados e erros por campo mesclados no payload da rota; sem mutar os argumentos; CART-01..05 | `scripts/probe-cartao-validade.sh` | idem acima |
-| Wiring (services, rotas, formulários, `MemberCard`) | integration | Só o caminho que o runtime não alcança: input presente, payload helper é o argumento de `.insert(`/`.update(`, retorno do mapper ligado ao JSX | `scripts/probe-cartao-validade.sh` | idem acima |
+| Wiring (services, rotas, formulários, `MemberCard`) | integration | Só o caminho que o runtime não alcança: input presente, payload helper é o argumento de `.insert(`/`.update(`, retorno do mapper ligado ao JSX, retorno da composição é o argumento de **todos** os serviços de gravação da rota e a guarda de 400 vem antes deles | `scripts/probe-cartao-validade.sh` | idem acima |
 | `MemberCard` (render) | integration | Validade calculada no mapper puro `camposCartao(member, hoje)` com `hoje` injetado no teste; demais campos lidos do row | `scripts/probe-cartao-validade.sh` | idem acima |
 | Migration `0024_validade_cartao.sql` | integration | Executada num Postgres efêmero: ciclo-base, clamp, trigger de insert/update, validade forjada, backfill derivado de `criado_em`, idempotência, e acordo TS x SQL em 8 instantes de fronteira; CART-12..14, CART-16 | `scripts/probe-cartao-db.sh` | `bash scripts/probe-cartao-validade.sh --com-db` (tier faz SKIP com exit 2 sem Docker) |
 
@@ -32,8 +32,14 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 | Gate Level | When to Use | Command |
 | ---------- | ----------- | ------- |
 | Quick | T1-T3 (domínio puro) | `npm run typecheck && npm run lint && bash scripts/probe-cartao-validade.sh` |
-| Full | T4-T7b (services, rotas, card) | `npm run typecheck && npm run lint && bash scripts/probe-cartao-validade.sh` |
-| Build | T8-T9 (migration + final) | `npm run typecheck && npm run lint && npm run build && bash scripts/probe-cartao-validade.sh` |
+| Full | T4-T7b (services, rotas, card) | `npm run typecheck && npm run lint && npm run build && bash scripts/probe-cartao-validade.sh --com-db` |
+| Build | T8-T9 (migration + final) | `npm run typecheck && npm run lint && npm run build && bash scripts/probe-cartao-validade.sh --com-db` |
+
+> A partir da 3a rodada do Verifier, **todo gate que cobre T4 em diante roda com
+> `--com-db`**. Sem o flag, CART-13/14/16 ficam de fora: o gate anterior dizia
+> "verde" sem executar a migration, e era assim que um backfill com data
+> arbitrária e um ciclo-base com `+ 0` anos passavam. Quick acima é a única
+> exceção de propósito — cobre só o domínio puro, sem banco.
 
 ---
 

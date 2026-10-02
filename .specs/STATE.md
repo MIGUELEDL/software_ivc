@@ -164,6 +164,32 @@
 - **Date**: 2026-09-23
 - **Status**: active
 
+### AD-021
+- **Decision**: O probe só aceita guard **estrutural**, não de presença de token: para o caminho de escrita, o identificador vinculado ao retorno da composição tem de ser **literalmente o último argumento de todos** os serviços de gravação da rota, a guarda de 400 (`temErros`) tem de consultá-lo e tem de vir **antes** deles. Para o cartão, o retorno do mapper tem de estar ligado ao JSX. Caractere de controle é conferido na entrada **crua**, antes de qualquer `trim`.
+- **Reason**: Três rodadas de Verifier foram gastas com a mesma classe de falha: o arquivo continha o símbolo, o efeito sumia. `comporDadosDocumento` chamada e descartada, `updateMember(..., base.dados)` com `createMember` ainda correto, `{...dadosDocumento, rg: null}` no lugar do argumento, `Object.keys(campos).length > 0` trocado por `=== 0` — todos passavam typecheck, lint, build e as probes. O ponto não era a ausência de teste, era o teste não conseguir distinguir a barreira da sua remoção. E o `trim()` antes de `temControle` era um **bug real**: `
+`, `
+` e `	` são whitespace, então `"12345678909\n"` entrava limpo (medido pelo Verifier), violando P1/5.
+- **Trade-off**: Um alias semanticamente correto (`const alias = dados; service(..., alias)`) é reprovado, e a tier de banco reprova o snapshot se alguma coluna citada não existir na tabela mínima. O preço é uma refatoração de uma linha virar alteração de gate; a alternativa já custou três rodadas.
+- **Scope**: `scripts/probe-cartao-validade.sh` (guard `persistido`), `src/lib/painel/documento.ts` (`temErros` + ordem da checagem de controle), `src/app/api/painel/perfil/route.ts` (`validarCamposBase` separado da composição), `src/lib/painel/cartao.ts` (`criado_em` anulável).
+- **Date**: 2026-10-01
+- **Status**: active
+
+### AD-022
+- **Decision**: O backfill da migration é provado por **snapshot de todas as outras colunas** antes e depois, e a **reexecução tem o exit code conferido** — não só a contagem e o valor de uma linha. A tabela mínima do probe passou a ter `nascimento`, `cpf`, `rg` e `data_batismo`, e o snapshot é validado como legível antes de ser comparado.
+- **Reason**: O Verifier provou que ambos os testes passavam vazios. Um backfill que também escrevesse `nome` e `atualizado_em` mantinha contagem e `validade_cartao` iguais. E o primeiro snapshot que escrevi citava colunas inexistentes na tabela mínima: `valor()` devolvia o texto do erro nas duas leituras, e o gate comparava o erro com ele mesmo — verde para qualquer coisa. Pior, remover `drop trigger if exists` deixava a tier sozinha em 18 ok / 0: a reexecução falhava e ninguém olhava o código de saída.
+- **Trade-off**: O gate de banco depende de Docker e de `pgvector/pgvector:pg16`. Sem isso a tier faz SKIP com **exit 2** e o wrapper transforma em falha, em vez de sumir: cobertura perdida tem de aparecer.
+- **Scope**: `scripts/probe-cartao-db.sh`, `supabase/migrations/0024_validade_cartao.sql` (sem mudança no arquivo), tasks da feature (T9 deixa de ser `Tests: none`).
+- **Date**: 2026-10-01
+- **Status**: active
+
+### AD-023
+- **Decision**: Probes de feature **não entram no CI** neste momento; ficam como gate local declarado no `tasks.md` de cada feature.
+- **Reason**: `.github/workflows/ci.yml` roda lint/typecheck/build e os validadores estruturais, e nenhum `scripts/probe*.sh` — condição **pré-existente do projeto**, não introduzida aqui. Colocar o probe de uma feature no CI do repo tornaria a pipeline dependente de Docker e imporia a ordem de merge de features sem decisão do usuário. Registrado como pendência em vez de silenciosamente aceito.
+- **Consequência**: "gate verde" existe apenas localmente. É o ponto 5 de precisão do 3o Verifier, e é a origem da fragilidade histórica deste gate: probes locais que ninguém roda não são barreira.
+- **Pendente de**: decisão do usuário sobre (a) rodar probes no CI e (b) ordem de merge.
+- **Date**: 2026-10-01
+- **Status**: active
+
 ## Handoff — feature cartao-valididade-anual (2026-09-23)
 
 - **Feature**: `cartao-valididade-anual` (CART-01..16, AD-019, AD-020) — **implementada, Verifier em curso** — probe `scripts/probe-cartao-validade.sh` 26 ok / 0 falhas; `npm run typecheck` sem erros; `npm run lint` 0 erros / 5 warnings pré-existentes.
@@ -172,7 +198,9 @@
 - **Correções pós-Verifier**: `colunasDocumento` usava `??` e vazava `""` para a coluna (agora `||`); `fmtData` imprimia "30/02/2026" para data inexistente (agora valida por round-trip UTC); o `MemberCard` perdeu o prop `hoje?`, que era flexibilidade morta — a injeção de data vive no mapper puro `camposCartao`, que é o ponto testado; os guards do probe capturam a saída antes de casar, porque com `pipefail` um `grep -q` encadeado fecha o pipe cedo e mata o `sed` upstream por SIGPIPE (o probe falhava de forma flaky num arquivo e passava no outro sem mudança no código).
 - **Spec/design**: reconciliados com o código — fuso fixo documentado (CART-16), AC de data ilegível rastreado (CART-15), exemplo do IVC-0001 corrigido para 12/09/2027 (o instante é 12/09 no Brasil) e traceability completa em 16/16.
 - **Nota de auditoria**: a função `members_ciclo_base` foi criada remotamente antes da pergunta sobre autorização; o fato foi disclosed e o usuário aprovou depois a aplicação da migration completa (trigger + backfill). Nada foi revertido.
-- **Open decisions**: nenhuma.
+- **Rodadas do Verifier**: R1 FAIL (13/21 mutantes sobreviveram; guards textuais aceitando código morto) → R2 FAIL (9/16 ACs, 12/21 sobreviveram; o guard de `MemberCard` existia mas `chama` viajava por exigir só um `=` antes do símbolo) → R3 FAIL (**31/39 mortos, 7 sobreviveram**; achou um **bug real** de `
+`/`	` no fim passando pelo `trim()`, e mostrou que a ligação entre a composição e a gravação atravessava duas camadas) → agora com AD-021/AD-022/AD-023 e os 7 mutantes mortos.
+- **Open decisions**: AD-023 (probes fora do CI) e a política de `git push`.
 - **Branch**: main (commits locais; `git push` nunca sem autorização).
 
 ## Handoff
