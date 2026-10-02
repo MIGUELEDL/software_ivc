@@ -110,6 +110,72 @@ ligada() {
   return 1
 }
 
+# `persistido` é a segunda metade de `ligada` para o caminho de escrita: exige
+# que o identificador vinculado ao retorno da composição seja LITERALMENTE o
+# último argumento do service que grava, e que a guarda de 400 teste o
+# identificador de `campos` e venha antes da gravação.
+#
+# Sem isso, `chama` viajava: chamar `comporDadosDocumento` e descartar o
+# resultado, usá-lo só para os erros, ou passar `{...dadosDocumento, rg: null}`
+# ao service deixavam typecheck, lint, build e todas as probes verdes — o token
+# existia, o documento não chegava à row. O `)` colado no nome é o que barra o
+# spread e o objeto literal.
+persistido() {
+  local simbolo="$2" servicos="$3"
+  local codigo dados campos linhaErro linhaServico
+
+  codigo="$(sem_comentarios "$1" | grep -Ev '^[[:space:]]*import([\\{[:space:]]|.* from )')" || true
+
+  while read -r dados campos; do
+    [ -n "$dados" ] && [ -n "$campos" ] || continue
+
+    # (a) a guarda de 400 consulta os erros do retorno da composição
+    printf '%s' "$codigo" | grep -qE \
+      'temErros\([[:space:]]*'"$campos"'[[:space:]]*\)' || continue
+
+    # (b) TODO service de gravação da rota recebe o identificador cru como
+    #     último argumento — não basta um deles. Exigir "algum" deixava passar
+    #     `updateMember(claims.sub, base.dados)` enquanto `createMember` ainda
+    #     recebia `dados`: o token e metade do caminho certainos, e a row da
+    #     edição nascia sem documento.
+    #
+    #     Known trade-off: um alias (`const alias = dados; service(..., alias)`)
+    #     é comportamentalmente correto e é reprovado do mesmo jeito. O guard
+    #     exige o identificador literal, e o preço é uma refatoração de uma
+    #     linha virar alteração de gate — escolha consciente, porque a
+    #     alternativa já custou três rodadas de Verifier.
+    #
+    #     O lookbehind `(?<![.\w])` é o que distingue `dados` de `base.dados`:
+    #     um `[^)]*` guloso casaria os dois, e o argumento errado continuaria
+    #     passando.
+    #
+    # (c) a guarda de 400 vem ANTES da gravação: senão `temErros` decide o
+    #     status, mas a row já foi escrita (CART-05..07, "SHALL NOT write").
+    local contagem linhaErro linhaServico
+    contagem="$(printf '%s' "$codigo" | perl -0777 -ne '
+      my ($c, $l) = (0, 0);
+      $c++ while /\b(?:'"$servicos"')[(]/g;
+      $l++ while /\b(?:'"$servicos"')[(][^)]*?(?<![.\w])'"$dados"'\s*\)/g;
+      print "$c $l";
+    ')"
+    totalChamadas="${contagem%% *}"
+    totalLinked="${contagem##* }"
+    [ "$totalChamadas" -ge 1 ] 2>/dev/null || continue
+    [ "$totalChamadas" = "$totalLinked" ] || continue
+
+    linhaErro="$(printf '%s' "$codigo" | grep -nE 'temErros\(' | head -1 | cut -d: -f1)"
+    linhaServico="$(printf '%s' "$codigo" | grep -nE '\b('"$servicos"')[(]' | head -1 | cut -d: -f1)"
+    if [ -n "$linhaErro" ] && [ -n "$linhaServico" ] && [ "$linhaErro" -lt "$linhaServico" ]; then
+      return 0
+    fi
+  done < <(printf '%s' "$codigo" | perl -ne '
+    while (/\{\s*dados(?:\s*:\s*([A-Za-z0-9_]+))?\s*,\s*campos\s*:\s*([A-Za-z0-9_]+)\s*\}\s*=\s*'"$simbolo"'\s*[(]/g) {
+      my ($d, $c) = (defined $1 ? $1 : "dados", $2);
+      print "$d $c\n";
+    }' | sort -u)
+  return 1
+}
+
 # --- CART-04: rota e services produzem as colunas de documento
 for rota in "$PERFIL" "$ADMIN_CREATE" "$ADMIN_EDIT"; do
   case "$rota" in
@@ -121,6 +187,17 @@ for rota in "$PERFIL" "$ADMIN_CREATE" "$ADMIN_EDIT"; do
     ok "CART-04 $nome compoe o documento no payload via helper puro"
   else
     ko "CART-04 $nome sem chamada a comporDadosDocumento"
+  fi
+
+  case "$rota" in
+    *painel/perfil*) svc="updateMember|createMember" ;;
+    *membros/\[id\]*) svc="atualizarDadosMembro" ;;
+    *) svc="criarMembro" ;;
+  esac
+  if persistido "$rota" 'comporDadosDocumento' "$svc"; then
+    ok "CART-01/02/03 $nome persiste o retorno da composicao e barra o 400 antes"
+  else
+    ko "CART-01/02/03 $nome nao persiste o retorno de comporDadosDocumento (ou barra o 400 depois de gravar)"
   fi
 done
 
@@ -275,6 +352,13 @@ assert.strictEqual(D.normalizarCpf("123456789099").ok, false, "CPF 12 dígitos r
 assert.strictEqual(D.normalizarCpf("abcdefghijk").ok, false, "CPF só letras rejeitado");
 assert.strictEqual(D.normalizarCpf("1234567890a").ok, false, "CPF 11 com letra rejeitado");
 assert.strictEqual(D.normalizarCpf("123\n45678909").ok, false, "CPF com newline rejeitado");
+// Controle no FIM: LF, CR e TAB sao whitespace, entao um `trim()` antes da
+// checagem os apagaria e o CPF entraria limpo. Foi exatamente o que a 3a rodada
+// do Verifier mediu: `normalizarCpf("12345678909\\n")` devolvia `{ok:true}`.
+assert.strictEqual(D.normalizarCpf("12345678909\n").ok, false, "CPF 11 dígitos + \\n no fim rejeitado");
+assert.strictEqual(D.normalizarCpf("12345678909\r").ok, false, "CPF 11 dígitos + \\r no fim rejeitado");
+assert.strictEqual(D.normalizarCpf("12345678909\t").ok, false, "CPF 11 dígitos + \\t no fim rejeitado");
+assert.strictEqual(D.normalizarCpf("12345678909\u0000").ok, false, "CPF 11 dígitos + NUL rejeitado");
 
 // ── CART-07: RG
 assert.strictEqual(D.normalizarRg(" 12.345.678-9 ").valor, "12.345.678-9", "RG com máscara preservada");
@@ -283,6 +367,10 @@ assert.strictEqual(D.normalizarRg("x".repeat(20)).ok, true, "RG 20 chars aceito"
 assert.strictEqual(D.normalizarRg("x".repeat(21)).ok, false, "RG 21 chars rejeitado");
 assert.strictEqual(D.normalizarRg("123\n456").ok, false, "RG com newline rejeitado");
 assert.strictEqual(D.normalizarRg("123\t456").ok, false, "RG com tab rejeitado");
+// LF e TAB no fim somem no `trim()`: o limite de 20 era conferido sobre
+// um valor de 20 que o cliente nao enviou.
+assert.strictEqual(D.normalizarRg("x".repeat(20) + "\n").ok, false, "RG 20 chars + \\n no fim rejeitado");
+assert.strictEqual(D.normalizarRg("x".repeat(20) + "\t").ok, false, "RG 20 chars + \\t no fim rejeitado");
 
 // ── CART-06: data de batismo
 assert.strictEqual(D.normalizarDataBatismo("2020-05-10", HOJE).valor, "2020-05-10", "batismo passado");
@@ -291,6 +379,8 @@ assert.strictEqual(D.normalizarDataBatismo("2026-10-01", HOJE).ok, true, "batism
 assert.strictEqual(D.normalizarDataBatismo("2026-10-02", HOJE).ok, false, "batismo futuro rejeitado");
 assert.strictEqual(D.normalizarDataBatismo("2026-02-30", HOJE).ok, false, "overflow 02-30 rejeitado");
 assert.strictEqual(D.normalizarDataBatismo("2026-13-01", HOJE).ok, false, "mês 13 rejeitado");
+assert.strictEqual(D.normalizarDataBatismo("2020-05-10\n", HOJE).ok, false, "batismo + \\n no fim rejeitado");
+assert.strictEqual(D.normalizarDataBatismo("2020-05-10\r\n", HOJE).ok, false, "batismo + \\r\\n no fim rejeitado");
 assert.strictEqual(D.normalizarDataBatismo("10/05/2020", HOJE).ok, false, "formato DD/MM/YYYY rejeitado");
 assert.strictEqual(D.normalizarDataBatismo("2020-5-1", HOJE).ok, false, "sem zero à esquerda rejeitado");
 
@@ -481,6 +571,14 @@ assert.deepStrictEqual(
 );
 assert.strictEqual(typeof mErro.campos.cpf, "string", "erro de documento presente no mapa");
 
+// `temErros` é a barreira entre "campo inválido" e "row gravada". Executada
+// nos dois sentidos: inverter `> 0` para `=== 0` dentro dela quebra o gate,
+// coisa que não acontecia com a comparação escrita inline na rota.
+assert.strictEqual(D.temErros({}), false, "temErros sem erros");
+assert.strictEqual(D.temErros({ nome: "Informe seu nome completo." }), true, "temErros com um erro");
+assert.strictEqual(D.temErros(mErro.campos), true, "temErros enxerga os erros da composicao");
+assert.strictEqual(D.temErros(D.comporDadosDocumento(baseDados, {}, fd({}), HOJE).campos), false, "temErros falso quando o formulario esta valido");
+
 const mLimpo = D.comporDadosDocumento(baseDados, {}, fd({}), HOJE);
 assert.deepStrictEqual(
   [mLimpo.dados.rg, mLimpo.dados.cpf, mLimpo.dados.data_batismo],
@@ -534,6 +632,13 @@ const c5 = C.camposCartao({ ...base, criado_em: "" }, d(2026,10,1));
 assert.strictEqual(c5.validity, "—", "CART-12 criado_em vazio -> —");
 const c6 = C.camposCartao({ ...base, criado_em: "lixo" }, d(2026,10,1));
 assert.strictEqual(c6.validity, "—", "CART-12 criado_em invalido -> —");
+// "AUSENTE" e não só "ilegível": a coluna é nullable no schema, então `null` e
+// `undefined` são estados reais do row, não valores que o tipo proíbe.
+const c7 = C.camposCartao({ ...base, criado_em: null }, d(2026,10,1));
+assert.strictEqual(c7.validity, "—", "CART-15 criado_em null -> —");
+const c8 = C.camposCartao({ ...base, criado_em: undefined }, d(2026,10,1));
+assert.strictEqual(c8.validity, "—", "CART-15 criado_em undefined -> —");
+assert.strictEqual(c8.name, base.nome, "CART-15 criado_em ausente nao derruba os outros campos");
 
 // fmtData: formato pt-BR e hoje invalido
 assert.strictEqual(C.fmtData("2026-09-13"), "13/09/2026", "fmtData pt-BR");
