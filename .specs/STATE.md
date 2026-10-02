@@ -200,11 +200,12 @@
 ## Handoff — feature cartao-valididade-anual — PAUSADO para nova sessão (2026-10-01)
 
 - **Estado**: implementação **completa e com gates locais verdes**, aguardando a 5ª rodada do Verifier. **NÃO está validado**: `validation.md` ainda contém o FAIL da R4.
-- **HEAD**: `0d4d1a4` (main, commits locais; `git push` nunca sem autorização).
-- **Os três commits desta sessão**:
+- **HEAD**: `a812ade` — main, **28 commits à frente do origin/main, nada pushed**; `git push` nunca sem autorização.
+- **Os seis commits desta sessão** (a4a39d1 → a812ade; o anterior era `aeda946`):
   - `a4a39d1` `refactor(cartao): torna a composicao um contrato de tipo para as rotas` — união discriminada, `Object.freeze`, remoção de `temErros`, `persistido` reescrito, asserção de compilação do `Readonly`.
   - `c16ea60` `test(cartao): deriva do gate a contagem de instantes de fronteira` — a mensagem dizia "8 instantes" com 9 fixtures na lista; a contagem agora vem de `grep -c` sobre `FIXTURES`.
   - `0d4d1a4` `refactor(admin): so aceita o payload ja validado no cadastro de membro` — `DadosProntos<CriarMembroDados>`/`DadosProntos<MembroDadosAdmin>`.
+  - `e6596a0`, `bf65a83`, `a812ade` — `docs(cartao)`: AD-024, delimitação da cobertura real do build, AD-021 marcada parcialmente supersedada, linha faltante na matriz.
 - **Gates medidos após `0d4d1a4`**:
   - `npm run typecheck` — sem erros;
   - `npm run lint` — 0 erros / 5 warnings pré-existentes;
@@ -215,6 +216,12 @@
 - **Mutação medida (11 mutantes, todos mortos)** em `/tmp/opencode/sc` (worktree com `node_modules` symlinked):
   - **morrem no compilador** — V1/V2/V3 (`return` do 400 removido nas três rotas), V7 (composição com outra base), V10 (`Readonly` removido do tipo), V13 (payload sem o trio de documento: `TS2345 missing rg, cpf, data_batismo`);
   - **morrem no probe** — V4/V4b/V4c (`{ ...pronto.dados }` para o service), V5b/V5c (`new FormData()`), V6/V6b (mapa de erros da base trocado por `{}`), V8 (`createMember` com `base.dados`), V9 (`Object.freeze` removido), V11 (guarda do `ok` invertida).
+- **ORDEM DE TRABALHO DA PRÓXIMA SESSÃO** (não pule etapas nem reordene):
+  1. `npm run build` — **primeira ação**. Única cobertura formal que falta; se quebrar, conserte antes de tudo.
+  2. Fechar o item 1 da lista abaixo (`criado_em` absurdo) — é a decisão de domínio que **precisa do usuário**, e o gap com maior chance de reprovar a R5.
+  3. T4 (`src/lib/painel/members.ts`) — tipar `updateMember`/`createMember` com `DadosProntos<T>` e medir o mutante.
+  4. Dispatchar o Verifier (R5) em worktree isolado. **Ele escreve `validation.md`; você não.**
+  5. Só com PASS: linha `verified` na matriz e início de `landing-visual-hero`.
 - **O que o R4 deixou em aberto e a próxima sessão deve fechar**:
   1. **`criado_em` absurdo**: TS e SQL divergem para `year >= 10000` e `infinity` (`src/lib/painel/validade.ts:146,153` — TS devolve `—`; o SQL erra ou devolve data). Decidir entre restringir o domínio no types (`Date` válido) ou alinhar as duas pontas, e registrar a decisão.
   2. **Claim obsoleta no R4**: o relatório afirma que "os 7 mutantes" estão mortos. Sete nomes estão mortos, a **classe** não. Não repetir a formulação.
