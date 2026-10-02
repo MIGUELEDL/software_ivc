@@ -22,7 +22,43 @@
  * introduziria ao atravessar a meia-noite UTC.
  */
 
-const FORMATO_DATA = /^\d{4}-\d{2}-\d{2}$/;
+/**
+ * Ano com 4 a 6 dígitos, não 4 fixos (AD-025). O Postgres tem `date` até o ano
+ * 5874897, e o trigger `members_ciclo_base` grava o ciclo-base com
+ * `make_date(ano + 1, ...)`: um `criado_em` de 9999-12-31 vira `10000-12-31` na
+ * coluna. Com `\d{4}` fixo esse valor não casava e o TS devolvia `—` para um
+ * registro que o banco tinha derivado — os dois lados discordando sobre dado já
+ * gravado, que é a forma mais cara de divergir.
+ *
+ * O teto real é o do `Date` do JavaScript (ano 275760), não o do regex: acima
+ * disso `new Date()` devolve `Invalid Date`. A janela 275761..5874896 é o
+ * resíduo conhecido — ver a nota de `compararDatas`.
+ */
+const FORMATO_DATA = /^\d{4,6}-\d{2}-\d{2}$/;
+
+/**
+ * Ordem cronológica por componentes, e não por string (AD-025).
+ *
+ * A comparação lexical é correta enquanto todo ano tem 4 dígitos, e quebra
+ * exatamente onde o banco já quebra: `"10000-12-31" >= "2026-01-01"` é `false`,
+ * porque `"1"` ordena antes de `"2"`. O efeito era `calcularValidadeCartao`
+ * devolvendo `null` (cartao mostrando `—`) para um registro cujo
+ * `validade_cartao` o trigger tinha gravado como `10000-12-31`. Para anos de 4
+ * dígitos a ordem por componente dá o mesmo resultado que a lexical, então nada
+ * que já passasse muda.
+ */
+function compararDatas(a: string, b: string): number {
+  const [anoA, mesA, diaA] = a.split("-").map(Number);
+  const [anoB, mesB, diaB] = b.split("-").map(Number);
+
+  if (anoA !== anoB) {
+    return anoA - anoB;
+  }
+  if (mesA !== mesB) {
+    return mesA - mesB;
+  }
+  return diaA - diaB;
+}
 
 /**
  * Fuso civil da igreja (Santa Luzia-PB). O cálculo é ancorado aqui em vez do
@@ -150,7 +186,7 @@ export function calcularValidadeCartao(
       return null;
     }
 
-    if (candidato >= hojeIso) {
+    if (compararDatas(candidato, hojeIso) >= 0) {
       return candidato;
     }
   }

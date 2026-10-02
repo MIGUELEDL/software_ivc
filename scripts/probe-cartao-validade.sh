@@ -494,6 +494,41 @@ assert.strictEqual(V.calcularValidadeCartao("2026-09-13T23:30:00-03:00", new Dat
 assert.strictEqual(V.dataCivil("lixo"), null, "dataCivil lixo -> null");
 assert.strictEqual(V.dataCivil(null), null, "dataCivil null -> null");
 
+// ── CART-16 / AD-025: ano de 5 dígitos, onde TS e SQL divergiam
+//
+// O trigger grava `make_date(ano + 1, ...)`; um `criado_em` de 9999-12-31 vira
+// `10000-12-31` na coluna. Duas peças independentes caem aqui:
+//
+//   1. o formato aceitou só 4 dígitos, então `10000-12-31` não casava;
+//   2. a comparação era lexical, e `"10000-12-31" >= "2026-01-01"` é FALSO
+//      porque "1" ordena antes de "2" — o cartão mostrava `—` para um registro
+//      cujo ciclo-base o banco já tinha gravado.
+//
+// Medido no Postgres efêmero: SQL devolvia `10000-12-31`, o TS devolvia `—`.
+assert.strictEqual(
+  V.aniversario("9999-12-31", 1), "10000-12-31",
+  "aniversario produz ano de 5 dígitos"
+);
+assert.strictEqual(
+  V.calcularValidadeCartao("9999-12-31T23:59:59+00:00", HOJE), "10000-12-31",
+  "calcularValidadeCartao concorda com o ciclo-base que o trigger gravou"
+);
+// `hoje` tem que ser um ano que o `Date` do JS representa: acima de 275760 o
+// `new Date(...)` devolve Invalid Date e o ISO de 5 dígitos não é parseável. O
+// teto do TS é esse, não o do regex — a nota em `validade.ts` registra a janela
+// 275761..5874896 como resíduo conhecido.
+assert.strictEqual(
+  V.calcularValidadeCartao("10000-12-31", HOJE), "10001-12-31",
+  "ano de 5 dígitos também como entrada já civil, e a saída segue de 5 dígitos"
+);
+// O caso de 4 dígitos que a comparação lexical resolvia: se `compararDatas`
+// voltasse a ser string, este ainda passaria — por isso o par de asserções
+// acima é que trava a regressão, e não este.
+assert.strictEqual(
+  V.calcularValidadeCartao("9999-01-01T00:00:00+00:00", HOJE), "9999-12-31",
+  "ano de 4 dígitos segue igual (controle de não-regressão)"
+);
+
 // ── CART-12: entrada inválida -> null
 assert.strictEqual(V.calcularValidadeCartao(null, HOJE), null, "null -> null");
 assert.strictEqual(V.calcularValidadeCartao(undefined, HOJE), null, "undefined -> null");
