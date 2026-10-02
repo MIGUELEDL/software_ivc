@@ -209,9 +209,9 @@
 ## Handoff — feature cartao-valididade-anual — R5 FAIL, remediação feita (2026-10-01)
 
 - **Estado**: implementação completa e gates locais verdes, mas **a R5 foi FAIL** e a feature **NÃO está verificada**. `validation.md` é o relatório da R5 — por isso `validate_state.py` falha, de propósito. Não adicionei linha em `docs/coverage-matrix.md` ainda.
-- **Onde o código para**: último commit que toca `src/`, `scripts/` ou `supabase/` é **`f14d1f9`**. Branch `main`, **nada pushed**.
+- **Onde o código para**: último commit que toca `src/`, `scripts/` ou `supabase/` é **`403efa4`**. Branch `main`, **nada pushed**.
   - **Não confie em SHA absoluto escrito aqui** — um handoff que declara o próprio HEAD fica errado no commit que o escreve. Use `git log`.
-- **O que a R5 achou e o que este HEAD já corrigiu** (`f14d1f9`, um commit):
+- **O que a R5 achou e o que este HEAD já corrigiu** (`403efa4`):
   - **Teto de 200 anos (bug real, dado já gravado)** — o laço de candidatos tinha limite arbitrário; `1800-06-01` devolvia `null` no TS enquanto a coluna tinha `1801-06-01`. Passos agora derivados. Era a **janela baixa**, que a AD-025 não mencionava.
   - **Wrapper no payload** — o `persistido` aceitava `service(f(pronto.dados))` (o `[^)]*?` parava no primeiro `)`, o do wrapper). Medido na R5: A1b/A1c/A1d gravavam `rg = null` com tudo verde. Argumentos da chamada agora quebrados por profundidade de ()[]{} e o último tem de ser **exatamente** `pronto.dados`.
   - **Corpo do 400** — o guard via que a rota montava um 400, não que o corpo era o erro; `erroCampos({})` passava (A2/A2b). Agora exige `pronto.campos` no arquivo da rota.
