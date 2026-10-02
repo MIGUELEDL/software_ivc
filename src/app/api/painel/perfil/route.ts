@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getClaims } from "@/lib/auth/claims";
-import { comporDadosDocumento } from "@/lib/painel/documento";
+import { comporDadosDocumento, temErros } from "@/lib/painel/documento";
 import {
   createMember,
   getMemberByAuthUid,
@@ -31,7 +31,18 @@ function validarNascimento(valor: string): boolean {
   return true;
 }
 
-function validarFormulario(formData: FormData) {
+/**
+ * Valida só os campos de perfil (nome, nascimento, WhatsApp). O documento do
+ * cartão entra depois, em `comporDadosDocumento`, chamado no próprio `POST`.
+ *
+ * A separação é deliberada: com a mesclagem dentro desta função, a ligação
+ * entre o resultado da composição e o que chega ao `.update()` atravessava duas
+ * camadas, e o gate só conseguia ver o token `comporDadosDocumento` no
+ * arquivo — não que o retorno dele fosse o persistido. Com as duas no mesmo
+ * escopo, o probe exige que o identificador vinculado ao retorno seja
+ * literalmente o argumento do service.
+ */
+function validarCamposBase(formData: FormData) {
   const nome = String(formData.get("nome") ?? "").trim();
   const nascimento = String(formData.get("nascimento") ?? "").trim();
   const whatsapp = String(formData.get("whatsapp") ?? "").trim();
@@ -47,19 +58,7 @@ function validarFormulario(formData: FormData) {
     campos.whatsapp = "Informe seu WhatsApp para contato.";
   }
 
-  // Documento do cartão (CART-04..07): o mesmo normalizador serve à criação e
-  // à edição, então "salvar vazio" limpa o campo para NULL nos dois caminhos.
-  // A leitura das chaves do FormData e a mesclagem dos erros por campo morrem
-  // em `comporDadosDocumento` para serem exercitáveis — as três actions
-  // precisam exatamente desta mesclagem.
-  const { dados, campos: todosCampos } = comporDadosDocumento(
-    { nome, nascimento, whatsapp },
-    campos,
-    formData,
-    new Date()
-  );
-
-  return { dados, campos: todosCampos };
+  return { dados: { nome, nascimento, whatsapp }, campos };
 }
 
 export async function POST(request: Request) {
@@ -70,11 +69,26 @@ export async function POST(request: Request) {
   }
 
   const formData = await request.formData();
-  const { dados, campos } = validarFormulario(formData);
+  const base = validarCamposBase(formData);
 
-  if (Object.keys(campos).length > 0) {
+  // Documento do cartão (CART-04..07): o mesmo normalizador serve à criação e
+  // à edição, então "salvar vazio" limpa o campo para NULL nos dois caminhos.
+  // A leitura das chaves do FormData e a mesclagem dos erros por campo morrem
+  // em `comporDadosDocumento` para serem exercitáveis — as três actions
+  // precisam exatamente desta mesclagem.
+  const { dados, campos: todosCampos } = comporDadosDocumento(
+    base.dados,
+    base.campos,
+    formData,
+    new Date()
+  );
+
+  // `temErros` e não `Object.keys(campos).length > 0` escrito aqui: esta é a
+  // única coisa que impede gravar a row com um campo inválido (CART-05..07), e
+  // invertendo a comparação dentro da função pura o probe acusa.
+  if (temErros(todosCampos)) {
     return NextResponse.json(
-      { error: "dados_invalidos", campos },
+      { error: "dados_invalidos", campos: todosCampos },
       { status: 400 }
     );
   }

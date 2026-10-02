@@ -18,7 +18,10 @@ export type MembroCartao = {
   rg: string | null;
   cpf: string | null;
   data_batismo: string | null;
-  criado_em: string;
+  // Anulável de propósito: a coluna tem `default now()` mas é nullable no
+  // schema, e CART-15 exige `—` para registro "ausente", não só para registro
+  // ilegível. Tipar como `string` não-nulável tiraria o caso do tipo.
+  criado_em: string | null | undefined;
   foto_url: string | null;
 };
 

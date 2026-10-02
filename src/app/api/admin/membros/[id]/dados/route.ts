@@ -7,7 +7,7 @@ import {
   lerEndereco,
 } from "@/lib/admin/validacao";
 import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
-import { comporDadosDocumento } from "@/lib/painel/documento";
+import { comporDadosDocumento, temErros } from "@/lib/painel/documento";
 
 /**
  * POST /api/admin/membros/[id]/dados — edição de dados textuais
@@ -57,7 +57,10 @@ export async function POST(
     new Date()
   );
 
-  if (Object.keys(camposDocumento).length > 0) {
+  // `temErros` em vez da comparação escrita aqui: é o único ponto que impede
+  // gravar a row com campo inválido (CART-05..07), e o probe executa a função
+  // — invertendo a comparação dentro dela, o gate acusa.
+  if (temErros(camposDocumento)) {
     return erroCampos(camposDocumento);
   }
 

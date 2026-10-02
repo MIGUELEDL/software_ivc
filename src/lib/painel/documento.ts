@@ -28,17 +28,36 @@ function temControle(valor: string): boolean {
 }
 
 /**
+ * Ausência de erro no mapa por campo das rotas.
+ *
+ * Existe como função pura para que o "não grava nada quando um campo é
+ * inválido" (CART-05..07) seja observável: o probe a executa nos dois
+ * sentidos, e inverter a comparação dentro dela quebra o gate. Escretado
+ * inline como `Object.keys(campos).length > 0` na rota, trocar por `=== 0`
+ * mantinha typecheck, lint, build e todas as probes verdes.
+ */
+export function temErros(campos: Record<string, string>): boolean {
+  return Object.keys(campos).length > 0;
+}
+
+/**
  * CPF: aceita apenas dígitos e exige exatamente 11 (CART-05). Máscara é
  * tolerada na entrada (o usuário digita `123.456.789-09`) mas **não** é
  * persistida — o cartão ID-1 não comporta máscara e duas representações do
  * mesmo CPF quebrariam a busca por ele.
  */
 export function normalizarCpf(valor: string): Resultado<string> {
-  const bruto = valor.trim();
-
-  if (temControle(bruto)) {
+  // Controle é testado na entrada CRUA, antes do `trim`: `\n`, `\r` e `\t`
+  // são whitespace e o `trim()` removeria um "\n no fim" sem que ele
+  // aparecesse em `bruto` — o "11 dígitos" viraria 11 dígitos limpos e a
+  // entrada seria aceita. Nenhum campo de documento é textarea, então o
+  // browser não produz esses caracteres; quando aparecem, a entrada não veio
+  // de um formulário.
+  if (temControle(valor)) {
     return { ok: false, erro: "Informe um CPF com 11 dígitos." };
   }
+
+  const bruto = valor.trim();
 
   if (bruto.length === 0) {
     return { ok: true, valor: "" };
@@ -60,11 +79,14 @@ export function normalizarCpf(valor: string): Resultado<string> {
  * (CART-07). Sem normalização de máscara — o formato varia por estado.
  */
 export function normalizarRg(valor: string): Resultado<string> {
-  const limpo = valor.trim();
-
-  if (temControle(limpo)) {
+  // Mesma ordem do CPF: controle na entrada crua, senão `\n`/`\t` no fim
+  // somem no `trim()` e o limite de 20 caracteres é conferido sobre um valor
+  // que o cliente não enviou.
+  if (temControle(valor)) {
     return { ok: false, erro: "Informe um RG válido." };
   }
+
+  const limpo = valor.trim();
 
   if (limpo.length === 0) {
     return { ok: true, valor: "" };
@@ -89,11 +111,13 @@ export function normalizarDataBatismo(
   valor: string,
   hoje: Date
 ): Resultado<string> {
-  const bruto = valor.trim();
-
-  if (temControle(bruto)) {
+  // Controle na entrada crua, antes do `trim()`: um "\n" no fim passaria
+  // pelo `trim()` e pelo `/^\d{4}-\d{2}-\d{2}$/`, gravando a data.
+  if (temControle(valor)) {
     return { ok: false, erro: "Informe uma data de batismo válida." };
   }
+
+  const bruto = valor.trim();
 
   if (bruto.length === 0) {
     return { ok: true, valor: "" };
