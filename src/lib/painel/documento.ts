@@ -28,19 +28,6 @@ function temControle(valor: string): boolean {
 }
 
 /**
- * Ausência de erro no mapa por campo das rotas.
- *
- * Existe como função pura para que o "não grava nada quando um campo é
- * inválido" (CART-05..07) seja observável: o probe a executa nos dois
- * sentidos, e inverter a comparação dentro dela quebra o gate. Escretado
- * inline como `Object.keys(campos).length > 0` na rota, trocar por `=== 0`
- * mantinha typecheck, lint, build e todas as probes verdes.
- */
-export function temErros(campos: Record<string, string>): boolean {
-  return Object.keys(campos).length > 0;
-}
-
-/**
  * CPF: aceita apenas dígitos e exige exatamente 11 (CART-05). Máscara é
  * tolerada na entrada (o usuário digita `123.456.789-09`) mas **não** é
  * persistida — o cartão ID-1 não comporta máscara e duas representações do
@@ -321,20 +308,42 @@ export function colunasEditarMembro(
  * distinguiria. Aqui a composição é executada pelo probe, então as duas
  * remoções falham.
  *
- * Não muta os argumentos: devolve os dois maps mesclados.
+ * Não muta os argumentos.
+ *
+ * O retorno é uma união discriminada, e isso não é estilo. `ok: false` só
+ * existe quando há erro; `ok: true` só existe quando não há. Ler `.dados`
+ * sem antes estreitar o tipo é erro de compilação — então o `return` do 400
+ * na rota não é uma linha que um guard textual vigia, é o que mantém o código
+ * compilando. Sob a assinatura antiga (`{ dados, campos }`), trocar o `return`
+ * por um `console.error` mantinha typecheck, lint, build e todas as probes
+ * verdes enquanto gravava a row com campo inválido: foi um mutante que
+ * sobreviveu a quatro rodadas de Verifier.
+ *
+ * O payload do caminho válido é `Readonly` e vai congelado. Um
+ * `dados.rg = null` escrito depois da composição é erro de compilação, e
+ * seria `TypeError` mesmo forçado por `as`.
  */
+export type Pronto<T> =
+  | { ok: true; dados: DadosProntos<T> }
+  | { ok: false; campos: Record<string, string> };
+
+/** Só o que pode chegar ao banco: validado, completo e imutável. */
+export type DadosProntos<T> = Readonly<T & DadosDocumento>;
+
 export function comporDadosDocumento<T extends object>(
   dadosBase: T,
   camposBase: Record<string, string>,
   formData: FormData,
   hoje: Date
-): { dados: T & DadosDocumento; campos: Record<string, string> } {
+): Pronto<T> {
   const documento = lerDocumentoForm(formData, hoje);
+  const campos = { ...camposBase, ...documento.campos };
 
-  return {
-    dados: { ...dadosBase, ...documento.dados },
-    campos: { ...camposBase, ...documento.campos },
-  };
+  if (Object.keys(campos).length > 0) {
+    return { ok: false, campos };
+  }
+
+  return { ok: true, dados: Object.freeze({ ...dadosBase, ...documento.dados }) };
 }
 
 /**

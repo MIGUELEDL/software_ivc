@@ -110,69 +110,94 @@ ligada() {
   return 1
 }
 
-# `persistido` é a segunda metade de `ligada` para o caminho de escrita: exige
-# que o identificador vinculado ao retorno da composição seja LITERALMENTE o
-# último argumento do service que grava, e que a guarda de 400 teste o
-# identificador de `campos` e venha antes da gravação.
+# `persistido` amarra a composição ao que é realmente gravado. Três fatos, e
+# cada um mata um mutante que o Verifier mediu passando com typecheck, lint,
+# build e todas as probes verdes:
 #
-# Sem isso, `chama` viajava: chamar `comporDadosDocumento` e descartar o
-# resultado, usá-lo só para os erros, ou passar `{...dadosDocumento, rg: null}`
-# ao service deixavam typecheck, lint, build e todas as probes verdes — o token
-# existia, o documento não chegava à row. O `)` colado no nome é o que barra o
-# spread e o objeto literal.
+#   (a) o `FormData` da request é o 3º argumento — passar `new FormData()`
+#       fazia rg/cpf/batismo chegarem sempre `null` e sem erro;
+#   (b) TODO serviço de gravação da rota recebe `<pronto>.dados` como último
+#       argumento, o identificador cru. Nem `{ ...pronto.dados, rg: null }`,
+#       nem `base.dados` com `createMember` ainda correto;
+#   (c) o `if (!<pronto>.ok)` aparece antes deles.
+#
+# O `return` desse `if` NÃO é verificado aqui, e não precisa: `pronto.dados`
+# só existe no ramo `ok: true`, então trocar o `return` por um `console.error`
+# deixa de compilar. É a diferença entre um guard e uma barreira de tipo —
+# guardUid é o que o Verifier reprovou quatro vezes seguidas.
+#
+# Trade-off aceito: um alias semanticamente correto (`const alias =
+# pronto.dados`) é reprovado. O preço é uma refatoração de uma linha virar
+# alteração de gate; a alternativa custou quatro rodadas.
 persistido() {
   local simbolo="$2" servicos="$3"
-  local codigo dados campos linhaErro linhaServico
-
+  local codigo
   codigo="$(sem_comentarios "$1" | grep -Ev '^[[:space:]]*import([\\{[:space:]]|.* from )')" || true
 
-  while read -r dados campos; do
-    [ -n "$dados" ] && [ -n "$campos" ] || continue
+  # Um nome por chamada: `const X = simbolo(...)`.
+  local var fd varDe fdDe contagem linhaOk linhaServico
+  varDe="$(printf '%s' "$codigo" | perl -0777 -ne '
+    while (/(?:const|let|var)\s+([A-Za-z0-9_]+)\s*=\s*(?:await\s+)?'"$simbolo"'\s*[(]/g) { print "$1\n" }' | sort -u)"
+  [ -n "$varDe" ] || return 1
 
-    # (a) a guarda de 400 consulta os erros do retorno da composição
-    printf '%s' "$codigo" | grep -qE \
-      'temErros\([[:space:]]*'"$campos"'[[:space:]]*\)' || continue
+  # (a) o `FormData` da request é o 3º argumento da composição
+  fdDe="$(printf '%s' "$codigo" | perl -0777 -ne '
+    while (/([A-Za-z0-9_]+)\s*=\s*await\s+request\.formData\s*[(]/g) { print "$1\n" }' | sort -u)"
+  [ -n "$fdDe" ] || return 1
 
-    # (b) TODO service de gravação da rota recebe o identificador cru como
-    #     último argumento — não basta um deles. Exigir "algum" deixava passar
-    #     `updateMember(claims.sub, base.dados)` enquanto `createMember` ainda
-    #     recebia `dados`: o token e metade do caminho certainos, e a row da
-    #     edição nascia sem documento.
-    #
-    #     Known trade-off: um alias (`const alias = dados; service(..., alias)`)
-    #     é comportamentalmente correto e é reprovado do mesmo jeito. O guard
-    #     exige o identificador literal, e o preço é uma refatoração de uma
-    #     linha virar alteração de gate — escolha consciente, porque a
-    #     alternativa já custou três rodadas de Verifier.
-    #
-    #     O lookbehind `(?<![.\w])` é o que distingue `dados` de `base.dados`:
-    #     um `[^)]*` guloso casaria os dois, e o argumento errado continuaria
-    #     passando.
-    #
-    # (c) a guarda de 400 vem ANTES da gravação: senão `temErros` decide o
-    #     status, mas a row já foi escrita (CART-05..07, "SHALL NOT write").
-    local contagem linhaErro linhaServico
+  for var in $varDe; do
+    if ! printf '%s' "$codigo" | perl -0777 -ne '
+      # 3º argumento de topo da chamada. A quebra de vírgula tem de contar
+      # profundidade de ()[]{}: um `split /,/` simples parte o objeto literal
+      # `{ nome, nascimento, ... }` em pedaços e a comparação nunca casa.
+      sub topo {
+        my ($s) = @_;
+        my (@p, $cur, $d);
+        $d = 0; $cur = "";
+        for my $ch (split //, $s) {
+          $d++ if $ch =~ /[(\[{]/;
+          $d-- if $ch =~ /[)\]}]/;
+          if ($ch eq "," && $d == 0) { push @p, $cur; $cur = ""; next }
+          $cur .= $ch;
+        }
+        push @p, $cur;
+        return map { my $x = $_; $x =~ s/\A\s+|\s+\z//g; $x } @p;
+      }
+      my $alvo = "'"$var"'";
+      while (/\b'"$simbolo"'\s*[(]((?:[^()]++|\((?:[^()]++|\([^()]*\))*\))*)\s*\)/gs) {
+        my @partes = topo($1);
+        next unless @partes >= 3;
+        # O 2º argumento é o mapa de erros que a rota montou. Passar `{}`
+        # descartaria as mensagens de nome/nascimento/whatsapp e ainda assim
+        # gravaria a row: o mesmo bug de "chamei certo e ignorei o efeito", só
+        # com um parâetro a menos. Aceita `campos` ou `algo.campos`.
+        exit(2) unless $partes[1] =~ /\A[A-Za-z0-9_]*\.?campos\z/;
+        exit(0) if $partes[2] eq "'"$fdDe"'";
+      }
+      exit(1);
+    '; then
+      # saida 1: FormData da request nao e o 3º argumento
+      # saida 2: o mapa de erros da rota nao e o 2º argumento
+      continue
+    fi
+
+    # (b) todos os serviços recebem o identificador cru como último argumento
     contagem="$(printf '%s' "$codigo" | perl -0777 -ne '
       my ($c, $l) = (0, 0);
       $c++ while /\b(?:'"$servicos"')[(]/g;
-      $l++ while /\b(?:'"$servicos"')[(][^)]*?(?<![.\w])'"$dados"'\s*\)/g;
+      $l++ while /\b(?:'"$servicos"')[(][^)]*?(?<![.\w])'"$var"'\.dados\s*\)/g;
       print "$c $l";
     ')"
-    totalChamadas="${contagem%% *}"
-    totalLinked="${contagem##* }"
-    [ "$totalChamadas" -ge 1 ] 2>/dev/null || continue
-    [ "$totalChamadas" = "$totalLinked" ] || continue
+    [ "${contagem%% *}" -ge 1 ] 2>/dev/null || continue
+    [ "${contagem%% *}" = "${contagem##* }" ] || continue
 
-    linhaErro="$(printf '%s' "$codigo" | grep -nE 'temErros\(' | head -1 | cut -d: -f1)"
+    # (c) o estreitamento do `ok` vem antes da gravação
+    linhaOk="$(printf '%s' "$codigo" | grep -nE '!\s*'"$var"'\.ok' | head -1 | cut -d: -f1)"
     linhaServico="$(printf '%s' "$codigo" | grep -nE '\b('"$servicos"')[(]' | head -1 | cut -d: -f1)"
-    if [ -n "$linhaErro" ] && [ -n "$linhaServico" ] && [ "$linhaErro" -lt "$linhaServico" ]; then
+    if [ -n "$linhaOk" ] && [ -n "$linhaServico" ] && [ "$linhaOk" -lt "$linhaServico" ]; then
       return 0
     fi
-  done < <(printf '%s' "$codigo" | perl -ne '
-    while (/\{\s*dados(?:\s*:\s*([A-Za-z0-9_]+))?\s*,\s*campos\s*:\s*([A-Za-z0-9_]+)\s*\}\s*=\s*'"$simbolo"'\s*[(]/g) {
-      my ($d, $c) = (defined $1 ? $1 : "dados", $2);
-      print "$d $c\n";
-    }' | sort -u)
+  done
   return 1
 }
 
@@ -319,13 +344,43 @@ fi # fim do bloco de integração (--domain pula)
 # --- CART-04..07 + CART-09..12: runtime node sobre os módulos puros ---
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
-npx tsc "$DOC" "$VAL" "$CART" --outDir "$TMP" --module commonjs --target es2020 \
-  --moduleResolution node --esModuleInterop --skipLibCheck >/dev/null 2>&1 \
-  || ko "compilacao dos modulos p/ teste falhou"
+# Assercao de TEMPO DE COMPILACAO do `Readonly` do payload pronto. O probe roda
+# o `tsc` de qualquer jeito; o que ele acrescenta e o arquivo `readonly.ts`, que
+# tenta escrever no payload. Com o tipo correto, a escrita e erro e o
+# `@ts-expect-error` e satisfeito; sem ele (Readonly removido), o compilador
+# reclama do `@ts-expect-error` nao usado. Nos dois casos o resultado e o mesmo
+# — verde quando o congelamento existe, vermelho quando sumiu.
+DOC_REL="$(realpath --relative-to="$TMP" "$DOC")"
+DOC_REL="${DOC_REL%.ts}"
+cat >"$TMP/readonly.ts" <<TS
+import { comporDadosDocumento } from "$DOC_REL";
 
-DOC_JS="$(find "$TMP" -name 'documento.js' -print -quit)"
-VAL_JS="$(find "$TMP" -name 'validade.js' -print -quit)"
-CART_JS="$(find "$TMP" -name 'cartao.js' -print -quit)"
+const pronto = comporDadosDocumento({}, {}, new FormData(), new Date());
+
+if (pronto.ok) {
+  // @ts-expect-error o payload pronto e Readonly (AD-021)
+  pronto.dados.rg = "12.345.678-9";
+  const semFreeze: { rg: string | null } = pronto.dados;
+  void semFreeze;
+}
+TS
+
+npx tsc "$DOC" "$VAL" "$CART" "$TMP/readonly.ts" --outDir "$TMP/out" \
+  --module commonjs --target es2020 \
+  --moduleResolution node --esModuleInterop --skipLibCheck >"$TMP/tsc.log" 2>&1 \
+  || ko "compilacao dos modulos p/ teste falhou (ver $TMP/tsc.log)"
+
+# `tsc` calcula a raiz comum entre o repo e o $TMP, então o emitido pode cair
+# em `$TMP/out/<caminho-absoluto-da-arvore>/readonly.js`.
+if [ -n "$(find "$TMP/out" -name 'readonly.js' -print -quit)" ]; then
+  ok "CART-01/02/03 payload pronto e Readonly no tipo (escrita nao compila)"
+else
+  ko "CART-01/02/03 o payload pronto deixou de ser Readonly"
+fi
+
+DOC_JS="$(find "$TMP/out" -name 'documento.js' -print -quit)"
+VAL_JS="$(find "$TMP/out" -name 'validade.js' -print -quit)"
+CART_JS="$(find "$TMP/out" -name 'cartao.js' -print -quit)"
 
 if [ ! -f "$DOC_JS" ] || [ ! -f "$VAL_JS" ] || [ ! -f "$CART_JS" ]; then
   ko "modulos compilados nao encontrados"
@@ -547,45 +602,61 @@ assert.strictEqual("logradouro" in pCreateLimpo, true, "coluna presente mesmo va
 const baseDados = { nome: "Miguel", nascimento: "2004-12-28", whatsapp: "84999766852" };
 const baseErros = { nome: "Informe seu nome completo." };
 
+// A união discriminada é o que torna a barreira de tipo: `dados` só existe no
+// ramo `ok: true`. Um caminho que grava sem estreitar não compila — não há
+// guarda de probe que pudesse substituir isso.
 const mOk = D.comporDadosDocumento(
-  baseDados, baseErros,
+  baseDados, {},
   fd({ rg: "12.345.678-9", cpf: "12345678909", data_batismo: "2020-05-10" }),
   HOJE
 );
+assert.strictEqual(mOk.ok, true, "CART-01 formulario valido devolve o ramo ok");
 assert.deepStrictEqual(
   [mOk.dados.rg, mOk.dados.cpf, mOk.dados.data_batismo],
   ["12.345.678-9", "12345678909", "2020-05-10"],
   "CART-01 rota compoe o documento no payload"
 );
 assert.strictEqual(mOk.dados.nome, "Miguel", "a mesclagem preserva os campos da rota");
-assert.strictEqual(mOk.campos.nome, "Informe seu nome completo.", "a mesclagem preserva os erros ja montados");
+assert.ok(!("campos" in mOk), "o ramo ok nao carrega mapa de erros");
+assert.ok(Object.isFrozen(mOk.dados), "o payload pronto e imutavel");
+
+const mBase = D.comporDadosDocumento(
+  baseDados, baseErros,
+  fd({ rg: "12.345.678-9" }),
+  HOJE
+);
+assert.strictEqual(mBase.ok, false, "erro da propria rota tambem barra a gravacao");
+assert.deepStrictEqual(Object.keys(mBase.campos), ["nome"], "erro da rota chega no 400");
 
 const mErro = D.comporDadosDocumento(
   baseDados, baseErros,
   fd({ cpf: "123" }),
   HOJE
 );
+assert.strictEqual(mErro.ok, false, "CART-05 campo invalido devolve o ramo de erro");
 assert.deepStrictEqual(
   Object.keys(mErro.campos).sort(), ["cpf", "nome"],
   "CART-05 erros de documento e da rota convivem no mesmo 400"
 );
+assert.ok(!("dados" in mErro), "o ramo de erro nao expoe payload: nao ha o que gravar");
 assert.strictEqual(typeof mErro.campos.cpf, "string", "erro de documento presente no mapa");
 
-// `temErros` é a barreira entre "campo inválido" e "row gravada". Executada
-// nos dois sentidos: inverter `> 0` para `=== 0` dentro dela quebra o gate,
-// coisa que não acontecia com a comparação escrita inline na rota.
-assert.strictEqual(D.temErros({}), false, "temErros sem erros");
-assert.strictEqual(D.temErros({ nome: "Informe seu nome completo." }), true, "temErros com um erro");
-assert.strictEqual(D.temErros(mErro.campos), true, "temErros enxerga os erros da composicao");
-assert.strictEqual(D.temErros(D.comporDadosDocumento(baseDados, {}, fd({}), HOJE).campos), false, "temErros falso quando o formulario esta valido");
+// Um único campo invalido tem de derrubar o documento inteiro: nao existe
+// "gravar o que deu" com parte invalida (CART-05..07, "SHALL NOT write").
+const mParcial = D.comporDadosDocumento(
+  baseDados, {},
+  fd({ rg: "12.345.678-9", cpf: "123" }),
+  HOJE
+);
+assert.strictEqual(mParcial.ok, false, "RG valido nao salva um CPF invalido ao lado");
 
 const mLimpo = D.comporDadosDocumento(baseDados, {}, fd({}), HOJE);
+assert.strictEqual(mLimpo.ok, true, "FormData sem documento e valido");
 assert.deepStrictEqual(
   [mLimpo.dados.rg, mLimpo.dados.cpf, mLimpo.dados.data_batismo],
   [null, null, null],
   "CART-04 rota sem documento leva NULL, nao string vazia"
 );
-assert.deepStrictEqual(mLimpo.campos, {}, "FormData sem documento nao gera erro");
 assert.deepStrictEqual(baseDados, { nome: "Miguel", nascimento: "2004-12-28", whatsapp: "84999766852" }, "comporDadosDocumento nao muta o payload da rota");
 assert.deepStrictEqual(baseErros, { nome: "Informe seu nome completo." }, "comporDadosDocumento nao muta o mapa de erros da rota");
 

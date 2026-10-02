@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getClaims } from "@/lib/auth/claims";
-import { comporDadosDocumento, temErros } from "@/lib/painel/documento";
+import { comporDadosDocumento } from "@/lib/painel/documento";
 import {
   createMember,
   getMemberByAuthUid,
@@ -73,22 +73,21 @@ export async function POST(request: Request) {
 
   // Documento do cartão (CART-04..07): o mesmo normalizador serve à criação e
   // à edição, então "salvar vazio" limpa o campo para NULL nos dois caminhos.
-  // A leitura das chaves do FormData e a mesclagem dos erros por campo morrem
-  // em `comporDadosDocumento` para serem exercitáveis — as três actions
-  // precisam exatamente desta mesclagem.
-  const { dados, campos: todosCampos } = comporDadosDocumento(
+  //
+  // `pronto.dados` só existe no ramo `ok: true`, e o `return` abaixo é o que
+  // estreita o tipo. Trocar esse `return` por um `console.error` deixa de
+  // compilar — não é um guard de probe, é o compilador recusando gravar a row
+  // sem antes recusar o formulário (CART-05..07, "SHALL NOT write").
+  const pronto = comporDadosDocumento(
     base.dados,
     base.campos,
     formData,
     new Date()
   );
 
-  // `temErros` e não `Object.keys(campos).length > 0` escrito aqui: esta é a
-  // única coisa que impede gravar a row com um campo inválido (CART-05..07), e
-  // invertendo a comparação dentro da função pura o probe acusa.
-  if (temErros(todosCampos)) {
+  if (!pronto.ok) {
     return NextResponse.json(
-      { error: "dados_invalidos", campos: todosCampos },
+      { error: "dados_invalidos", campos: pronto.campos },
       { status: 400 }
     );
   }
@@ -97,12 +96,12 @@ export async function POST(request: Request) {
     const existente = await getMemberByAuthUid(claims.sub);
 
     if (existente) {
-      const member = await updateMember(claims.sub, dados);
+      const member = await updateMember(claims.sub, pronto.dados);
       return NextResponse.json({ member }, { status: 200 });
     }
 
     // Autocadastro: cria o registro e gera a matrícula IVC-#### (PAINEL-19).
-    const member = await createMember(claims.sub, dados);
+    const member = await createMember(claims.sub, pronto.dados);
     return NextResponse.json(
       { member, matricula: member.matricula },
       { status: 201 }

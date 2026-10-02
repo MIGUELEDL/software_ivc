@@ -8,7 +8,7 @@ import {
   lerEndereco,
 } from "@/lib/admin/validacao";
 import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
-import { comporDadosDocumento, temErros } from "@/lib/painel/documento";
+import { comporDadosDocumento } from "@/lib/painel/documento";
 
 /**
  * POST /api/admin/membros — criação de membro com conta auth (ADMINMEM-07..12).
@@ -52,22 +52,23 @@ export async function POST(request: Request) {
   // mesclagem dos dados e dos erros por campo mora no helper puro, que o probe
   // executa — escrever o spread aqui dentro deixaria o gate incapaz de perceber
   // a remoção dele.
-  const { dados: dadosDocumento, campos: camposDocumento } = comporDadosDocumento(
+  const pronto = comporDadosDocumento(
     { nome, nascimento, whatsapp, email, ...endereco },
     campos,
     formData,
     new Date()
   );
 
-  // `temErros` em vez da comparação escrita aqui: é o único ponto que impede
-  // gravar a row com campo inválido (CART-05..07), e o probe executa a função
-  // — invertendo a comparação dentro dela, o gate acusa.
-  if (temErros(camposDocumento)) {
-    return erroCampos(camposDocumento);
+  // O `return` do 400 é o que estreita `pronto` para o ramo `ok: true`.
+  // Removê-lo deixa de compilar, porque `pronto.dados` não existe no outro
+  // ramo da união — a barreira de "não grava com campo inválido" é de tipo,
+  // não de convenção (CART-05..07).
+  if (!pronto.ok) {
+    return erroCampos(pronto.campos);
   }
 
   try {
-    const { membro, senhaTemporaria } = await criarMembro(dadosDocumento);
+    const { membro, senhaTemporaria } = await criarMembro(pronto.dados);
 
     const { ip, user_agent } = extrairInfoRequest(request);
     await registrarAuditoria({

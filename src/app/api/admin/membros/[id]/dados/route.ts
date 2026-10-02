@@ -7,7 +7,7 @@ import {
   lerEndereco,
 } from "@/lib/admin/validacao";
 import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
-import { comporDadosDocumento, temErros } from "@/lib/painel/documento";
+import { comporDadosDocumento } from "@/lib/painel/documento";
 
 /**
  * POST /api/admin/membros/[id]/dados — edição de dados textuais
@@ -50,18 +50,19 @@ export async function POST(
   // Documento do cartão (CART-01..03, CART-04..07): salvar vazio limpa o
   // campo para NULL, então a edição aceita remover um dado antes preenchido. A
   // mesclagem mora no helper puro, executado pelo probe.
-  const { dados: dadosDocumento, campos: camposDocumento } = comporDadosDocumento(
+  const pronto = comporDadosDocumento(
     { nome, nascimento, whatsapp, ...endereco },
     campos,
     formData,
     new Date()
   );
 
-  // `temErros` em vez da comparação escrita aqui: é o único ponto que impede
-  // gravar a row com campo inválido (CART-05..07), e o probe executa a função
-  // — invertendo a comparação dentro dela, o gate acusa.
-  if (temErros(camposDocumento)) {
-    return erroCampos(camposDocumento);
+  // O `return` do 400 é o que estreita `pronto` para o ramo `ok: true`.
+  // Removê-lo deixa de compilar, porque `pronto.dados` não existe no outro
+  // ramo da união — a barreira de "não grava com campo inválido" é de tipo,
+  // não de convenção (CART-05..07).
+  if (!pronto.ok) {
+    return erroCampos(pronto.campos);
   }
 
   const existente = await getMembro(id);
@@ -73,7 +74,7 @@ export async function POST(
   }
 
   try {
-    const member = await atualizarDadosMembro(id, dadosDocumento);
+    const member = await atualizarDadosMembro(id, pronto.dados);
     const { ip, user_agent } = extrairInfoRequest(request);
     await registrarAuditoria({
       autor: auth.sub,
