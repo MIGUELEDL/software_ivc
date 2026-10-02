@@ -23,16 +23,20 @@
  */
 
 /**
- * Ano com 4 a 6 dígitos, não 4 fixos (AD-025). O Postgres tem `date` até o ano
- * 5874897, e o trigger `members_ciclo_base` grava o ciclo-base com
- * `make_date(ano + 1, ...)`: um `criado_em` de 9999-12-31 vira `10000-12-31` na
- * coluna. Com `\d{4}` fixo esse valor não casava e o TS devolvia `—` para um
- * registro que o banco tinha derivado — os dois lados discordando sobre dado já
- * gravado, que é a forma mais cara de divergir.
+ * Ano com 4 a 6 dígitos, não 4 fixos (AD-025). O trigger `members_ciclo_base`
+ * grava o ciclo-base com `make_date(ano + 1, ...)`: um `criado_em` de
+ * 9999-12-31 vira `10000-12-31` na coluna. Com `\d{4}` fixo esse valor não
+ * casava e o TS devolvia `—` para um registro que o banco tinha derivado — os
+ * dois lados discordando sobre dado já gravado, que é a forma mais cara de
+ * divergir.
  *
- * O teto real é o do `Date` do JavaScript (ano 275760), não o do regex: acima
- * disso `new Date()` devolve `Invalid Date`. A janela 275761..5874896 é o
- * resíduo conhecido — ver a nota de `compararDatas`.
+ * O teto real é o do `Date` do JavaScript, medido: `new Date(8640000000000000)`
+ * é `+275760-09-13T00:00:00.000Z`. Ou seja, **o ano 275760 só é representável
+ * até 13 de setembro** — a janela começa *dentro* dele, não em 275761. Do lado
+ * do Postgres, `criado_em` é `timestamptz` e estoura em 294276 (o 5874897 que
+ * eu citei antes é o teto do `date`, que o `make_date` alcança mas não é o
+ * gargalo). Resíduo conhecido: de 275760-09-14 a 294276-12-31 o TS devolve
+ * `null` porque não tem como representar a data. Ver `aniversario`.
  */
 const FORMATO_DATA = /^\d{4,6}-\d{2}-\d{2}$/;
 
@@ -68,9 +72,18 @@ function compararDatas(a: string, b: string): number {
  */
 const FUSO_CIVIL = "America/Sao_Paulo";
 
-function diasNoMes(ano: number, mes: number): number {
+/**
+ * Último dia do mês, ou `null` se o ano não é representável pelo `Date`.
+ *
+ * Não pode devolver `NaN`: `dia > NaN` é `false`, então uma validação de
+ * calendário escrita com este valor **passava em silêncio** e o `formatar`
+ * despejava `"275761-09-NaN"` dentro de uma data — quebrando o contrato
+ * `YYYY-MM-DD | null`. Foi a R6 que mediu isso com `275760-09-12`.
+ */
+function diasNoMes(ano: number, mes: number): number | null {
   // `new Date(ano, mes, 0)` devolve o último dia do mês `mes` (1-based).
-  return new Date(ano, mes, 0).getDate();
+  const dias = new Date(ano, mes, 0).getDate();
+  return Number.isNaN(dias) ? null : dias;
 }
 
 function formatar(ano: number, mes: number, dia: number): string {
@@ -105,20 +118,27 @@ export function aniversario(criadoIso: string, anos: number): string | null {
 
   // Valida o calendário *antes* de somar: `2026-13-01` passaria pelo formato
   // e viraria `2027-13-01`, uma data que não existe.
+  const diasBase = diasNoMes(anoBase, mes);
+
   if (
     mes < 1 ||
     mes > 12 ||
     dia < 1 ||
-    dia > diasNoMes(anoBase, mes) ||
-    !Number.isInteger(anoBase)
+    !Number.isInteger(anoBase) ||
+    diasBase === null ||
+    dia > diasBase
   ) {
     return null;
   }
 
   const anoAlvo = anoBase + anos;
-  const diaAjustado = Math.min(dia, diasNoMes(anoAlvo, mes));
+  const diasAlvo = diasNoMes(anoAlvo, mes);
 
-  return formatar(anoAlvo, mes, diaAjustado);
+  if (diasAlvo === null) {
+    return null;
+  }
+
+  return formatar(anoAlvo, mes, Math.min(dia, diasAlvo));
 }
 
 /**

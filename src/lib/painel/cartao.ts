@@ -45,7 +45,12 @@ export const VAZIO = "—";
  * impresso mentiria sobre a data de batismo do membro.
  */
 export function fmtData(valor: string | null | undefined): string {
-  if (!valor || !/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
+  // 4 a 6 dígitos no ano, e não 4 fixos, pelo mesmo motivo do `FORMATO_DATA`
+  // (AD-025): o trigger deriva `10000-12-31` de um `criado_em` de 9999, e um
+  // cartao que mostra `—` para uma data que a coluna tem e discorda do dado
+  // gravado. O round-trip em UTC abaixo ja rejeita o que o `Date` nao
+  // representa (acima de `+275760-09-13`).
+  if (!valor || !/^\d{4,6}-\d{2}-\d{2}$/.test(valor)) {
     return VAZIO;
   }
 

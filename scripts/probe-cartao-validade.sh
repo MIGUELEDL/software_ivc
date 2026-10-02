@@ -268,8 +268,37 @@ done
 # verificada por execução no bloco node; aqui prova-se só o caminho.
 gravando() {
   local codigo
-  codigo="$(sem_comentarios "$1" | grep -Ev '^[[:space:]]*import([\\{[:space:]]|.* from )')" || true
-  printf '%s' "$codigo" | grep -qE '\.(insert|update)\([[:space:]]*'"$2"'[[:space:]]*\('
+  codigo="$(sem_comentarios "$1" | grep -Ev '^[[:space:]]*import([\{[:space:]]|.* from )')" || true
+  # Primeiro argumento de `colunas*` tem de ser EXATAMENTE o `dados` ja tipado.
+  #
+  # A versao anterior so exigia o token `colunas*(` na frente de `.insert(`/`.update(`.
+  # Isso provava que a funcao de payload era chamada, nao que o payload que
+  # chegava ao banco era o `dados` composto: `colunasCriarMembro({ ...dados, rg: null })`
+  # type-checava (o spread preserva os tipos) e passava. Medido na R6 — 6
+  # mutantes sobreviveram assim, gravando `rg = cpf = data_batismo = NULL`.
+  # Mesma amarra de valor que o `persistido` recebeu: argumentos quebrados por
+  # profundidade de ()[]{} e comparados com igualdade exata.
+  printf '%s' "$codigo" | perl -0777 -ne '
+    sub topo {
+      my ($s) = @_;
+      my (@p, $cur, $d);
+      $d = 0; $cur = "";
+      for my $ch (split //, $s) {
+        $d++ if $ch =~ /[(\[{]/;
+        $d-- if $ch =~ /[)\]}]/;
+        if ($ch eq "," && $d == 0) { push @p, $cur; $cur = ""; next }
+        $cur .= $ch;
+      }
+      push @p, $cur;
+      return map { my $x = $_; $x =~ s/\A\s+|\s+\z//g; $x } @p;
+    }
+    while (/\b'"$2"'\s*\(((?:[^()]++|\((?:[^()]++|\([^()]*\))*\))*)\s*\)/gs) {
+      my @a = topo($1);
+      next unless @a >= 1;
+      exit 0 if $a[0] eq "dados";
+    }
+    exit 1;
+  '
 }
 
 for svc in "$ROOT/src/lib/painel/members.ts" "$ADMIN_LIB"; do
@@ -548,10 +577,10 @@ assert.strictEqual(
   V.calcularValidadeCartao("9999-12-31T23:59:59+00:00", HOJE), "10000-12-31",
   "calcularValidadeCartao concorda com o ciclo-base que o trigger gravou"
 );
-// `hoje` tem que ser um ano que o `Date` do JS representa: acima de 275760 o
-// `new Date(...)` devolve Invalid Date e o ISO de 5 dígitos não é parseável. O
-// teto do TS é esse, não o do regex — a nota em `validade.ts` registra a janela
-// 275761..5874896 como resíduo conhecido.
+// `hoje` tem que ser um ano que o `Date` do JS representa. O teto medido e
+// `+275760-09-13T00:00:00.000Z`, ou seja, o ano 275760 so vale ate 13 de
+// setembro — a janela residual comeca DENTRO dele, nao em 275761. Do lado do
+// Postgres, `criado_em` e `timestamptz` e estoura em 294276.
 assert.strictEqual(
   V.calcularValidadeCartao("10000-12-31", HOJE), "10001-12-31",
   "ano de 5 dígitos também como entrada já civil, e a saída segue de 5 dígitos"
@@ -570,6 +599,26 @@ assert.strictEqual(
 assert.strictEqual(
   V.calcularValidadeCartao("1800-06-01", HOJE), "2027-06-01",
   "criado_em de 226 anos atrás ainda acha o aniversário corrente"
+);
+// Contrato `YYYY-MM-DD | null`: nada de `NaN` dentro de uma data. Medido na
+// R6 — `diasNoMes` devolvia `NaN` acima do teto do `Date`, `dia > NaN` era
+// `false` (a validação de calendário passava em silêncio) e `formatar`
+// despejava `"275761-09-NaN"`. `Number.isNaN` tem de morrer na tier TS.
+assert.strictEqual(
+  V.calcularValidadeCartao("275760-09-12", HOJE), null,
+  "ano no teto do Date devolve null, nunca uma data com NaN"
+);
+assert.strictEqual(
+  V.aniversario("275760-09-12", 1), null,
+  "aniversario no teto do Date devolve null"
+);
+assert.strictEqual(
+  V.aniversario("275760-01-01", 1), null,
+  "mes representavel, ano-alvo nao: null em vez de dado invalido"
+);
+assert.strictEqual(
+  V.aniversario("9999-12-31", 1), "10000-12-31",
+  "ano de 5 digitos continua sendo derivado, nao cortado"
 );
 assert.strictEqual(
   V.calcularValidadeCartao("1700-01-01", HOJE), "2027-01-01",
@@ -803,6 +852,17 @@ assert.strictEqual(C.fmtData("2026-09-13"), "13/09/2026", "fmtData pt-BR");
 assert.strictEqual(C.fmtData(null), "—", "fmtData null");
 assert.strictEqual(C.fmtData("13/09/2026"), "—", "fmtData formato errado -> —");
 assert.strictEqual(C.fmtData("2026-02-30"), "—", "fmtData data inexistente -> —");
+// Ano de 5 digitos no cartao: o trigger deriva `10000-12-31` (AD-025) e o
+// cartao mostrava `—` para a data que a coluna tem. Medido na R6. Agora o
+// round-trip em UTC e a unica coisa que pode recusar.
+assert.strictEqual(
+  C.fmtData("10000-12-31"), "31/12/10000",
+  "fmtData mostra o ano de 5 digitos que a coluna tem"
+);
+assert.strictEqual(
+  C.fmtData("275760-09-14"), "—",
+  "fmtData acima do teto do Date continua recusando"
+);
 
 // determinismo
 assert.strictEqual(
