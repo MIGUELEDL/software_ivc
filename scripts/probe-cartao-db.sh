@@ -385,8 +385,13 @@ for (const iso of process.env.PROBE_FIXTURES.split("\n").filter(Boolean)) {
 }
 ')"
 
+# A contagem vem da lista, nao de um literal: um "8" escrito a mao ja ficou
+# desatualizado quando o nono instante foi adicionado e a mensagem continuava
+# verde, mentindo sobre o proprio gate.
+n_instantes="$(printf '%s\n' "$FIXTURES" | grep -c .)"
+
 if [ -n "$saida_ts" ] && [ "$saida_sql" = "$saida_ts" ]; then
-  ok "CART-16 TS e SQL concordam nos 8 instantes de fronteira"
+  ok "CART-16 TS e SQL concordam nos $n_instantes instantes de fronteira"
 else
   ko "CART-16 divergencia TS x SQL:"
   printf '%s\n' "$saida_ts" >/tmp/probe-ts.$$ 2>/dev/null

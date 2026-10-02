@@ -23,7 +23,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 | Mesclagem da rota (`comporDadosDocumento`) | integration | Dados e erros por campo mesclados no payload da rota; sem mutar os argumentos; CART-01..05 | `scripts/probe-cartao-validade.sh` | idem acima |
 | Wiring (services, rotas, formulários, `MemberCard`) | integration | Só o caminho que o runtime não alcança: input presente, payload helper é o argumento de `.insert(`/`.update(`, retorno do mapper ligado ao JSX, retorno da composição é o argumento de **todos** os serviços de gravação da rota e a guarda de 400 vem antes deles | `scripts/probe-cartao-validade.sh` | idem acima |
 | `MemberCard` (render) | integration | Validade calculada no mapper puro `camposCartao(member, hoje)` com `hoje` injetado no teste; demais campos lidos do row | `scripts/probe-cartao-validade.sh` | idem acima |
-| Migration `0024_validade_cartao.sql` | integration | Executada num Postgres efêmero: ciclo-base, clamp, trigger de insert/update, validade forjada, backfill derivado de `criado_em`, idempotência, e acordo TS x SQL em 8 instantes de fronteira; CART-12..14, CART-16 | `scripts/probe-cartao-db.sh` | `bash scripts/probe-cartao-validade.sh --com-db` (tier faz SKIP com exit 2 sem Docker) |
+| Migration `0024_validade_cartao.sql` | integration | Executada num Postgres efêmero: ciclo-base, clamp, trigger de insert/update, validade forjada, backfill derivado de `criado_em`, idempotência, e acordo TS x SQL em 9 instantes de fronteira; CART-12..14, CART-16 | `scripts/probe-cartao-db.sh` | `bash scripts/probe-cartao-validade.sh --com-db` (tier faz SKIP com exit 2 sem Docker) |
 
 ## Gate Check Commands
 
