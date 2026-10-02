@@ -165,11 +165,9 @@ Dependências entre fases: T4,T5 dependem de T1; T6 de T4; T7,T7b de T5; T8 de T
 - [x] Tipos atualizados e consistentes
 - [x] Whitelist preservada (nenhum campo sensível alcançável)
 - [x] Gate full passa
-- [ ] **Follow-up AD-024 (aberto)**: `createMember` e `updateMember` recebem
-  `DadosProntos<T>` em vez do tipo de entrada amplo. O service admin (T5) já
-  recebeu isso em `0d4d1a4`; este é o lado do painel. Sem ele, o payload do perfil
-  ainda pode omitir `rg`/`cpf`/`data_batismo` e a reescrita via spread só é barrada
-  pelo guard do probe. Ver "ORDEM DE TRABALHO" no `.specs/STATE.md`.
+- [x] **Follow-up AD-024**: `createMember` e `updateMember` recebem
+  `DadosProntos<T>` em vez do tipo de entrada amplo (commit `e18fcb4`). Mutante M19
+  medido: payload sem `rg`/`cpf`/`data_batismo` morre em `TS2345`.
 
 **Tests**: integration
 **Gate**: full
