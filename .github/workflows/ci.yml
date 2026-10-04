@@ -1,5 +1,11 @@
 name: ci
 
+# R11: sem isto o workflow herda o padrao do repositorio, que dependendo do
+# setup pode incluir escrita. Estes jobs so precisam LER o repositorio: o mais
+# apertado que ainda funciona.
+permissions:
+  contents: read
+
 on:
   push:
     branches: [main]
@@ -51,7 +57,14 @@ jobs:
       # UTC). Rodar so em UTC deixaria passar um `toISOString()` disfarçado.
       - name: Matriz de fuso
         run: |
-          for tz in UTC Asia/Tokyo Pacific/Kiritimati Europe/Lisbon; do
+          # A R11 mediu o dia civil da igreja sobreviver em TODOS estes quatro
+          # fusos, porque todos tem offset >= 0 — e nenhum fuso com offset
+          # >= 0 distingue o dia da igreja do dia UTC. Somado a isso, nenhum
+          # destes e o offset de producao. America/Sao_Paulo e' o fuso da
+          # igreja (FUSO_CIVIL em validade.ts) e o unico que pega o
+          # `civilDe -> toISOString`; o hemisferio oeste entra por causa do
+          # rollover de ano.
+          for tz in UTC America/Sao_Paulo America/Los_Angeles Asia/Tokyo Pacific/Kiritimati Europe/Lisbon; do
             echo "== TZ=$tz"
             TZ="$tz" npm run probe:cartao --silent -- --domain
           done
@@ -66,7 +79,7 @@ jobs:
           [ "$n" -eq 0 ] || { echo "a probe vazou volume"; exit 1; }
 
   specs:
-    name: Spec structural gates (validate_spec / validate_state)
+    name: Spec structural gates (validate_spec / validate_tasks / validate_state)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -84,6 +97,13 @@ jobs:
           fi
           for f in "${features[@]}"; do
             python3 "$SKILL_DIR/scripts/validate_spec.py" "$f"
+            # A R11 notou que validate_tasks nao rodava em lugar nenhum da CI.
+            # Spec e tasks sao a mesma promessa por lados diferentes: a spec
+            # diz o que tem de ser verdade, a tasks diz o que foi de fato
+            # construido. Validar so uma delas deixa a outra passar de graca.
+            if [ -e ".specs/features/$f/tasks.md" ]; then
+              python3 "$SKILL_DIR/scripts/validate_tasks.py" "$f"
+            fi
             if [ -e ".specs/features/$f/validation.md" ]; then
               python3 "$SKILL_DIR/scripts/validate_state.py" "$f"
             fi
