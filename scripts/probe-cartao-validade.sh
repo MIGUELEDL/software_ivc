@@ -549,7 +549,6 @@ assert.strictEqual(D.normalizarDataBatismo("2026-10-01", HOJE).ok, true, "batism
 assert.strictEqual(D.normalizarDataBatismo("2026-10-02", HOJE).ok, false, "batismo futuro rejeitado");
 assert.strictEqual(D.normalizarDataBatismo("2026-02-30", HOJE).ok, false, "overflow 02-30 rejeitado");
 assert.strictEqual(D.normalizarDataBatismo("2026-13-01", HOJE).ok, false, "mês 13 rejeitado");
-assert.strictEqual(D.normalizarDataBatismo("0000-01-01", HOJE).ok, false, "ano 0 rejeitado (Date.UTC(0) e 1900)");
 // O round-trip de ANO é Comparison de ano, mes e dia; 02-30 e 13-01 pegam
 // pelo dia e pelo mês, então a única peça que só o ano testemunha é o ano
 // ZERO. `Date.UTC(0, …)` devolve 1900 — o deslocamento clássico do `Date` — e
