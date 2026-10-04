@@ -42,10 +42,69 @@ SOMENTE_DOMINIO=0
 COM_DB=0
 [ "${1:-}" = "--com-db" ] && COM_DB=1
 
-PASS=0
-FAIL=0
-ok() { PASS=$((PASS + 1)); printf '  ok   %s\n' "$1"; }
-ko() { FAIL=$((FAIL + 1)); printf '  FAIL %s\n' "$1"; }
+# Os contadores nao sao a fonte da verdade: sao DERIVADOS de um log. A R11
+# mediu `ko() { :; }` + defeito real = "36 ok / 0 falhas", com exit 0 — o probe
+# declarava sucesso com um mutante vivo porque o unico lugar que sabia da falha
+# era a propria funcao que a mutacao apagou. Aqui cada evento vira uma linha, e
+# o veredito sai de `grep -c` no log, onde nenhuma edicao isolada no probe
+# alcança. Some com o total exato do fim, que e a segunda camada: se `ok` e `ko`
+# deixarem de escrever, o total some tambem, e o total some e falha.
+# Quantidade de asercoes que cada tier tem de executar para contar como "rodou".
+# Barreira 2 da R11: o token sem contagem provava so que a tier chegou ao fim.
+# Estes numeros sao a segunda barreira — um `exit(0)` no topo imprime zero. Mudar
+# a lista de asercoes de uma tierobriga a atualizar o numero aqui, e a falha
+# aparece no probe em vez de passar quieto.
+N_ASSERCOES_DOMINIO=199
+N_ASSERCOES_SERVICE=57
+N_ASSERCOES_ROTA=39
+
+LOG_CART="$(mktemp)"
+trap 'rm -f "$LOG_CART"' EXIT
+ok() { printf 'OK %s\n' "$1" >>"$LOG_CART"; printf '  ok   %s\n' "$1"; }
+ko() { printf 'KO %s\n' "$1" >>"$LOG_CART"; printf '  FAIL %s\n' "$1"; }
+
+# --- os blocos node -e nao podem conter apostrofo ------------------------
+#
+# Tres vezes nesta R11 um apostrofo de acentos no COMENTARIO de dentro de um
+# bloco node -e quoted quebrou o probe, e cada vez de um jeito diferente: com
+# numero impar de apostrofos o shell sai do modo citado e tenta executar duas
+# barras como comando (Is a directory); com numero par, o bash remove os
+# apostrofos em silencio e a mensagem da asercao passa a ler diferente do que
+# o autor escreveu. Nenhum dos dois acusa o autor, e o segundo e pior: parece
+# funcionar.
+#
+# Entao vira gate: um apostrofo dentro de qualquer bloco node -e quoted e
+# falha immediate, com o numero da linha, antes de qualquer tier rodar. O
+# marcador e montado com chr(39) de proposito — se o proprio guard escrevesse
+# o marcador entre aspas, ele se declararia tier e comeria o proprio texto.
+PROBE="$ROOT/scripts/probe-cartao-validade.sh"
+APOSTROFOS="$(python3 - "$PROBE" <<'PY' || true
+import re, sys
+marcador = "node -e " + chr(39)
+fechador = re.compile(r"^\s*" + chr(39) + r" 2?(&>|\")")
+linhas = open(sys.argv[1], encoding="utf-8").read().split("\n")
+achados = []
+for i, l in enumerate(linhas):
+    if marcador not in l:
+        continue
+    fim = next((j for j in range(i + 1, len(linhas)) if fechador.match(linhas[j])), None)
+    if fim is None:
+        continue
+    for k in range(i, fim + 1):
+        if marcador in linhas[k]:
+            continue
+        if re.search(r"[A-Za-z\u00c0-\u00ff]'", linhas[k]):
+            achados.append((k + 1, linhas[k].strip()))
+for n, t in achados:
+    print(f"{n}\t{t}")
+PY
+)"
+if [ -n "$APOSTROFOS" ]; then
+  while IFS="$(printf '\t')" read -r _n _t; do
+    [ -n "$_n" ] && ko "apostrofo dentro de node -e (linha $_n): $_t"
+  done <<<"$APOSTROFOS"
+  exit 1
+fi
 
 printf '== Probes cartao-valididade-anual (CART)%s ==\n' "$([ "$SOMENTE_DOMINIO" -eq 1 ] && printf ' [dominio]')"
 
@@ -500,8 +559,31 @@ CART_JS="$(find "$TMP/out" -name 'cartao.js' -print -quit)"
 if [ ! -f "$DOC_JS" ] || [ ! -f "$VAL_JS" ] || [ ! -f "$CART_JS" ]; then
   ko "modulos compilados nao encontrados"
 else
-  if DOC_J="$DOC_JS" VAL_J="$VAL_JS" CART_J="$CART_JS" node -e '
+  if saida_dom="$(DOC_J="$DOC_JS" VAL_J="$VAL_JS" CART_J="$CART_JS" node -e '
 const assert = require("assert");
+
+// ── BARREIRA 2 DA R11: a tier conta as asercoes que EXECUTOU ────────────
+//
+// Lacuna 1 da R11, e a mais cara das quatro: inserir
+// `console.log("TIER-...-EXECUTADA"); process.exit(0)` no topo da tier dava
+// 37 ok / 0. O token provava que a tier CHEGOU AO FIM, nao que ela
+// TRABALHOU — e era a terceira vez que a mesma classe de furo aparecia
+// (R8, R10, R11). Um token sozinho e barato demais.
+//
+// Aqui o token carrega a QUANTIDADE de asercoes que a tier executou, e o
+// shell exige o numero exato. Um `exit(0)` no topo imprime zero — nao o
+// numero esperado — e a barreira fecha. Para forjar, alguem teria de
+// reproduzir a contagem sem rodar as asercoes, e o numero so vale se
+// as assercoes rodaram. E cada `assert` novo exige atualizar o esperado no
+// shell, o que torna a adicao visivel em vez de silenciosa.
+let __n = 0;
+for (const __m of ["strictEqual", "notStrictEqual", "deepStrictEqual", "ok", "match", "throws", "rejects", "fail"]) {
+  if (typeof assert[__m] === "function") {
+    const __f = assert[__m];
+    assert[__m] = function (...__a) { __n += 1; return __f.apply(assert, __a); };
+  }
+}
+
 const D = require(process.env.DOC_J);
 const V = require(process.env.VAL_J);
 const C = require(process.env.CART_J);
@@ -595,9 +677,66 @@ assert.strictEqual(V.aniversario("2024-02-29", 4), "2028-02-29", "29/02 + 4 anos
 assert.strictEqual(V.aniversario("2024-02-29", 2), "2026-02-28", "29/02 + 2 anos = 28/02");
 assert.strictEqual(V.aniversario("2023-02-28", 1), "2024-02-28", "28/02 + 1 ano = 28/02");
 
+// ── CART-11: a fronteira do dia civil
+//
+// A R11 mediu `civilDe(hoje)` -> `hoje.toISOString().slice(0, 10)` na linha 207
+// de `validade.ts` e o mutante SOBREVIVEU nos quatro fusos da matriz.
+//
+// A causa nao era a fixture sozinha. `civilDe` nao responde o dia local do
+// processo: `FUSO_CIVIL` e fixo em `America/Sao_Paulo` (validade.ts:83), e o
+// doc da funcao diz "no fuso civil da igreja (independente do TZ do processo)" —
+// e o certo, porque o cartao e lido em Santa Luzia, nao na maquina que o
+// renderiza. Entao o que o mutante quebra nao e "dia local", e o dia da igreja.
+//
+// E como o fuso e FIXO, o instante que separa os dois e o mesmo em qualquer TZ
+// de processo — o que torna o witness deterministico e dispensa o ramo por
+// fuso. Nenhuma matriz de fusos conserta isso: os quatro fusos da R11 eram
+// todos >= 0, e nenhuma asercao comparava a resposta da funcao com o dia UTC.
+// O instante abaixo e 00:30 UTC, que em Sao_Paulo ainda e o dia ANTERIOR.
+const FRONTEIRA = new Date("2026-10-02T00:30:00Z");
+const DIA_IGREJA = "2026-10-01"; // 21:30 de 01/10 em America/Sao_Paulo
+assert.strictEqual(
+  V.civilDe(FRONTEIRA), DIA_IGREJA,
+  "civilDe responde o dia no fuso da igreja, nao o dia UTC",
+);
+// O witness se auto-verifica. Um fixture que nao separa nada e um fixture
+// quebrado, e agora ele diz isso em vez de passar quieto — que era
+// exatamente o que acontecia: 37 ok / 0 com o dia civil errado.
+assert.notStrictEqual(
+  FRONTEIRA.toISOString().slice(0, 10), DIA_IGREJA,
+  "o witness tem de cair dos dois lados: dia da igreja != dia UTC neste instante",
+);
+assert.strictEqual(
+  V.calcularValidadeCartao("2026-09-13", FRONTEIRA), "2027-09-13",
+  "calcularValidadeCartao usa o dia civil da igreja para o hoje do servidor",
+);
+// `hojeIso` alimenta duas coisas: o ano, e a comparacao que escolhe o
+// aniversario vencedor. Trocar o dia da igreja pelo dia UTC so muda a resposta
+// quando o candidato cai ENTRE os dois dias — e o candidato tem o mesmo mes e
+// dia do `criado_em`, entao o fixture separador e um aniversario de 30 anos
+// que cai exatamente na fronteira. Medido: 1996-10-01 devolve 2026-10-01 na
+// producao e 2027-10-01 no mutante. E a janela de 3 horas em que uma
+// congregante que faz 30 anos veria o cartao dizer que a validade ainda nao
+// renovou.
+assert.strictEqual(
+  V.calcularValidadeCartao("1996-10-01", FRONTEIRA), "2026-10-01",
+  "aniversario de 30 anos na fronteira: o cartao tem de dizer 2026-10-01, nao 2027-10-01",
+);
+// O controle: um dia antes nao pode dar a resposta do dia seguinte, senao o
+// assert acima so estaria medindo que a funcao devolve alguma coisa.
+assert.strictEqual(
+  V.calcularValidadeCartao("1996-09-30", FRONTEIRA), "2027-09-30",
+  "aniversario um dia antes da fronteira nao muda de ano (controle)",
+);
+// E o outro lado: um instante no meio do dia da igreja tem de concordar com
+// UTC, senao a funcao estaria deslocada em vez de ancorada num fuso.
+assert.strictEqual(
+  V.civilDe(new Date("2026-10-01T12:00:00Z")), "2026-10-01",
+  "no meio do dia da igreja, o dia civil e o dia UTC (a funcao nao esta deslocada)",
+);
+
 // ── CART-09/11: rolagem com limite inclusivo
-assert.strictEqual(V.calcularValidadeCartao("2026-09-13", d(2026,10,1)), "2027-09-13", "mesmo ano -> +1 ano");
-assert.strictEqual(V.calcularValidadeCartao("2026-09-13", d(2027,9,13)), "2027-09-13", "1 dia antes -> ainda +1");
+assert.strictEqual(V.calcularValidadeCartao("2026-09-13", d(2026,10,1)), "2027-09-13", "mesmo ano -> +1 ano");assert.strictEqual(V.calcularValidadeCartao("2026-09-13", d(2027,9,13)), "2027-09-13", "1 dia antes -> ainda +1");
 assert.strictEqual(V.calcularValidadeCartao("2026-09-13", d(2027,9,14)), "2028-09-13", "1 dia depois -> +2 (renovou)");
 assert.strictEqual(V.calcularValidadeCartao("2026-09-13", d(2027,9,13)), "2027-09-13", "limite inclusivo no próprio dia");
 assert.strictEqual(V.calcularValidadeCartao("2026-09-13", d(2031,1,1)), "2031-09-13", "ciclo ainda corrente em 2031 -> 2031-09-13");
@@ -1167,9 +1306,27 @@ assert.strictEqual(
   C.camposCartao(base, d(2026,10,1)).validity,
   "determinismo"
 );
-console.log("ok");
-'; then
-    ok "CART-04..07/09..12 runtime node: normalização, rejeições e validade rolante"
+console.log("TIER-DOMINIO n=" + __n);
+' 2>"$TMP/dominio.err")"; then
+    case "$saida_dom" in
+      *TIER-VENENO*)
+        ko "CART-04..07/09..12 a tier de dominio falhou (veneno no corpo)"
+        printf '%s\n' "$saida_dom" ;;
+      *TIER-DOMINIO*)
+        _nDom="$(printf '%s\n' "$saida_dom" | sed -n 's/.*TIER-DOMINIO n=\([0-9][0-9]*\).*/\1/p' | tail -1)"
+        if [ -n "$_nDom" ] && [ "$_nDom" -eq "$N_ASSERCOES_DOMINIO" ]; then
+          ok "CART-04..07/09..12 runtime node: normalização, rejeições e validade rolante"
+        else
+          ko "CART-04..07/09..12 dominio rodou com contagem inesperada (n=${_nDom:-ausente}, esperado $N_ASSERCOES_DOMINIO) — pode ter saido cedo"
+          printf '%s\n' "$saida_dom"
+        fi ;;
+      *)
+        # Sem token nenhum NAO e sucesso: a tier pode ter saido antes de
+        # impresso. A R11 mediu um `exit(0)` no topo produzindo verde por
+        # aqui, e o ramo default era justamente o furo.
+        ko "CART-04..07/09..12 a tier de dominio nao emitiu token nenhum (pode ter saido cedo)"
+        printf '%s\n' "$saida_dom" ;;
+    esac
   else
     ko "CART-04..07/09..12 runtime node falhou (detalhes acima)"
   fi
@@ -1245,6 +1402,29 @@ else
     #     RECUSE — se o checker aceitasse lixo, a tier seria inerte.
     if saida_svc="$(SVC="$TMP/svc" MEM_JS="$MEM_JS" ADM_JS="$ADM_JS" node -e '
 const assert = require("assert");
+
+// ── BARREIRA 2 DA R11: a tier conta as asercoes que EXECUTOU ────────────
+//
+// Lacuna 1 da R11, e a mais cara das quatro: inserir
+// `console.log("TIER-...-EXECUTADA"); process.exit(0)` no topo da tier dava
+// 37 ok / 0. O token provava que a tier CHEGOU AO FIM, nao que ela
+// TRABALHOU — e era a terceira vez que a mesma classe de furo aparecia
+// (R8, R10, R11). Um token sozinho e barato demais.
+//
+// Aqui o token carrega a QUANTIDADE de asercoes que a tier executou, e o
+// shell exige o numero exato. Um `exit(0)` no topo imprime zero — nao o
+// numero esperado — e a barreira fecha. Para forjar, alguem teria de
+// reproduzir a contagem sem rodar as asercoes, e o numero so vale se
+// as assercoes rodaram. E cada `assert` novo exige atualizar o esperado no
+// shell, o que torna a adicao visivel em vez de silenciosa.
+let __n = 0;
+for (const __m of ["strictEqual", "notStrictEqual", "deepStrictEqual", "ok", "match", "throws", "rejects", "fail"]) {
+  if (typeof assert[__m] === "function") {
+    const __f = assert[__m];
+    assert[__m] = function (...__a) { __n += 1; return __f.apply(assert, __a); };
+  }
+}
+
 const path = require("path");
 const Module = require("module");
 
@@ -1505,7 +1685,7 @@ function assertTrio(capturado, rotulo) {
   try { assertTrio(cCanario3.capturado, "canario3"); } catch (e) { canarioRecusou3 = true; }
   assert.strictEqual(canarioRecusou3, true, "canario: o checker precisa recusar outra tabela");
 
-  console.log("TIER-SERVICE-EXECUTADA");
+  console.log("TIER-SERVICE n=" + __n);
 })().catch((e) => {
   // O VENENO vem ANTES de qualquer `process.exit`. A R10 mediu por que a
   // ordem importa: trocar `process.exit(1)` por `console.log(TOKEN)` deixava
@@ -1524,8 +1704,18 @@ function assertTrio(capturado, rotulo) {
         *TIER-VENENO*)
           ko "CART-01/02/03 a tier de service falhou (veneno no corpo)"
           printf '%s\n' "$saida_svc" ;;
-        *TIER-SERVICE-EXECUTADA*)
-          ok "CART-01/02/03 service executado: os 4 caminhos mandam o trio do formulario" ;;
+        *TIER-SERVICE*)
+          # A contagem e o que separa "rodou ate o fim" de "trabalhou". Um
+          # `exit(0)` no topo imprime zero e cai no ramo seguinte, que falha.
+          # O numero e exato de proposito: mudar a lista de asercoesobriga a
+          # mudar o esperado aqui, e essa e' a parte visivel.
+          _nSvc="$(printf '%s\n' "$saida_svc" | sed -n 's/.*TIER-SERVICE n=\([0-9][0-9]*\).*/\1/p' | tail -1)"
+          if [ -n "$_nSvc" ] && [ "$_nSvc" -eq "$N_ASSERCOES_SERVICE" ]; then
+            ok "CART-01/02/03 service executado: os 4 caminhos mandam o trio do formulario"
+          else
+            ko "CART-01/02/03 service rodou com contagem inesperada (n=${_nSvc:-ausente}, esperado $N_ASSERCOES_SERVICE) — pode ter saido cedo"
+            printf '%s\n' "$saida_svc"
+          fi ;;
         *)
           ko "CART-01/02/03 a tier de service rodou sem emitir o token (pode ter saido cedo)"
           printf '%s\n' "$saida_svc" ;;
@@ -1578,6 +1768,29 @@ else
   else
     if saida_rota="$(SVC="$TMP/svc" R_ADMIN="$R_ADMIN" R_DADOS="$R_DADOS" R_PERFIL="$R_PERFIL" node -e '
 const assert = require("assert");
+
+// ── BARREIRA 2 DA R11: a tier conta as asercoes que EXECUTOU ────────────
+//
+// Lacuna 1 da R11, e a mais cara das quatro: inserir
+// `console.log("TIER-...-EXECUTADA"); process.exit(0)` no topo da tier dava
+// 37 ok / 0. O token provava que a tier CHEGOU AO FIM, nao que ela
+// TRABALHOU — e era a terceira vez que a mesma classe de furo aparecia
+// (R8, R10, R11). Um token sozinho e barato demais.
+//
+// Aqui o token carrega a QUANTIDADE de asercoes que a tier executou, e o
+// shell exige o numero exato. Um `exit(0)` no topo imprime zero — nao o
+// numero esperado — e a barreira fecha. Para forjar, alguem teria de
+// reproduzir a contagem sem rodar as asercoes, e o numero so vale se
+// as assercoes rodaram. E cada `assert` novo exige atualizar o esperado no
+// shell, o que torna a adicao visivel em vez de silenciosa.
+let __n = 0;
+for (const __m of ["strictEqual", "notStrictEqual", "deepStrictEqual", "ok", "match", "throws", "rejects", "fail"]) {
+  if (typeof assert[__m] === "function") {
+    const __f = assert[__m];
+    assert[__m] = function (...__a) { __n += 1; return __f.apply(assert, __a); };
+  }
+}
+
 const path = require("path");
 const Module = require("module");
 const { NextResponse } = require("next/server");
@@ -1710,7 +1923,7 @@ function zera() { for (const k of Object.keys(chamadas)) chamadas[k] = 0; }
   assert.strictEqual(chamadas.createMember, 1, "perfil valido: gravou uma vez");
   assert.strictEqual(chamadas.updateMember, 0, "perfil valido: nao foi autoedicao");
 
-  console.log("TIER-ROTA-EXECUTADA");
+  console.log("TIER-ROTA n=" + __n);
 })().catch((e) => {
   // O VENENO vem ANTES de qualquer `process.exit`. A R10 mediu por que a
   // ordem importa: trocar `process.exit(1)` por `console.log(TOKEN)` deixava
@@ -1729,8 +1942,14 @@ function zera() { for (const k of Object.keys(chamadas)) chamadas[k] = 0; }
         *TIER-VENENO*)
           ko "CART-05/06/07 a tier de rota falhou (veneno no corpo)"
           printf '%s\n' "$saida_rota" ;;
-        *TIER-ROTA-EXECUTADA*)
-          ok "CART-05/06/07 rota executada: campo invalido responde 400 sem escrever" ;;
+        *TIER-ROTA*)
+          _nRota="$(printf '%s\n' "$saida_rota" | sed -n 's/.*TIER-ROTA n=\([0-9][0-9]*\).*/\1/p' | tail -1)"
+          if [ -n "$_nRota" ] && [ "$_nRota" -eq "$N_ASSERCOES_ROTA" ]; then
+            ok "CART-05/06/07 rota executada: campo invalido responde 400 sem escrever"
+          else
+            ko "CART-05/06/07 rota rodou com contagem inesperada (n=${_nRota:-ausente}, esperado $N_ASSERCOES_ROTA) — pode ter saido cedo"
+            printf '%s\n' "$saida_rota"
+          fi ;;
         *)
           ko "CART-05/06/07 a tier de rota rodou sem emitir o token (pode ter saido cedo)"
           printf '%s\n' "$saida_rota" ;;
@@ -1755,5 +1974,38 @@ if [ "$SOMENTE_DOMINIO" -eq 0 ] && [ "$COM_DB" -eq 1 ]; then
   fi
 fi
 
+# O veredito e derivado do log, nao de um contador em memoria. E o total e
+# EXATO: a R11 mediu `ko() { :; }` + um mutante de producao dando "36 ok / 0" e
+# exit 0, porque apagar a funcao que registra a falha tambem apaga o contador.
+# Daqui para frente nenhuma edicao isolada consegue produzir um verde que nao
+# seja verde de verdade: sem `KO` no log e com o total batendo, os canarios
+# rodaram todos.
+PASS="$(grep -c '^OK ' "$LOG_CART" || true)"
+FAIL="$(grep -c '^KO ' "$LOG_CART" || true)"
+
+# Total esperado por modo, medido: `--domain` nao abre o bloco de guards
+# estaticos nem a tier de postgres, entao sao 4 canarios; com `--com-db` a tier
+# de postgres soma 1; sem flag alguma, 37. Um numero aqui estatico e
+# deliberado — é o que transforma "nenhuma falha registrada" em "todas as
+# verificacoes rodaram".
+if [ "$SOMENTE_DOMINIO" -eq 1 ]; then
+  TOTAL_ESPERADO=4
+elif [ "$COM_DB" -eq 1 ]; then
+  TOTAL_ESPERADO=38
+else
+  TOTAL_ESPERADO=37
+fi
+
+if [ "$FAIL" -ne 0 ]; then
+  printf '== Resumo: %s ok / %s falhas ==\n' "$PASS" "$FAIL"
+  [ "$PASS" -eq "$TOTAL_ESPERADO" ] || printf '== ATENCAO: %s ok registrados, esperado %s ==\n' "$PASS" "$TOTAL_ESPERADO"
+  exit 1
+fi
+
+if [ "$PASS" -ne "$TOTAL_ESPERADO" ]; then
+  printf '== Resumo: %s ok / %s falhas ==\n' "$PASS" "$FAIL"
+  printf '== FALHA: %s ok registrados, esperado %s — um canario nao rodou ou nao foi registrado ==\n' "$PASS" "$TOTAL_ESPERADO"
+  exit 1
+fi
+
 printf '== Resumo: %s ok / %s falhas ==\n' "$PASS" "$FAIL"
-[ "$FAIL" -eq 0 ]
