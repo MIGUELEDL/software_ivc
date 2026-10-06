@@ -228,7 +228,7 @@ export default async function AdminFinanceiroPage({
 
             <button
               type="submit"
-              className="hero-background-accent hover:bg-white/75 cursor-pointer text-white/90 font-sans font-bold rounded-lg px-4 py-2 transition-colors"
+              className="hero-background-accent hover:brightness-110 cursor-pointer text-white/90 font-sans font-bold rounded-lg px-4 py-2 transition-colors"
             >
               Filtrar
             </button>

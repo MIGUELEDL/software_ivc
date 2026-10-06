@@ -45,7 +45,7 @@ export default async function AdminUsuariosPage({
       <section className="py-8 min-h-[calc(100vh-3.5rem)]">
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <div
-            className="background-accent-admin border border-white/10 rounded-xl p-10 text-center"
+            className="hero-background-accent border border-white/10 rounded-xl p-10 text-center"
             role="alert"
           >
             <h1 className="font-sans text-2xl font-bold text-white mb-3">
