@@ -6,7 +6,7 @@ import Image from "next/image";
 
 export default function About() {
   return (
-    <section id="sobre" className="py-20 sm:py-32 bg-bg-gray">
+    <section id="sobre" className="py-20 sm:py-32 bg-landing">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <motion.div
@@ -19,7 +19,7 @@ export default function About() {
               Nossa{" "}
               <span className="text-accent">História</span>
             </h2>
-            <p className="font-serif text-lg leading-relaxed text-text-dark/80 mb-4">
+            <p className="font-serif text-lg leading-relaxed text-text-dark mb-4">
               {CHURCH.about}
             </p>
             <div className="flex flex-wrap gap-6 text-sm font-sans font-semibold text-text-dark/60">
@@ -51,7 +51,7 @@ export default function About() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="relative h-80 sm:h-90 rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-primary via-bg-dark to-primary"
+            className="relative h-80 sm:h-90 rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-primary via-bg-dark to-primary hero-background"
           >
             <Image
               src="/img_culto.png"
@@ -59,7 +59,7 @@ export default function About() {
               aria-hidden
               fill
               sizes="450px"
-              className="object-cover opacity-5"
+              className="object-cover opacity-10"
             />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#C9A22730_0%,_transparent_65%)]" />
             <Image

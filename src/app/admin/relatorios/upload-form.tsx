@@ -31,7 +31,7 @@ export function UploadForm() {
     <form
       onSubmit={handleSubmit}
       encType="multipart/form-data"
-      className="mt-6 rounded-2xl bg-[#132744] border border-white/10 p-5"
+      className="mt-6 rounded-2xl bg-white/10 border border-white/10 p-5"
     >
       <h3 className="font-sans text-lg font-bold text-white mb-4">
         Novo documento
@@ -40,7 +40,7 @@ export function UploadForm() {
         <div className="min-w-0 flex-1">
           <label
             htmlFor="doc-title"
-            className="block font-sans text-xs font-semibold text-white/50 mb-1"
+            className="block font-sans text-xs font-semibold text-white/70 mb-1"
           >
             Título *
           </label>
@@ -49,13 +49,13 @@ export function UploadForm() {
             name="title"
             type="text"
             required
-            className="w-full rounded-lg bg-[#0d1f3c] border border-white/10 px-3 py-2 font-serif text-white focus:border-[#c9a84c] focus:ring-1 focus:ring-[#c9a84c] outline-none transition-colors"
+            className="w-full rounded-lg bg-white/20 border border-white/10 px-3 py-2 font-serif text-white focus:border-[#c9a84c] focus:ring-1 focus:ring-[#c9a84c] outline-none transition-colors"
           />
         </div>
         <div className="min-w-0 flex-1">
           <label
             htmlFor="doc-category"
-            className="block font-sans text-xs font-semibold text-white/50 mb-1"
+            className="block font-sans text-xs font-semibold text-white/70 mb-1"
           >
             Categoria *
           </label>
@@ -63,7 +63,7 @@ export function UploadForm() {
             id="doc-category"
             name="category"
             required
-            className="w-full rounded-lg bg-[#0d1f3c] border border-white/10 px-3 py-2 font-serif text-white focus:border-[#c9a84c] focus:ring-1 focus:ring-[#c9a84c] outline-none transition-colors"
+            className="w-full rounded-lg bg-white/20 border border-white/10 px-3 py-2 font-serif text-white focus:border-[#c9a84c] focus:ring-1 focus:ring-[#c9a84c] outline-none transition-colors"
           >
             {DOCUMENT_CATEGORIES.map((cat) => (
               <option key={cat} value={cat}>
@@ -75,7 +75,7 @@ export function UploadForm() {
         <div className="min-w-0 flex-1">
           <label
             htmlFor="doc-file"
-            className="block font-sans text-xs font-semibold text-white/50 mb-1"
+            className="block font-sans text-xs font-semibold text-white/70 mb-1"
           >
             Arquivo *
           </label>
@@ -85,13 +85,13 @@ export function UploadForm() {
             type="file"
             required
             accept=".pdf,.csv,.xls,.xlsx,.doc,.docx,.ods,.odt"
-            className="w-full rounded-lg bg-[#0d1f3c] border border-white/10 px-3 py-2 font-serif text-white focus:border-[#c9a84c] focus:ring-1 focus:ring-[#c9a84c] outline-none transition-colors file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#c9a84c]/10 file:text-[#c9a84c]"
+            className="w-full rounded-lg bg-white/20 border border-white/10 px-3 py-2 font-serif text-white focus:border-[#c9a84c] focus:ring-1 focus:ring-[#c9a84c] outline-none transition-colors file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-accent-light/20 file:text-accent-light"
           />
         </div>
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex items-center gap-2 rounded-lg bg-[#c9a84c] hover:bg-[#e0c872] disabled:opacity-50 text-[#0d1f3c] font-sans font-bold px-5 py-2 transition-colors"
+          className="inline-flex items-center gap-2 rounded-lg hero-background-accent hover:bg-[#e0c872] disabled:opacity-50 text-white/90 font-sans font-bold px-5 py-2 transition-colors"
         >
           <Upload size={16} aria-hidden="true" />
           {pending ? "Enviando..." : "Enviar"}

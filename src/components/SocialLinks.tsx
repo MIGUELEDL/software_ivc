@@ -38,7 +38,7 @@ const SOCIAL_LINKS = [
 
 export default function SocialLinks() {
   return (
-    <section id="redes" className="py-20 sm:py-32 bg-white">
+    <section id="redes" className="py-20 sm:py-32 bg-landing">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 40 }}

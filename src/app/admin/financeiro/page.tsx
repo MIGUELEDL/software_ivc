@@ -49,18 +49,18 @@ export default async function AdminFinanceiroPage({
       <section className="py-8 min-h-[calc(100vh-3.5rem)]">
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <div
-            className="bg-[#132744] border border-white/10 rounded-xl p-10 text-center"
+            className="hero-background-admin border border-white/10 rounded-xl p-10 text-center"
             role="alert"
           >
-            <h1 className="font-sans text-2xl font-bold text-white mb-3">
+            <h1 className="font-sans text-2xl font-bold text-primary mb-3">
               Financeiro
             </h1>
-            <p className="font-serif text-white/60">
+            <p className="font-serif text-primary/60">
               Você não tem permissão para acessar este módulo.
             </p>
             <Link
               href="/admin"
-              className="mt-6 inline-flex items-center gap-2 font-sans text-sm font-bold text-[#c9a84c] hover:text-[#e0c872] transition-colors"
+              className="mt-6 inline-flex items-center gap-2 font-sans text-sm font-bold text-accent-light hover:text-accent-light/75 transition-colors"
             >
               Voltar ao painel
             </Link>
@@ -125,9 +125,9 @@ export default async function AdminFinanceiroPage({
   const saldo = totalEntradas - totalSaidas;
 
   const estiloChipAtivo =
-    "rounded-full bg-[#c9a84c] text-[#0d1f3c] px-3 py-1.5 font-sans text-xs font-bold transition-colors";
+    "rounded-full hero-background-accent text-white/90 px-3 py-1.5 font-sans text-xs font-bold transition-colors";
   const estiloChipInativo =
-    "rounded-full border border-white/20 text-white/60 hover:border-[#c9a84c] hover:text-[#c9a84c] px-3 py-1.5 font-sans text-xs font-bold transition-colors";
+    "rounded-full border border-white/50 text-white/75 hover:border-accent-light hover:text-accent-light px-3 py-1.5 font-sans text-xs font-bold transition-colors";
 
   const classeBadgeTipo = (valor: string) =>
     valor === "RECEITA"
@@ -151,10 +151,10 @@ export default async function AdminFinanceiroPage({
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
           <div>
-            <h1 className="font-sans text-3xl font-bold text-white mb-2">
+            <h1 className="font-sans text-3xl font-bold text-primary mb-2">
               Financeiro
             </h1>
-            <p className="font-serif text-base text-white/60">
+            <p className="font-serif text-base text-primary/70">
               Receitas e despesas da igreja.
             </p>
           </div>
@@ -162,10 +162,10 @@ export default async function AdminFinanceiroPage({
           {escritor && (
             <Link
               href="/admin/financeiro/nova"
-              className="inline-flex items-center gap-2 bg-[#c9a84c] hover:bg-[#e0c872] text-[#0d1f3c] font-sans text-sm font-bold rounded-lg px-4 py-2 transition-colors"
+              className="inline-flex items-center gap-2 hero-background-accent hover:bg-accent-light text-white font-sans text-sm font-bold rounded-lg px-6 py-2.5 transition-colors"
             >
               <Plus size={16} aria-hidden="true" />
-              Novo lançamento
+              Novo registro
             </Link>
           )}
         </div>
@@ -173,7 +173,7 @@ export default async function AdminFinanceiroPage({
         <form
           method="GET"
           action="/admin/financeiro"
-          className="mb-6 space-y-4 bg-[#132744] border border-white/10 rounded-xl p-5"
+          className="mb-6 space-y-4 hero-background-admin border border-white/10 rounded-xl p-5"
         >
           <div className="flex flex-wrap items-end gap-3">
             <div className="relative min-w-0 flex-1">
@@ -182,7 +182,7 @@ export default async function AdminFinanceiroPage({
               </label>
               <Search
                 size={16}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-white/80"
                 aria-hidden="true"
               />
               <input
@@ -191,14 +191,14 @@ export default async function AdminFinanceiroPage({
                 type="search"
                 defaultValue={busca}
                 placeholder="Buscar por descrição"
-                className="w-full bg-[#0d1f3c] border border-white/10 text-white rounded-lg pl-9 pr-3 py-2.5 font-serif focus:border-[#c9a84c] focus:outline-none transition-colors"
+                className="w-full bg-white/20 border border-white/10 text-white rounded-lg pl-9 pr-3 py-2.5 font-serif focus:border-accent-light focus:outline-none transition-colors"
               />
             </div>
 
             <div>
               <label
                 htmlFor="data_inicio"
-                className="block font-sans text-xs font-semibold text-white/60 mb-1"
+                className="block font-sans text-xs font-semibold text-white/90 mb-1"
               >
                 De
               </label>
@@ -207,13 +207,13 @@ export default async function AdminFinanceiroPage({
                 name="data_inicio"
                 type="date"
                 defaultValue={dataInicio}
-                className="bg-[#0d1f3c] border border-white/10 text-white rounded-lg px-3 py-2 font-serif focus:border-[#c9a84c] focus:outline-none transition-colors"
+                className="bg-white/20 border border-white/10 text-white rounded-lg px-3 py-2 font-serif focus:border-accent-light focus:outline-none transition-colors"
               />
             </div>
             <div>
               <label
                 htmlFor="data_fim"
-                className="block font-sans text-xs font-semibold text-white/60 mb-1"
+                className="block font-sans text-xs font-semibold text-white/90 mb-1"
               >
                 Até
               </label>
@@ -222,26 +222,26 @@ export default async function AdminFinanceiroPage({
                 name="data_fim"
                 type="date"
                 defaultValue={dataFim}
-                className="bg-[#0d1f3c] border border-white/10 text-white rounded-lg px-3 py-2 font-serif focus:border-[#c9a84c] focus:outline-none transition-colors"
+                className="bg-white/20 border border-white/10 text-white rounded-lg px-3 py-2 font-serif focus:border-accent-light focus:outline-none transition-colors"
               />
             </div>
 
             <button
               type="submit"
-              className="bg-[#c9a84c] hover:bg-[#e0c872] text-[#0d1f3c] font-sans font-bold rounded-lg px-4 py-2 transition-colors"
+              className="hero-background-accent hover:bg-white/75 cursor-pointer text-white/90 font-sans font-bold rounded-lg px-4 py-2 transition-colors"
             >
               Filtrar
             </button>
             <Link
               href="/admin/financeiro"
-              className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-[#c9a84c] hover:text-[#e0c872] px-1 py-2.5 transition-colors"
+              className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-accent-light hover:text-white/75 px-1 py-2.5 transition-colors"
             >
               Limpar
             </Link>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-sans text-xs font-bold uppercase tracking-wider text-white/70">
+            <span className="font-sans text-xs font-bold uppercase tracking-wider text-white/90">
               Tipo:
             </span>
             <Link href={filtrar({ tipo: "" })} className={tipo === "" ? estiloChipAtivo : estiloChipInativo}>
@@ -254,7 +254,7 @@ export default async function AdminFinanceiroPage({
               SAÍDA
             </Link>
 
-            <span className="ml-4 font-sans text-xs font-bold uppercase tracking-wider text-white/70">
+            <span className="ml-4 font-sans text-xs font-bold uppercase tracking-wider text-white/90">
               Status:
             </span>
             <Link href={filtrar({ status: "" })} className={status === "" ? estiloChipAtivo : estiloChipInativo}>
@@ -270,7 +270,7 @@ export default async function AdminFinanceiroPage({
               CANCELADO
             </Link>
 
-            <span className="ml-4 font-sans text-xs font-bold uppercase tracking-wider text-white/70">
+            <span className="ml-4 font-sans text-xs font-bold uppercase tracking-wider text-white/90">
               Pagamento:
             </span>
             <Link href={filtrar({ metodo: "" })} className={metodo === "" ? estiloChipAtivo : estiloChipInativo}>
@@ -293,7 +293,7 @@ export default async function AdminFinanceiroPage({
 
         {!falhaConsulta && lancamentos.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <div className="bg-[#132744] border border-white/10 rounded-xl p-4 text-center">
+            <div className="hero-background-admin border border-white/10 rounded-xl p-4 text-center">
               <p className="font-sans text-xs font-bold uppercase tracking-wider text-emerald-400 mb-1">
                 Entradas
               </p>
@@ -301,7 +301,7 @@ export default async function AdminFinanceiroPage({
                 {formatarValor(totalEntradas)}
               </p>
             </div>
-            <div className="bg-[#132744] border border-white/10 rounded-xl p-4 text-center">
+            <div className="hero-background-admin border border-white/10 rounded-xl p-4 text-center">
               <p className="font-sans text-xs font-bold uppercase tracking-wider text-red-400 mb-1">
                 Saídas
               </p>
@@ -309,8 +309,8 @@ export default async function AdminFinanceiroPage({
                 {formatarValor(totalSaidas)}
               </p>
             </div>
-            <div className="bg-[#132744] border border-white/10 rounded-xl p-4 text-center">
-              <p className="font-sans text-xs font-bold uppercase tracking-wider text-[#c9a84c] mb-1">
+            <div className="hero-background-admin border border-white/10 rounded-xl p-4 text-center">
+              <p className="font-sans text-xs font-bold uppercase tracking-wider text-accent-light mb-1">
                 Saldo
               </p>
               <p className={`font-sans text-xl font-bold ${saldo >= 0 ? "text-emerald-400" : "text-red-400"}`}>
@@ -321,23 +321,23 @@ export default async function AdminFinanceiroPage({
         )}
 
         {falhaConsulta ? (
-          <div className="bg-[#132744] border border-white/10 rounded-xl p-10 text-center">
+          <div className="hero-background-admin border border-white/10 rounded-xl p-10 text-center">
             <p className="font-serif text-white/60">
               Não foi possível carregar os lançamentos. Tente novamente mais
               tarde.
             </p>
           </div>
         ) : lancamentos.length === 0 ? (
-          <div className="bg-[#132744] border border-white/10 rounded-xl p-10 text-center">
+          <div className="hero-background-admin border border-white/10 rounded-xl p-10 text-center">
             <p className="font-serif text-base text-white/60">
               Nenhum lançamento encontrado.
             </p>
           </div>
         ) : (
-          <div className="bg-[#132744] border border-white/10 rounded-xl overflow-hidden">
+          <div className="hero-background-admin border border-white/10 rounded-xl overflow-hidden">
             <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-white/10 font-sans text-xs font-bold uppercase tracking-wider text-white/70">
+                <tr className="border-b border-white/10 font-sans text-xs font-bold uppercase tracking-wider text-white/90">
                   <th className="px-6 py-4">Descrição</th>
                   <th className="px-6 py-4">Valor</th>
                   <th className="px-6 py-4">Tipo</th>
@@ -350,7 +350,7 @@ export default async function AdminFinanceiroPage({
                 {lancamentos.map((lancamento) => (
                   <tr
                     key={lancamento.id}
-                    className="bg-[#0d1f3c] border-b border-white/5 last:border-0"
+                    className="bg-white/5 border-b border-white/10 last:border-0"
                   >
                     <td className="px-6 py-4">
                       <Link
@@ -360,12 +360,12 @@ export default async function AdminFinanceiroPage({
                         {lancamento.descricao}
                         <Eye
                           size={14}
-                          className="text-[#c9a84c]"
+                          className="text-accent-light"
                           aria-hidden="true"
                         />
                       </Link>
                     </td>
-                    <td className="px-6 py-4 font-serif text-sm text-white/60">
+                    <td className="px-6 py-4 font-serif text-sm text-white/80">
                       {formatarValor(lancamento.valor)}
                     </td>
                     <td className="px-6 py-4">
@@ -375,7 +375,7 @@ export default async function AdminFinanceiroPage({
                         {labelTipo(lancamento.tipo)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 font-serif text-sm text-white/60">
+                    <td className="px-6 py-4 font-serif text-sm text-white/80">
                       {lancamento.metodo}
                     </td>
                     <td className="px-6 py-4">
@@ -386,10 +386,10 @@ export default async function AdminFinanceiroPage({
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="flex items-center gap-1.5 font-serif text-sm text-white/60">
+                      <p className="flex items-center gap-1.5 font-serif text-sm text-white/80">
                         <CalendarDays
                           size={14}
-                          className="text-[#c9a84c]"
+                          className="text-accent-light"
                           aria-hidden="true"
                         />
                         {formatarData(lancamento.data)}

@@ -22,7 +22,7 @@ export default async function EventosPage() {
   return (
     <>
       <Navbar />
-      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
+      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-landing min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h1 className="font-sans text-4xl sm:text-5xl font-bold text-primary mb-4">
@@ -48,12 +48,12 @@ export default async function EventosPage() {
             {eventos.map((event) => (
               <article
                 key={event.id}
-                className="rounded-2xl bg-admin-surface shadow-xl p-8 flex flex-col hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+                className="rounded-2xl hero-background-lite shadow-xl p-8 flex flex-col hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
               >
-                <h2 className="font-sans text-2xl font-bold text-white mb-4">
+                <h2 className="font-sans text-2xl font-bold text-primary mb-4">
                   {event.title}
                 </h2>
-                <div className="space-y-2 text-white/70 font-serif text-sm mb-6">
+                <div className="space-y-2 text-primary/70 font-serif text-sm mb-6">
                   <p className="inline-flex items-center gap-2">
                     <CalendarDays size={16} className="text-accent" />
                     {event.date}

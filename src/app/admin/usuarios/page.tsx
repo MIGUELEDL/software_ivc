@@ -45,7 +45,7 @@ export default async function AdminUsuariosPage({
       <section className="py-8 min-h-[calc(100vh-3.5rem)]">
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <div
-            className="bg-[#132744] border border-white/10 rounded-xl p-10 text-center"
+            className="background-accent-admin border border-white/10 rounded-xl p-10 text-center"
             role="alert"
           >
             <h1 className="font-sans text-2xl font-bold text-white mb-3">
@@ -75,8 +75,8 @@ export default async function AdminUsuariosPage({
     <section className="py-8 min-h-[calc(100vh-3.5rem)]">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="flex items-center gap-3 mb-8">
-          <Users className="text-[#c9a84c]" size={28} />
-          <h1 className="font-sans text-3xl font-bold text-white">
+          <Users className="text-accent-light" size={28} />
+          <h1 className="font-sans text-3xl font-bold text-primary">
             Usuários
           </h1>
         </div>
@@ -88,8 +88,8 @@ export default async function AdminUsuariosPage({
               href={r ? `/admin/usuarios?role=${r}` : "/admin/usuarios"}
               className={`px-3 py-1.5 rounded-full text-sm font-sans font-bold transition-colors ${
                 roleParam === r || (!roleParam && !r)
-                  ? "bg-[#c9a84c] text-[#0d1f3c]"
-                  : "bg-white/10 text-white/60 border border-white/10 hover:border-[#c9a84c] hover:text-[#c9a84c]"
+                  ? "hero-background-accent text-white/90"
+                  : "hero-background-admin text-white/90 border border-white/10 hover:border-accent-light hover:text-accent-light"
               }`}
             >
               {r ? ROLE_LABELS[r] : "Todos"}
@@ -103,7 +103,7 @@ export default async function AdminUsuariosPage({
           </div>
         )}
 
-        <div className="bg-[#132744] border border-white/10 rounded-xl overflow-hidden">
+        <div className="hero-background-admin border border-white/10 rounded-xl overflow-hidden">
           <div className="p-4 border-b border-white/10 flex items-center justify-between">
             <span className="font-sans text-sm text-white/60">
               {result.total} usuário(s)
@@ -111,7 +111,7 @@ export default async function AdminUsuariosPage({
             {administrador && (
               <Link
                 href="/admin/usuarios/permissoes"
-                className="inline-flex items-center gap-1.5 text-sm font-sans font-bold text-[#c9a84c] hover:text-[#e0c872] transition-colors"
+                className="inline-flex items-center gap-1.5 text-sm font-sans font-bold text-accent-light hover:text-white/70 transition-colors"
               >
                 <Shield size={14} />
                 Matriz de Permissões
@@ -131,16 +131,16 @@ export default async function AdminUsuariosPage({
               <table className="w-full text-left">
                 <thead>
                   <tr className="border-b border-white/10">
-                    <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase tracking-wider">
+                    <th className="px-4 py-3 font-sans text-xs font-bold text-white/80 uppercase tracking-wider">
                       Email
                     </th>
-                    <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase tracking-wider">
+                    <th className="px-4 py-3 font-sans text-xs font-bold text-white/80 uppercase tracking-wider">
                       Papel
                     </th>
-                    <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase tracking-wider">
+                    <th className="px-4 py-3 font-sans text-xs font-bold text-white/80 uppercase tracking-wider">
                       Criado em
                     </th>
-                    <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase tracking-wider">
+                    <th className="px-4 py-3 font-sans text-xs font-bold text-white/80 uppercase tracking-wider">
                       Status
                     </th>
                   </tr>
@@ -149,17 +149,17 @@ export default async function AdminUsuariosPage({
                   {result.users.map((u) => (
                     <tr
                       key={u.id}
-                      className="bg-[#0d1f3c] border-b border-white/5 hover:bg-white/5 transition-colors"
+                      className="bg-white/5 border-b border-white/10 hover:bg-white/20 transition-colors"
                     >
                       <td className="px-4 py-3 font-sans text-sm text-white">
                         {u.email}
                       </td>
                       <td className="px-4 py-3">
-                        <span className="inline-block px-2 py-0.5 rounded-full text-xs font-sans font-bold bg-[#c9a84c]/10 text-[#c9a84c]">
+                        <span className="inline-block px-2 py-0.5 rounded-full text-xs font-sans font-bold bg-white/7 text-accent-light">
                           {ROLE_LABELS[u.role ?? ""] ?? u.role ?? "—"}
                         </span>
                       </td>
-                      <td className="px-4 py-3 font-sans text-sm text-white/60">
+                      <td className="px-4 py-3 font-sans text-sm text-white/80">
                         {formatarData(u.createdAt)}
                       </td>
                       <td className="px-4 py-3">
@@ -167,7 +167,7 @@ export default async function AdminUsuariosPage({
                           className={`inline-block px-2 py-0.5 rounded-full text-xs font-sans font-bold ${
                             u.lastSignInAt
                               ? "bg-emerald-500/20 text-emerald-400"
-                              : "bg-white/10 text-white/40"
+                              : "bg-white/10 text-white/60"
                           }`}
                         >
                           {u.lastSignInAt ? "Ativo" : "Inativo"}

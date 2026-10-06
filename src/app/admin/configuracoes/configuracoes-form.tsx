@@ -31,7 +31,7 @@ function TextField({
       </label>
       {multiline ? (
         <textarea
-          className="w-full rounded-lg bg-[#0d1f3c] border border-white/10 px-3 py-2 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30 disabled:opacity-50"
+          className="w-full rounded-lg hero-background-admin border border-white/10 px-3 py-2 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30 disabled:opacity-50"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
@@ -40,7 +40,7 @@ function TextField({
       ) : (
         <input
           type="text"
-          className="w-full rounded-lg bg-[#0d1f3c] border border-white/10 px-3 py-2 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30 disabled:opacity-50"
+          className="w-full rounded-lg hero-background-admin border border-white/10 px-3 py-2 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30 disabled:opacity-50"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
@@ -58,9 +58,9 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl bg-[#132744] border border-white/10 p-6 space-y-4">
+    <div className="rounded-2xl hero-background-admin border border-white/10 p-6 space-y-4">
       <h2 className="font-sans text-lg font-bold text-white flex items-center gap-2">
-        <Settings size={18} className="text-[#c9a84c]" />
+        <Settings size={18} className="text-accent-light" />
         {title}
       </h2>
       {children}
@@ -71,7 +71,7 @@ function Section({
 function ReadonlyValue({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="font-sans text-xs font-bold text-white/50 uppercase">
+      <p className="font-sans text-xs font-bold text-white/60 uppercase">
         {label}
       </p>
       <p className="font-serif text-sm text-white">{value || "—"}</p>
@@ -103,7 +103,7 @@ function ValoresEditor({
           <input
             type="text"
             placeholder="Titulo"
-            className="w-28 rounded-lg bg-[#0d1f3c] border border-white/10 px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
+            className="w-28 rounded-lg hero-background-admin border border-white/10 px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
             value={v.title}
             onChange={(e) => update(i, "title", e.target.value)}
           />
@@ -271,7 +271,7 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
               <p className="font-sans text-xs font-bold text-white/50 uppercase">
                 Link wa.me
               </p>
-              <p className="font-serif text-sm text-[#c9a84c] break-all">
+              <p className="font-serif text-sm text-accent-light break-all">
                 https://wa.me/55{form["whatsapp.number"] as string}
               </p>
             </div>
@@ -285,11 +285,11 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
         ) : (
           <div className="space-y-2">
             <ReadonlyValue label="Chave PIX (CNPJ)" value={form["pix.key"] as string} />
-            <div className="rounded-lg bg-bg-gray p-3">
-              <p className="font-sans text-xs font-bold text-white/50 uppercase mb-1">
+            <div className="rounded-lg bg-white/20 p-3">
+              <p className="font-sans text-xs font-bold text-white/70 uppercase mb-1">
                 Como doar
               </p>
-              <p className="font-serif text-sm text-white/70">
+              <p className="font-serif text-sm text-white/90">
                 Abra o app do banco, escolha PIX copia-e-cola, cole a chave acima e informe o valor desejado.
               </p>
             </div>
@@ -392,7 +392,7 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
           ) : (
             <button
               onClick={() => setEditing(true)}
-              className="flex items-center gap-2 rounded-lg border-2 border-[#c9a84c] px-4 py-2 font-sans text-sm font-bold text-[#c9a84c] hover:bg-[#c9a84c] hover:text-[#0d1f3c]"
+              className="flex items-center gap-2 rounded-lg border-2 border-accent-light px-4 py-2 font-sans text-sm font-bold text-primary hover:bg-accent-light/60 hover:text-primary"
             >
               Editar
             </button>

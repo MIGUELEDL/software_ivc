@@ -17,7 +17,7 @@ export default function Leadership({
   leaders: Lider[];
 }) {
   return (
-    <section id="lideranca" className="py-20 sm:py-32 bg-white">
+    <section id="lideranca" className="py-20 sm:py-32 bg-landing">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -58,7 +58,7 @@ export default function Leadership({
             {leaders.map((lider) => (
               <div
                 key={lider.id}
-                className="rounded-2xl bg-primary shadow-xl p-8 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+                className="rounded-2xl hero-background shadow-xl p-8 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
               >
                 {lider.photo_url ? (
                   <img

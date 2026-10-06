@@ -16,13 +16,13 @@ export default async function AdminConfiguracoesPage() {
       <section className="py-8 min-h-[calc(100vh-3.5rem)]">
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <div
-            className="bg-[#132744] border border-white/10 rounded-xl p-10 text-center"
+            className="hero-background-admin border border-white/10 rounded-xl p-10 text-center"
             role="alert"
           >
             <h1 className="font-sans text-2xl font-bold text-white mb-3">
               Configurações
             </h1>
-            <p className="text-white/60">
+            <p className="text-white/80">
               Você não tem permissão para acessar este módulo.
             </p>
           </div>
@@ -37,8 +37,8 @@ export default async function AdminConfiguracoesPage() {
     <section className="py-8 min-h-[calc(100vh-3.5rem)]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         <div className="flex items-center gap-3 mb-6">
-          <Settings size={24} className="text-[#c9a84c]" />
-          <h1 className="font-sans text-2xl font-bold text-white">
+          <Settings size={24} className="text-accent-light" />
+          <h1 className="font-sans text-2xl font-bold text-primary">
             Configurações
           </h1>
           {!fromDb && (

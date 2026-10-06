@@ -72,10 +72,10 @@ export default async function AdminMembrosPage({
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
           <div>
-            <h1 className="font-sans text-3xl font-bold text-white mb-2">
+            <h1 className="font-sans text-3xl font-bold text-primary mb-2">
               Membros
             </h1>
-            <p className="font-serif text-base text-white/60">
+            <p className="font-serif text-base text-primary/60">
               Registro oficial de membros da igreja.
             </p>
           </div>
@@ -83,7 +83,7 @@ export default async function AdminMembrosPage({
           {escritor && (
             <Link
               href="/admin/membros/novo"
-              className="inline-flex items-center gap-2 bg-[#c9a84c] hover:bg-[#e0c872] text-[#0d1f3c] font-sans text-sm font-bold rounded-lg px-4 py-2 transition-colors"
+              className="inline-flex items-center gap-2 hero-background-accent hover:bg-accent text-white font-sans text-sm font-bold rounded-lg px-4 py-2 transition-colors"
             >
               <UserPlus size={16} aria-hidden="true" />
               Novo membro
@@ -94,7 +94,7 @@ export default async function AdminMembrosPage({
         <form
           method="GET"
           action="/admin/membros"
-          className="mb-6 flex flex-wrap items-center gap-3 bg-[#132744] border border-white/10 rounded-xl p-5"
+          className="mb-6 flex flex-wrap items-center gap-3 hero-background-admin border border-white/10 rounded-xl p-5"
         >
           <label className="sr-only" htmlFor="q">
             Buscar membro
@@ -102,7 +102,7 @@ export default async function AdminMembrosPage({
           <div className="relative min-w-0 flex-1">
             <Search
               size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-white/80"
               aria-hidden="true"
             />
             <input
@@ -111,7 +111,7 @@ export default async function AdminMembrosPage({
               type="search"
               defaultValue={q}
               placeholder="Buscar por nome ou matrícula"
-              className="w-full bg-[#0d1f3c] border border-white/10 text-white rounded-lg pl-9 pr-3 py-2 font-sans focus:border-[#c9a84c] focus:outline-none transition-colors"
+              className="w-full bg-white/10 border border-white/10 text-white rounded-lg pl-9 pr-3 py-2 font-sans focus:border-accent focus:outline-none transition-colors"
             />
           </div>
 
@@ -122,7 +122,7 @@ export default async function AdminMembrosPage({
             id="status"
             name="status"
             defaultValue={statusOpt}
-            className="bg-[#0d1f3c] border border-white/10 text-white rounded-lg px-3 py-2 font-sans focus:border-[#c9a84c] focus:outline-none transition-colors"
+            className="bg-white/10 border border-white/10 text-white rounded-lg px-3 py-2 font-sans focus:border-accent focus:outline-none transition-colors"
           >
             {STATUS_OPCOES.map((opcao) => (
               <option key={opcao.valor} value={opcao.valor}>
@@ -138,9 +138,11 @@ export default async function AdminMembrosPage({
             id="mes"
             name="mes"
             defaultValue={mesAniversario?.toString() ?? ""}
-            className="bg-[#0d1f3c] border border-white/10 text-white rounded-lg px-3 py-2 font-sans focus:border-[#c9a84c] focus:outline-none transition-colors"
+            className="bg-white/10 border border-white/10 text-white rounded-lg px-3 py-2 font-sans focus:border-accent focus:outline-none transition-colors"
           >
-            <option value="">Mês aniversário</option>
+            <option value="">
+              Mês aniversário
+            </option>
             {[
               { valor: "1", rotulo: "Janeiro" },
               { valor: "2", rotulo: "Fevereiro" },
@@ -163,26 +165,26 @@ export default async function AdminMembrosPage({
 
           <button
             type="submit"
-            className="bg-[#c9a84c] hover:bg-[#e0c872] text-[#0d1f3c] font-sans font-bold rounded-lg px-4 py-2 transition-colors"
+            className="hero-background-accent hover:bg-accent text-white font-sans font-bold rounded-lg px-4 py-2 transition-colors"
           >
             Filtrar
           </button>
         </form>
 
         {falhaConsulta ? (
-          <div className="bg-[#132744] border border-white/10 rounded-xl p-10 text-center">
+          <div className="hero-background-admin border border-white/10 rounded-xl p-10 text-center">
             <p className="font-serif text-white/60">
               Não foi possível carregar os membros. Tente novamente mais tarde.
             </p>
           </div>
         ) : membros.length === 0 ? (
-          <div className="bg-[#132744] border border-white/10 rounded-xl p-10 text-center">
+          <div className="hero-background-admin border border-white/10 rounded-xl p-10 text-center">
             <p className="font-serif text-base text-white/60">
               Nenhum membro encontrado.
             </p>
           </div>
         ) : (
-          <div className="bg-[#132744] border border-white/10 rounded-xl overflow-hidden">
+          <div className="hero-background-admin border border-white/10 rounded-xl overflow-hidden">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-white/10 font-sans text-xs font-semibold uppercase tracking-wider text-white/70">
@@ -196,12 +198,12 @@ export default async function AdminMembrosPage({
                 {membros.map((membro) => (
                   <tr
                     key={membro.id}
-                    className="bg-[#0d1f3c] border-b border-white/5 last:border-0"
+                    className="bg-white/5 border-b border-white/30 last:border-0"
                   >
                     <td className="px-6 py-4 font-sans font-semibold text-white">
                       {membro.nome}
                     </td>
-                    <td className="px-6 py-4 font-sans text-[#c9a84c] font-bold">
+                    <td className="px-6 py-4 font-sans text-accent-light font-bold">
                       {membro.matricula}
                     </td>
                     <td className="px-6 py-4">
@@ -217,14 +219,14 @@ export default async function AdminMembrosPage({
                       <div className="flex items-center justify-end gap-3">
                         <Link
                           href={`/admin/membros/${membro.id}`}
-                          className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-[#c9a84c] hover:text-[#e0c872] transition-colors"
+                          className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-accent-light hover:text-white transition-colors"
                         >
                           <Eye size={15} aria-hidden="true" />
                           Detalhes
                         </Link>
                         <Link
                           href={`/admin/membros/${membro.id}/cartao`}
-                          className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-[#c9a84c] hover:text-[#e0c872] transition-colors"
+                          className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-accent-light hover:text-white transition-colors"
                         >
                           <IdCard size={15} aria-hidden="true" />
                           Cartão

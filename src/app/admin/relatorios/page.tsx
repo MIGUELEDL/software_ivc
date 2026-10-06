@@ -43,13 +43,13 @@ export default async function AdminRelatoriosPage({
       <section className="py-8 min-h-[calc(100vh-3.5rem)]">
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <div
-            className="bg-[#132744] border border-white/10 rounded-xl p-10 text-center"
+            className="hero-background-admin border border-white/10 rounded-xl p-10 text-center"
             role="alert"
           >
-            <h1 className="font-sans text-2xl font-bold text-white mb-3">
+            <h1 className="font-sans text-2xl font-bold text-primary mb-3">
               Relatórios
             </h1>
-            <p className="text-white/60">
+            <p className="text-primary/60">
               Você não tem permissão para acessar este módulo.
             </p>
           </div>
@@ -68,9 +68,9 @@ export default async function AdminRelatoriosPage({
   }
 
   const estiloChipAtivo =
-    "rounded-full bg-[#c9a84c] text-[#0d1f3c] px-3 py-1.5 font-sans text-xs font-bold transition-colors";
+    "rounded-full hero-background-accent text-white/90 px-3 py-1.5 font-sans text-xs font-bold transition-colors";
   const estiloChipInativo =
-    "rounded-full border border-white/10 text-white/60 hover:border-[#c9a84c] hover:text-[#c9a84c] px-3 py-1.5 font-sans text-xs font-bold transition-colors";
+    "rounded-full border border-white/50 text-white/75 hover:border-accent-light hover:text-accent-light px-3 py-1.5 font-sans text-xs font-bold transition-colors";
 
   function hrefCategoria(cat: string): string {
     return cat === ""
@@ -82,17 +82,17 @@ export default async function AdminRelatoriosPage({
     <section className="py-8 min-h-[calc(100vh-3.5rem)]">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="mb-8">
-          <h1 className="font-sans text-3xl font-bold text-white mb-2">
+          <h1 className="font-sans text-3xl font-bold text-primary mb-2">
             Relatórios
           </h1>
-          <p className="text-white/60">
+          <p className="text-primary/70">
             Exportações e documentos da igreja.
           </p>
         </div>
 
         {/* --- Seção Relatórios --- */}
-        <div className="bg-[#132744] border border-white/10 rounded-xl p-5 mb-8">
-          <h2 className="font-sans text-lg font-bold text-white mb-4">
+        <div className="hero-background-admin border border-white/10 rounded-xl p-5 mb-8">
+          <h2 className="font-sans text-lg font-bold text-white/90 mb-4">
             Exportar relatório
           </h2>
           <form
@@ -104,7 +104,7 @@ export default async function AdminRelatoriosPage({
             <div>
               <label
                 htmlFor="data_inicio"
-                className="block font-sans text-xs font-semibold text-white/70 uppercase tracking-wider mb-1"
+                className="block font-sans text-xs font-semibold text-white/90 uppercase tracking-wider mb-1"
               >
                 De
               </label>
@@ -112,13 +112,13 @@ export default async function AdminRelatoriosPage({
                 id="data_inicio"
                 name="data_inicio"
                 type="date"
-                className="bg-[#0d1f3c] border border-white/10 text-white rounded-lg px-3 py-2 font-sans focus:border-[#c9a84c] focus:outline-none transition-colors"
+                className="bg-white/20 border border-white/10 text-white/75 rounded-lg px-3 py-2 font-sans focus:border-[#c9a84c] focus:outline-none transition-colors"
               />
             </div>
             <div>
               <label
                 htmlFor="data_fim"
-                className="block font-sans text-xs font-semibold text-white/70 uppercase tracking-wider mb-1"
+                className="block font-sans text-xs font-semibold text-white/90 uppercase tracking-wider mb-1"
               >
                 Até
               </label>
@@ -126,12 +126,12 @@ export default async function AdminRelatoriosPage({
                 id="data_fim"
                 name="data_fim"
                 type="date"
-                className="bg-[#0d1f3c] border border-white/10 text-white rounded-lg px-3 py-2 font-sans focus:border-[#c9a84c] focus:outline-none transition-colors"
+                className="bg-white/20 border border-white/10 text-white/75 rounded-lg px-3 py-2 font-sans focus:border-[#c9a84c] focus:outline-none transition-colors"
               />
             </div>
             <button
               type="submit"
-              className="inline-flex items-center gap-2 bg-[#c9a84c] hover:bg-[#e0c872] text-[#0d1f3c] font-sans font-bold rounded-lg px-5 py-2 transition-colors"
+              className="inline-flex items-center gap-2 hero-background-accent hover:bg-accent-light text-white/90 font-sans font-bold rounded-lg px-5 py-2 transition-colors"
             >
               <Download size={16} aria-hidden="true" />
               Financeiro (CSV)
@@ -141,21 +141,21 @@ export default async function AdminRelatoriosPage({
           <div className="flex flex-wrap gap-3">
             <a
               href="/api/admin/relatorios/exportar?tipo=membros"
-              className="inline-flex items-center gap-2 rounded-lg border border-white/10 text-white/60 hover:border-[#c9a84c] hover:text-[#c9a84c] font-sans text-sm font-bold px-4 py-2 transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg border border-white/10 text-white/80 hover:border-accent-light hover:text-accent-light font-sans text-sm font-bold px-4 py-2 transition-colors"
             >
               <Download size={14} aria-hidden="true" />
               Membros
             </a>
             <a
               href="/api/admin/relatorios/exportar?tipo=eventos"
-              className="inline-flex items-center gap-2 rounded-lg border border-white/10 text-white/60 hover:border-[#c9a84c] hover:text-[#c9a84c] font-sans text-sm font-bold px-4 py-2 transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg border border-white/10 text-white/80 hover:border-accent-light hover:text-accent-light font-sans text-sm font-bold px-4 py-2 transition-colors"
             >
               <Download size={14} aria-hidden="true" />
               Eventos
             </a>
             <a
               href="/api/admin/relatorios/exportar?tipo=patrimonio"
-              className="inline-flex items-center gap-2 rounded-lg border border-white/10 text-white/60 hover:border-[#c9a84c] hover:text-[#c9a84c] font-sans text-sm font-bold px-4 py-2 transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg border border-white/10 text-white/80 hover:border-accent-light hover:text-accent-light font-sans text-sm font-bold px-4 py-2 transition-colors"
             >
               <Download size={14} aria-hidden="true" />
               Patrimônio
@@ -164,14 +164,14 @@ export default async function AdminRelatoriosPage({
         </div>
 
         {/* --- Seção Documentos --- */}
-        <div className="bg-[#132744] border border-white/10 rounded-xl p-5">
-          <h2 className="font-sans text-lg font-bold text-white mb-4">
+        <div className="hero-background-admin border border-white/10 rounded-xl p-5">
+          <h2 className="font-sans text-lg font-bold text-white/90 mb-4">
             Documentos
           </h2>
 
           {/* Chips de categoria */}
           <div className="flex flex-wrap items-center gap-2 mb-6">
-            <span className="font-sans text-xs font-semibold uppercase tracking-wider text-white/70">
+            <span className="font-sans text-xs font-semibold uppercase tracking-wider text-white/90">
               Categoria:
             </span>
             <Link
@@ -194,7 +194,7 @@ export default async function AdminRelatoriosPage({
           </div>
 
           {documentos.length === 0 ? (
-            <div className="rounded-xl bg-[#0d1f3c] p-10 text-center">
+            <div className="rounded-xl bg-white/20 p-10 text-center">
               <FileText
                 size={32}
                 className="mx-auto mb-3 text-white/30"
@@ -208,7 +208,7 @@ export default async function AdminRelatoriosPage({
             <div className="overflow-hidden rounded-xl border border-white/10">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="border-b border-white/10 font-sans text-xs font-semibold uppercase tracking-wider text-white/70">
+                  <tr className="border-b border-white/10 font-sans text-xs font-semibold uppercase tracking-wider text-white/80">
                     <th className="px-4 py-3">Título</th>
                     <th className="px-4 py-3">Categoria</th>
                     <th className="px-4 py-3">Tamanho</th>
@@ -220,7 +220,7 @@ export default async function AdminRelatoriosPage({
                   {documentos.map((doc) => (
                     <tr
                       key={doc.id}
-                      className="bg-[#0d1f3c] border-b border-white/5 last:border-0"
+                      className="bg-white/10 border-b border-white/5 last:border-0"
                     >
                       <td className="px-4 py-3">
                         <span className="font-sans font-semibold text-white">

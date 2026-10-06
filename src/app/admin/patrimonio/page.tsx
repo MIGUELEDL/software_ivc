@@ -30,13 +30,13 @@ export default async function AdminPatrimonioPage() {
       <section className="py-8 min-h-[calc(100vh-3.5rem)]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div
-            className="bg-[#132744] border border-white/10 rounded-xl p-10 text-center"
+            className="hero-background-admin border border-white/10 rounded-xl p-10 text-center"
             role="alert"
           >
-            <h1 className="font-sans text-2xl font-bold text-white mb-3">
+            <h1 className="font-sans text-2xl font-bold text-primary mb-3">
               Patrimônio
             </h1>
-            <p className="font-serif text-white/60">
+            <p className="font-serif text-primary/60">
               Você não tem permissão para acessar este módulo.
             </p>
           </div>
@@ -58,10 +58,10 @@ export default async function AdminPatrimonioPage() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
           <div>
-            <h1 className="font-sans text-3xl font-bold text-white mb-2">
+            <h1 className="font-sans text-3xl font-bold text-primary mb-2">
               Patrimônio
             </h1>
-            <p className="font-serif text-base text-white/60">
+            <p className="font-serif text-base text-primary/70">
               Inventário dos bens da igreja.
             </p>
           </div>
@@ -69,34 +69,34 @@ export default async function AdminPatrimonioPage() {
           {escritor && (
             <Link
               href="/admin/patrimonio/nova"
-              className="inline-flex items-center gap-2 bg-[#c9a84c] hover:bg-[#e0c872] text-[#0d1f3c] font-sans font-bold rounded-lg px-4 py-2 transition-colors"
+              className="inline-flex items-center gap-2 hero-background-accent hover:bg-accent text-white font-sans font-bold rounded-lg px-4 py-2 transition-colors"
             >
               <Plus size={16} aria-hidden="true" />
-              Novo bem
+              Novo Registro
             </Link>
           )}
         </div>
 
         {falhaConsulta ? (
-          <div className="bg-[#132744] border border-white/10 rounded-xl p-10 text-center">
+          <div className="hero-background-admin border border-white/10 rounded-xl p-10 text-center">
             <p className="font-serif text-white/60">
               Não foi possível carregar o inventário. Tente novamente mais
               tarde.
             </p>
           </div>
         ) : assets.length === 0 ? (
-          <div className="bg-[#132744] border border-white/10 rounded-xl p-10 text-center">
-            <p className="font-serif text-base text-white/60">
+          <div className="hero-background-admin border border-white/10 rounded-xl p-10 text-center">
+            <p className="font-serif text-base text-primary/60">
               Nenhum bem cadastrado.
             </p>
           </div>
         ) : (
-          <div className="bg-[#132744] border border-white/10 rounded-xl overflow-hidden overflow-x-auto">
+          <div className="hero-background-admin border border-white/10 rounded-xl overflow-hidden overflow-x-auto">
             <table className="w-full text-left min-w-[800px]">
               <thead>
-                <tr className="border-b border-white/10 font-sans text-sm font-bold text-white/70 uppercase tracking-wider">
+                <tr className="border-b border-white/10 font-sans text-sm font-bold text-white/90 uppercase tracking-wider">
                   <th className="px-6 py-4">Bem</th>
-                  <th className="px-6 py-4">Tombo</th>
+                  <th className="px-6 py-4">ID</th>
                   <th className="px-6 py-4">Localização</th>
                   <th className="px-6 py-4">Valor</th>
                   <th className="px-6 py-4">Situação</th>
@@ -107,41 +107,41 @@ export default async function AdminPatrimonioPage() {
                 {assets.map((asset) => (
                   <tr
                     key={asset.id}
-                    className="bg-[#0d1f3c] border-b border-white/5 last:border-0"
+                    className="bg-white/4 border-b border-white/10 last:border-1"
                   >
                     <td className="px-6 py-4">
                       <p className="flex items-center gap-2 font-sans font-semibold text-white">
                         <Package
                           size={16}
-                          className="text-[#c9a84c]"
+                          className="text-accent-light"
                           aria-hidden="true"
                         />
                         <span>
                           {asset.name}
-                          <span className="ml-2 rounded-full bg-[#c9a84c]/10 px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wide text-[#c9a84c]">
+                          <span className="ml-2 rounded-full bg-accent-light/10 px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wide text-accent-light">
                             {asset.category}
                           </span>
                         </span>
                       </p>
                     </td>
-                    <td className="px-6 py-4 font-serif text-sm text-white/60">
+                    <td className="px-6 py-4 font-serif text-sm text-white/80">
                       {asset.numero_patrimonio ?? "—"}
                     </td>
                     <td className="px-6 py-4">
-                      <p className="flex items-center gap-1.5 font-serif text-sm text-white/60">
+                      <p className="flex items-center gap-1.5 font-serif text-sm text-white/80">
                         <MapPin
                           size={14}
-                          className="text-[#c9a84c]"
+                          className="text-accent-light"
                           aria-hidden="true"
                         />
                         {asset.location ?? "—"}
                       </p>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="flex items-center gap-1.5 font-serif text-sm text-white/60">
+                      <p className="flex items-center gap-1.5 font-serif text-sm text-white/80">
                         <CircleDollarSign
                           size={14}
-                          className="text-[#c9a84c]"
+                          className="text-accent-light"
                           aria-hidden="true"
                         />
                         {asset.acquisition_value !== null
@@ -167,7 +167,7 @@ export default async function AdminPatrimonioPage() {
                       <div className="flex items-center justify-end gap-3">
                         <Link
                           href={`/admin/patrimonio/${asset.id}`}
-                          className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-white/60 hover:text-white transition-colors"
+                          className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-white/75 hover:text-white transition-colors"
                         >
                           <Eye size={15} aria-hidden="true" />
                           Detalhes
@@ -175,7 +175,7 @@ export default async function AdminPatrimonioPage() {
                         {escritor && (
                           <Link
                             href={`/admin/patrimonio/${asset.id}?editar=1`}
-                            className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-white/60 hover:text-white transition-colors"
+                            className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-accent-light hover:text-accent-light/75 transition-colors"
                           >
                             <Pencil size={15} aria-hidden="true" />
                             Editar

@@ -9,7 +9,7 @@ export default async function AdminLayout({
   const claims = await getClaims();
 
   return (
-    <div className="min-h-screen bg-[#0a1628]">
+    <div className="min-h-screen hero-lite-admin">
       <AdminNavbar
         email={claims?.email ?? ""}
         role={claims?.role ?? ""}

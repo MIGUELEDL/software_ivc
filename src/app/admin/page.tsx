@@ -116,25 +116,25 @@ export default async function AdminPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {claims ? (
           !podeDashboard ? (
-            <div className="rounded-2xl bg-[#132744] border border-white/10 p-10 text-center">
+            <div className="rounded-2xl hero-background-admin border border-white/10 p-10 text-center">
               <Shield size={48} className="mx-auto mb-4 text-red-400" />
-              <h2 className="font-sans text-xl font-bold text-white mb-2">
+              <h2 className="font-sans text-xl font-bold text-primary mb-2">
                 Acesso Negado
               </h2>
-              <p className="font-serif text-sm text-white/60">
+              <p className="font-serif text-sm text-primary/60">
                 Voce nao possui permissao para acessar o painel administrativo.
               </p>
-              <p className="font-serif text-xs text-white/40 mt-2">
+              <p className="font-serif text-xs text-primary/40 mt-2">
                 Papel atual: {claims.role ?? "nenhum"} | Contato: administrador
               </p>
             </div>
           ) : (
           <div className="space-y-8">
             <div>
-              <h1 className="font-sans text-2xl font-bold text-white mb-1">
+              <h1 className="font-sans text-2xl font-bold text-primary mb-1">
                 Dashboard
               </h1>
-              <p className="font-serif text-sm text-white/50">
+              <p className="font-serif text-sm text-primary/50">
                 Visao geral da administracao da IVC
               </p>
             </div>
@@ -147,17 +147,17 @@ export default async function AdminPage() {
                     <Link
                       key={key}
                       href={METRIC_HREF[key]}
-                      className="rounded-xl bg-[#132744] border border-white/10 p-4 hover:border-[#c9a84c]/40 hover:bg-[#1a3050] transition-all text-center group"
+                      className="rounded-xl hero-background-admin border border-white/10 p-4 hover:border-[#c9a84c]/40 hover:bg-[#1a3050] transition-all text-center group"
                     >
                       <Icon
                         size={24}
-                        className="mx-auto mb-2 text-[#c9a84c] group-hover:scale-110 transition-transform"
+                        className="mx-auto mb-2 text-accent group-hover:scale-110 transition-transform"
                         aria-hidden="true"
                       />
                       <p className="font-sans text-xl font-bold text-white">
                         {metricas[key]}
                       </p>
-                      <p className="font-sans text-[10px] font-bold text-white/40 uppercase tracking-wider">
+                      <p className="font-sans text-[10px] font-bold text-white/80 uppercase tracking-wider">
                         {METRIC_LABELS[key]}
                       </p>
                     </Link>
@@ -167,12 +167,12 @@ export default async function AdminPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 rounded-xl bg-[#132744] border border-white/10 p-5">
-                <h2 className="font-sans text-sm font-bold text-white/70 uppercase tracking-wider mb-4">
+              <div className="lg:col-span-2 rounded-xl hero-background-admin border border-white/10 p-5">
+                <h2 className="font-sans text-sm font-bold text-white uppercase tracking-wider mb-4">
                   Atividade Recente
                 </h2>
                 {atividade.length === 0 ? (
-                  <p className="font-serif text-sm text-white/40">
+                  <p className="font-serif text-sm text-white">
                     Nenhuma atividade recente.
                   </p>
                 ) : (
@@ -180,7 +180,7 @@ export default async function AdminPage() {
                     {atividade.map((item) => (
                       <li
                         key={`${item.tipo}-${item.id}`}
-                        className="flex items-center gap-3 rounded-lg bg-[#0d1f3c] px-3 py-2.5"
+                        className="flex items-center gap-3 rounded-lg bg-white/10 px-3 py-2.5"
                       >
                         <AtividadeIcon tipo={item.tipo} />
                         <div className="flex-1 min-w-0">
@@ -198,25 +198,25 @@ export default async function AdminPage() {
                 )}
               </div>
 
-              <div className="rounded-xl bg-[#132744] border border-white/10 p-5">
-                <h2 className="font-sans text-sm font-bold text-white/70 uppercase tracking-wider mb-4">
+              <div className="rounded-xl hero-background-admin border border-white/10 p-5">
+                <h2 className="font-sans text-sm font-bold text-white uppercase tracking-wider mb-4">
                   Resumo Financeiro
                 </h2>
                 <div className="space-y-3 mb-4">
                   <div className="flex justify-between items-baseline">
-                    <span className="font-sans text-xs text-white/40">Receitas</span>
+                    <span className="font-sans text-xs text-white/80">Receitas</span>
                     <span className="font-serif text-lg font-bold text-emerald-400">
                       {formatarMoeda(financeiro.receitas)}
                     </span>
                   </div>
                   <div className="flex justify-between items-baseline">
-                    <span className="font-sans text-xs text-white/40">Despesas</span>
+                    <span className="font-sans text-xs text-white/80">Despesas</span>
                     <span className="font-serif text-lg font-bold text-red-400">
                       {formatarMoeda(financeiro.despesas)}
                     </span>
                   </div>
                   <div className="border-t border-white/10 pt-3 flex justify-between items-baseline">
-                    <span className="font-sans text-xs font-bold text-white/60">Saldo</span>
+                    <span className="font-sans text-xs font-bold text-white/80">Saldo</span>
                     <span className="font-serif text-xl font-bold text-white">
                       {formatarMoeda(financeiro.saldo)}
                     </span>
@@ -224,14 +224,14 @@ export default async function AdminPage() {
                 </div>
                 {financeiro.topCategorias.length > 0 && (
                   <>
-                    <p className="font-sans text-[10px] font-bold text-white/40 uppercase tracking-wider mb-2">
+                    <p className="font-sans text-[10px] font-bold text-white/80 uppercase tracking-wider mb-2">
                       Top Categorias
                     </p>
                     <ul className="space-y-1">
                       {financeiro.topCategorias.map((cat) => (
                         <li
                           key={cat.categoria}
-                          className="flex justify-between font-serif text-xs text-white/50"
+                          className="flex justify-between font-serif text-xs text-white/70"
                         >
                           <span>{cat.categoria}</span>
                           <span>{formatarMoeda(cat.valor)}</span>
@@ -245,9 +245,9 @@ export default async function AdminPage() {
 
             <nav
               aria-label="Modulos administrativos"
-              className="rounded-xl bg-[#132744] border border-white/10 p-4"
+              className="rounded-xl hero-background-admin border border-white/10 p-4"
             >
-              <h2 className="font-sans text-sm font-bold text-white/70 uppercase tracking-wider mb-3 px-2">
+              <h2 className="font-sans text-sm font-bold text-white uppercase tracking-wider mb-3 px-2">
                 Modulos
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
@@ -260,12 +260,12 @@ export default async function AdminPage() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="flex items-center gap-3 rounded-lg bg-[#0d1f3c] p-3 hover:bg-[#1a3050] hover:border-[#c9a84c]/30 border border-transparent transition-all group"
+                    className="flex items-center gap-3 rounded-lg bg-white/10 p-3 hover:bg-[#1a3050] hover:border-[#c9a84c]/30 border border-transparent transition-all group"
                   >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#c9a84c]/10 text-[#c9a84c] group-hover:bg-[#c9a84c]/20 transition-colors">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent group-hover:bg-[#c9a84c]/20 transition-colors">
                       <item.icon size={16} aria-hidden="true" />
                     </span>
-                    <span className="font-sans text-xs font-bold text-white/80 group-hover:text-white transition-colors">
+                    <span className="font-sans text-xs font-bold text-white group-hover:text-white transition-colors">
                       {item.label}
                     </span>
                   </Link>

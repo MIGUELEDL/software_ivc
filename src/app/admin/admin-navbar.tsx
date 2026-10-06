@@ -68,15 +68,15 @@ export function AdminNavbar({ email, role }: { email: string; role: string }) {
     : "??";
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0d1f3c]/95 backdrop-blur-sm border-b border-white/10">
+    <nav className="fixed top-0 left-0 right-0 z-50 hero-lite-admin backdrop-blur-sm border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-14">
           <div className="flex items-center gap-3">
             <Link
               href="/admin"
-              className="font-sans text-lg font-bold text-white tracking-tight"
+              className="font-sans text-lg font-bold text-primary tracking-tight"
             >
-              <span className="text-[#c9a84c]">IVC</span> Admin
+              <span className="text-accent">IVC</span> Admin
             </Link>
           </div>
 
@@ -92,8 +92,8 @@ export function AdminNavbar({ email, role }: { email: string; role: string }) {
                   href={item.href}
                   className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-sans font-medium transition-colors ${
                     active
-                      ? "bg-white/15 text-white"
-                      : "text-white/60 hover:text-white hover:bg-white/5"
+                      ? "bg-primary/15 text-primary"
+                      : "text-primary/90 hover:text-accent hover:bg-primary/5"
                   }`}
                 >
                   <item.icon size={14} />
@@ -122,31 +122,31 @@ export function AdminNavbar({ email, role }: { email: string; role: string }) {
               onClick={() => setMenuOpen(!menuOpen)}
               className="flex items-center gap-2 group"
             >
-              <div className="w-8 h-8 rounded-full bg-[#c9a84c] flex items-center justify-center text-[#0d1f3c] font-sans text-xs font-bold">
+              <div className="w-8 h-8 rounded-full hero-background-admin flex items-center justify-center text-white font-sans text-xs font-bold">
                 {initials}
               </div>
               <ChevronDown
                 size={14}
-                className={`text-white/50 transition-transform ${
+                className={`text-primary transition-transform ${
                   menuOpen ? "rotate-180" : ""
                 }`}
               />
             </button>
 
             {menuOpen && (
-              <div className="absolute right-0 top-full mt-2 w-64 bg-[#132744] rounded-xl shadow-2xl border border-white/10 py-2 overflow-hidden">
+              <div className="absolute right-0 top-full mt-2 w-64 hero-background-lite rounded-xl shadow-2xl border border-white/10 py-2 overflow-hidden">
                 <div className="px-4 py-3 border-b border-white/10">
-                  <p className="font-sans text-xs text-white/40 truncate">
+                  <p className="font-sans text-xs text-primary truncate">
                     {email}
                   </p>
-                  <p className="font-sans text-xs font-bold text-[#c9a84c] mt-0.5">
+                  <p className="font-sans text-xs font-bold text-accent mt-0.5">
                     {ROLE_LABELS[role] ?? role}
                   </p>
                 </div>
                 <div className="py-1">
                   <Link
                     href="/admin/configuracoes"
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm font-sans text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm font-sans text-primary/70 hover:text-primary hover:bg-primary/5 transition-colors"
                     onClick={() => setMenuOpen(false)}
                   >
                     <User size={15} />
@@ -154,7 +154,7 @@ export function AdminNavbar({ email, role }: { email: string; role: string }) {
                   </Link>
                   <Link
                     href="/"
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm font-sans text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm font-sans text-primary/70 hover:text-primary hover:bg-primary/5 transition-colors"
                     onClick={() => setMenuOpen(false)}
                   >
                     <LogOut size={15} />

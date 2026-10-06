@@ -45,7 +45,7 @@ export default async function EventoPage({
   return (
     <>
       <Navbar />
-      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
+      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-landing min-h-screen">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <Link
           href="/eventos"
@@ -55,12 +55,12 @@ export default async function EventoPage({
           Voltar para eventos
         </Link>
 
-        <div className="rounded-2xl bg-admin-surface shadow-xl p-8 sm:p-12">
-          <h1 className="font-sans text-3xl sm:text-4xl font-bold text-white mb-6">
+        <div className="rounded-2xl hero-background-lite shadow-xl p-8 sm:p-12">
+          <h1 className="font-sans text-3xl sm:text-4xl font-bold text-primary mb-6">
             {event.title}
           </h1>
 
-          <div className="space-y-3 text-white/70 font-serif text-base mb-8">
+          <div className="space-y-3 text-primary/70 font-serif text-base mb-8">
             <p className="inline-flex items-center gap-2">
               <CalendarDays size={18} className="text-accent" />
               {event.date}
@@ -76,7 +76,7 @@ export default async function EventoPage({
           </div>
 
           {event.description && (
-            <p className="font-serif text-lg leading-relaxed text-white/80 mb-10">
+            <p className="font-serif text-lg leading-relaxed text-primary/80 mb-10">
               {event.description}
             </p>
           )}
@@ -92,7 +92,7 @@ export default async function EventoPage({
           </a>
         </div>
 
-        <p className="mt-8 text-center font-serif text-sm text-white/50">
+        <p className="mt-8 text-center font-serif text-sm text-primary/60">
           {CHURCH.name} — {CHURCH.city}
         </p>
       </div>

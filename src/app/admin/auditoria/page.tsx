@@ -19,13 +19,13 @@ export default async function AdminAuditoriaPage({
       <section className="py-8 min-h-[calc(100vh-3.5rem)]">
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <div
-            className="bg-[#132744] border border-white/10 rounded-xl p-10 text-center"
+            className="hero-background-admin border border-white/10 rounded-xl p-10 text-center"
             role="alert"
           >
-            <h1 className="font-sans text-2xl font-bold text-white mb-3">
+            <h1 className="font-sans text-2xl font-bold text-primary mb-3">
               Auditoria
             </h1>
-            <p className="text-white/60">
+            <p className="text-primary/60">
               Você não tem permissão para acessar este módulo.
             </p>
           </div>
@@ -78,8 +78,8 @@ export default async function AdminAuditoriaPage({
     <section className="py-8 min-h-[calc(100vh-3.5rem)]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center gap-3 mb-6">
-          <FileText size={24} className="text-[#c9a84c]" />
-          <h1 className="font-sans text-2xl font-bold text-white">
+          <FileText size={24} className="text-accent-light" />
+          <h1 className="font-sans text-2xl font-bold text-primary">
             Auditoria
           </h1>
         </div>
@@ -91,10 +91,10 @@ export default async function AdminAuditoriaPage({
           entidade={entidade}
         />
 
-        <div className="mt-6 bg-[#132744] border border-white/10 rounded-xl overflow-hidden">
+        <div className="mt-6 hero-background-admin border border-white/10 rounded-xl overflow-hidden">
           {logs.length === 0 ? (
             <div className="p-10 text-center">
-              <p className="text-white/60">
+              <p className="text-white/80">
                 Nenhum log de auditoria encontrado.
               </p>
             </div>
@@ -104,22 +104,22 @@ export default async function AdminAuditoriaPage({
                 <table className="w-full text-left">
                   <thead>
                     <tr className="border-b border-white/10">
-                      <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase tracking-wider">
+                      <th className="px-4 py-3 font-sans text-xs font-bold text-white/80 uppercase tracking-wider">
                         Data/Hora
                       </th>
-                      <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase tracking-wider">
+                      <th className="px-4 py-3 font-sans text-xs font-bold text-white/80 uppercase tracking-wider">
                         Autor
                       </th>
-                      <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase tracking-wider">
+                      <th className="px-4 py-3 font-sans text-xs font-bold text-white/80 uppercase tracking-wider">
                         Ação
                       </th>
-                      <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase tracking-wider">
+                      <th className="px-4 py-3 font-sans text-xs font-bold text-white/80 uppercase tracking-wider">
                         Entidade
                       </th>
-                      <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase tracking-wider">
+                      <th className="px-4 py-3 font-sans text-xs font-bold text-white/80 uppercase tracking-wider">
                         ID
                       </th>
-                      <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase tracking-wider">
+                      <th className="px-4 py-3 font-sans text-xs font-bold text-white/80 uppercase tracking-wider">
                         IP
                       </th>
                     </tr>
@@ -128,16 +128,16 @@ export default async function AdminAuditoriaPage({
                     {logs.map((log) => (
                       <tr
                         key={log.id}
-                        className="bg-[#0d1f3c] border-b border-white/5 hover:bg-white/5 transition-colors"
+                        className="bg-white/5 border-b border-white/10 hover:bg-white/20 transition-colors"
                       >
                         <td className="px-4 py-3 font-sans text-sm text-white">
                           {formatarData(log.timestamp)}
                         </td>
-                        <td className="px-4 py-3 font-sans text-sm text-white">
+                        <td className="px-4 py-3 font-sans text-sm text-white/80">
                           {log.autor ?? "Sistema"}
                         </td>
                         <td className="px-4 py-3">
-                          <span className="inline-flex items-center rounded bg-[#c9a84c]/10 px-2 py-0.5 font-sans text-xs font-bold text-[#c9a84c]">
+                          <span className="inline-flex items-center rounded bg-accent-light/10 px-2 py-0.5 font-sans text-xs font-bold text-accent-light">
                             {log.acao}
                           </span>
                         </td>

@@ -12,17 +12,17 @@ const iconMap = {
 
 const colorMap = {
   primary: {
-    bg: "bg-primary",
+    bg: "hero-background",
     text: "text-white",
     border: "border-primary",
   },
   accent: {
-    bg: "bg-accent",
-    text: "text-bg-dark",
+    bg: "hero-background-lite",
+    text: "text-primary",
     border: "border-accent",
   },
   dark: {
-    bg: "bg-bg-dark",
+    bg: "hero-background-accent",
     text: "text-white",
     border: "border-bg-dark",
   },
@@ -30,7 +30,7 @@ const colorMap = {
 
 export default function Values() {
   return (
-    <section id="valores" className="py-20 sm:py-32 bg-white">
+    <section id="valores" className="py-20 sm:py-32 bg-landing">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -54,13 +54,13 @@ export default function Values() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6 }}
-            className="rounded-2xl bg-bg-gray p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+            className="rounded-2xl hero-background-accent p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
           >
-            <Cross className="w-10 h-10 mb-4 text-accent" />
-            <h3 className="font-sans text-2xl font-bold text-primary mb-3">
+            <Cross className="w-10 h-10 mb-4 text-white" />
+            <h3 className="font-sans text-2xl font-bold text-landing mb-3">
               Missão
             </h3>
-            <p className="font-serif text-base leading-relaxed text-text-dark/80">
+            <p className="font-serif text-base leading-relaxed text-white/90">
               {CHURCH.mission}
             </p>
           </motion.div>
@@ -69,13 +69,13 @@ export default function Values() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6, delay: 0.15 }}
-            className="rounded-2xl bg-bg-gray p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+            className="rounded-2xl hero-background-accent p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
           >
-            <BookOpen className="w-10 h-10 mb-4 text-accent" />
-            <h3 className="font-sans text-2xl font-bold text-primary mb-3">
+            <BookOpen className="w-10 h-10 mb-4 text-white" />
+            <h3 className="font-sans text-2xl font-bold text-landing mb-3">
               Visão
             </h3>
-            <p className="font-serif text-base leading-relaxed text-text-dark/80">
+            <p className="font-serif text-base leading-relaxed text-white/90">
               {CHURCH.vision}
             </p>
           </motion.div>

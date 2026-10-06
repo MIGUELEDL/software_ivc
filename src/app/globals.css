@@ -18,6 +18,7 @@
   --color-bg-dark: #0f1f3a;
   --color-text-dark: #1a1a2e;
   --color-text-light: #ffffff;
+  --color-landing: #d8e0e7;
 
   --color-admin-bg: #0a1628;
   --color-admin-surface: #132744;
@@ -41,4 +42,44 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-sans);
+}
+
+select option {
+  background-color: #d8e0e7;
+  color: #1a3a6b;
+}
+
+.hero-background {
+  background:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.145), rgba(17, 17, 17, 0.184)),
+    radial-gradient(ellipse at center, #1a3a6b30 0%, transparent 70%),
+    linear-gradient(135deg, var(--color-bg-dark), #274e89 90%, #1e4989);
+}
+
+.hero-background-accent {
+  background:
+    linear-gradient(to bottom, rgba(184, 153, 60, 0.938), rgba(200, 189, 124, 0.944)),
+    radial-gradient(ellipse at center, #97972c 0%, transparent 70%),
+    linear-gradient(135deg, var(--color-bg-dark), #ae9c55f3 90%, #bab462f0);
+}
+
+.hero-background-lite {
+  background:
+    linear-gradient(to bottom, rgba(216, 225, 235, 0.912), rgba(224, 235, 243, 0.892)),
+    radial-gradient(ellipse at center, #1862c3f9 0%, transparent 70%),
+    linear-gradient(135deg, var(--color-bg-dark), #5b8bd3d1 90%, #6294ded5);
+}
+
+.hero-lite-admin {
+  background:
+    linear-gradient(to bottom, rgba(184, 198, 214, 0.912), rgba(191, 206, 217, 0.892)),
+    radial-gradient(ellipse at center, #1862c3f9 0%, transparent 70%),
+    linear-gradient(135deg, var(--color-bg-dark), #5b8bd3e3 90%, #6294ded5);
+}
+
+.hero-background-admin {
+  background:
+    linear-gradient(to bottom, rgba(77, 101, 122, 0.145), rgba(106, 128, 144, 0.359)),
+    radial-gradient(ellipse at center, #4966921c 0%, transparent 70%),
+    linear-gradient(135deg, var(--color-bg-dark), #1d3558 90%, #1d3963);
 }

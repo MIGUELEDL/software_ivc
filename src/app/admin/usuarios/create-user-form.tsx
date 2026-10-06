@@ -47,8 +47,8 @@ export function CreateUserForm() {
   }
 
   return (
-    <div className="rounded-2xl bg-[#132744] border border-white/10 p-6">
-      <h2 className="font-sans text-lg font-bold text-[#c9a84c] mb-4 flex items-center gap-2">
+    <div className="rounded-2xl hero-background-admin border border-white/10 p-6">
+      <h2 className="font-sans text-lg font-bold text-white/90 mb-4 flex items-center gap-2">
         <UserPlus size={18} />
         Criar Usuário
       </h2>
@@ -59,12 +59,12 @@ export function CreateUserForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="flex-1 px-3 py-2 rounded-lg bg-[#0d1f3c] border border-white/10 text-white font-sans text-sm focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
+          className="flex-1 px-3 py-2 rounded-lg bg-white/15 border border-white/10 text-white font-sans text-sm focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
         />
         <select
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          className="px-3 py-2 rounded-lg bg-[#0d1f3c] border border-white/10 text-white font-sans text-sm focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
+          className="px-3 py-2 rounded-lg bg-white/15 border border-white/10 text-white font-sans text-sm focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
         >
           {Object.entries(ROLE_LABELS).map(([value, label]) => (
             <option key={value} value={value}>
@@ -75,7 +75,7 @@ export function CreateUserForm() {
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-2 rounded-lg bg-[#c9a84c] text-[#0d1f3c] font-sans text-sm font-bold hover:bg-[#e0c872] transition-colors disabled:opacity-50"
+          className="px-4 py-2 rounded-lg hero-background-accent text-white/90 font-sans text-sm font-bold hover:bg-[#e0c872] transition-colors disabled:opacity-50"
         >
           {loading ? "Criando..." : "Criar"}
         </button>
