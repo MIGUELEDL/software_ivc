@@ -31,7 +31,7 @@ function TextField({
       </label>
       {multiline ? (
         <textarea
-          className="w-full rounded-lg hero-background-admin border border-white/10 px-3 py-2 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30 disabled:opacity-50"
+          className="w-full rounded-lg bg-white/10 border border-accent-light px-3 py-2 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30 disabled:opacity-50"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
@@ -40,7 +40,7 @@ function TextField({
       ) : (
         <input
           type="text"
-          className="w-full rounded-lg hero-background-admin border border-white/10 px-3 py-2 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30 disabled:opacity-50"
+          className="w-full rounded-lg bg-white/10 border border-accent-light px-3 py-2 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30 disabled:opacity-50"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
@@ -392,7 +392,7 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
           ) : (
             <button
               onClick={() => setEditing(true)}
-              className="flex items-center gap-2 rounded-lg border-2 border-accent-light px-4 py-2 font-sans text-sm font-bold text-primary hover:bg-accent-light/60 hover:text-primary"
+              className="flex items-center gap-2 rounded-lg bg-primary/20 border-2 border-accent-light px-4 py-2 font-sans text-sm font-bold text-accent-light hover:bg-accent-light/60 hover:text-white/90 cursor-pointer transition-colors"
             >
               Editar
             </button>
