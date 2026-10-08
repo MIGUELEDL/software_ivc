@@ -25,7 +25,7 @@ export default async function CartaoPage() {
 
   if (falhaConsulta) {
     return (
-      <section className="py-8 min-h-[calc(100vh-3.5rem)]">
+      <section className="py-8 min-h-[calc(100vh-3.5rem)] print:py-0 print:min-h-0 print:bg-white">
 <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <div
             className="rounded-xl bg-[#132744] border border-white/10 p-10 text-center"
@@ -57,8 +57,8 @@ export default async function CartaoPage() {
   const canPrint = await can(claims.role ?? "", "membros", "escrever");
 
   return (
-    <section className="py-8 min-h-[calc(100vh-3.5rem)]">
-      <div className="max-w-md mx-auto px-4 sm:px-6">
+    <section className="py-8 min-h-[calc(100vh-3.5rem)] print:py-0 print:min-h-0 print:bg-white">
+      <div className="max-w-md mx-auto px-4 sm:px-6 print:hidden">
         <Link
           href="/painel"
           className="inline-flex items-center gap-2 font-sans text-sm font-bold text-white/60 hover:text-[#c9a84c] mb-6 transition-colors print:hidden"
@@ -106,6 +106,11 @@ export default async function CartaoPage() {
             left: 0;
             top: 0;
             margin: 0;
+            transform: scale(1) !important;
+            transform-origin: top left !important;
+            overflow: hidden !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
             print-color-adjust: exact !important;
             -webkit-print-color-adjust: exact !important;
           }

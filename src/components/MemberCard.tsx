@@ -127,9 +127,9 @@ export function MemberCard({ member }: { member: Member }) {
       </div>
 
       {/* ═══════════ TÍTULO DO CARTÃO ═══════════ */}
-      <div className="absolute left-[15.5%] top-[25%] z-30">
-        <div className="flex h-[5.5mm] w-[35mm] items-center justify-center rounded-full bg-[#254e78] px-4">
-          <span className="whitespace-nowrap text-[3mm] font-bold tracking-tight text-white">
+      <div className="absolute left-[17.5%] top-[25%] z-30">
+        <div className="flex h-[8.9mm] w-[50mm] items-center justify-center rounded-full bg-[#254e78] px-4">
+          <span className="whitespace-nowrap text-[4mm] font-bold tracking-tight text-white">
             CARTÃO DE MEMBRO
           </span>
         </div>
@@ -139,12 +139,12 @@ export function MemberCard({ member }: { member: Member }) {
       <div className="absolute left-[33%] top-[37.5%] z-30 flex h-[10%] w-[80%] items-center bg-[#555555] px-[3%]">
         <div className="flex w-full items-center gap-[7%] whitespace-nowrap">
           <div className="flex items-center gap-[2mm]">
-            <span className="text-[2.2mm] font-bold text-white">ID:</span>
-            <span className="text-[2.2mm] font-bold text-white">{campos.id}</span>
+            <span className="text-[3mm] font-bold text-white">ID:</span>
+            <span className="text-[4mm] font-bold text-white">{campos.id}</span>
           </div>
           <div className="flex items-center gap-[2mm]">
-            <span className="text-[2.2mm] font-bold text-white">NOME:</span>
-            <span className="text-[2.2mm] font-bold text-white">{campos.name}</span>
+            <span className="text-[3mm] font-bold text-white">NOME:</span>
+            <span className="text-[4mm] font-bold text-white">{campos.name}</span>
           </div>
         </div>
       </div>
@@ -164,24 +164,24 @@ export function MemberCard({ member }: { member: Member }) {
       {/* ═══════════ INFORMAÇÕES — COLUNA ESQUERDA ═══════════ */}
       <div className="absolute left-[36%] top-[54%] z-30">
         <div className="mb-[4%]">
-          <p className="m-0 text-[2.2mm] font-bold leading-tight">DATA DE BATISMO</p>
-          <p className="m-0 mt-[1.5mm] text-[2.2mm] leading-tight">{campos.baptismDate}</p>
+          <p className="m-0 text-[3.5mm] font-bold leading-tight">DATA DE BATISMO</p>
+          <p className="m-0 mt-[1mm] text-[4mm] leading-tight">{campos.baptismDate}</p>
         </div>
         <div>
-          <p className="m-0 text-[2.2mm] font-bold leading-tight">RG</p>
-          <p className="m-0 mt-[1.5mm] text-[2.2mm] leading-tight">{campos.rg}</p>
+          <p className="m-0 text-[3.5mm] font-bold leading-tight">RG</p>
+          <p className="m-0 mt-[1mm] text-[4mm] leading-tight">{campos.rg}</p>
         </div>
       </div>
 
       {/* ═══════════ INFORMAÇÕES — COLUNA DIREITA ═══════════ */}
       <div className="absolute left-[74%] top-[54%] z-30">
         <div className="mb-[4%]">
-          <p className="m-0 text-[2.2mm] font-bold leading-tight">CPF</p>
-          <p className="m-0 mt-[1.5mm] text-[2.2mm] leading-tight">{campos.cpf}</p>
+          <p className="m-0 text-[3.5mm] font-bold leading-tight">CPF</p>
+          <p className="m-0 mt-[1mm] text-[4mm] leading-tight">{campos.cpf}</p>
         </div>
         <div>
-          <p className="m-0 text-[2.2mm] font-bold leading-tight">VALIDADE</p>
-          <p className="m-0 mt-[1.5mm] text-[2.2mm] leading-tight">{campos.validity}</p>
+          <p className="m-0 text-[3.5mm] font-bold leading-tight">VALIDADE</p>
+          <p className="m-0 mt-[1mm] text-[4mm] leading-tight">{campos.validity}</p>
         </div>
       </div>
 
@@ -190,7 +190,7 @@ export function MemberCard({ member }: { member: Member }) {
         <div className="relative h-[10mm] w-[27.5mm]">
           <div className="absolute bottom-[2mm] left-0 h-px w-full bg-black" />
         </div>
-        <p className="m-0 text-[2mm] font-bold">Assinatura do Pastor Presidente</p>
+        <p className="m-0 text-[2.5mm] font-bold text-center">Assinatura do Pastor</p>
       </div>
 
       {/* ═══════════ CÓDIGO DE BARRAS — CODE 128 (matrícula) ═══════════ */}
@@ -203,3 +203,26 @@ export function MemberCard({ member }: { member: Member }) {
     </div>
   );
 }
+<style>{`@media print {
+  @page { size: 85.6mm 53.98mm; margin: 0; }
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+  }
+  .member-card {
+    width: 85.6mm !important;
+    height: 53.98mm !important;
+    min-width: 85.6mm !important;
+    min-height: 53.98mm !important;
+    max-width: 85.6mm !important;
+    max-height: 53.98mm !important;
+    transform: scale(1) !important;
+    transform-origin: top left !important;
+    overflow: hidden !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+}`}</style>

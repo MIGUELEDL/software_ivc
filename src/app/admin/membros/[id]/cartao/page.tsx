@@ -105,6 +105,11 @@ export default async function MembroCartaoPage({
             left: 0;
             top: 0;
             margin: 0;
+            transform: scale(1) !important;
+            transform-origin: top left !important;
+            overflow: hidden !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
             print-color-adjust: exact !important;
             -webkit-print-color-adjust: exact !important;
           }
