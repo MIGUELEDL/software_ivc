@@ -55,7 +55,7 @@ export default async function LiderancaNovaPage() {
           <h1 className="font-sans text-3xl font-bold text-primary mb-2">
             Nova igreja
           </h1>
-          <p className="font-serif text-base text-text-dark/60">
+          <p className="font-serif text-base text-primary/70">
             Cadastre os dados institucionais da igreja.
           </p>
         </div>

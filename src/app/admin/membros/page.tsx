@@ -111,7 +111,7 @@ export default async function AdminMembrosPage({
               type="search"
               defaultValue={q}
               placeholder="Buscar por nome ou matrícula"
-              className="w-full bg-white/10 border border-white/10 text-white rounded-lg pl-9 pr-3 py-2 font-sans focus:border-accent focus:outline-none transition-colors"
+              className="w-full bg-white/10 border border-white/10 text-white rounded-lg pl-9 pr-3 py-2 font-sans focus:border-accent-light focus:outline-none transition-colors"
             />
           </div>
 
@@ -122,7 +122,7 @@ export default async function AdminMembrosPage({
             id="status"
             name="status"
             defaultValue={statusOpt}
-            className="bg-white/10 border border-white/10 text-white rounded-lg px-3 py-2 font-sans focus:border-accent focus:outline-none transition-colors"
+            className="bg-white/10 border border-white/10 text-white rounded-lg px-3 py-2 font-sans focus:border-accent-light focus:outline-none transition-colors"
           >
             {STATUS_OPCOES.map((opcao) => (
               <option key={opcao.valor} value={opcao.valor}>
@@ -138,7 +138,7 @@ export default async function AdminMembrosPage({
             id="mes"
             name="mes"
             defaultValue={mesAniversario?.toString() ?? ""}
-            className="bg-white/10 border border-white/10 text-white rounded-lg px-3 py-2 font-sans focus:border-accent focus:outline-none transition-colors"
+            className="bg-white/10 border border-white/10 text-white rounded-lg px-3 py-2 font-sans focus:border-accent-light focus:outline-none transition-colors"
           >
             <option value="">
               Mês aniversário
@@ -165,7 +165,7 @@ export default async function AdminMembrosPage({
 
           <button
             type="submit"
-            className="hero-background-accent hover:bg-accent text-white font-sans font-bold rounded-lg px-4 py-2 transition-colors"
+            className="hero-background-accent hover:bg-accent text-white font-sans font-bold rounded-lg px-4 py-2 transition-colors cursor-pointer"
           >
             Filtrar
           </button>
@@ -198,7 +198,7 @@ export default async function AdminMembrosPage({
                 {membros.map((membro) => (
                   <tr
                     key={membro.id}
-                    className="bg-white/5 border-b border-white/30 last:border-0"
+                    className="bg-white/5 border-b border-white/30 last:border-0 hover:bg-white/15 transition-colors"
                   >
                     <td className="px-6 py-4 font-sans font-semibold text-white">
                       {membro.nome}
@@ -219,14 +219,14 @@ export default async function AdminMembrosPage({
                       <div className="flex items-center justify-end gap-3">
                         <Link
                           href={`/admin/membros/${membro.id}`}
-                          className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-accent-light hover:text-white transition-colors"
+                          className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-white/75 hover:text-white transition-colors"
                         >
                           <Eye size={15} aria-hidden="true" />
                           Detalhes
                         </Link>
                         <Link
                           href={`/admin/membros/${membro.id}/cartao`}
-                          className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-accent-light hover:text-white transition-colors"
+                          className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-accent-light hover:text-accent-light/75 transition-colors"
                         >
                           <IdCard size={15} aria-hidden="true" />
                           Cartão

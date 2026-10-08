@@ -79,7 +79,7 @@ export function ExcluirIgrejaBotao({
       type="button"
       onClick={excluir}
       disabled={enviando}
-      className="inline-flex items-center gap-1.5 rounded-full border-2 border-red-600 px-3 py-1 font-sans text-xs font-bold text-red-600 hover:bg-red-600 hover:text-white disabled:opacity-60 transition-colors"
+      className="inline-flex items-center gap-1.5 rounded-full border-2 border-red-500 px-3 py-1 font-sans text-xs font-bold text-red-600 hover:bg-red-500 hover:text-white disabled:opacity-60 transition-colors cursor-pointer"
     >
       <Trash2 size={13} aria-hidden="true" />
       {enviando ? "Excluindo..." : "Excluir"}

@@ -11,8 +11,8 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 const STATUS_CLASS: Record<string, string> = {
-  ATIVO: "border-green-200 bg-green-50 text-green-700",
-  INATIVO: "border-gray-200 bg-gray-50 text-text-dark/60",
+  ATIVO: "border-green-200 bg-white/10 text-green-500",
+  INATIVO: "border-red-200 bg-white/10 text-red-500",
 };
 
 /**
@@ -163,13 +163,13 @@ export function LiderLinha({
   }
 
   return (
-    <div className="rounded-2xl bg-white shadow-xl p-6">
+    <div className="rounded-2xl hero-background-admin shadow-xl p-6">
       <div className="flex items-start gap-4">
         {lider.photo_url ? (
           <img
             src={lider.photo_url}
             alt={lider.name}
-            className="h-16 w-16 rounded-full object-cover border border-text-dark/10"
+            className="h-16 w-16 rounded-full object-cover border border-white/20"
           />
         ) : (
           <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary/10 font-sans text-lg font-bold text-primary">
@@ -290,10 +290,10 @@ export function LiderLinha({
             </form>
           ) : (
             <div>
-              <p className="font-sans text-base font-bold text-text-dark truncate">
+              <p className="font-sans text-base font-bold text-white truncate">
                 {lider.name}
               </p>
-              <p className="font-serif text-sm text-text-dark/60">
+              <p className="font-serif text-sm text-white/60">
                 {lider.role} · ordem {lider.order}
               </p>
               <span
@@ -312,7 +312,7 @@ export function LiderLinha({
             <button
               type="button"
               onClick={() => setEditando(true)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-primary text-primary hover:bg-primary hover:text-white font-sans text-xs font-bold px-4 py-1.5 transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/50 text-white hover:bg-white/50 hover:text-primary font-sans text-xs font-bold px-4 py-1.5 transition-colors cursor-pointer"
             >
               Editar
             </button>
@@ -320,9 +320,9 @@ export function LiderLinha({
               type="button"
               onClick={toggleStatus}
               disabled={enviando}
-              className={`inline-flex items-center gap-1.5 rounded-full border-2 font-sans text-xs font-bold px-4 py-1.5 transition-colors disabled:opacity-60 ${
+              className={`inline-flex items-center gap-1.5 rounded-full border-2 font-sans text-xs font-bold px-4 py-1.5 transition-colors cursor-pointer disabled:opacity-60 ${
                 lider.status === "ATIVO"
-                  ? "border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white"
+                  ? "border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
                   : "border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
               }`}
             >

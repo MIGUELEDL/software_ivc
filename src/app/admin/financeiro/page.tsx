@@ -350,7 +350,7 @@ export default async function AdminFinanceiroPage({
                 {lancamentos.map((lancamento) => (
                   <tr
                     key={lancamento.id}
-                    className="bg-white/5 border-b border-white/10 last:border-0"
+                    className="bg-white/5 border-b border-white/10 last:border-0 hover:bg-white/15 transition-colors"
                   >
                     <td className="px-6 py-4">
                       <Link

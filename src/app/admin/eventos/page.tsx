@@ -96,7 +96,7 @@ export default async function AdminEventosPage() {
                 {eventos.map((evento) => (
                   <tr
                     key={evento.id}
-                    className="bg-white/4 border-b border-white/10 last:border-1"
+                    className="bg-white/5 border-b border-white/10 last:border-1 hover:bg-white/15 transition-colors"
                   >
                     <td className="px-6 py-4">
                       <p className="flex items-center gap-2 font-sans font-semibold text-white">
@@ -150,7 +150,7 @@ export default async function AdminEventosPage() {
                         {escritor && (
                           <Link
                             href={`/admin/eventos/${evento.id}?editar=1`}
-                            className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-accent-light hover:text-accent-light/75 transition-colors"
+                            className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-accent-light hover:text-accent-light/75 transition-colors cursor-pointer"
                           >
                             <Pencil size={15} aria-hidden="true" />
                             Editar

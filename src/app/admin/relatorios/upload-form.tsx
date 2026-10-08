@@ -49,7 +49,7 @@ export function UploadForm() {
             name="title"
             type="text"
             required
-            className="w-full rounded-lg bg-white/20 border border-white/10 px-3 py-2 font-serif text-white focus:border-[#c9a84c] focus:ring-1 focus:ring-[#c9a84c] outline-none transition-colors"
+            className="w-full rounded-lg bg-white/20 border border-white/10 px-3 py-2 font-serif text-white focus:border-accent-light outline-none transition-colors"
           />
         </div>
         <div className="min-w-0 flex-1">
@@ -63,7 +63,7 @@ export function UploadForm() {
             id="doc-category"
             name="category"
             required
-            className="w-full rounded-lg bg-white/20 border border-white/10 px-3 py-2 font-serif text-white focus:border-[#c9a84c] focus:ring-1 focus:ring-[#c9a84c] outline-none transition-colors"
+            className="w-full rounded-lg bg-white/20 border border-white/10 px-3 py-2 font-serif text-white focus:border-accent-light outline-none transition-colors"
           >
             {DOCUMENT_CATEGORIES.map((cat) => (
               <option key={cat} value={cat}>
@@ -85,13 +85,13 @@ export function UploadForm() {
             type="file"
             required
             accept=".pdf,.csv,.xls,.xlsx,.doc,.docx,.ods,.odt"
-            className="w-full rounded-lg bg-white/20 border border-white/10 px-3 py-2 font-serif text-white focus:border-[#c9a84c] focus:ring-1 focus:ring-[#c9a84c] outline-none transition-colors file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-accent-light/20 file:text-accent-light"
+            className="w-full rounded-lg bg-white/20 border border-white/10 px-3 py-2 font-serif text-white focus:border-accent-light outline-none transition-colors file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-accent-light/20 file:text-accent-light cursor-pointer"
           />
         </div>
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex items-center gap-2 rounded-lg hero-background-accent hover:bg-[#e0c872] disabled:opacity-50 text-white/90 font-sans font-bold px-5 py-2 transition-colors"
+          className="inline-flex items-center gap-2 rounded-lg hero-background-accent hover:bg-[#e0c872] disabled:opacity-50 text-white/90 font-sans font-bold px-5 py-2 transition-colors cursor-pointer"
         >
           <Upload size={16} aria-hidden="true" />
           {pending ? "Enviando..." : "Enviar"}

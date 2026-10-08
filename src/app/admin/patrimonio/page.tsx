@@ -107,7 +107,7 @@ export default async function AdminPatrimonioPage() {
                 {assets.map((asset) => (
                   <tr
                     key={asset.id}
-                    className="bg-white/4 border-b border-white/10 last:border-1"
+                    className="bg-white/5 border-b border-white/10 last:border-1 hover:bg-white/15 transition-colors"
                   >
                     <td className="px-6 py-4">
                       <p className="flex items-center gap-2 font-sans font-semibold text-white">

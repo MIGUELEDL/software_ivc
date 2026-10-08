@@ -15,16 +15,16 @@ export default async function EventoNovoPage() {
 
   if (!escritor) {
     return (
-      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
+      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 hero-background-admin min-h-screen">
         <div className="max-w-2xl mx-auto px-4">
           <div
-            className="rounded-2xl bg-white shadow-xl p-10 text-center"
+            className="rounded-2xl bg-white/20 shadow-xl p-10 text-center"
             role="alert"
           >
-            <h1 className="font-sans text-2xl font-bold text-primary mb-3">
+            <h1 className="font-sans text-2xl font-bold text-white mb-3">
               Novo evento
             </h1>
-            <p className="font-serif text-text-dark/70">
+            <p className="font-serif text-primary/70">
               Apenas escritores podem cadastrar eventos.
             </p>
             <Link
@@ -41,7 +41,7 @@ export default async function EventoNovoPage() {
   }
 
   return (
-    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
+    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 hero-lite-admin min-h-screen">
       <div className="max-w-2xl mx-auto px-4">
         <Link
           href="/admin/eventos"
@@ -55,7 +55,7 @@ export default async function EventoNovoPage() {
           <h1 className="font-sans text-3xl font-bold text-primary mb-2">
             Novo evento
           </h1>
-          <p className="font-serif text-base text-text-dark/60">
+          <p className="font-serif text-base text-primary/70">
             Cadastre um evento da agenda da igreja.
           </p>
         </div>

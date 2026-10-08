@@ -59,12 +59,12 @@ export function CreateUserForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="flex-1 px-3 py-2 rounded-lg bg-white/15 border border-white/10 text-white font-sans text-sm focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
+          className="flex-1 bg-white/20 border border-white/10 text-white/75 rounded-lg px-3 py-2 font-sans focus:border-accent-light focus:outline-none transition-colors"
         />
         <select
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          className="px-3 py-2 rounded-lg bg-white/15 border border-white/10 text-white font-sans text-sm focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
+          className="bg-white/20 border border-white/10 text-white/75 rounded-lg px-3 py-2 font-sans focus:border-accent-light focus:outline-none transition-colors"
         >
           {Object.entries(ROLE_LABELS).map(([value, label]) => (
             <option key={value} value={value}>
@@ -75,7 +75,7 @@ export function CreateUserForm() {
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-2 rounded-lg hero-background-accent text-white/90 font-sans text-sm font-bold hover:bg-[#e0c872] transition-colors disabled:opacity-50"
+          className="px-4 py-2 rounded-lg hero-background-accent text-white/90 font-sans text-sm font-bold hover:bg-[#e0c872] transition-colors disabled:opacity-50 cursor-pointer"
         >
           {loading ? "Criando..." : "Criar"}
         </button>

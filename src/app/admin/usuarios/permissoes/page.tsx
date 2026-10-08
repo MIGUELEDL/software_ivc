@@ -35,16 +35,16 @@ export default async function AdminPermissoesPage() {
 
   if (!administrador) {
     return (
-      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
+      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 hero-lite-admin min-h-screen">
         <div className="max-w-2xl mx-auto px-4">
           <div
-            className="rounded-2xl bg-white shadow-xl p-10 text-center"
+            className="rounded-2xl hero-background-admin shadow-xl p-10 text-center"
             role="alert"
           >
-            <h1 className="font-sans text-2xl font-bold text-primary mb-3">
+            <h1 className="font-sans text-2xl font-bold text-white mb-3">
               Matriz de Permissões
             </h1>
-            <p className="font-serif text-text-dark/70">
+            <p className="font-serif text-white/70">
               Apenas administradores podem acessar a matriz de permissões.
             </p>
             <Link
@@ -78,10 +78,10 @@ export default async function AdminPermissoesPage() {
   }
 
   return (
-    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
+    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 hero-lite-admin min-h-screen">
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex items-center gap-3 mb-8">
-          <Shield className="text-primary" size={28} />
+          <Shield className="text-accent-light" size={28} />
           <h1 className="font-sans text-3xl font-bold text-primary">
             Matriz de Permissões
           </h1>
@@ -98,7 +98,7 @@ export default async function AdminPermissoesPage() {
         <div className="mt-6">
           <Link
             href="/admin/usuarios"
-            className="inline-flex items-center gap-2 font-sans text-sm font-bold text-primary hover:text-accent transition-colors"
+            className="inline-flex items-center gap-2 font-sans text-sm font-bold text-primary hover:text-accent-light transition-colors"
           >
             <ArrowLeft size={16} />
             Voltar

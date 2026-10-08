@@ -22,7 +22,7 @@ export default function AdminFinanceiroNovaPage() {
   const [enviando, setEnviando] = useState(false);
 
   const inputClass =
-    "w-full rounded-lg border border-gray-300 px-4 py-2.5 font-serif text-text-dark focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors";
+    "w-full rounded-lg bg-white/10 border border-white/20 px-4 py-2.5 font-serif text-white focus:border-accent-light outline-none transition-colors";
   const hoje = new Date().toISOString().slice(0, 10);
 
   async function cadastrar(event: React.FormEvent<HTMLFormElement>) {
@@ -83,7 +83,7 @@ export default function AdminFinanceiroNovaPage() {
   }
 
   return (
-    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
+    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 hero-lite-admin min-h-screen">
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="font-sans text-3xl font-bold text-primary mb-6">
           Novo lançamento
@@ -91,7 +91,7 @@ export default function AdminFinanceiroNovaPage() {
 
         <form
           onSubmit={cadastrar}
-          className="rounded-2xl bg-white shadow-xl p-8 sm:p-10 space-y-5"
+          className="rounded-2xl hero-background-admin shadow-xl p-8 sm:p-10 space-y-5"
         >
           {mensagem && (
             <p
@@ -105,7 +105,7 @@ export default function AdminFinanceiroNovaPage() {
           <div>
             <label
               htmlFor="descricao"
-              className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+              className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
             >
               Descrição
             </label>
@@ -128,7 +128,7 @@ export default function AdminFinanceiroNovaPage() {
             <div>
               <label
                 htmlFor="valor"
-                className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
               >
                 Valor (R$)
               </label>
@@ -155,7 +155,7 @@ export default function AdminFinanceiroNovaPage() {
             <div>
               <label
                 htmlFor="data"
-                className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
               >
                 Data
               </label>
@@ -182,7 +182,7 @@ export default function AdminFinanceiroNovaPage() {
             <div>
               <label
                 htmlFor="tipo"
-                className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
               >
                 Tipo
               </label>
@@ -206,7 +206,7 @@ export default function AdminFinanceiroNovaPage() {
             <div>
               <label
                 htmlFor="metodo"
-                className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
               >
                 Método de pagamento
               </label>
@@ -231,7 +231,7 @@ export default function AdminFinanceiroNovaPage() {
           <div>
             <label
               htmlFor="categoria"
-              className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+              className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
             >
               Categoria — opcional
             </label>
@@ -252,7 +252,7 @@ export default function AdminFinanceiroNovaPage() {
           <div>
             <label
               htmlFor="observacoes"
-              className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+              className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
             >
               Observações — opcional
             </label>
@@ -272,7 +272,7 @@ export default function AdminFinanceiroNovaPage() {
           <button
             type="submit"
             disabled={enviando}
-            className="w-full rounded-lg bg-accent hover:bg-accent-light disabled:opacity-60 text-bg-dark font-sans font-bold py-2.5 transition-colors"
+            className="w-full rounded-lg hero-background-accent hover:bg-accent-light disabled:opacity-60 text-white/90 font-sans font-bold py-2.5 transition-colors cursor-pointer"
           >
             {enviando ? "Cadastrando..." : "Cadastrar lançamento"}
           </button>

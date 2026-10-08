@@ -112,7 +112,7 @@ export default async function AdminRelatoriosPage({
                 id="data_inicio"
                 name="data_inicio"
                 type="date"
-                className="bg-white/20 border border-white/10 text-white/75 rounded-lg px-3 py-2 font-sans focus:border-[#c9a84c] focus:outline-none transition-colors"
+                className="bg-white/20 border border-white/10 text-white/75 rounded-lg px-3 py-2 font-sans focus:border-accent-light focus:outline-none transition-colors"
               />
             </div>
             <div>
@@ -126,12 +126,12 @@ export default async function AdminRelatoriosPage({
                 id="data_fim"
                 name="data_fim"
                 type="date"
-                className="bg-white/20 border border-white/10 text-white/75 rounded-lg px-3 py-2 font-sans focus:border-[#c9a84c] focus:outline-none transition-colors"
+                className="bg-white/20 border border-white/10 text-white/75 rounded-lg px-3 py-2 font-sans focus:border-accent-light focus:outline-none transition-colors"
               />
             </div>
             <button
               type="submit"
-              className="inline-flex items-center gap-2 hero-background-accent hover:bg-accent-light text-white/90 font-sans font-bold rounded-lg px-5 py-2 transition-colors"
+              className="inline-flex items-center gap-2 hero-background-accent hover:bg-accent-light text-white/90 font-sans font-bold rounded-lg px-5 py-2 transition-colors cursor-pointer"
             >
               <Download size={16} aria-hidden="true" />
               Financeiro (CSV)
@@ -141,21 +141,21 @@ export default async function AdminRelatoriosPage({
           <div className="flex flex-wrap gap-3">
             <a
               href="/api/admin/relatorios/exportar?tipo=membros"
-              className="inline-flex items-center gap-2 rounded-lg border border-white/10 text-white/80 hover:border-accent-light hover:text-accent-light font-sans text-sm font-bold px-4 py-2 transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg bg-white/10 border border-white/10 text-white/80 hover:bg-accent-light/10 hover:border-accent-light hover:text-accent-light font-sans text-sm font-bold px-4 py-2 transition-colors"
             >
               <Download size={14} aria-hidden="true" />
               Membros
             </a>
             <a
               href="/api/admin/relatorios/exportar?tipo=eventos"
-              className="inline-flex items-center gap-2 rounded-lg border border-white/10 text-white/80 hover:border-accent-light hover:text-accent-light font-sans text-sm font-bold px-4 py-2 transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg bg-white/10 border border-white/10 text-white/80 hover:bg-accent-light/10 hover:border-accent-light hover:text-accent-light font-sans text-sm font-bold px-4 py-2 transition-colors"
             >
               <Download size={14} aria-hidden="true" />
               Eventos
             </a>
             <a
               href="/api/admin/relatorios/exportar?tipo=patrimonio"
-              className="inline-flex items-center gap-2 rounded-lg border border-white/10 text-white/80 hover:border-accent-light hover:text-accent-light font-sans text-sm font-bold px-4 py-2 transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg bg-white/10 border border-white/10 text-white/80 hover:bg-accent-light/10 hover:border-accent-light hover:text-accent-light font-sans text-sm font-bold px-4 py-2 transition-colors"
             >
               <Download size={14} aria-hidden="true" />
               Patrimônio
@@ -220,7 +220,7 @@ export default async function AdminRelatoriosPage({
                   {documentos.map((doc) => (
                     <tr
                       key={doc.id}
-                      className="bg-white/10 border-b border-white/5 last:border-0"
+                      className="bg-white/10 border-b border-white/5 last:border-0 hover:bg-white/15 transition-colors"
                     >
                       <td className="px-4 py-3">
                         <span className="font-sans font-semibold text-white">
@@ -254,7 +254,7 @@ export default async function AdminRelatoriosPage({
                         <div className="inline-flex items-center gap-2">
                           <a
                             href={`/api/admin/relatorios/documentos/${doc.id}/download`}
-                            className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 text-white/60 hover:border-[#c9a84c] hover:text-[#c9a84c] font-sans text-xs font-bold px-3 py-1.5 transition-colors"
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 border border-white/50 text-white hover:bg-accent-light/10 hover:border-accent-light hover:text-accent-light font-sans text-xs font-bold px-3 py-1.5 transition-colors"
                           >
                             <Download size={12} aria-hidden="true" />
                             Baixar

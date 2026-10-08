@@ -38,7 +38,7 @@ export function DeleteAssetButton({ assetId }: { assetId: string }) {
       type="button"
       onClick={handleDelete}
       disabled={deleting}
-      className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-red-400 hover:text-red-300 transition-colors disabled:opacity-50"
+      className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-red-400 hover:text-red-300 transition-colors disabled:opacity-50 cursor-pointer"
     >
       <Trash2 size={15} aria-hidden="true" />
       {deleting ? "Excluindo..." : "Excluir"}

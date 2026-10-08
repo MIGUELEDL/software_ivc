@@ -72,7 +72,7 @@ export default function AuditoriaFiltros({
             type="date"
             value={inicio}
             onChange={(e) => setInicio(e.target.value)}
-            className="w-full rounded bg-white/20 border border-white/10 px-3 py-2 font-sans text-sm text-white focus:border-[#c9a84c] focus:outline-none"
+            className="w-full rounded bg-white/20 border border-white/10 px-3 py-2 font-sans text-sm text-white focus:border-accent-light focus:outline-none"
           />
         </div>
         <div>
@@ -83,7 +83,7 @@ export default function AuditoriaFiltros({
             type="date"
             value={fim}
             onChange={(e) => setFim(e.target.value)}
-            className="w-full rounded bg-white/20 border border-white/10 px-3 py-2 font-sans text-sm text-white focus:border-[#c9a84c] focus:outline-none"
+            className="w-full rounded bg-white/20 border border-white/10 px-3 py-2 font-sans text-sm text-white focus:border-accent-light focus:outline-none"
           />
         </div>
         <div>
@@ -93,7 +93,7 @@ export default function AuditoriaFiltros({
           <select
             value={acaoFiltro}
             onChange={(e) => setAcaoFiltro(e.target.value)}
-            className="w-full rounded bg-white/20 border border-white/10 px-3 py-2 font-sans text-sm text-white focus:border-[#c9a84c] focus:outline-none"
+            className="w-full rounded bg-white/20 border border-white/10 px-3 py-2 font-sans text-sm text-white focus:border-accent-light focus:outline-none"
           >
             <option value="">Todas</option>
             {ACOES.map((a) => (
@@ -110,7 +110,7 @@ export default function AuditoriaFiltros({
           <select
             value={entidadeFiltro}
             onChange={(e) => setEntidadeFiltro(e.target.value)}
-            className="w-full rounded bg-white/20 border border-white/10 px-3 py-2 font-sans text-sm text-white focus:border-[#c9a84c] focus:outline-none"
+            className="w-full rounded bg-white/20 border border-white/10 px-3 py-2 font-sans text-sm text-white focus:border-accent-light focus:outline-none"
           >
             <option value="">Todas</option>
             {ENTIDADES.map((e) => (
@@ -124,13 +124,13 @@ export default function AuditoriaFiltros({
       <div className="flex gap-2 mt-4">
         <button
           onClick={aplicarFiltros}
-          className="rounded hero-background-accent px-4 py-2 font-sans text-xs font-bold text-white/90 hover:bg-[#e0c872] transition-colors"
+          className="rounded hero-background-accent px-4 py-2 font-sans text-xs font-bold text-white/90 hover:bg-accent-light transition-colors cursor-pointer"
         >
           Aplicar
         </button>
         <button
           onClick={limparFiltros}
-          className="rounded bg-white/20 px-4 py-2 font-sans text-xs font-bold text-white hover:bg-white/40"
+          className="rounded bg-white/20 border border-white/10 px-4 py-2 font-sans text-xs font-bold text-white/80 hover:bg-white/40 hover:text-white cursor-pointer transition-colors"
         >
           Limpar
         </button>

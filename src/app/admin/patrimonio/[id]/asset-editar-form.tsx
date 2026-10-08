@@ -23,7 +23,7 @@ export function AssetEditarForm({ asset }: { asset: Asset }) {
   const [status, setStatus] = useState<AssetStatus>(asset.status);
 
   const inputClass =
-    "w-full rounded-lg border border-gray-300 px-4 py-2.5 font-serif text-text-dark focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors";
+    "w-full rounded-lg bg-white/10 border border-white/20 px-4 py-2.5 font-serif text-white/80 focus:border-accent-light outline-none transition-colors";
 
   if (!aberto) {
     return (
@@ -31,7 +31,7 @@ export function AssetEditarForm({ asset }: { asset: Asset }) {
         <button
           type="button"
           onClick={() => setAberto(true)}
-          className="rounded-lg border-2 border-primary text-primary hover:bg-primary hover:text-white font-sans text-sm font-bold px-5 py-2.5 transition-colors"
+          className="rounded-lg border-2 border-primary text-primary hover:bg-white/20 hover:text-white/70 font-sans text-sm font-bold px-5 py-2.5 transition-colors cursor-pointer"
         >
           Editar bem
         </button>
@@ -111,9 +111,9 @@ export function AssetEditarForm({ asset }: { asset: Asset }) {
   return (
     <form
       onSubmit={atualizar}
-      className="rounded-2xl bg-white shadow-xl p-8 sm:p-10 space-y-5 mb-6"
+      className="rounded-2xl hero-background-admin shadow-xl p-8 sm:p-10 space-y-5 mb-6"
     >
-      <h2 className="font-sans text-lg font-bold text-primary">
+      <h2 className="font-sans text-lg font-bold text-white">
         Editar bem
       </h2>
 
@@ -129,7 +129,7 @@ export function AssetEditarForm({ asset }: { asset: Asset }) {
       <div>
         <label
           htmlFor="name"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
         >
           Nome do bem
         </label>
@@ -151,7 +151,7 @@ export function AssetEditarForm({ asset }: { asset: Asset }) {
       <div>
         <label
           htmlFor="category"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
         >
           Categoria
         </label>
@@ -179,7 +179,7 @@ export function AssetEditarForm({ asset }: { asset: Asset }) {
         <div>
           <label
             htmlFor="numero_patrimonio"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
           >
             Nº de patrimônio (tombo) — opcional
           </label>
@@ -200,7 +200,7 @@ export function AssetEditarForm({ asset }: { asset: Asset }) {
         <div>
           <label
             htmlFor="location"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
           >
             Localização — opcional
           </label>
@@ -223,7 +223,7 @@ export function AssetEditarForm({ asset }: { asset: Asset }) {
         <div>
           <label
             htmlFor="acquisition_value"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
           >
             Valor de aquisição (R$) — opcional
           </label>
@@ -246,7 +246,7 @@ export function AssetEditarForm({ asset }: { asset: Asset }) {
         <div>
           <label
             htmlFor="acquisition_date"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
           >
             Data de aquisição — opcional
           </label>
@@ -268,7 +268,7 @@ export function AssetEditarForm({ asset }: { asset: Asset }) {
       <div>
         <label
           htmlFor="responsible"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
         >
           Responsável — opcional
         </label>
@@ -289,7 +289,7 @@ export function AssetEditarForm({ asset }: { asset: Asset }) {
       <div>
         <label
           htmlFor="observations"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
         >
           Observações — opcional
         </label>
@@ -308,17 +308,17 @@ export function AssetEditarForm({ asset }: { asset: Asset }) {
       </div>
 
       <div>
-        <span className="block font-sans text-sm font-semibold text-text-dark mb-1.5">
+        <span className="block font-sans text-sm font-semibold text-white/80 mb-1.5">
           Status
         </span>
-        <div className="inline-flex overflow-hidden rounded-full border-2 border-primary">
+        <div className="inline-flex overflow-hidden rounded-full border-2 border-white/30">
           <button
             type="button"
             onClick={() => setStatus("ATIVO")}
-            className={`px-4 py-1.5 font-sans text-xs font-bold transition-colors ${
+            className={`px-4 py-1.5 font-sans text-xs font-bold transition-colors cursor-pointer ${
               status === "ATIVO"
-                ? "bg-green-100 text-green-700"
-                : "text-text-dark/50 hover:text-primary"
+                ? "bg-green-100 text-green-500"
+                : "bg-white/10 text-white/80 hover:bg-white/20 hover:text-green-500"
             }`}
           >
             ATIVO
@@ -326,16 +326,16 @@ export function AssetEditarForm({ asset }: { asset: Asset }) {
           <button
             type="button"
             onClick={() => setStatus("INATIVO")}
-            className={`px-4 py-1.5 font-sans text-xs font-bold transition-colors ${
+            className={`px-4 py-1.5 font-sans text-xs font-bold transition-colors cursor-pointer ${
               status === "INATIVO"
-                ? "bg-red-100 text-red-700"
-                : "text-text-dark/50 hover:text-primary"
+                ? "bg-red-100 text-red-500"
+                : "bg-white/10 text-white/80 hover:bg-white/20 hover:text-red-500"
             }`}
           >
             INATIVO
           </button>
         </div>
-        <p className="mt-1 text-sm text-text-dark/60 font-serif">
+        <p className="mt-1 text-sm text-white/60 font-serif">
           INATIVO registra a baixa do bem (soft-delete — o histórico é
           preservado).
         </p>
@@ -350,14 +350,14 @@ export function AssetEditarForm({ asset }: { asset: Asset }) {
         <button
           type="submit"
           disabled={enviando}
-          className="rounded-lg bg-accent hover:bg-accent-light disabled:opacity-60 text-bg-dark font-sans font-bold px-6 py-2.5 transition-colors"
+          className="rounded-lg hero-background-accent hover:bg-accent-light disabled:opacity-60 text-white/90 font-sans font-bold px-6 py-2.5 transition-colors cursor-pointer"
         >
           {enviando ? "Salvando..." : "Salvar alterações"}
         </button>
         <button
           type="button"
           onClick={() => setAberto(false)}
-          className="rounded-lg border-2 border-primary text-primary hover:bg-primary hover:text-white font-sans text-sm font-bold px-5 py-2.5 transition-colors"
+          className="rounded-lg border-2 bg-white/10 border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-sans text-sm font-bold px-5 py-2.5 transition-colors cursor-pointer"
         >
           Cancelar
         </button>

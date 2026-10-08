@@ -26,16 +26,16 @@ export default async function EventoDetalhePage({
 
   if (!leitor) {
     return (
-      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
+      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 hero-background-admin min-h-screen">
         <div className="max-w-2xl mx-auto px-4">
           <div
             className="rounded-2xl bg-white shadow-xl p-10 text-center"
             role="alert"
           >
-            <h1 className="font-sans text-2xl font-bold text-primary mb-3">
+            <h1 className="font-sans text-2xl font-bold text-white mb-3">
               Evento
             </h1>
-            <p className="font-serif text-text-dark/70">
+            <p className="font-serif text-white/70">
               Você não tem permissão para acessar este módulo.
             </p>
             <Link
@@ -64,7 +64,7 @@ export default async function EventoDetalhePage({
   }
 
   return (
-    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
+    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 hero-lite-admin min-h-screen">
       <div className="max-w-2xl mx-auto px-4">
         <Link
           href="/admin/eventos"
@@ -74,14 +74,14 @@ export default async function EventoDetalhePage({
           Voltar aos eventos
         </Link>
 
-        <div className="rounded-2xl bg-white shadow-xl p-8 sm:p-10 mb-6">
+        <div className="rounded-2xl hero-background-admin shadow-xl p-8 sm:p-10 mb-6">
           <div className="flex items-start justify-between gap-4 mb-4">
             <div>
-              <h1 className="font-sans text-2xl font-bold text-primary">
+              <h1 className="font-sans text-2xl font-bold text-white">
                 {evento.title}
               </h1>
-              <p className="mt-1 flex items-center gap-1.5 font-serif text-sm text-text-dark/60">
-                <MapPin size={14} className="text-primary" aria-hidden="true" />
+              <p className="mt-1 flex items-center gap-1.5 font-serif text-sm text-white/70">
+                <MapPin size={14} className="text-accent-light" aria-hidden="true" />
                 {evento.location}
               </p>
             </div>
@@ -89,8 +89,8 @@ export default async function EventoDetalhePage({
               <span
                 className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-sans text-xs font-bold ${
                   evento.visivel
-                    ? "bg-green-100 text-green-700"
-                    : "bg-gray-200 text-gray-600"
+                    ? "bg-green-200 text-green-600"
+                    : "bg-gray-200 text-gray-500"
                 }`}
               >
                 {evento.visivel ? "Visível" : "Oculto"}
@@ -109,28 +109,28 @@ export default async function EventoDetalhePage({
 
           <dl className="grid gap-4 sm:grid-cols-2">
             <div>
-              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-text-dark/50">
+              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-white/60">
                 Data
               </dt>
-              <dd className="mt-1 flex items-center gap-1.5 font-serif text-base text-text-dark">
-                <CalendarDays size={15} className="text-primary" aria-hidden="true" />
+              <dd className="mt-1 flex items-center gap-1.5 font-serif text-base text-white/80">
+                <CalendarDays size={15} className="text-accent-light" aria-hidden="true" />
                 {new Date(evento.date + "T00:00:00").toLocaleDateString("pt-BR")}
               </dd>
             </div>
             <div>
-              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-text-dark/50">
+              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-white/60">
                 Hora
               </dt>
-              <dd className="mt-1 flex items-center gap-1.5 font-serif text-base text-text-dark">
-                <Clock size={15} className="text-primary" aria-hidden="true" />
+              <dd className="mt-1 flex items-center gap-1.5 font-serif text-base text-white/80">
+                <Clock size={15} className="text-accent-light" aria-hidden="true" />
                 {evento.time}
               </dd>
             </div>
             <div className="sm:col-span-2">
-              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-text-dark/50">
+              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-white/60">
                 Descrição
               </dt>
-              <dd className="mt-1 font-serif text-base text-text-dark">
+              <dd className="mt-1 font-serif text-base text-white/80">
                 {evento.description ?? "—"}
               </dd>
             </div>

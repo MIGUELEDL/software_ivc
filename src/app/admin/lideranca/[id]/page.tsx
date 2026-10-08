@@ -30,13 +30,13 @@ export default async function LiderancaDetalhePage({
 
   if (!leitor) {
     return (
-      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
+      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 hero-background-admin min-h-screen">
         <div className="max-w-2xl mx-auto px-4">
           <div
-            className="rounded-2xl bg-white shadow-xl p-10 text-center"
+            className="rounded-2xl bg-white/10 shadow-xl p-10 text-center"
             role="alert"
           >
-            <h1 className="font-sans text-2xl font-bold text-primary mb-3">
+            <h1 className="font-sans text-2xl font-bold text-white mb-3">
               Igreja
             </h1>
             <p className="font-serif text-text-dark/70">
@@ -71,7 +71,7 @@ export default async function LiderancaDetalhePage({
   }
 
   return (
-    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
+    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 hero-lite-admin min-h-screen">
       <div className="max-w-2xl mx-auto px-4">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <Link
@@ -90,44 +90,44 @@ export default async function LiderancaDetalhePage({
           )}
         </div>
 
-        <div className="rounded-2xl bg-white shadow-xl p-8 sm:p-10 mb-6">
+        <div className="rounded-2xl hero-background-admin shadow-xl p-8 sm:p-10 mb-6">
           <div className="flex items-center gap-3 mb-6">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-accent-light">
               <Church size={18} aria-hidden="true" />
             </span>
             <div>
-              <h1 className="font-sans text-2xl font-bold text-primary">
+              <h1 className="font-sans text-2xl font-bold text-white">
                 {igreja.name}
               </h1>
-              <p className="font-sans text-sm font-semibold text-primary">
+              <p className="font-sans text-sm font-semibold text-white/80">
                 {igreja.short_name} · {igreja.city}
               </p>
             </div>
           </div>
           <dl className="grid gap-4 sm:grid-cols-2">
             <div>
-              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-text-dark/50">
+              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-white/80">
                 CNPJ
               </dt>
-              <dd className="mt-1 font-serif text-base text-text-dark">
+              <dd className="mt-1 font-serif text-base text-white">
                 {igreja.cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5")}
               </dd>
             </div>
             <div>
-              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-text-dark/50">
+              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-white/80">
                 Fundada em
               </dt>
-              <dd className="mt-1 font-serif text-base text-text-dark">
+              <dd className="mt-1 font-serif text-base text-white">
                 {igreja.founded_date
                   ? new Date(igreja.founded_date + "T00:00:00").toLocaleDateString("pt-BR")
                   : "—"}
               </dd>
             </div>
             <div className="sm:col-span-2">
-              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-text-dark/50">
+              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-white/80">
                 Endereço
               </dt>
-              <dd className="mt-1 font-serif text-base text-text-dark">
+              <dd className="mt-1 font-serif text-base text-white">
                 {igreja.address}
               </dd>
             </div>
@@ -146,8 +146,8 @@ export default async function LiderancaDetalhePage({
           {escritor && <LiderNovoForm igrejaId={igreja.id} />}
 
           {lideres.length === 0 ? (
-            <div className="rounded-2xl bg-white shadow-xl p-10 text-center">
-              <p className="font-serif text-base text-text-dark/70">
+            <div className="rounded-2xl hero-background-admin shadow-xl p-10 text-center">
+              <p className="font-serif text-base text-white/70">
                 Nenhum líder cadastrado.
               </p>
             </div>

@@ -103,14 +103,14 @@ function ValoresEditor({
           <input
             type="text"
             placeholder="Titulo"
-            className="w-28 rounded-lg bg-white/10 border border-accent-light px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
+            className="w-28 rounded-lg bg-white/10 border border-white/20 hover:bg-white/20 px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:border-accent-light"
             value={v.title}
             onChange={(e) => update(i, "title", e.target.value)}
           />
           <input
             type="text"
             placeholder="Descricao"
-                  className="flex-1 rounded-lg bg-white/10 border border-accent-light px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
+                  className="flex-1 rounded-lg bg-white/10 border border-white/20 hover:bg-white/20 px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:border-accent-light"
             value={v.description}
             onChange={(e) => update(i, "description", e.target.value)}
           />
@@ -326,7 +326,7 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
                 <button
                   type="button"
                   onClick={() => removeSchedule(i)}
-                  className="text-red-400 hover:text-red-600"
+                  className="text-red-400 hover:text-red-600 cursor-pointer transition-colors"
                 >
                   <Trash2 size={16} />
                 </button>
@@ -378,13 +378,13 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex items-center gap-2 rounded-lg bg-[#c9a84c] px-4 py-2 font-sans text-sm font-bold text-[#0d1f3c] hover:bg-[#e0c872] disabled:opacity-50"
+                className="flex items-center gap-2 rounded-lg hero-background-accent px-4 py-2 font-sans text-sm font-bold text-white/90 hover:bg-accent-light/30 disabled:opacity-50 cursor-pointer transition-colors"
               >
                 <Save size={16} /> {saving ? "Salvando..." : "Salvar"}
               </button>
               <button
                 onClick={handleCancel}
-                className="flex items-center gap-2 rounded-lg border-2 border-white/10 px-4 py-2 font-sans text-sm font-bold text-white/60 hover:border-[#c9a84c]/30"
+                className="flex items-center gap-2 rounded-lg border-2 border-red-500/70 px-4 py-2 font-sans text-sm font-bold text-red-500/70 hover:bg-red-500/30 hover:border-accent-light hover:text-accent-light cursor-pointer transition-colors"
               >
                 <X size={16} /> Cancelar
               </button>

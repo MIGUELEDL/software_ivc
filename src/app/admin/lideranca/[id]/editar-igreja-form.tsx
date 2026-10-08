@@ -17,15 +17,15 @@ export function EditarIgrejaForm({ igreja }: { igreja: Igreja }) {
   const [enviando, setEnviando] = useState(false);
 
   const inputClass =
-    "w-full rounded-lg border border-gray-300 px-4 py-2.5 font-serif text-text-dark focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors";
+    "w-full rounded-lg bg-white/10 border border-white/40 px-4 py-2.5 font-serif text-white/80 focus:border-accent-light focus:ring-1 focus:ring-primary outline-none transition-colors";
 
   if (!aberto) {
     return (
       <div className="mb-6">
         <button
           type="button"
-          onClick={() => setAberto(true)}
-          className="rounded-lg border-2 border-primary text-primary hover:bg-primary hover:text-white font-sans text-sm font-bold px-5 py-2.5 transition-colors"
+          onClick={() => setAberto(true)} 
+          className="rounded-lg border-2 border-primary text-primary hover:bg-accent-light/20 hover:text-white font-sans text-sm font-bold px-5 py-2.5 transition-colors cursor-pointer"
         >
           Editar igreja
         </button>
@@ -86,9 +86,9 @@ export function EditarIgrejaForm({ igreja }: { igreja: Igreja }) {
   return (
     <form
       onSubmit={atualizar}
-      className="rounded-2xl bg-white shadow-xl p-8 sm:p-10 space-y-5 mb-6"
+      className="rounded-2xl hero-background-admin shadow-xl p-8 sm:p-10 space-y-5 mb-6"
     >
-      <h2 className="font-sans text-lg font-bold text-primary">
+      <h2 className="font-sans text-lg font-bold text-white">
         Editar igreja
       </h2>
 
@@ -104,7 +104,7 @@ export function EditarIgrejaForm({ igreja }: { igreja: Igreja }) {
       <div>
         <label
           htmlFor="name"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
         >
           Nome da igreja
         </label>
@@ -126,7 +126,7 @@ export function EditarIgrejaForm({ igreja }: { igreja: Igreja }) {
       <div>
         <label
           htmlFor="short_name"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
         >
           Sigla
         </label>
@@ -148,7 +148,7 @@ export function EditarIgrejaForm({ igreja }: { igreja: Igreja }) {
       <div>
         <label
           htmlFor="cnpj"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
         >
           CNPJ
         </label>
@@ -172,7 +172,7 @@ export function EditarIgrejaForm({ igreja }: { igreja: Igreja }) {
       <div>
         <label
           htmlFor="address"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
         >
           Endereço completo
         </label>
@@ -194,7 +194,7 @@ export function EditarIgrejaForm({ igreja }: { igreja: Igreja }) {
       <div>
         <label
           htmlFor="city"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
         >
           Cidade
         </label>
@@ -216,7 +216,7 @@ export function EditarIgrejaForm({ igreja }: { igreja: Igreja }) {
       <div>
         <label
           htmlFor="founded_date"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
         >
           Data de fundação (opcional)
         </label>
@@ -239,14 +239,14 @@ export function EditarIgrejaForm({ igreja }: { igreja: Igreja }) {
         <button
           type="submit"
           disabled={enviando}
-          className="rounded-lg bg-accent hover:bg-accent-light disabled:opacity-60 text-bg-dark font-sans font-bold px-6 py-2.5 transition-colors"
+          className="rounded-lg hero-background-accent hover:bg-accent-light disabled:opacity-60 text-white/90 font-sans font-bold px-6 py-2.5 transition-colors cursor-pointer"
         >
           {enviando ? "Salvando..." : "Salvar alterações"}
         </button>
         <button
           type="button"
           onClick={() => setAberto(false)}
-          className="rounded-lg border-2 border-primary text-primary hover:bg-primary hover:text-white font-sans text-sm font-bold px-5 py-2.5 transition-colors"
+          className="rounded-lg border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-sans text-sm font-bold px-5 py-2.5 transition-colors cursor-pointer"
         >
           Cancelar
         </button>

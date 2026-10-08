@@ -19,7 +19,7 @@ export function AssetNovoForm() {
   const [enviando, setEnviando] = useState(false);
 
   const inputClass =
-    "w-full rounded-lg border border-gray-300 px-4 py-2.5 font-serif text-text-dark focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors";
+    "w-full rounded-lg bg-white/20 border border-white/20 px-4 py-2.5 font-serif text-white focus:border-accent-light focus:ring-accent-light outline-none transition-colors";
 
   async function cadastrar(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -90,7 +90,7 @@ export function AssetNovoForm() {
   return (
     <form
       onSubmit={cadastrar}
-      className="rounded-2xl bg-white shadow-xl p-8 sm:p-10 space-y-5"
+      className="rounded-2xl hero-background-admin shadow-xl p-8 sm:p-10 space-y-5"
     >
       {mensagem && (
         <p
@@ -104,7 +104,7 @@ export function AssetNovoForm() {
       <div>
         <label
           htmlFor="name"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
         >
           Nome do bem
         </label>
@@ -126,7 +126,7 @@ export function AssetNovoForm() {
       <div>
         <label
           htmlFor="category"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
         >
           Categoria
         </label>
@@ -148,7 +148,7 @@ export function AssetNovoForm() {
         <div>
           <label
             htmlFor="numero_patrimonio"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
           >
             Nº de patrimônio (tombo) — opcional
           </label>
@@ -169,7 +169,7 @@ export function AssetNovoForm() {
         <div>
           <label
             htmlFor="location"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
           >
             Localização — opcional
           </label>
@@ -192,7 +192,7 @@ export function AssetNovoForm() {
         <div>
           <label
             htmlFor="acquisition_value"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
           >
             Valor de aquisição (R$) — opcional
           </label>
@@ -215,7 +215,7 @@ export function AssetNovoForm() {
         <div>
           <label
             htmlFor="acquisition_date"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
           >
             Data de aquisição — opcional
           </label>
@@ -236,7 +236,7 @@ export function AssetNovoForm() {
       <div>
         <label
           htmlFor="responsible"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
         >
           Responsável — opcional
         </label>
@@ -257,7 +257,7 @@ export function AssetNovoForm() {
       <div>
         <label
           htmlFor="observations"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
         >
           Observações — opcional
         </label>
@@ -277,7 +277,7 @@ export function AssetNovoForm() {
       <button
         type="submit"
         disabled={enviando}
-        className="w-full rounded-lg bg-accent hover:bg-accent-light disabled:opacity-60 text-bg-dark font-sans font-bold py-2.5 transition-colors"
+        className="w-full rounded-lg hero-background-accent hover:bg-accent-light disabled:opacity-60 text-white/90 font-sans font-bold py-2.5 transition-colors cursor-pointer"
       >
         {enviando ? "Cadastrando..." : "Cadastrar bem"}
       </button>

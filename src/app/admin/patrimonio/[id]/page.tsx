@@ -31,16 +31,16 @@ export default async function AssetDetalhePage({
 
   if (!leitor) {
     return (
-      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
+      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 hero-background-admin min-h-screen">
         <div className="max-w-2xl mx-auto px-4">
           <div
             className="rounded-2xl bg-white shadow-xl p-10 text-center"
             role="alert"
           >
-            <h1 className="font-sans text-2xl font-bold text-primary mb-3">
+            <h1 className="font-sans text-2xl font-bold text-white mb-3">
               Patrimônio
             </h1>
-            <p className="font-serif text-text-dark/70">
+            <p className="font-serif text-white/70">
               Você não tem permissão para acessar este módulo.
             </p>
             <Link
@@ -69,7 +69,7 @@ export default async function AssetDetalhePage({
   }
 
   return (
-    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
+    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 hero-lite-admin min-h-screen">
       <div className="max-w-2xl mx-auto px-4">
         <Link
           href="/admin/patrimonio"
@@ -79,15 +79,15 @@ export default async function AssetDetalhePage({
           Voltar ao patrimônio
         </Link>
 
-        <div className="rounded-2xl bg-white shadow-xl p-8 sm:p-10 mb-6">
+        <div className="rounded-2xl hero-background-admin shadow-xl p-8 sm:p-10 mb-6">
           <div className="flex items-start justify-between gap-4 mb-4">
             <div>
-              <h1 className="flex items-center gap-2 font-sans text-2xl font-bold text-primary">
-                <Package size={22} className="text-primary" aria-hidden="true" />
+              <h1 className="flex items-center gap-2 font-sans text-2xl font-bold text-white">
+                <Package size={22} className="text-white" aria-hidden="true" />
                 {asset.name}
               </h1>
-              <p className="mt-1 flex items-center gap-1.5 font-serif text-sm text-text-dark/60">
-                <span className="rounded-full bg-primary/10 px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wide text-primary">
+              <p className="mt-1 flex items-center gap-1.5 font-serif text-sm text-white/60">
+                <span className="rounded-full bg-accent-light/20 px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wide text-accent-light">
                   {asset.category}
                 </span>
                 {asset.numero_patrimonio && (
@@ -98,8 +98,8 @@ export default async function AssetDetalhePage({
             <span
               className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-0.5 font-sans text-xs font-bold ${
                 asset.status === "ATIVO"
-                  ? "bg-green-100 text-green-700"
-                  : "bg-red-100 text-red-700"
+                  ? "border border-green-500 bg-white/10 bg-green-100 text-green-500"
+                  : "border border-red-500 bg-white/10 text-red-500"
               }`}
             >
               {asset.status}
@@ -108,22 +108,22 @@ export default async function AssetDetalhePage({
 
           <dl className="grid gap-4 sm:grid-cols-2">
             <div>
-              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-text-dark/50">
+              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-white/70">
                 Localização
               </dt>
-              <dd className="mt-1 flex items-center gap-1.5 font-serif text-base text-text-dark">
-                <MapPin size={15} className="text-primary" aria-hidden="true" />
+              <dd className="mt-1 flex items-center gap-1.5 font-serif text-base text-white/90">
+                <MapPin size={15} className="text-accent-light" aria-hidden="true" />
                 {asset.location ?? "—"}
               </dd>
             </div>
             <div>
-              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-text-dark/50">
+              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-white/70">
                 Valor de aquisição
               </dt>
-              <dd className="mt-1 flex items-center gap-1.5 font-serif text-base text-text-dark">
+              <dd className="mt-1 flex items-center gap-1.5 font-serif text-base text-white/90">
                 <CircleDollarSign
                   size={15}
-                  className="text-primary"
+                  className="text-accent-light"
                   aria-hidden="true"
                 />
                 {asset.acquisition_value !== null
@@ -135,11 +135,11 @@ export default async function AssetDetalhePage({
               </dd>
             </div>
             <div>
-              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-text-dark/50">
+              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-white/70">
                 Data de aquisição
               </dt>
-              <dd className="mt-1 flex items-center gap-1.5 font-serif text-base text-text-dark">
-                <CalendarDays size={15} className="text-primary" aria-hidden="true" />
+              <dd className="mt-1 flex items-center gap-1.5 font-serif text-base text-white/90">
+                <CalendarDays size={15} className="text-accent-light" aria-hidden="true" /> 
                 {asset.acquisition_date
                   ? new Date(asset.acquisition_date + "T00:00:00").toLocaleDateString(
                       "pt-BR"
@@ -148,18 +148,18 @@ export default async function AssetDetalhePage({
               </dd>
             </div>
             <div>
-              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-text-dark/50">
+              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-white/70">
                 Responsável
               </dt>
-              <dd className="mt-1 font-serif text-base text-text-dark">
+              <dd className="mt-1 font-serif text-base text-white/90">
                 {asset.responsible ?? "—"}
               </dd>
             </div>
             <div className="sm:col-span-2">
-              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-text-dark/50">
+              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-white/70">
                 Observações
               </dt>
-              <dd className="mt-1 font-serif text-base text-text-dark">
+              <dd className="mt-1 font-serif text-base text-white/90">
                 {asset.observations ?? "—"}
               </dd>
             </div>

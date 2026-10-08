@@ -71,15 +71,15 @@ export function MatrixEditor({
   }
 
   return (
-    <div className="rounded-2xl bg-white shadow-xl overflow-hidden">
-      <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-        <span className="font-sans text-sm text-text-dark/60">
+    <div className="rounded-2xl hero-background-admin shadow-xl overflow-hidden">
+      <div className="p-4 border-b border-white/30 flex items-center justify-between">
+        <span className="font-sans text-sm text-white/70">
           {roles.length} papéis × {modules.length} módulos
         </span>
         <button
           onClick={handleSave}
           disabled={saving}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-white font-sans text-sm font-bold hover:bg-accent transition-colors disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/20 border border-white/30 text-white font-sans text-sm font-bold hover:bg-accent-light/40 hover:text-accent-light transition-colors disabled:opacity-50 cursor-pointer"
         >
           <Save size={14} />
           {saving ? "Salvando..." : "Salvar"}
@@ -101,14 +101,14 @@ export function MatrixEditor({
       <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead>
-            <tr className="border-b border-gray-100">
-              <th className="px-4 py-3 font-sans text-xs font-bold text-text-dark/50 uppercase sticky left-0 bg-white">
+            <tr className="border-b border-white/30">
+              <th className="px-4 py-3 font-sans text-xs font-bold text-white/70 uppercase sticky left-0 hero-background-admin">
                 Papel
               </th>
               {modules.map((m) => (
                 <th
                   key={m}
-                  className="px-3 py-3 font-sans text-xs font-bold text-text-dark/50 uppercase text-center"
+                  className="px-3 py-3 font-sans text-xs font-bold text-white/70 uppercase text-center"
                 >
                   {moduloLabels[m] ?? m}
                 </th>
@@ -119,9 +119,9 @@ export function MatrixEditor({
             {roles.map((role) => (
               <tr
                 key={role}
-                className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
+                className="border-b border-white/30 hover:bg-white/20 transition-colors"
               >
-                <td className="px-4 py-3 font-sans text-sm font-bold text-text-dark sticky left-0 bg-white">
+                <td className="px-4 py-3 font-sans text-sm font-bold text-white/80 sticky left-0 hero-background-admin">
                   {roleLabels[role] ?? role}
                 </td>
                 {modules.map((mod) => {

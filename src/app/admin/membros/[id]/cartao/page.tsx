@@ -28,7 +28,7 @@ export default async function MembroCartaoPage({
 
   if (falhaConsulta) {
     return (
-      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
+      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 hero-lite-admin min-h-screen">
         <div className="max-w-2xl mx-auto px-4">
           <div
             className="rounded-2xl bg-white shadow-xl p-10 text-center"
@@ -58,11 +58,11 @@ export default async function MembroCartaoPage({
   }
 
   return (
-    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
+    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 hero-lite-admin min-h-screen">
       <div className="max-w-2xl mx-auto px-4">
         <Link
           href={`/admin/membros/${id}`}
-          className="inline-flex items-center gap-2 font-sans text-sm font-bold text-primary hover:text-accent mb-6 transition-colors print:hidden"
+          className="inline-flex items-center gap-2 font-sans text-sm font-bold text-primary hover:text-accent-light mb-6 transition-colors print:hidden"
         >
           <ArrowLeft size={16} aria-hidden="true" />
           Voltar ao membro
@@ -72,7 +72,7 @@ export default async function MembroCartaoPage({
           <h1 className="font-sans text-3xl font-bold text-primary mb-2">
             Cartão de membro
           </h1>
-          <p className="font-serif text-base text-text-dark/60">
+          <p className="font-serif text-base text-primary/70">
             Imprima o cartão para identificação nos cultos.
           </p>
         </div>

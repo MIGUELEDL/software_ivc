@@ -36,7 +36,7 @@ export function RemoverDocumentoButton({
     <button
       type="button"
       onClick={remover}
-      className="font-sans text-sm font-bold text-red-600 hover:text-red-700 transition-colors"
+      className="font-sans text-sm font-bold text-red-400 hover:text-red-500 transition-colors"
     >
       Remover
     </button>
@@ -80,7 +80,7 @@ export function HardDeleteButton({
     <button
       type="button"
       onClick={excluir}
-      className="rounded-lg border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-sans font-bold py-2.5 px-5 transition-colors"
+      className="rounded-lg border-2 border-red-400 text-red-400 hover:bg-red-400 hover:text-white font-sans font-bold py-2.5 px-5 transition-colors cursor-pointer"
     >
       Excluir definitivamente
     </button>

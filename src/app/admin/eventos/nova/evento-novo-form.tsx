@@ -17,7 +17,7 @@ export function EventoNovoForm() {
   const [enviando, setEnviando] = useState(false);
 
   const inputClass =
-    "w-full rounded-lg bg-[#0d1f3c] border border-white/10 px-4 py-2.5 font-serif text-white focus:border-accent focus:ring-1 focus:ring-accent outline-none transition-colors";
+    "w-full rounded-lg bg-white/10 border border-white/20 px-4 py-2.5 font-serif text-white focus:border-accent-light focus:ring-accent outline-none transition-colors";
 
   async function cadastrar(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -76,7 +76,7 @@ export function EventoNovoForm() {
   return (
     <form
       onSubmit={cadastrar}
-      className="rounded-2xl bg-[#132744] border border-white/10 shadow-xl p-8 sm:p-10 space-y-5"
+      className="rounded-2xl hero-background-admin border border-white/10 shadow-xl p-8 sm:p-10 space-y-5"
     >
       {mensagem && (
         <p
@@ -90,7 +90,7 @@ export function EventoNovoForm() {
       <div>
         <label
           htmlFor="title"
-          className="block font-sans text-sm font-semibold text-white/70 mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
         >
           Título
         </label>
@@ -112,7 +112,7 @@ export function EventoNovoForm() {
       <div>
         <label
           htmlFor="description"
-          className="block font-sans text-sm font-semibold text-white/70 mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
         >
           Descrição (opcional)
         </label>
@@ -133,7 +133,7 @@ export function EventoNovoForm() {
         <div>
           <label
             htmlFor="date"
-            className="block font-sans text-sm font-semibold text-white/70 mb-1.5"
+            className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
           >
             Data
           </label>
@@ -148,7 +148,7 @@ export function EventoNovoForm() {
         <div>
           <label
             htmlFor="time"
-            className="block font-sans text-sm font-semibold text-white/70 mb-1.5"
+            className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
           >
             Hora
           </label>
@@ -164,7 +164,7 @@ export function EventoNovoForm() {
       <div>
         <label
           htmlFor="location"
-          className="block font-sans text-sm font-semibold text-white/70 mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
         >
           Local
         </label>
@@ -183,7 +183,7 @@ export function EventoNovoForm() {
         )}
       </div>
 
-      <label className="flex items-center gap-3 font-serif text-white/70 cursor-pointer">
+      <label className="flex items-center gap-3 font-serif text-white/80 cursor-pointer">
         <input
           type="checkbox"
           name="visivel"
@@ -201,7 +201,7 @@ export function EventoNovoForm() {
       <button
         type="submit"
         disabled={enviando}
-        className="w-full rounded-lg bg-[#c9a84c] hover:bg-[#e0c872] disabled:opacity-60 text-[#0d1f3c] font-sans font-bold py-2.5 transition-colors"
+        className="w-full rounded-lg hero-background-accent hover:bg-[#e0c872] disabled:opacity-60 text-white/90 font-sans font-bold py-2.5 transition-colors"
       >
         {enviando ? "Cadastrando..." : "Cadastrar evento"}
       </button>

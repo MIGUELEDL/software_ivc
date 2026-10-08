@@ -103,7 +103,7 @@ export default async function AdminLiderancaPage() {
                 {igrejas.map((igreja) => (
                   <tr
                     key={igreja.id}
-                    className="bg-hero-background-admin border-b border-white/20 last:border-1"
+                    className="bg-white/5 border-b border-white/20 last:border-1 hover:bg-white/15 transition-colors"
                   >
                     <td className="px-6 py-4">
                       <p className="flex items-center gap-2 font-sans font-semibold text-white">
@@ -124,7 +124,7 @@ export default async function AdminLiderancaPage() {
                       <div className="flex items-center justify-end gap-3">
                         <Link
                           href={`/admin/lideranca/${igreja.id}`}
-                          className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-accent-light hover:text-white/75 transition-colors"
+                          className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-white/75 hover:text-white transition-colors"
                         >
                           <Eye size={15} aria-hidden="true" />
                           Detalhes
@@ -132,7 +132,7 @@ export default async function AdminLiderancaPage() {
                         {escritor && (
                           <Link
                             href={`/admin/lideranca/${igreja.id}?editar=1`}
-                            className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-accent-light hover:text-white/75 transition-colors"
+                            className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-accent-light hover:text-accent-light/75 transition-colors"
                           >
                             <Pencil size={15} aria-hidden="true" />
                             Editar

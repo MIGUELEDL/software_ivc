@@ -16,16 +16,16 @@ export default async function MembroNovoPage() {
 
   if (!escritor) {
     return (
-      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
+      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 hero-lite-admin min-h-screen">
         <div className="max-w-2xl mx-auto px-4">
           <div
-            className="rounded-2xl bg-white shadow-xl p-10 text-center"
+            className="rounded-2xl hero-background-admin shadow-xl p-10 text-center"
             role="alert"
           >
-            <h1 className="font-sans text-2xl font-bold text-primary mb-3">
+            <h1 className="font-sans text-2xl font-bold text-white mb-3">
               Novo membro
             </h1>
-            <p className="font-serif text-text-dark/70">
+            <p className="font-serif text-white/70">
               Apenas escritores podem cadastrar membros.
             </p>
             <Link
@@ -42,7 +42,7 @@ export default async function MembroNovoPage() {
   }
 
   return (
-    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
+    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 hero-lite-admin min-h-screen">
       <div className="max-w-2xl mx-auto px-4">
         <Link
           href="/admin/membros"
@@ -56,7 +56,7 @@ export default async function MembroNovoPage() {
           <h1 className="font-sans text-3xl font-bold text-primary mb-2">
             Novo membro
           </h1>
-          <p className="font-serif text-base text-text-dark/60">
+          <p className="font-serif text-base text-primary/80">
             Cadastre a pessoa e entregue manualmente a senha temporária gerada
             (exibida uma única vez).
           </p>

@@ -102,22 +102,22 @@ export function MembroNovoForm() {
   }
 
   const inputClass =
-    "w-full rounded-lg border border-gray-300 px-4 py-2.5 font-serif text-text-dark focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors";
+    "w-full bg-white/10 rounded-lg border border-white/30 px-4 py-2.5 font-serif text-white/80 focus:border-accent-light focus:ring-1 focus:ring-primary outline-none transition-colors";
 
   if (membroCriado && senhaTemporaria) {
     return (
-      <div className="rounded-2xl bg-white shadow-xl p-8 sm:p-10 space-y-5 text-center">
-        <h2 className="font-sans text-xl font-bold text-primary">
+      <div className="rounded-2xl hero-lite-admin shadow-xl p-8 sm:p-10 space-y-5 text-center">
+        <h2 className="font-sans text-xl font-bold text-white mb-2">
           Membros {membroCriado.matricula} cadastrado!
         </h2>
-        <p className="font-serif text-base text-text-dark/70">
+        <p className="font-serif text-base text-white/70">
           Entregue esta senha temporária ao membro. O primeiro acesso exigirá a
           troca de senha.
         </p>
 
         <div
           aria-live="polite"
-          className="rounded-lg bg-bg-gray border border-text-dark/10 p-4 break-all font-mono text-lg font-bold text-text-dark"
+          className="rounded-lg bg-white/10 border border-white/30 p-4 break-all font-mono text-lg font-bold text-white/80"
         >
           {senhaTemporaria}
         </div>
@@ -152,7 +152,7 @@ export function MembroNovoForm() {
     <form
       ref={formRef}
       onSubmit={cadastrar}
-      className="rounded-2xl bg-white shadow-xl p-8 sm:p-10 space-y-5"
+      className="rounded-2xl hero-background-admin shadow-xl p-8 sm:p-10 space-y-5"
     >
       {mensagem && (
         <p
@@ -166,7 +166,7 @@ export function MembroNovoForm() {
       <div>
         <label
           htmlFor="nome"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white mb-1.5"
         >
           Nome completo
         </label>
@@ -188,7 +188,7 @@ export function MembroNovoForm() {
       <div>
         <label
           htmlFor="nascimento"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white mb-1.5"
         >
           Data de nascimento
         </label>
@@ -210,7 +210,7 @@ export function MembroNovoForm() {
       <div>
         <label
           htmlFor="whatsapp"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white mb-1.5"
         >
           WhatsApp
         </label>
@@ -233,7 +233,7 @@ export function MembroNovoForm() {
       <div>
         <label
           htmlFor="email"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white mb-1.5"
         >
           E-mail (acesso do membro)
         </label>
@@ -254,18 +254,18 @@ export function MembroNovoForm() {
       </div>
 
       <fieldset className="rounded-lg border border-text-dark/10 p-4 space-y-4">
-        <legend className="font-sans text-sm font-semibold text-text-dark px-1">
+        <legend className="font-sans text-sm font-semibold text-white px-1">
           Dados do cartão (opcional)
         </legend>
 
-        <p className="font-serif text-sm text-text-dark/60">
+        <p className="font-serif text-sm text-white/70">
           Campos em branco ficam sem valor no cartão do membro.
         </p>
 
         <div>
           <label
             htmlFor="rg"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white mb-1.5"
           >
             RG
           </label>
@@ -287,7 +287,7 @@ export function MembroNovoForm() {
         <div>
           <label
             htmlFor="cpf"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white mb-1.5"
           >
             CPF
           </label>
@@ -299,7 +299,7 @@ export function MembroNovoForm() {
             placeholder="000.000.000-00"
             className={inputClass}
           />
-          <p className="mt-1 font-serif text-xs text-text-dark/50">
+          <p className="mt-1 font-serif text-xs text-white/50">
             11 dígitos. A máscara é convertida e os dígitos verificadores não são
             conferidos.
           </p>
@@ -313,7 +313,7 @@ export function MembroNovoForm() {
         <div>
           <label
             htmlFor="data_batismo"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white mb-1.5"
           >
             Data de batismo
           </label>
@@ -333,14 +333,14 @@ export function MembroNovoForm() {
       </fieldset>
 
       <fieldset className="rounded-lg border border-text-dark/10 p-4 space-y-4">
-        <legend className="font-sans text-sm font-semibold text-text-dark px-1">
+        <legend className="font-sans text-sm font-semibold text-white px-1">
           Endereço (opcional)
         </legend>
 
         <div>
           <label
             htmlFor="logradouro"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white mb-1.5"
           >
             Logradouro
           </label>
@@ -356,7 +356,7 @@ export function MembroNovoForm() {
         <div>
           <label
             htmlFor="numero"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white mb-1.5"
           >
             Número
           </label>
@@ -372,7 +372,7 @@ export function MembroNovoForm() {
         <div>
           <label
             htmlFor="bairro"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white mb-1.5"
           >
             Bairro
           </label>
@@ -387,7 +387,7 @@ export function MembroNovoForm() {
         <div>
           <label
             htmlFor="cidade"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white mb-1.5"
           >
             Cidade
           </label>
@@ -403,7 +403,7 @@ export function MembroNovoForm() {
         <div>
           <label
             htmlFor="uf"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white mb-1.5"
           >
             UF
           </label>
@@ -426,7 +426,7 @@ export function MembroNovoForm() {
         <div>
           <label
             htmlFor="cep"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white mb-1.5"
           >
             CEP
           </label>
@@ -444,7 +444,7 @@ export function MembroNovoForm() {
       <button
         type="submit"
         disabled={enviando}
-        className="w-full rounded-lg bg-accent hover:bg-accent-light disabled:opacity-60 text-bg-dark font-sans font-bold py-2.5 transition-colors"
+        className="w-full rounded-lg hero-background-accent hover:bg-accent-light disabled:opacity-60 text-white/90 font-sans font-bold py-2.5 transition-colors"
       >
         {enviando ? "Cadastrando..." : "Cadastrar membro"}
       </button>

@@ -68,16 +68,16 @@ export default async function MembroDetalhePage({
 
   if (falhaConsulta) {
     return (
-      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
+      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 hero-background-admin min-h-screen">
         <div className="max-w-2xl mx-auto px-4">
           <div
             className="rounded-2xl bg-white shadow-xl p-10 text-center"
             role="alert"
           >
-            <h1 className="font-sans text-2xl font-bold text-primary mb-3">
+            <h1 className="font-sans text-2xl font-bold text-white mb-3">
               Detalhe do membro
             </h1>
-            <p className="font-serif text-text-dark/70">
+            <p className="font-serif text-white/70">
               Não foi possível carregar os dados. Tente novamente mais tarde.
             </p>
             <Link
@@ -108,40 +108,40 @@ export default async function MembroDetalhePage({
   ].some(Boolean);
 
   const inputClass =
-    "w-full rounded-lg border border-gray-300 px-4 py-2.5 font-serif text-text-dark focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors";
+    "w-full rounded-lg border bg-white/10 border-white/30 px-4 py-2.5 font-serif text-white/80 focus:border-accent-light focus:ring-1 focus:ring-primary outline-none transition-colors";
 
   return (
-    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
+    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 hero-lite-admin min-h-screen">
       <div className="max-w-2xl mx-auto px-4">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <Link
             href="/admin/membros"
-            className="inline-flex items-center gap-2 font-sans text-sm font-bold text-primary hover:text-accent transition-colors"
+            className="inline-flex items-center gap-2 font-sans text-sm font-bold text-primary hover:text-accent-light transition-colors"
           >
             <ArrowLeft size={16} aria-hidden="true" />
             Voltar aos membros
           </Link>
           <Link
             href={`/admin/membros/${id}/cartao`}
-            className="inline-flex items-center gap-2 font-sans text-sm font-bold text-primary hover:text-accent transition-colors"
+            className="inline-flex items-center gap-2 font-sans text-sm font-bold text-primary hover:text-accent-light transition-colors"
           >
             <IdCard size={16} aria-hidden="true" />
             Ver cartão
           </Link>
         </div>
 
-        <div className="rounded-2xl bg-white shadow-xl p-8 sm:p-10 mb-6">
+        <div className="rounded-2xl hero-background-admin shadow-xl p-8 sm:p-10 mb-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="min-w-0">
-              <h1 className="truncate font-sans text-2xl font-bold text-primary">
+              <h1 className="truncate font-sans text-2xl font-bold text-white">
                 {membro.nome}
               </h1>
-              <p className="mt-1 font-sans text-sm font-semibold text-primary">
+              <p className="mt-1 font-sans text-sm font-semibold text-white/80">
                 Matrícula {membro.matricula}
               </p>
             </div>
             <span
-              className={`inline-block rounded-full border px-3 py-1 font-sans text-xs font-bold ${
+              className={`inline-block rounded-full bg-white/20 border border-white/50 text-white px-3 py-1 font-sans text-xs font-bold ${
                 STATUS_CLASS[membro.status] ?? ""
               }`}
             >
@@ -151,18 +151,18 @@ export default async function MembroDetalhePage({
 
           <dl className="mt-6 grid gap-4 sm:grid-cols-2">
             <div>
-              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-text-dark/50">
+              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-white/80">
                 WhatsApp
               </dt>
-              <dd className="mt-1 font-serif text-base text-text-dark">
+              <dd className="mt-1 font-serif text-base text-white">
                 {membro.whatsapp}
               </dd>
             </div>
             <div>
-              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-text-dark/50">
+              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-white/80">
                 Nascimento
               </dt>
-              <dd className="mt-1 font-serif text-base text-text-dark">
+              <dd className="mt-1 font-serif text-base text-white">
                 {membro.nascimento}
               </dd>
             </div>
@@ -170,10 +170,10 @@ export default async function MembroDetalhePage({
 
           {endereco && (
             <div className="mt-5">
-              <p className="font-sans text-xs font-semibold uppercase tracking-wider text-text-dark/50">
+              <p className="font-sans text-xs font-semibold uppercase tracking-wider text-white/80">
                 Endereço
               </p>
-              <p className="mt-1 font-serif text-base text-text-dark">
+              <p className="mt-1 font-serif text-base text-white/80">
                 {[membro.logradouro, membro.numero]
                   .filter(Boolean)
                   .join(", ")
@@ -192,16 +192,16 @@ export default async function MembroDetalhePage({
             <form
               action={`/api/admin/membros/${id}/dados`}
               method="POST"
-              className="rounded-2xl bg-white shadow-xl p-8 sm:p-10 space-y-5 mb-6"
+              className="rounded-2xl hero-background-admin shadow-xl p-8 sm:p-10 space-y-5 mb-6"
             >
-              <h2 className="font-sans text-lg font-bold text-primary">
+              <h2 className="font-sans text-lg font-bold text-white">
                 Editar dados
               </h2>
 
               <div>
                 <label
                   htmlFor="nome"
-                  className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                  className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
                 >
                   Nome completo
                 </label>
@@ -218,7 +218,7 @@ export default async function MembroDetalhePage({
               <div>
                 <label
                   htmlFor="nascimento"
-                  className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                  className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
                 >
                   Data de nascimento
                 </label>
@@ -236,7 +236,7 @@ export default async function MembroDetalhePage({
               <div>
                 <label
                   htmlFor="whatsapp"
-                  className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                  className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
                 >
                   WhatsApp
                 </label>
@@ -250,19 +250,19 @@ export default async function MembroDetalhePage({
                 />
               </div>
 
-              <fieldset className="rounded-lg border border-text-dark/10 p-4 space-y-4">
-                <legend className="font-sans text-sm font-semibold text-text-dark px-1">
+              <fieldset className="rounded-lg border bg-white/10 border-white/30 p-4 space-y-4">
+                <legend className="font-sans text-sm font-semibold text-white px-1">
                   Dados do cartão (opcional)
                 </legend>
 
-                <p className="font-serif text-sm text-text-dark/60">
+                <p className="font-serif text-sm text-white/80">
                   Apagar o conteúdo de um campo limpa o dado do cartão.
                 </p>
 
                 <div>
                   <label
                     htmlFor="rg"
-                    className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                    className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
                   >
                     RG
                   </label>
@@ -280,7 +280,7 @@ export default async function MembroDetalhePage({
                 <div>
                   <label
                     htmlFor="cpf"
-                    className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                    className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
                   >
                     CPF
                   </label>
@@ -293,7 +293,7 @@ export default async function MembroDetalhePage({
                     defaultValue={membro.cpf ?? ""}
                     className={inputClass}
                   />
-                  <p className="mt-1 font-serif text-xs text-text-dark/50">
+                  <p className="mt-1 font-serif text-xs text-white/70">
                     11 dígitos. A máscara é convertida e os dígitos verificadores
                     não são conferidos.
                   </p>
@@ -302,7 +302,7 @@ export default async function MembroDetalhePage({
                 <div>
                   <label
                     htmlFor="data_batismo"
-                    className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                    className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
                   >
                     Data de batismo
                   </label>
@@ -317,15 +317,15 @@ export default async function MembroDetalhePage({
                 </div>
               </fieldset>
 
-              <fieldset className="rounded-lg border border-text-dark/10 p-4 space-y-4">
-                <legend className="font-sans text-sm font-semibold text-text-dark px-1">
+              <fieldset className="rounded-lg border border-white/30 p-4 space-y-4">
+                <legend className="font-sans text-sm font-semibold text-white/80 px-1">
                   Endereço (opcional)
                 </legend>
 
                 <div>
                   <label
                     htmlFor="logradouro"
-                    className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                    className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
                   >
                     Logradouro
                   </label>
@@ -342,7 +342,7 @@ export default async function MembroDetalhePage({
                   <div>
                     <label
                       htmlFor="numero"
-                      className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                      className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
                     >
                       Número
                     </label>
@@ -357,7 +357,7 @@ export default async function MembroDetalhePage({
                   <div>
                     <label
                       htmlFor="bairro"
-                      className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                      className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
                     >
                       Bairro
                     </label>
@@ -372,7 +372,7 @@ export default async function MembroDetalhePage({
                   <div>
                     <label
                       htmlFor="cidade"
-                      className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                      className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
                     >
                       Cidade
                     </label>
@@ -388,7 +388,7 @@ export default async function MembroDetalhePage({
                     <div>
                       <label
                         htmlFor="uf"
-                        className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                        className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
                       >
                         UF
                       </label>
@@ -405,7 +405,7 @@ export default async function MembroDetalhePage({
                     <div>
                       <label
                         htmlFor="cep"
-                        className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                        className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
                       >
                         CEP
                       </label>
@@ -423,7 +423,7 @@ export default async function MembroDetalhePage({
 
               <button
                 type="submit"
-                className="w-full rounded-lg bg-accent hover:bg-accent-light text-bg-dark font-sans font-bold py-2.5 transition-colors"
+                className="w-full rounded-lg hero-background-accent hover:bg-accent-light text-white/90 font-sans font-bold py-2.5 transition-colors cursor-pointer"
               >
                 Salvar alterações
               </button>
@@ -432,14 +432,14 @@ export default async function MembroDetalhePage({
             <form
               action={`/api/admin/membros/${id}/status`}
               method="POST"
-              className="rounded-2xl bg-white shadow-xl p-8 sm:p-10 space-y-5 mb-6"
+              className="rounded-2xl hero-background-admin shadow-xl p-8 sm:p-10 space-y-5 mb-6"
             >
-              <h2 className="font-sans text-lg font-bold text-primary">
+              <h2 className="font-sans text-lg font-bold text-white">
                 Situação do membro
               </h2>
 
               {transicoes.length === 0 ? (
-                <p className="font-serif text-base text-text-dark/70">
+                <p className="font-serif text-base text-white/70">
                   Situação terminal: nenhuma transição disponível.
                 </p>
               ) : (
@@ -450,7 +450,7 @@ export default async function MembroDetalhePage({
                       type="submit"
                       name="status"
                       value={destino}
-                      className="rounded-full border-2 border-primary text-primary hover:bg-primary hover:text-white font-sans text-sm font-bold px-5 py-2 transition-colors"
+                      className="rounded-full bg-white/10 border-2 border-white/20 text-white hover:bg-white/30 hover:text-white font-sans text-sm font-bold px-5 py-2 transition-colors cursor-pointer"
                     >
                       {TRANSICAO_ROTULO[destino] ?? destino}
                     </button>
@@ -462,16 +462,16 @@ export default async function MembroDetalhePage({
             <form
               action={`/api/admin/membros/${id}/documentos`}
               method="POST"
-              className="rounded-2xl bg-white shadow-xl p-8 sm:p-10 space-y-5 mb-6"
+              className="rounded-2xl hero-background-admin shadow-xl p-8 sm:p-10 space-y-5 mb-6"
             >
-              <h2 className="font-sans text-lg font-bold text-primary">
+              <h2 className="font-sans text-lg font-bold text-white">
                 Documentos
               </h2>
 
               <div>
                 <label
                   htmlFor="tipo"
-                  className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                  className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
                 >
                   Tipo
                 </label>
@@ -494,7 +494,7 @@ export default async function MembroDetalhePage({
               <div>
                 <label
                   htmlFor="descricao"
-                  className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+                  className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
                 >
                   Descrição (opcional)
                 </label>
@@ -508,7 +508,7 @@ export default async function MembroDetalhePage({
 
               <button
                 type="submit"
-                className="w-full rounded-lg bg-accent hover:bg-accent-light text-bg-dark font-sans font-bold py-2.5 transition-colors"
+                className="w-full rounded-lg hero-background-accent hover:bg-accent-light text-white/90 font-sans font-bold py-2.5 transition-colors cursor-pointer"
               >
                 Registrar documento
               </button>
@@ -516,32 +516,32 @@ export default async function MembroDetalhePage({
           </>
         )}
 
-        <div className="rounded-2xl bg-white shadow-xl p-8 sm:p-10 space-y-4 mb-6">
-          <h2 className="font-sans text-lg font-bold text-primary">
+        <div className="rounded-2xl hero-background-admin shadow-xl p-8 sm:p-10 space-y-4 mb-6">
+          <h2 className="font-sans text-lg font-bold text-white">
             Documentos registrados
           </h2>
 
           {documentos.length === 0 ? (
-            <p className="font-serif text-base text-text-dark/70">
+            <p className="font-serif text-base text-white/70">
               Nenhum documento registrado.
             </p>
           ) : (
-            <ul className="divide-y divide-text-dark/5">
+            <ul className="divide-y divide-white/10">
               {documentos.map((documento) => (
                 <li
                   key={documento.id}
                   className="flex flex-wrap items-center justify-between gap-3 py-3"
                 >
                   <div>
-                    <p className="font-sans text-sm font-bold text-text-dark">
+                    <p className="font-sans text-sm font-bold text-white">
                       {TIPO_DOCUMENTO_LABEL[documento.tipo] ?? documento.tipo}
                     </p>
                     {documento.descricao && (
-                      <p className="font-serif text-sm text-text-dark/60">
+                      <p className="font-serif text-sm text-white/60">
                         {documento.descricao}
                       </p>
                     )}
-                    <p className="font-sans text-xs text-text-dark/40">
+                    <p className="font-sans text-xs text-white/40">
                       {new Date(documento.criado_em).toLocaleDateString(
                         "pt-BR"
                       )}
@@ -560,13 +560,13 @@ export default async function MembroDetalhePage({
         </div>
 
         {hardDelete && (
-          <div className="rounded-2xl bg-white shadow-xl p-8 sm:p-10 flex flex-wrap items-center justify-between gap-4">
+          <div className="rounded-2xl hero-background-admin shadow-xl p-8 sm:p-10 flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h2 className="flex items-center gap-2 font-sans text-lg font-bold text-red-600">
+              <h2 className="flex items-center gap-2 font-sans text-lg font-bold text-red-400">
                 <Trash2 size={18} aria-hidden="true" />
                 Zona de exclusão
               </h2>
-              <p className="mt-1 font-serif text-sm text-text-dark/60">
+              <p className="mt-1 font-serif text-sm text-white/60">
                 Remove o cadastro e a conta de acesso. Só disponível sem
                 documentos registrados.
               </p>

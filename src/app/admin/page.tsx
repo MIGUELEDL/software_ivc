@@ -180,7 +180,7 @@ export default async function AdminPage() {
                     {atividade.map((item) => (
                       <li
                         key={`${item.tipo}-${item.id}`}
-                        className="flex items-center gap-3 rounded-lg bg-white/10 px-3 py-2.5"
+                        className="flex items-center gap-3 rounded-lg bg-white/5 px-3 py-2.5 hover:bg-white/15 transition-colors"
                       >
                         <AtividadeIcon tipo={item.tipo} />
                         <div className="flex-1 min-w-0">
@@ -260,12 +260,12 @@ export default async function AdminPage() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="flex items-center gap-3 rounded-lg bg-white/10 p-3 hover:bg-[#1a3050] hover:border-[#c9a84c]/30 border border-transparent transition-all group"
+                    className="flex items-center gap-3 rounded-lg bg-white/5 border border-accent-light/50 p-3 hover:bg-white/15 transition-colors"
                   >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent group-hover:bg-[#c9a84c]/20 transition-colors">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent-light/10 text-accent-light hover:text-white group-hover:bg-accent-light/30 transition-colors">
                       <item.icon size={16} aria-hidden="true" />
                     </span>
-                    <span className="font-sans text-xs font-bold text-white group-hover:text-white transition-colors">
+                    <span className="font-sans text-xs font-bold text-accent-light hover:text-white transition-colors">
                       {item.label}
                     </span>
                   </Link>

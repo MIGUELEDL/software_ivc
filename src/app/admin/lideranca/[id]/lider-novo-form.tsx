@@ -16,7 +16,7 @@ export function LiderNovoForm({ igrejaId }: { igrejaId: string }) {
   const [enviando, setEnviando] = useState(false);
 
   const inputClass =
-    "w-full rounded-lg border border-gray-300 px-4 py-2.5 font-serif text-text-dark focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors";
+    "w-full rounded-lg bg-white/10 border border-white/50 px-4 py-2.5 font-serif text-white/80 focus:border-accent-light focus:ring-1 focus:ring-primary outline-none transition-colors";
 
   if (!aberto) {
     return (
@@ -24,7 +24,7 @@ export function LiderNovoForm({ igrejaId }: { igrejaId: string }) {
         <button
           type="button"
           onClick={() => setAberto(true)}
-          className="rounded-full bg-accent hover:bg-accent-light text-white font-sans text-sm font-bold px-5 py-2.5 transition-colors"
+          className="rounded-full hero-background-accent hover:bg-accent-light text-white font-sans text-sm font-bold px-5 py-2.5 transition-colors cursor-pointer"
         >
           + Adicionar líder
         </button>
@@ -93,9 +93,9 @@ export function LiderNovoForm({ igrejaId }: { igrejaId: string }) {
   return (
     <form
       onSubmit={cadastrar}
-      className="rounded-2xl bg-white shadow-xl p-6 mb-4 space-y-4"
+      className="rounded-2xl hero-background-admin shadow-xl p-6 mb-4 space-y-4"
     >
-      <h3 className="font-sans text-base font-bold text-primary">
+      <h3 className="font-sans text-base font-bold text-white">
         Novo líder
       </h3>
 
@@ -112,7 +112,7 @@ export function LiderNovoForm({ igrejaId }: { igrejaId: string }) {
         <div>
           <label
             htmlFor="lider-name"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
           >
             Nome
           </label>
@@ -133,7 +133,7 @@ export function LiderNovoForm({ igrejaId }: { igrejaId: string }) {
         <div>
           <label
             htmlFor="lider-role"
-            className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
           >
             Cargo
           </label>
@@ -156,7 +156,7 @@ export function LiderNovoForm({ igrejaId }: { igrejaId: string }) {
       <div className="max-w-[140px]">
         <label
           htmlFor="lider-order"
-          className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+          className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
         >
           Ordem
         </label>
@@ -180,15 +180,15 @@ export function LiderNovoForm({ igrejaId }: { igrejaId: string }) {
         <button
           type="submit"
           disabled={enviando}
-          className="rounded-lg bg-accent hover:bg-accent-light disabled:opacity-60 text-bg-dark font-sans font-bold px-6 py-2.5 transition-colors"
+          className="rounded-lg hero-background-accent hover:bg-accent-light disabled:opacity-60 text-white/90 font-sans font-bold px-6 py-2.5 transition-colors cursor-pointer"
         >
           {enviando ? "Adicionando..." : "Adicionar líder"}
         </button>
         <button
           type="button"
           onClick={() => setAberto(false)}
-          className="rounded-lg border-2 border-primary text-primary hover:bg-primary hover:text-white font-sans text-sm font-bold px-5 py-2.5 transition-colors"
-        >
+          className="rounded-lg border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-sans text-sm font-bold px-5 py-2.5 transition-colors cursor-pointer"
+        > 
           Cancelar
         </button>
       </div>
