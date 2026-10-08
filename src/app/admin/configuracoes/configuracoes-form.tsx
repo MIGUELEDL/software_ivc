@@ -31,7 +31,7 @@ function TextField({
       </label>
       {multiline ? (
         <textarea
-          className="w-full rounded-lg bg-white/10 border border-accent-light px-3 py-2 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30 disabled:opacity-50"
+          className="w-full rounded-lg bg-white/10 border border-white/20 hover:bg-white/20 px-3 py-2 font-serif text-sm text-white focus:outline-none focus:border-accent-light disabled:opacity-50"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
@@ -40,7 +40,7 @@ function TextField({
       ) : (
         <input
           type="text"
-          className="w-full rounded-lg bg-white/10 border border-accent-light px-3 py-2 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30 disabled:opacity-50"
+          className="w-full rounded-lg bg-white/10 border border-white/20 hover:bg-white/20 px-3 py-2 font-serif text-sm text-white focus:outline-none focus:border-accent-light disabled:opacity-50"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
@@ -103,14 +103,14 @@ function ValoresEditor({
           <input
             type="text"
             placeholder="Titulo"
-            className="w-28 rounded-lg hero-background-admin border border-white/10 px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
+            className="w-28 rounded-lg bg-white/10 border border-accent-light px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
             value={v.title}
             onChange={(e) => update(i, "title", e.target.value)}
           />
           <input
             type="text"
             placeholder="Descricao"
-                  className="flex-1 rounded-lg bg-[#0d1f3c] border border-white/10 px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
+                  className="flex-1 rounded-lg bg-white/10 border border-accent-light px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
             value={v.description}
             onChange={(e) => update(i, "description", e.target.value)}
           />
@@ -305,21 +305,21 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
                 <input
                   type="text"
                   placeholder="Dia"
-                  className="w-20 rounded-lg bg-[#0d1f3c] border border-white/10 px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
+                  className="w-20 rounded-lg bg-white/10 border border-white/20 hover:bg-white/20 px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:border-accent-light"
                   value={item.day}
                   onChange={(e) => updateSchedule(i, "day", e.target.value)}
                 />
                 <input
                   type="text"
                   placeholder="Horario"
-                  className="w-24 rounded-lg bg-[#0d1f3c] border border-white/10 px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
+                  className="w-24 rounded-lg bg-white/10 border border-white/20 hover:bg-white/20 px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:border-accent-light"
                   value={item.time}
                   onChange={(e) => updateSchedule(i, "time", e.target.value)}
                 />
                 <input
                   type="text"
                   placeholder="Titulo"
-            className="flex-1 rounded-lg bg-[#0d1f3c] border border-white/10 px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30"
+                  className="flex-1 rounded-lg bg-white/10 border border-white/20 hover:bg-white/20 px-2 py-1.5 font-serif text-sm text-white focus:outline-none focus:border-accent-light"
                   value={item.title}
                   onChange={(e) => updateSchedule(i, "title", e.target.value)}
                 />
@@ -335,7 +335,7 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
             <button
               type="button"
               onClick={addSchedule}
-              className="flex items-center gap-1 font-sans text-xs font-bold text-[#c9a84c] hover:text-[#e0c872]"
+              className="flex items-center gap-1 font-sans text-xs font-bold text-accent-light hover:text-white/80 transition-colors cursor-pointer"
             >
               <Plus size={14} /> Adicionar culto
             </button>
