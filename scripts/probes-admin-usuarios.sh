@@ -405,6 +405,69 @@ else
 fi
 
 # =====================================================================
+# RUNTIME — Exclusao: erros e auditoria (T8 / USREX-02/03/05)
+# =====================================================================
+if grep -q 'auth-token' "$JAR_ADMIN" 2>/dev/null; then
+  printf '%s\n' '-- Runtime: exclusao — erros e auditoria'
+
+  # USREX-03: DELETE UUID inexistente -> 404 nao_encontrado
+  RESP_404=$(curl -s -w '\n%{http_code}' -X DELETE -b "$JAR_ADMIN" \
+    "$BASE_URL/api/admin/usuarios/11111111-1111-4111-8111-111111111111" 2>/dev/null || printf '\n000')
+  HTTP_404=$(printf '%s' "$RESP_404" | tail -n1)
+  BODY_404=$(printf '%s' "$RESP_404" | sed '$d')
+  if [ "$HTTP_404" = "404" ] && printf '%s' "$BODY_404" | grep -q 'nao_encontrado'; then
+    ok "DELETE inexistente -> 404 nao_encontrado (USREX-03)"
+  else
+    ko "DELETE inexistente -> $HTTP_404 $BODY_404 (USREX-03)"
+  fi
+
+  # USREX-05: DELETE SUPER_ADMIN seed (...000c, sem marcador) -> 403 super_admin_protegido
+  RESP_SUPER=$(curl -s -w '\n%{http_code}' -X DELETE -b "$JAR_ADMIN" \
+    "$BASE_URL/api/admin/usuarios/00000000-0000-4000-8000-00000000000c" 2>/dev/null || printf '\n000')
+  HTTP_SUPER=$(printf '%s' "$RESP_SUPER" | tail -n1)
+  BODY_SUPER=$(printf '%s' "$RESP_SUPER" | sed '$d')
+  if [ "$HTTP_SUPER" = "403" ] && printf '%s' "$BODY_SUPER" | grep -q 'super_admin_protegido'; then
+    ok "ADMIN exclui SUPER_ADMIN -> 403 super_admin_protegido (USREX-05)"
+  else
+    ko "ADMIN exclui SUPER_ADMIN -> $HTTP_SUPER $BODY_SUPER (USREX-05)"
+  fi
+
+  # USREX-02: excluir conta do painel gera auditoria acao=excluir/entidade=usuarios/entidade_id/autor=caller
+  AUD_EMAIL="probe.audit.$RANDOM@ivc.local"
+  RESP_AUD=$(curl -s -b "$JAR_ADMIN" -X POST "$BASE_URL/api/admin/usuarios" \
+    -H 'Content-Type: application/json' \
+    -d "{\"email\":\"$AUD_EMAIL\",\"role\":\"SECRETARIA\"}" 2>/dev/null || echo "")
+  AUD_ID=$(printf '%s' "$RESP_AUD" | python3 -c 'import sys, json
+try:
+    print(json.load(sys.stdin).get("id", ""))
+except Exception:
+    print("")' 2>/dev/null || echo "")
+  if [ -n "$AUD_ID" ]; then
+    HTTP_AUD_DEL=$(curl -s -o /dev/null -w '%{http_code}' -X DELETE -b "$JAR_ADMIN" \
+      "$BASE_URL/api/admin/usuarios/$AUD_ID" 2>/dev/null || echo "000")
+    AUD_JSON=$(curl -s -b "$JAR_ADMIN" \
+      "$BASE_URL/api/admin/auditoria?acao=excluir&entidade=usuarios&limit=100" 2>/dev/null || echo '{}')
+    AUD_FOUND=$(printf '%s' "$AUD_JSON" | python3 -c 'import sys, json
+try:
+    d = json.load(sys.stdin)
+except Exception:
+    d = {}
+logs = d.get("logs", [])
+hit = any(l.get("entidade_id") == sys.argv[1] and l.get("autor") == "00000000-0000-4000-8000-000000000004" for l in logs)
+print("yes" if hit else "no")' "$AUD_ID" 2>/dev/null || echo "no")
+    if [ "$HTTP_AUD_DEL" = "204" ] && [ "$AUD_FOUND" = "yes" ]; then
+      ok "exclusao gera auditoria acao=excluir autor=caller (USREX-02)"
+    else
+      ko "auditoria da exclusao ausente (delete=$HTTP_AUD_DEL found=$AUD_FOUND) (USREX-02)"
+    fi
+  else
+    ko "criacao para probe de auditoria falhou (USREX-02)"
+  fi
+else
+  ko "Login ADMIN ausente — probes de erro/auditoria puladas (USREX-02/03/05)"
+fi
+
+# =====================================================================
 # RESUMO
 # =====================================================================
 printf '\n== Resumo admin-usuarios: %d ok / %d falhas ==\n' "$PASS" "$FAIL"

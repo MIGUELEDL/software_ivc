@@ -72,6 +72,14 @@ Probes de exclusão e fechamento documental. T7 depende de T6.
 T6 → T7
 ```
 
+### Phase 5: Verification hardening (re-verificação)
+
+Fecha as lacunas apontadas pelo Verifier (10 ACs sem asserção; 4/8 mutantes sobreviventes). Cada tarefa estende o probe com asserções que matam o mutante correspondente. Sequencial (mesmo arquivo): T8 → T9 → T10 → T11.
+
+```
+T8 → T9 → T10 → T11
+```
+
 ---
 
 ## Task Breakdown
@@ -273,17 +281,125 @@ T6 → T7
 
 ---
 
+### T8: Probes — erros e auditoria da exclusão
+
+**What**: Asserções runtime que faltavam ao probe: 404 de inexistente, 403 de `SUPER_ADMIN` e o log de auditoria da exclusão (mata os mutantes M5/M6/M7 do sensor).
+**Where**: `scripts/probes-admin-usuarios.sh` (modify)
+**Depends on**: T7
+**Reuses**: cookie jar ADMIN, `GET /api/admin/auditoria` (filtros `acao`/`entidade`)
+**Requirement**: USREX-02, USREX-03, USREX-05
+
+**Tools**:
+
+- MCP: NONE
+- Skill: NONE
+
+**Done when**:
+
+- [x] `DELETE` UUID inexistente → 404 `nao_encontrado`
+- [x] `DELETE` `superadmin.teste` (`…000c`) → 403 `super_admin_protegido`
+- [x] Excluir conta do painel gera log com `acao=excluir`, `entidade=usuarios`, `entidade_id` e `autor`=caller
+- [x] Gate check passes: `npm run lint && npm run typecheck && npm run build && BASE_URL=http://localhost:3000 bash scripts/probes-admin-usuarios.sh`
+
+**Tests**: e2e
+**Gate**: full
+
+**Commit**: `test(admin/usuarios): cobre 404, super_admin e auditoria nos probes`
+
+---
+
+### T9: Probes — semântica de `deletable` e render condicional
+
+**What**: Asserção runtime de `deletable` no JSON da listagem e do render do botão na página (presente só para conta excluível; ausente para próprio/sistema/SUPER_ADMIN e para SECRETARIA). Mata o mutante M8.
+**Where**: `scripts/probes-admin-usuarios.sh` (modify)
+**Depends on**: T8
+**Reuses**: cookie jars ADMIN e SECRETARIA, HTML server-rendered da página
+**Requirement**: USREX-12, USREX-13, USREX-14, USREX-15
+
+**Tools**:
+
+- MCP: NONE
+- Skill: NONE
+
+**Done when**:
+
+- [ ] `GET /api/admin/usuarios`: `deletable:true` para conta do painel; `false` para `leitor.teste` e `superadmin.teste`
+- [ ] Página ADMIN: prop do botão presente para conta excluível; ausente para o próprio (`…0004`), sistema (`…0005`) e `SUPER_ADMIN` (`…000c`)
+- [ ] Página SECRETARIA: nenhum controle de exclusão renderizado
+- [ ] Gate check passes: `npm run lint && npm run typecheck && npm run build && BASE_URL=http://localhost:3000 bash scripts/probes-admin-usuarios.sh`
+
+**Tests**: e2e
+**Gate**: full
+
+**Commit**: `test(admin/usuarios): cobre deletable e render condicional nos probes`
+
+---
+
+### T10: Probes — 409 de vínculos
+
+**What**: Fixture runtime de 409: cria conta do painel, sobe um documento como ela (`documents.uploaded_by`), exclui → 409; cleanup do documento e da conta.
+**Where**: `scripts/probes-admin-usuarios.sh` (modify)
+**Depends on**: T9
+**Reuses**: `POST /api/admin/relatorios/documentos` (multipart), `DELETE …/documentos/[id]`, cookie jar da conta-probe
+**Requirement**: USREX-07
+
+**Tools**:
+
+- MCP: NONE
+- Skill: NONE
+
+**Done when**:
+
+- [ ] `DELETE` de conta com documento vinculado → 409 `usuario_com_vinculos`
+- [ ] Cleanup: documento removido (200) e conta removida (204), sem resíduo
+- [ ] Gate check passes: `npm run lint && npm run typecheck && npm run build && BASE_URL=http://localhost:3000 bash scripts/probes-admin-usuarios.sh`
+
+**Tests**: e2e
+**Gate**: full
+
+**Commit**: `test(admin/usuarios): cobre 409 de vinculos nos probes`
+
+---
+
+### T11: Probes — contrato do botão de exclusão
+
+**What**: Asserções estáticas precisas do `DeleteUserButton`: refresh só no ramo `res.ok`, confirmação e `DELETE`, e mapa de mensagens 403/409 sem refresh no erro.
+**Where**: `scripts/probes-admin-usuarios.sh` (modify)
+**Depends on**: T10
+**Reuses**: `DELETE_BUTTON`
+**Requirement**: USREX-16, USREX-17
+
+**Tools**:
+
+- MCP: NONE
+- Skill: NONE
+
+**Done when**:
+
+- [ ] `window.confirm`, `method: "DELETE"` e `router.refresh()` aparecem **dentro** do ramo `if (res.ok)`
+- [ ] `MENSAGENS` cobre as 5 chaves (`nao_encontrado`, `auto_modificacao_nao_permitida`, `super_admin_protegido`, `usuario_protegido`, `usuario_com_vinculos`)
+- [ ] Ramo de erro exibe `MENSAGENS[data?.error]` e **não** chama `router.refresh()`
+- [ ] Gate check passes: `npm run lint && npm run typecheck && npm run build && BASE_URL=http://localhost:3000 bash scripts/probes-admin-usuarios.sh`
+
+**Tests**: e2e
+**Gate**: full
+
+**Commit**: `test(admin/usuarios): cobre contrato do botao de exclusao nos probes`
+
+---
+
 ## Phase Execution Map
 
 Visual representation of task ordering. Phases run in sequence, and tasks within a phase run in order:
 
 ```
-Phase 1 → Phase 2 → Phase 3 → Phase 4
+Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5
 
 Phase 1:  T1 ------→ T2
 Phase 2:  T3
 Phase 3:  T4 ------→ T5
 Phase 4:  T6 ------→ T7
+Phase 5:  T8 ------→ T9 ------→ T10 ------→ T11
 ```
 
 Execution is strictly sequential - there is no intra-phase parallelism.
@@ -291,7 +407,7 @@ Execution is strictly sequential - there is no intra-phase parallelism.
 ### Full Dependency Diagram
 
 ```txt
-T1 -> T2 -> T3 -> T4 -> T5 -> T6 -> T7
+T1 -> T2 -> T3 -> T4 -> T5 -> T6 -> T7 -> T8 -> T9 -> T10 -> T11
 ```
 
 O diagrama completo só é válido porque todas as dependências são encadeadas.
@@ -310,6 +426,10 @@ O critério de empacotamento (batching) é contado abaixo.
 | T5: Page ação | 1 arquivo edit | ✅ Granular |
 | T6: Probes | 1 script | ✅ Granular |
 | T7: Regressões + docs | 1 arquivo de doc | ✅ Granular |
+| T8: Probes erros/auditoria | 1 script | ✅ Granular |
+| T9: Probes `deletable`/render | 1 script | ✅ Granular |
+| T10: Probes 409 vínculos | 1 script | ✅ Granular |
+| T11: Probes contrato do botão | 1 script | ✅ Granular |
 
 ---
 
@@ -324,6 +444,10 @@ O critério de empacotamento (batching) é contado abaixo.
 | T5 | T4 | T4 → T5 | ✅ Match |
 | T6 | T5 | T5 → T6 | ✅ Match |
 | T7 | T6 | T6 → T7 | ✅ Match |
+| T8 | T7 | T7 → T8 | ✅ Match |
+| T9 | T8 | T8 → T9 | ✅ Match |
+| T10 | T9 | T9 → T10 | ✅ Match |
+| T11 | T10 | T10 → T11 | ✅ Match |
 
 ---
 
@@ -338,12 +462,16 @@ O critério de empacotamento (batching) é contado abaixo.
 | T5: Page ação | Page | none | none | ✅ OK |
 | T6: Probes | Probe script (e2e) | e2e | e2e | ✅ OK |
 | T7: Docs | Docs | none | none | ✅ OK |
+| T8: Probes erros/auditoria | Probe script (e2e) | e2e | e2e | ✅ OK |
+| T9: Probes `deletable`/render | Probe script (e2e) | e2e | e2e | ✅ OK |
+| T10: Probes 409 vínculos | Probe script (e2e) | e2e | e2e | ✅ OK |
+| T11: Probes contrato do botão | Probe script (e2e) | e2e | e2e | ✅ OK |
 
 ---
 
 ## Execution Notes
 
-- **Total**: 7 tasks → cabe em **um único batch** (≤ ~8). Execute inline, sem sub-agentes `tlc-worker`.
-- **Verifier**: após o último commit (T7), o agente `tlc-verifier` roda automaticamente (autor ≠ verificador): reconciliação dos 17 ACs + sensor de mutação em scratch + `validation.md`.
+- **Total**: 11 tasks (T1–T7 originais + T8–T11 de hardening pós-Verifier). T1–T7 em um batch; T8–T11 sequenciais no mesmo arquivo de probe.
+- **Verifier**: após o último commit da feature, o agente `tlc-verifier` roda automaticamente (autor ≠ verificador): reconciliação dos 17 ACs + sensor de mutação em scratch + `validation.md`. A 1ª rodada deu FAIL (10 ACs sem asserção; mutantes M5–M8 sobreviventes) → T8–T11 os cobrem; re-verificação obrigatória.
 - **Ferramentas por task**: nenhum MCP é necessário (Supabase MCP só se um ajuste de dados for pedido — não há migration). Nenhum skill adicional além do `tlc-spec-driven`.
 - **T6 evidência**: `bash scripts/probes-admin-usuarios.sh` → `33 ok / 0 falhas` (gate Full: lint + typecheck + build + probe, exit 0).
