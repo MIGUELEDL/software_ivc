@@ -216,13 +216,14 @@
 - **Date**: 2026-10-08
 - **Status**: active
 
-## Handoff — feature admin-usuarios-exclusao — Execute concluída, aguardando Verifier (2026-10-09)
+## Handoff — feature admin-usuarios-exclusao — Execute + hardening concluídos, re-verificando (2026-10-09)
 
-- **Estado**: Spec → Design → Tasks → **Execute** concluídas em batch único (7 tasks). T1–T6 implementadas, gate verde e commitadas: `1459cc6` (marcador/`deletable` no serviço), `8aa1785` (`excluirUsuario` + erros), `6e99537` (`DELETE /api/admin/usuarios/[id]`), `498e2ab` (`DeleteUserButton`), `8d98397` (ação na listagem), `50cfdc3` (probes). Probes: `scripts/probes-admin-usuarios.sh` → **33 ok / 0 falhas** (gate Full: lint + typecheck + build + probe, exit 0).
-- **Próximo passo**: T7 (coverage-matrix + este Handoff) e então o agente **`tlc-verifier`** (autor ≠ verificador) gera `validation.md`; só depois a feature passa a `verified`. Nada pushed.
-- **Feature**: `.specs/features/admin-usuarios-exclusao/` — 17 ACs `USREX-01..17` marcados Done na traceability; design em `design.md`.
+- **Estado**: Spec → Design → Tasks → **Execute** concluídas (T1–T7) e **hardening pós-Verifier** (T8–T11) implementado. A 1ª rodada do Verifier deu **FAIL** por evidência: 10 ACs sem asserção e 4/8 mutantes sobreviventes (M5 auditoria, M6 404, M7 SUPER_ADMIN, M8 `deletable`). T8–T11 adicionaram as asserções que matam esses mutantes (404, SUPER_ADMIN, auditoria, `deletable`/render, 409 vínculos com cleanup e contrato do botão). Probes agora: `scripts/probes-admin-usuarios.sh` → **43 ok / 0 falhas**.
+- **Commits**: `1459cc6`, `8aa1785`, `6e99537`, `498e2ab`, `8d98397`, `50cfdc3` (T1–T6), `b53c14a` (T7 docs), `008159d`, `76b429d`, `be2f82e`, `d357f90` (T8–T11). Nada pushed.
+- **Próximo passo**: **re-verificação** com o agente `tlc-verifier` (autor ≠ verificador) sobre o range da feature; se PASS, commitar `validation.md` e a feature fecha. Loop de fix→re-verify limitado a 3 iterações.
+- **Feature**: `.specs/features/admin-usuarios-exclusao/` — 17 ACs `USREX-01..17`; design em `design.md`.
 - **Decisão**: AD-026 (hard delete só de contas criadas pelo painel; 403 auto/SUPER/sistema; 409 vínculos; 204 + auditoria).
-- **Descoberta operacional**: o probe autenticado deve usar **cookie jar** (`curl -c/-b <arquivo>`); passar o token inline (`-b "name=valor"`) devolve 401 espúrio com o cookie grande do Supabase.
+- **Descobertas operacionais**: probes autenticados exigem **cookie jar** (`curl -c/-b <arquivo>`), token inline dá 401 espúrio; rodar gate com **servidor de produção** (`npm run build && npm run start`) evita o `.next/dev/types` do `next dev` quebrar o `tsc`; o seed `superadmin.teste@ivc.local` (`…000c`) existe e é o alvo do 403 SUPER_ADMIN.
 - **Árvore suja pré-existente** (não tocar): `next-env.d.ts`, `src/components/MemberCard.tsx`, `src/app/admin/membros/[id]/cartao/page.tsx`, `tsconfig.tsbuildinfo`.
 - **Pendências herdadas**: cartão-valididade-anual aguarda R12 (handoff abaixo); `docs/coverage-matrix.md` sem linha para `barcode-membro`, `admin-auditoria` e `cartao-valididade-anual`.
 
