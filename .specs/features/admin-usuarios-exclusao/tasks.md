@@ -350,9 +350,9 @@ T8 → T9 → T10 → T11
 
 **Done when**:
 
-- [ ] `DELETE` de conta com documento vinculado → 409 `usuario_com_vinculos`
-- [ ] Cleanup: documento removido (200) e conta removida (204), sem resíduo
-- [ ] Gate check passes: `npm run lint && npm run typecheck && npm run build && BASE_URL=http://localhost:3000 bash scripts/probes-admin-usuarios.sh`
+- [x] `DELETE` de conta com documento vinculado → 409 `usuario_com_vinculos`
+- [x] Cleanup: documento removido (200) e conta removida (204), sem resíduo
+- [x] Gate check passes: `npm run lint && npm run typecheck && npm run build && BASE_URL=http://localhost:3000 bash scripts/probes-admin-usuarios.sh`
 
 **Tests**: e2e
 **Gate**: full

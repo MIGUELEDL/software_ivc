@@ -544,6 +544,76 @@ else
 fi
 
 # =====================================================================
+# RUNTIME — Exclusao: 409 vinculos (T10 / USREX-07)
+# =====================================================================
+if grep -q 'auth-token' "$JAR_ADMIN" 2>/dev/null; then
+  printf '%s\n' '-- Runtime: 409 vinculos'
+
+  VINC_EMAIL="probe.vinculo.$RANDOM@ivc.local"
+  RESP_V=$(curl -s -b "$JAR_ADMIN" -X POST "$BASE_URL/api/admin/usuarios" \
+    -H 'Content-Type: application/json' \
+    -d "{\"email\":\"$VINC_EMAIL\",\"role\":\"FINANCEIRO\"}" 2>/dev/null || echo "")
+  VINC_ID=$(printf '%s' "$RESP_V" | python3 -c 'import sys, json
+try:
+    print(json.load(sys.stdin).get("id", ""))
+except Exception:
+    print("")' 2>/dev/null || echo "")
+  VINC_PW=$(printf '%s' "$RESP_V" | python3 -c 'import sys, json
+try:
+    print(json.load(sys.stdin).get("temporaryPassword", ""))
+except Exception:
+    print("")' 2>/dev/null || echo "")
+
+  if [ -n "$VINC_ID" ] && [ -n "$VINC_PW" ]; then
+    JAR_V=$(mktemp)
+    VINC_FILE=$(mktemp)
+    printf 'coluna\n1\n' > "$VINC_FILE"
+    curl -s -c "$JAR_V" -o /dev/null -X POST "$BASE_URL/api/auth/login/admin" \
+      --data-urlencode "email=$VINC_EMAIL" \
+      --data-urlencode "password=$VINC_PW" 2>/dev/null || true
+    RESP_DOC=$(curl -s -b "$JAR_V" -X POST "$BASE_URL/api/admin/relatorios/documentos" \
+      -F 'title=probe vinculo' -F 'category=GERAL' \
+      -F "file=@${VINC_FILE};type=text/csv;filename=probe.csv" 2>/dev/null || echo "")
+    DOC_ID=$(printf '%s' "$RESP_DOC" | python3 -c 'import sys, json
+try:
+    print(json.load(sys.stdin).get("documento", {}).get("id", ""))
+except Exception:
+    print("")' 2>/dev/null || echo "")
+
+    if [ -n "$DOC_ID" ]; then
+      # USREX-07: conta com documento vinculado -> 409 usuario_com_vinculos
+      RESP_409=$(curl -s -w '\n%{http_code}' -X DELETE -b "$JAR_ADMIN" \
+        "$BASE_URL/api/admin/usuarios/$VINC_ID" 2>/dev/null || printf '\n000')
+      HTTP_409=$(printf '%s' "$RESP_409" | tail -n1)
+      BODY_409=$(printf '%s' "$RESP_409" | sed '$d')
+      if [ "$HTTP_409" = "409" ] && printf '%s' "$BODY_409" | grep -q 'usuario_com_vinculos'; then
+        ok "conta com vinculo -> 409 usuario_com_vinculos (USREX-07)"
+      else
+        ko "conta com vinculo -> $HTTP_409 $BODY_409 (USREX-07)"
+      fi
+
+      # Cleanup: remove o documento e depois a conta (sem residuo)
+      curl -s -o /dev/null -X DELETE -b "$JAR_ADMIN" \
+        "$BASE_URL/api/admin/relatorios/documentos/$DOC_ID" 2>/dev/null || true
+      HTTP_DEL_V=$(curl -s -o /dev/null -w '%{http_code}' -X DELETE -b "$JAR_ADMIN" \
+        "$BASE_URL/api/admin/usuarios/$VINC_ID" 2>/dev/null || echo "000")
+      if [ "$HTTP_DEL_V" = "204" ]; then
+        ok "cleanup do fixture de vinculo -> 204 (USREX-07)"
+      else
+        ko "cleanup do fixture de vinculo -> $HTTP_DEL_V esperado 204 (USREX-07)"
+      fi
+    else
+      ko "upload do documento de vinculo falhou (USREX-07)"
+    fi
+    rm -f "$JAR_V" "$VINC_FILE"
+  else
+    ko "criacao da conta de vinculo falhou (USREX-07)"
+  fi
+else
+  ko "Login ADMIN ausente — probe de 409 pulada (USREX-07)"
+fi
+
+# =====================================================================
 # RESUMO
 # =====================================================================
 printf '\n== Resumo admin-usuarios: %d ok / %d falhas ==\n' "$PASS" "$FAIL"
