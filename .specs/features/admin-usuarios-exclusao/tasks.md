@@ -323,10 +323,10 @@ T8 → T9 → T10 → T11
 
 **Done when**:
 
-- [ ] `GET /api/admin/usuarios`: `deletable:true` para conta do painel; `false` para `leitor.teste` e `superadmin.teste`
-- [ ] Página ADMIN: prop do botão presente para conta excluível; ausente para o próprio (`…0004`), sistema (`…0005`) e `SUPER_ADMIN` (`…000c`)
-- [ ] Página SECRETARIA: nenhum controle de exclusão renderizado
-- [ ] Gate check passes: `npm run lint && npm run typecheck && npm run build && BASE_URL=http://localhost:3000 bash scripts/probes-admin-usuarios.sh`
+- [x] `GET /api/admin/usuarios`: `deletable:true` para conta do painel; `false` para `leitor.teste` e `superadmin.teste`
+- [x] Página ADMIN: prop do botão presente para conta excluível; ausente para o próprio (`…0004`), sistema (`…0005`) e `SUPER_ADMIN` (`…000c`)
+- [x] Página SECRETARIA: nenhum controle de exclusão renderizado
+- [x] Gate check passes: `npm run lint && npm run typecheck && npm run build && BASE_URL=http://localhost:3000 bash scripts/probes-admin-usuarios.sh`
 
 **Tests**: e2e
 **Gate**: full

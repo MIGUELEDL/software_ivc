@@ -468,6 +468,82 @@ else
 fi
 
 # =====================================================================
+# RUNTIME — Exclusao: deletable e render condicional (T9 / USREX-12/13/14/15)
+# =====================================================================
+if grep -q 'auth-token' "$JAR_ADMIN" 2>/dev/null; then
+  printf '%s\n' '-- Runtime: deletable e render condicional'
+
+  OWN_ID="00000000-0000-4000-8000-000000000004"
+  LEITOR_ID="00000000-0000-4000-8000-000000000005"
+  SUPER_ID="00000000-0000-4000-8000-00000000000c"
+
+  UI_EMAIL="probe.ui.$RANDOM@ivc.local"
+  RESP_UI=$(curl -s -b "$JAR_ADMIN" -X POST "$BASE_URL/api/admin/usuarios" \
+    -H 'Content-Type: application/json' \
+    -d "{\"email\":\"$UI_EMAIL\",\"role\":\"SECRETARIA\"}" 2>/dev/null || echo "")
+  UI_ID=$(printf '%s' "$RESP_UI" | python3 -c 'import sys, json
+try:
+    print(json.load(sys.stdin).get("id", ""))
+except Exception:
+    print("")' 2>/dev/null || echo "")
+
+  if [ -n "$UI_ID" ]; then
+    # USREX-12: GET lista expoe deletable=true p/ conta do painel; false p/ leitor e SUPER_ADMIN
+    LIST_JSON=$(curl -s -b "$JAR_ADMIN" "$BASE_URL/api/admin/usuarios" 2>/dev/null || echo '{}')
+    LIST_OK=$(printf '%s' "$LIST_JSON" | python3 -c 'import sys, json
+try:
+    d = json.load(sys.stdin)
+except Exception:
+    d = {}
+m = {u.get("id"): u.get("deletable") for u in d.get("users", [])}
+ok = m.get(sys.argv[1]) is True and m.get(sys.argv[2]) is False and m.get(sys.argv[3]) is False
+print("yes" if ok else "no")' "$UI_ID" "$LEITOR_ID" "$SUPER_ID" 2>/dev/null || echo "no")
+    if [ "$LIST_OK" = "yes" ]; then
+      ok "deletable true na conta do painel; false para leitor/SUPER_ADMIN (USREX-12)"
+    else
+      ko "deletable incorreto na listagem (USREX-12)"
+    fi
+
+    # USREX-13/14: pagina ADMIN renderiza o botao so p/ conta excluivel (nao p/ proprio/sistema/SUPER_ADMIN)
+    ADM_HTML=$(curl -s -b "$JAR_ADMIN" "$BASE_URL/admin/usuarios" 2>/dev/null || echo "")
+    HTML_OK=$(printf '%s' "$ADM_HTML" | python3 -c 'import sys
+h = sys.stdin.read()
+def c(i):
+    return h.count("\\\"userId\\\":\\\"" + i + "\\\"")
+w = c(sys.argv[1]); own = c(sys.argv[2]); le = c(sys.argv[3]); su = c(sys.argv[4])
+print("yes" if w >= 1 and own == 0 and le == 0 and su == 0 else "no:" + str((w, own, le, su)))' "$UI_ID" "$OWN_ID" "$LEITOR_ID" "$SUPER_ID" 2>/dev/null || echo "no")
+    if [ "$HTML_OK" = "yes" ]; then
+      ok "pagina ADMIN: botao so na linha excluivel (USREX-13/14)"
+    else
+      ko "pagina ADMIN: render do botao incorreto ($HTML_OK) (USREX-13/14)"
+    fi
+  else
+    ko "criacao para probe de render falhou (USREX-12/13/14)"
+  fi
+
+  # USREX-15: SECRETARIA sem administrar -> nenhum controle de exclusao na pagina
+  if grep -q 'auth-token' "$JAR_SEC" 2>/dev/null; then
+    SEC_HTML=$(curl -s -b "$JAR_SEC" "$BASE_URL/admin/usuarios" 2>/dev/null || echo "")
+    SEC_OK=$(printf '%s' "$SEC_HTML" | python3 -c 'import sys
+h = sys.stdin.read()
+print("yes" if h.count("\\\"userId\\\":\\\"") == 0 else "no")' 2>/dev/null || echo "no")
+    if [ "$SEC_OK" = "yes" ]; then
+      ok "pagina SECRETARIA: sem controle de exclusao (USREX-15)"
+    else
+      ko "pagina SECRETARIA: controle de exclusao presente (USREX-15)"
+    fi
+  else
+    ko "Login SECRETARIA ausente — probe de render SECRETARIA pulada (USREX-15)"
+  fi
+
+  if [ -n "$UI_ID" ]; then
+    curl -s -o /dev/null -X DELETE -b "$JAR_ADMIN" "$BASE_URL/api/admin/usuarios/$UI_ID" 2>/dev/null || true
+  fi
+else
+  ko "Login ADMIN ausente — probes de deletable/render puladas (USREX-12/13/14/15)"
+fi
+
+# =====================================================================
 # RESUMO
 # =====================================================================
 printf '\n== Resumo admin-usuarios: %d ok / %d falhas ==\n' "$PASS" "$FAIL"
