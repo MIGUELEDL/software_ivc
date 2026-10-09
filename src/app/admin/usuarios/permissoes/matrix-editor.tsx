@@ -60,7 +60,7 @@ export function MatrixEditor({
       } else {
         setFeedback({
           type: "success",
-          message: `${data.updated} permissões atualizadas.`,
+          message: `${data.updated} atualizadas, ${data.removed} revogadas.`,
         });
       }
     } catch {

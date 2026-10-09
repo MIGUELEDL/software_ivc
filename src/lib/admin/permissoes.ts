@@ -13,6 +13,7 @@ interface PermissaoRow {
 interface AtualizarResult {
   ok: true;
   updated: number;
+  removed: number;
 }
 
 export async function obterMatriz(): Promise<PermissaoRow[]> {
@@ -33,12 +34,25 @@ export async function atualizarMatriz(
 ): Promise<AtualizarResult> {
   const admin = createAdminClient();
   let updated = 0;
+  let removed = 0;
   for (const u of updates) {
     if (!ADMIN_ROLES.has(u.role)) {
       throw new Error(`role_invalida: ${u.role}`);
     }
     if (!(MODULOS as readonly string[]).includes(u.module)) {
       throw new Error(`modulo_invalido: ${u.module}`);
+    }
+    if (u.nivel === "") {
+      const { error, count } = await admin
+        .from("permissions")
+        .delete({ count: "exact" })
+        .eq("role", u.role)
+        .eq("module", u.module);
+      if (error) {
+        throw error;
+      }
+      removed += count ?? 0;
+      continue;
     }
     if (!NIVEIS_VALIDOS.includes(u.nivel as Nivel)) {
       throw new Error(`nivel_invalido: ${u.nivel}`);
@@ -52,5 +66,5 @@ export async function atualizarMatriz(
     }
     updated++;
   }
-  return { ok: true, updated };
+  return { ok: true, updated, removed };
 }
