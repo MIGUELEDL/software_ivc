@@ -217,6 +217,34 @@ else
   ko "listagem sem DeleteUserButton/deletable (USREX-13/14/15)"
 fi
 
+# USREX-16: confirm + DELETE e refresh SO no ramo 204 (res.ok)
+BTN_REFRESH_OK=$(python3 -c 'import sys
+s = open(sys.argv[1]).read()
+i_ok = s.find("if (res.ok)")
+i_refresh = s.find("router.refresh")
+i_else = s.find("else {")
+print("yes" if (0 <= i_ok < i_refresh < i_else) else "no")' "$DELETE_BUTTON" 2>/dev/null || echo "no")
+if grep -q 'window.confirm' "$DELETE_BUTTON" \
+  && grep -F -q 'method: "DELETE"' "$DELETE_BUTTON" \
+  && [ "$BTN_REFRESH_OK" = "yes" ]; then
+  ok "DeleteUserButton: confirm+DELETE e refresh so no ramo res.ok (USREX-16)"
+else
+  ko "DeleteUserButton: refresh fora do ramo res.ok (USREX-16)"
+fi
+
+# USREX-17: MENSAGENS cobre 403/409 e o ramo de erro exibe a mensagem sem refresh
+BTN_MSG_OK=1
+for k in nao_encontrado auto_modificacao_nao_permitida super_admin_protegido usuario_protegido usuario_com_vinculos; do
+  grep -q "${k}:" "$DELETE_BUTTON" || BTN_MSG_OK=0
+done
+if [ "$BTN_MSG_OK" = "1" ] \
+  && grep -F -q 'MENSAGENS[data?.error]' "$DELETE_BUTTON" \
+  && [ "$BTN_REFRESH_OK" = "yes" ]; then
+  ok "DeleteUserButton: mensagens 403/409 exibidas sem refresh (USREX-17)"
+else
+  ko "DeleteUserButton: mensagens 403/409 ausentes ou refresh no erro (USREX-17)"
+fi
+
 printf '%s\n' '-- RBAC guards'
 if grep -q "requireAdministrar" "$ROUTE_ID" 2>/dev/null; then
   ok "guard requireAdministrar('usuarios') no PATCH (USR-17)"

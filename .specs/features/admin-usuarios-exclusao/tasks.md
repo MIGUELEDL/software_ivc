@@ -376,10 +376,10 @@ T8 → T9 → T10 → T11
 
 **Done when**:
 
-- [ ] `window.confirm`, `method: "DELETE"` e `router.refresh()` aparecem **dentro** do ramo `if (res.ok)`
-- [ ] `MENSAGENS` cobre as 5 chaves (`nao_encontrado`, `auto_modificacao_nao_permitida`, `super_admin_protegido`, `usuario_protegido`, `usuario_com_vinculos`)
-- [ ] Ramo de erro exibe `MENSAGENS[data?.error]` e **não** chama `router.refresh()`
-- [ ] Gate check passes: `npm run lint && npm run typecheck && npm run build && BASE_URL=http://localhost:3000 bash scripts/probes-admin-usuarios.sh`
+- [x] `window.confirm`, `method: "DELETE"` e `router.refresh()` aparecem **dentro** do ramo `if (res.ok)`
+- [x] `MENSAGENS` cobre as 5 chaves (`nao_encontrado`, `auto_modificacao_nao_permitida`, `super_admin_protegido`, `usuario_protegido`, `usuario_com_vinculos`)
+- [x] Ramo de erro exibe `MENSAGENS[data?.error]` e **não** chama `router.refresh()`
+- [x] Gate check passes: `npm run lint && npm run typecheck && npm run build && BASE_URL=http://localhost:3000 bash scripts/probes-admin-usuarios.sh`
 
 **Tests**: e2e
 **Gate**: full
@@ -475,3 +475,4 @@ O critério de empacotamento (batching) é contado abaixo.
 - **Verifier**: após o último commit da feature, o agente `tlc-verifier` roda automaticamente (autor ≠ verificador): reconciliação dos 17 ACs + sensor de mutação em scratch + `validation.md`. A 1ª rodada deu FAIL (10 ACs sem asserção; mutantes M5–M8 sobreviventes) → T8–T11 os cobrem; re-verificação obrigatória.
 - **Ferramentas por task**: nenhum MCP é necessário (Supabase MCP só se um ajuste de dados for pedido — não há migration). Nenhum skill adicional além do `tlc-spec-driven`.
 - **T6 evidência**: `bash scripts/probes-admin-usuarios.sh` → `33 ok / 0 falhas` (gate Full: lint + typecheck + build + probe, exit 0).
+- **T8–T11 evidência**: suite final `bash scripts/probes-admin-usuarios.sh` → `43 ok / 0 falhas` (cobre 404, SUPER_ADMIN, auditoria, `deletable`/render, 409 vínculos com cleanup e contrato do botão).
