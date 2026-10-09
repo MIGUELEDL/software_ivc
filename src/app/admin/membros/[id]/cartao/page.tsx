@@ -1,7 +1,11 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { MemberCard } from "@/components/MemberCard";
+import {
+  MemberCard,
+  MemberCardBack,
+  CardPrintStyles,
+} from "@/components/MemberCard";
 import { PrintButton } from "@/app/painel/cartao/print-button";
 import { getMembro } from "@/lib/admin/membros";
 
@@ -58,8 +62,8 @@ export default async function MembroCartaoPage({
   }
 
   return (
-    <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 hero-lite-admin min-h-screen">
-      <div className="max-w-2xl mx-auto px-4">
+    <section className="print-root pt-24 sm:pt-32 pb-20 sm:pb-32 hero-lite-admin min-h-screen">
+      <div className="print-reset max-w-2xl mx-auto px-4">
         <Link
           href={`/admin/membros/${id}`}
           className="inline-flex items-center gap-2 font-sans text-sm font-bold text-primary hover:text-accent-light mb-6 transition-colors print:hidden"
@@ -77,44 +81,28 @@ export default async function MembroCartaoPage({
           </p>
         </div>
 
-        <MemberCard member={membro} />
+        <div id="cartao-print" className="space-y-8">
+          <div className="card-face">
+            <p className="mb-2 font-sans text-xs font-bold uppercase tracking-wider text-primary/60 print:hidden">
+              Frente
+            </p>
+            <MemberCard member={membro} />
+          </div>
+
+          <div className="card-face">
+            <p className="mb-2 font-sans text-xs font-bold uppercase tracking-wider text-primary/60 print:hidden">
+              Verso
+            </p>
+            <MemberCardBack member={membro} />
+          </div>
+        </div>
 
         <div className="mt-6 text-center print:hidden">
           <PrintButton />
         </div>
       </div>
 
-      <style>{`
-        @media print {
-          @page { size: 85.6mm 53.98mm; margin: 0; }
-          html, body {
-            margin: 0 !important;
-            padding: 0 !important;
-            background: white !important;
-          }
-          body * { visibility: hidden; }
-          #cartao-membro, #cartao-membro * { visibility: visible; }
-          #cartao-membro {
-            width: 85.6mm !important;
-            height: 53.98mm !important;
-            min-width: 85.6mm !important;
-            min-height: 53.98mm !important;
-            max-width: 85.6mm !important;
-            max-height: 53.98mm !important;
-            position: absolute;
-            left: 0;
-            top: 0;
-            margin: 0;
-            transform: scale(1) !important;
-            transform-origin: top left !important;
-            overflow: hidden !important;
-            page-break-inside: avoid !important;
-            break-inside: avoid !important;
-            print-color-adjust: exact !important;
-            -webkit-print-color-adjust: exact !important;
-          }
-        }
-      `}</style>
+      <CardPrintStyles />
     </section>
   );
 }
