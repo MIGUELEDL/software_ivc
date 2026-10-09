@@ -134,13 +134,13 @@ Cada requisito tem ID único para rastreamento em design, tasks e validation.
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| USREX-01 | P1: DELETE exclui via deleteUser → 204 | Design | Pending |
-| USREX-02 | P1: auditoria da exclusão | Design | Pending |
-| USREX-03 | P1: 404 inexistente | Design | Pending |
-| USREX-04 | P1: 403 auto-exclusão | Design | Pending |
-| USREX-05 | P1: 403 SUPER_ADMIN | Design | Pending |
-| USREX-06 | P1: 403 usuário de sistema | Design | Pending |
-| USREX-07 | P1: 409 vínculos | Design | Pending |
+| USREX-01 | P1: DELETE exclui via deleteUser → 204 | Done | Done |
+| USREX-02 | P1: auditoria da exclusão | Done | Done |
+| USREX-03 | P1: 404 inexistente | Done | Done |
+| USREX-04 | P1: 403 auto-exclusão | Done | Done |
+| USREX-05 | P1: 403 SUPER_ADMIN | Done | Done |
+| USREX-06 | P1: 403 usuário de sistema | Done | Done |
+| USREX-07 | P1: 409 vínculos | Done | Done |
 | USREX-08 | P1: 401 não autenticado | Design | Pending |
 | USREX-09 | P1: 403 sem administrar | Design | Pending |
 | USREX-10 | P2: marcador na criação | Done | Done |

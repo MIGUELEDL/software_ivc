@@ -37,6 +37,20 @@ export class PapelInvalidoError extends Error {
   }
 }
 
+export class UsuarioProtegidoError extends Error {
+  constructor() {
+    super("usuario_protegido");
+    this.name = "UsuarioProtegidoError";
+  }
+}
+
+export class UsuarioComVinculosError extends Error {
+  constructor() {
+    super("usuario_com_vinculos");
+    this.name = "UsuarioComVinculosError";
+  }
+}
+
 interface UsuarioAuth {
   id: string;
   email: string;
@@ -171,6 +185,52 @@ export async function editarPapel(
     email: data.user.email ?? "",
     role,
   };
+}
+
+const VINCULOS_EXCLUSAO: { tabela: string; coluna: string }[] = [
+  { tabela: "transactions", coluna: "created_by" },
+  { tabela: "cash_closes", coluna: "created_by" },
+  { tabela: "documents", coluna: "uploaded_by" },
+  { tabela: "audit_logs", coluna: "autor" },
+];
+
+export async function excluirUsuario(
+  userId: string,
+  callerId: string
+): Promise<void> {
+  const admin = createAdminClient();
+  const { data: existing, error: fetchError } =
+    await admin.auth.admin.getUserById(userId);
+  if (fetchError || !existing?.user) {
+    throw new NaoEncontradoError();
+  }
+  if (userId === callerId) {
+    throw new AutoModificacaoError();
+  }
+  const role = existing.user.app_metadata?.role;
+  if (role === "SUPER_ADMIN") {
+    throw new SuperAdminProtegidoError();
+  }
+  if (existing.user.app_metadata?.criado_por_admin !== true) {
+    throw new UsuarioProtegidoError();
+  }
+  for (const vinculo of VINCULOS_EXCLUSAO) {
+    const { data, error } = await admin
+      .from(vinculo.tabela)
+      .select("id")
+      .eq(vinculo.coluna, userId)
+      .limit(1);
+    if (error) {
+      throw error;
+    }
+    if (data && data.length > 0) {
+      throw new UsuarioComVinculosError();
+    }
+  }
+  const { error: deleteError } = await admin.auth.admin.deleteUser(userId);
+  if (deleteError) {
+    throw deleteError;
+  }
 }
 
 export async function redefinirSenha(userId: string): Promise<RedefinirResult> {

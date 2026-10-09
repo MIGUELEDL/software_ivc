@@ -120,12 +120,12 @@ T6 → T7
 
 **Done when**:
 
-- [ ] `UsuarioProtegidoError` (`"usuario_protegido"`) e `UsuarioComVinculosError` (`"usuario_com_vinculos"`) exportados
-- [ ] `excluirUsuario` executa na ordem: (1) `getUserById` ausente → `NaoEncontradoError`; (2) `userId === callerId` → `AutoModificacaoError`; (3) role `SUPER_ADMIN` → `SuperAdminProtegidoError`; (4) `criado_por_admin !== true` → `UsuarioProtegidoError`
-- [ ] Checagem prévia de vínculos em `transactions.created_by`, `cash_closes.created_by`, `documents.uploaded_by` e `audit_logs.autor` → `UsuarioComVinculosError`
-- [ ] Só então chama `admin.auth.admin.deleteUser(userId)` e propaga erro do Auth
-- [ ] Gate check passes: `npm run lint && npm run typecheck`
-- [ ] No TypeScript errors
+- [x] `UsuarioProtegidoError` (`"usuario_protegido"`) e `UsuarioComVinculosError` (`"usuario_com_vinculos"`) exportados
+- [x] `excluirUsuario` executa na ordem: (1) `getUserById` ausente → `NaoEncontradoError`; (2) `userId === callerId` → `AutoModificacaoError`; (3) role `SUPER_ADMIN` → `SuperAdminProtegidoError`; (4) `criado_por_admin !== true` → `UsuarioProtegidoError`
+- [x] Checagem prévia de vínculos em `transactions.created_by`, `cash_closes.created_by`, `documents.uploaded_by` e `audit_logs.autor` → `UsuarioComVinculosError`
+- [x] Só então chama `admin.auth.admin.deleteUser(userId)` e propaga erro do Auth
+- [x] Gate check passes: `npm run lint && npm run typecheck`
+- [x] No TypeScript errors
 
 **Tests**: none
 **Gate**: quick
