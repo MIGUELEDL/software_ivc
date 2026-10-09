@@ -43,6 +43,8 @@ interface UsuarioAuth {
   role: string | null;
   createdAt: string;
   lastSignInAt: string | null;
+  criadoPorAdmin: boolean;
+  deletable: boolean;
 }
 
 interface ListarUsuariosResult {
@@ -87,13 +89,19 @@ export async function listarUsuarios(
     return true;
   });
   return {
-    users: filtered.map((u) => ({
-      id: u.id,
-      email: u.email ?? "",
-      role: u.app_metadata?.role ?? null,
-      createdAt: u.created_at,
-      lastSignInAt: u.last_sign_in_at ?? null,
-    })),
+    users: filtered.map((u) => {
+      const role = u.app_metadata?.role ?? null;
+      const criadoPorAdmin = u.app_metadata?.criado_por_admin === true;
+      return {
+        id: u.id,
+        email: u.email ?? "",
+        role,
+        createdAt: u.created_at,
+        lastSignInAt: u.last_sign_in_at ?? null,
+        criadoPorAdmin,
+        deletable: role !== "SUPER_ADMIN" && criadoPorAdmin,
+      };
+    }),
     total: filtered.length,
   };
 }
@@ -111,7 +119,7 @@ export async function criarUsuario(dados: {
     email: dados.email,
     password: temporaryPassword,
     email_confirm: true,
-    app_metadata: { role: dados.role, force_password_change: true },
+    app_metadata: { role: dados.role, force_password_change: true, criado_por_admin: true },
   });
   if (error) {
     const msg = error.message?.toLowerCase() ?? "";
@@ -153,7 +161,7 @@ export async function editarPapel(
     throw new SuperAdminProtegidoError();
   }
   const { data, error } = await admin.auth.admin.updateUserById(userId, {
-    app_metadata: { role },
+    app_metadata: { ...existing.user.app_metadata, role },
   });
   if (error) {
     throw error;
