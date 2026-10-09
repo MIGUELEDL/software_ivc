@@ -216,12 +216,13 @@
 - **Date**: 2026-10-08
 - **Status**: active
 
-## Handoff — feature admin-usuarios-exclusao — Execute + hardening concluídos, re-verificando (2026-10-09)
+## Handoff — feature admin-usuarios-exclusao — ✅ VERIFIED (2026-10-09)
 
-- **Estado**: Spec → Design → Tasks → **Execute** concluídas (T1–T7) e **hardening pós-Verifier** (T8–T11) implementado. A 1ª rodada do Verifier deu **FAIL** por evidência: 10 ACs sem asserção e 4/8 mutantes sobreviventes (M5 auditoria, M6 404, M7 SUPER_ADMIN, M8 `deletable`). T8–T11 adicionaram as asserções que matam esses mutantes (404, SUPER_ADMIN, auditoria, `deletable`/render, 409 vínculos com cleanup e contrato do botão). Probes agora: `scripts/probes-admin-usuarios.sh` → **43 ok / 0 falhas**.
-- **Commits**: `1459cc6`, `8aa1785`, `6e99537`, `498e2ab`, `8d98397`, `50cfdc3` (T1–T6), `b53c14a` (T7 docs), `008159d`, `76b429d`, `be2f82e`, `d357f90` (T8–T11). Nada pushed.
-- **Próximo passo**: **re-verificação** com o agente `tlc-verifier` (autor ≠ verificador) sobre o range da feature; se PASS, commitar `validation.md` e a feature fecha. Loop de fix→re-verify limitado a 3 iterações.
-- **Feature**: `.specs/features/admin-usuarios-exclusao/` — 17 ACs `USREX-01..17`; design em `design.md`.
+- **Estado**: Spec → Design → Tasks → Execute (T1–T7) → hardening pós-Verifier (T8–T11) → **re-verificação PASS**. Feature **fechada**. `validation.md` (PASS) em `.specs/features/admin-usuarios-exclusao/`. Probes: `scripts/probes-admin-usuarios.sh` → **43 ok / 0 falhas**.
+- **Verificação**: Verifier independente (autor ≠ verificador), range `159a526..5fc76ed`; 17/17 ACs com asserção discriminante; sensor re-executou os 4 mutantes antes sobreviventes → **4/4 mortos** (M5 auditoria, M6 404, M7 SUPER_ADMIN, M8 `deletable`).
+- **Commits**: `1459cc6`, `8aa1785`, `6e99537`, `498e2ab`, `8d98397`, `50cfdc3` (T1–T6), `b53c14a` (T7 docs), `008159d`, `76b429d`, `be2f82e`, `d357f90` (T8–T11), `5fc76ed` (docs pós-hardening) + commit de validação/LESSONS. Nada pushed.
+- **Gaps residuais (não-bloqueantes, registados em `validation.md` e LESSONS L-014/L-015)**: corpo dos 401/403 (USREX-08/09) e classe/label "red" do botão (USREX-13) não assertados; 3 edge cases com código correto sem probe (self+SUPER_ADMIN, lista vazia, `deleteUser`-failure→500); nuance de cache frio pós-build no assert de HTML.
+- **Feature**: `.specs/features/admin-usuarios-exclusao/` — 17 ACs `USREX-01..17` Verified; design em `design.md`.
 - **Decisão**: AD-026 (hard delete só de contas criadas pelo painel; 403 auto/SUPER/sistema; 409 vínculos; 204 + auditoria).
 - **Descobertas operacionais**: probes autenticados exigem **cookie jar** (`curl -c/-b <arquivo>`), token inline dá 401 espúrio; rodar gate com **servidor de produção** (`npm run build && npm run start`) evita o `.next/dev/types` do `next dev` quebrar o `tsc`; o seed `superadmin.teste@ivc.local` (`…000c`) existe e é o alvo do 403 SUPER_ADMIN.
 - **Árvore suja pré-existente** (não tocar): `next-env.d.ts`, `src/components/MemberCard.tsx`, `src/app/admin/membros/[id]/cartao/page.tsx`, `tsconfig.tsbuildinfo`.

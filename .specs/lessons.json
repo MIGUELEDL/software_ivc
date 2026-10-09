@@ -3,7 +3,7 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 14,
+  "next_id": 16,
   "lessons": [
     {
       "id": "L-001",
@@ -244,6 +244,42 @@
       ],
       "created": "2026-09-17T05:13:55Z",
       "last_seen": "2026-09-17T05:13:55Z"
+    },
+    {
+      "id": "L-014",
+      "key": "spec_precision_gap::asserte o corpo de erro nao autenticado nao autorizado dos guards nao apenas o status 401 403",
+      "text": "Asserte o corpo de erro (nao_autenticado/nao_autorizado) dos guards, nao apenas o status 401/403.",
+      "signal": "spec_precision_gap",
+      "scope": "probes",
+      "status": "candidate",
+      "features": [
+        "admin-usuarios-exclusao"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "spec.md USREX-08/09 (probes)"
+      ],
+      "created": "2026-10-09T16:09:56Z",
+      "last_seen": "2026-10-09T16:09:56Z"
+    },
+    {
+      "id": "L-015",
+      "key": "spec_precision_gap::assert de render deve afirmar classe cor rotulo do controle nao apenas a presenca do payload no html e assertar por api json e mais imune a cache do que o html renderizado",
+      "text": "Assert de render deve afirmar classe/cor/rotulo do controle, nao apenas a presenca do payload no HTML; e assertar por API JSON e mais imune a cache do que o HTML renderizado.",
+      "signal": "spec_precision_gap",
+      "scope": "",
+      "status": "candidate",
+      "features": [
+        "admin-usuarios-exclusao"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "spec.md USREX-13"
+      ],
+      "created": "2026-10-09T16:09:56Z",
+      "last_seen": "2026-10-09T16:09:56Z"
     }
   ]
 }

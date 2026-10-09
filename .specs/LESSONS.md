@@ -90,6 +90,18 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - evidence: AUD-19 (spec)
 - last seen: 2026-09-17T05:13:55Z
 
+### L-014 - Asserte o corpo de erro (nao_autenticado/nao_autorizado) dos guards, nao apenas o status 401/403.
+- signal: `spec_precision_gap` · recurrence: 1 feature(s) · scope: `probes` · harmful: 0
+- features: admin-usuarios-exclusao
+- evidence: spec.md USREX-08/09 (probes)
+- last seen: 2026-10-09T16:09:56Z
+
+### L-015 - Assert de render deve afirmar classe/cor/rotulo do controle, nao apenas a presenca do payload no HTML; e assertar por API JSON e mais imune a cache do que o HTML renderizado.
+- signal: `spec_precision_gap` · recurrence: 1 feature(s) · harmful: 0
+- features: admin-usuarios-exclusao
+- evidence: spec.md USREX-13
+- last seen: 2026-10-09T16:09:56Z
+
 ## Quarantined (failed when applied - ignore)
 
 A confirmed lesson that recurred alongside failure. Kept for the maintainer to review.
