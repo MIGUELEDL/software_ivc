@@ -149,11 +149,11 @@ T6 → T7
 
 **Done when**:
 
-- [ ] `DELETE` usa `requireAdministrar("usuarios")` (401 sem sessão; 403 sem `administrar`)
-- [ ] Chama `excluirUsuario(id, auth.sub)`; em sucesso registra auditoria `acao: "excluir"`, `entidade: "usuarios"`, `entidade_id: id` e retorna 204 sem corpo
-- [ ] Mapa de erros: 404 `nao_encontrado`; 403 `auto_modificacao_nao_permitida` / `super_admin_protegido` / `usuario_protegido`; 409 `usuario_com_vinculos`; 500 `erro_interno` com `console.error`
-- [ ] Gate check passes: `npm run lint && npm run typecheck`
-- [ ] No TypeScript errors
+- [x] `DELETE` usa `requireAdministrar("usuarios")` (401 sem sessão; 403 sem `administrar`)
+- [x] Chama `excluirUsuario(id, auth.sub)`; em sucesso registra auditoria `acao: "excluir"`, `entidade: "usuarios"`, `entidade_id: id` e retorna 204 sem corpo
+- [x] Mapa de erros: 404 `nao_encontrado`; 403 `auto_modificacao_nao_permitida` / `super_admin_protegido` / `usuario_protegido`; 409 `usuario_com_vinculos`; 500 `erro_interno` com `console.error`
+- [x] Gate check passes: `npm run lint && npm run typecheck`
+- [x] No TypeScript errors
 
 **Tests**: none
 **Gate**: quick

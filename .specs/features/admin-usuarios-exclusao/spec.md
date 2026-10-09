@@ -141,8 +141,8 @@ Cada requisito tem ID único para rastreamento em design, tasks e validation.
 | USREX-05 | P1: 403 SUPER_ADMIN | Done | Done |
 | USREX-06 | P1: 403 usuário de sistema | Done | Done |
 | USREX-07 | P1: 409 vínculos | Done | Done |
-| USREX-08 | P1: 401 não autenticado | Design | Pending |
-| USREX-09 | P1: 403 sem administrar | Design | Pending |
+| USREX-08 | P1: 401 não autenticado | Done | Done |
+| USREX-09 | P1: 403 sem administrar | Done | Done |
 | USREX-10 | P2: marcador na criação | Done | Done |
 | USREX-11 | P2: marcador preservado na edição | Done | Done |
 | USREX-12 | P2: `deletable` na listagem | Done | Done |

@@ -2,10 +2,13 @@ import { NextResponse } from "next/server";
 import { requireAdministrar } from "@/lib/admin/http";
 import {
   editarPapel,
+  excluirUsuario,
   NaoEncontradoError,
   AutoModificacaoError,
   SuperAdminProtegidoError,
   PapelInvalidoError,
+  UsuarioProtegidoError,
+  UsuarioComVinculosError,
 } from "@/lib/admin/usuarios";
 import { ADMIN_ROLES } from "@/lib/auth/rbac";
 import { registrarAuditoria, extrairInfoRequest } from "@/lib/admin/auditoria";
@@ -57,6 +60,57 @@ export async function PATCH(
       return NextResponse.json({ error: "papel_invalido" }, { status: 400 });
     }
     console.error("PATCH /api/admin/usuarios/[id]", error);
+    return NextResponse.json({ error: "erro_interno" }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const auth = await requireAdministrar("usuarios");
+  if (auth instanceof NextResponse) {
+    return auth;
+  }
+  const { id } = await params;
+  try {
+    await excluirUsuario(id, auth.sub);
+    const { ip, user_agent } = extrairInfoRequest(request);
+    await registrarAuditoria({
+      autor: auth.sub,
+      acao: "excluir",
+      entidade: "usuarios",
+      entidade_id: id,
+      ip,
+      user_agent,
+    });
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    if (error instanceof NaoEncontradoError) {
+      return NextResponse.json({ error: "nao_encontrado" }, { status: 404 });
+    }
+    if (error instanceof AutoModificacaoError) {
+      return NextResponse.json(
+        { error: "auto_modificacao_nao_permitida" },
+        { status: 403 }
+      );
+    }
+    if (error instanceof SuperAdminProtegidoError) {
+      return NextResponse.json(
+        { error: "super_admin_protegido" },
+        { status: 403 }
+      );
+    }
+    if (error instanceof UsuarioProtegidoError) {
+      return NextResponse.json({ error: "usuario_protegido" }, { status: 403 });
+    }
+    if (error instanceof UsuarioComVinculosError) {
+      return NextResponse.json(
+        { error: "usuario_com_vinculos" },
+        { status: 409 }
+      );
+    }
+    console.error("DELETE /api/admin/usuarios/[id]", error);
     return NextResponse.json({ error: "erro_interno" }, { status: 500 });
   }
 }
