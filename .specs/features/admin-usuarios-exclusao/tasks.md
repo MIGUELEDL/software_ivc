@@ -261,10 +261,10 @@ T6 → T7
 
 **Done when**:
 
-- [ ] `docs/coverage-matrix.md` ganha a linha da feature `admin-usuarios-exclusao` (USREX-01..17, status `verified`)
-- [ ] `.specs/STATE.md` Handoff da feature atualizado para o estado final
-- [ ] Regressões: lint, typecheck e build passam
-- [ ] Gate check passes: `npm run lint && npm run typecheck && npm run build`
+- [x] `docs/coverage-matrix.md` ganha a linha da feature `admin-usuarios-exclusao` (USREX-01..17, status `verified`)
+- [x] `.specs/STATE.md` Handoff da feature atualizado para o estado final
+- [x] Regressões: lint, typecheck e build passam
+- [x] Gate check passes: `npm run lint && npm run typecheck && npm run build`
 
 **Tests**: none
 **Gate**: build

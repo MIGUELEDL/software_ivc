@@ -208,6 +208,24 @@
 - **Date**: 2026-10-01
 - **Status**: active
 
+### AD-026
+- **Decisão**: Exclusão de usuários admin (feature `admin-usuarios-exclusao`) é **hard delete** via `admin.auth.admin.deleteUser`, restrita a quem tem `administrar` no módulo `usuarios` (`can(papel, "usuarios", "administrar")`). São excluíveis **apenas** contas com `app_metadata.criado_por_admin === true` (marcador durável gravado por `criarUsuario`); todos os usuários pré-existentes ficam protegidos (403 `usuario_protegido`), **sem backfill**. `SUPER_ADMIN` nunca é excluível e a auto-exclusão é bloqueada. Vínculos em `transactions.created_by`, `cash_closes.created_by`, `documents.uploaded_by` e `audit_logs.autor` bloqueiam a exclusão com 409 `usuario_com_vinculos` (preserva a auditoria append-only). Sucesso = 204 + log de auditoria (`acao: "excluir"`, `entidade: "usuarios"`).
+- **Reason**: Decisão do usuário em 2026-10-08. Não existe flag de origem no Auth; `force_password_change` não serve (é limpo ao trocar senha, `trocar-senha/route.ts:62`). Os FKs citados não têm `ON DELETE`, então o hard-delete falharia; anonimizar destruiria a trilha de auditoria.
+- **Trade-off**: Contas já criadas (inclusive a de teste "lider") não são removíveis pela UI — exigem re-criação para herdar o marcador. Exclusão futura exige que o usuário nunca tenha vínculos (senão 409). O marcador precisa ser preservado por `editarPapel` (espelhar `app_metadata`, como `redefinirSenha` já faz).
+- **Scope**: `src/lib/admin/usuarios.ts` (marcador + `excluirUsuario`), `src/app/api/admin/usuarios/[id]/route.ts` (DELETE), `src/app/admin/usuarios/page.tsx` + novo client component. Sem migration. Não altera a feature `admin-usuarios`, que mantém exclusão em Out of Scope.
+- **Date**: 2026-10-08
+- **Status**: active
+
+## Handoff — feature admin-usuarios-exclusao — Execute concluída, aguardando Verifier (2026-10-09)
+
+- **Estado**: Spec → Design → Tasks → **Execute** concluídas em batch único (7 tasks). T1–T6 implementadas, gate verde e commitadas: `1459cc6` (marcador/`deletable` no serviço), `8aa1785` (`excluirUsuario` + erros), `6e99537` (`DELETE /api/admin/usuarios/[id]`), `498e2ab` (`DeleteUserButton`), `8d98397` (ação na listagem), `50cfdc3` (probes). Probes: `scripts/probes-admin-usuarios.sh` → **33 ok / 0 falhas** (gate Full: lint + typecheck + build + probe, exit 0).
+- **Próximo passo**: T7 (coverage-matrix + este Handoff) e então o agente **`tlc-verifier`** (autor ≠ verificador) gera `validation.md`; só depois a feature passa a `verified`. Nada pushed.
+- **Feature**: `.specs/features/admin-usuarios-exclusao/` — 17 ACs `USREX-01..17` marcados Done na traceability; design em `design.md`.
+- **Decisão**: AD-026 (hard delete só de contas criadas pelo painel; 403 auto/SUPER/sistema; 409 vínculos; 204 + auditoria).
+- **Descoberta operacional**: o probe autenticado deve usar **cookie jar** (`curl -c/-b <arquivo>`); passar o token inline (`-b "name=valor"`) devolve 401 espúrio com o cookie grande do Supabase.
+- **Árvore suja pré-existente** (não tocar): `next-env.d.ts`, `src/components/MemberCard.tsx`, `src/app/admin/membros/[id]/cartao/page.tsx`, `tsconfig.tsbuildinfo`.
+- **Pendências herdadas**: cartão-valididade-anual aguarda R12 (handoff abaixo); `docs/coverage-matrix.md` sem linha para `barcode-membro`, `admin-auditoria` e `cartao-valididade-anual`.
+
 ## Handoff â PAUSA a pedido do usuario â cartao-valididade-anual (2026-10-04)
 
 **Trabalho pausado por ordem do usuario. Retomar dqui.**
