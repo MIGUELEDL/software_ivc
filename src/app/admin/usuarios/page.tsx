@@ -8,6 +8,7 @@ import { getClaims } from "@/lib/auth/claims";
 import { can } from "@/lib/auth/rbac";
 import { listarUsuarios } from "@/lib/admin/usuarios";
 import { CreateUserForm } from "./create-user-form";
+import { DeleteUserButton } from "./delete-user-button";
 
 function formatarData(iso: string): string {
   return new Date(iso).toLocaleDateString("pt-BR", {
@@ -37,6 +38,7 @@ export default async function AdminUsuariosPage({
 
   const claims = await getClaims();
   const papel = claims?.role ?? "";
+  const atualId = claims?.sub ?? "";
   const leitor = await can(papel, "usuarios", "ler");
   const administrador = await can(papel, "usuarios", "administrar");
 
@@ -143,6 +145,11 @@ export default async function AdminUsuariosPage({
                     <th className="px-4 py-3 font-sans text-xs font-bold text-white/80 uppercase tracking-wider">
                       Status
                     </th>
+                    {administrador && (
+                      <th className="px-4 py-3 font-sans text-xs font-bold text-white/80 uppercase tracking-wider">
+                        Ações
+                      </th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -173,6 +180,13 @@ export default async function AdminUsuariosPage({
                           {u.lastSignInAt ? "Ativo" : "Inativo"}
                         </span>
                       </td>
+                      {administrador && (
+                        <td className="px-4 py-3">
+                          {u.deletable && u.id !== atualId && (
+                            <DeleteUserButton userId={u.id} email={u.email} />
+                          )}
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

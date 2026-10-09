@@ -205,11 +205,11 @@ T6 → T7
 
 **Done when**:
 
-- [ ] Coluna "Ações" no cabeçalho e célula por linha
-- [ ] Renderiza `<DeleteUserButton>` só quando `administrador && u.deletable`
-- [ ] Não renderiza botão para o próprio usuário (`u.id === claims?.sub`) nem para não-administradores
-- [ ] Gate check passes: `npm run lint && npm run typecheck && npm run build`
-- [ ] No TypeScript errors
+- [x] Coluna "Ações" no cabeçalho e célula por linha
+- [x] Renderiza `<DeleteUserButton>` só quando `administrador && u.deletable`
+- [x] Não renderiza botão para o próprio usuário (`u.id === claims?.sub`) nem para não-administradores
+- [x] Gate check passes: `npm run lint && npm run typecheck && npm run build`
+- [x] No TypeScript errors
 
 **Tests**: none
 **Gate**: build

@@ -146,9 +146,9 @@ Cada requisito tem ID único para rastreamento em design, tasks e validation.
 | USREX-10 | P2: marcador na criação | Done | Done |
 | USREX-11 | P2: marcador preservado na edição | Done | Done |
 | USREX-12 | P2: `deletable` na listagem | Done | Done |
-| USREX-13 | P3: botão para linhas excluíveis | Design | Pending |
-| USREX-14 | P3: sem botão para protegidos/próprio | Design | Pending |
-| USREX-15 | P3: sem controle sem administrar | Design | Pending |
+| USREX-13 | P3: botão para linhas excluíveis | Done | Done |
+| USREX-14 | P3: sem botão para protegidos/próprio | Done | Done |
+| USREX-15 | P3: sem controle sem administrar | Done | Done |
 | USREX-16 | P3: confirm + DELETE + refresh | Done | Done |
 | USREX-17 | P3: mensagem em 403/409 | Done | Done |
 
