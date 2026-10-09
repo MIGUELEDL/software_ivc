@@ -224,13 +224,16 @@
 - **Date**: 2026-10-09
 - **Status**: active
 
-## Handoff — feature admin-usuarios-matriz-revogar — Execute concluída, aguardando Verifier (2026-10-09)
+## Handoff — feature admin-usuarios-matriz-revogar — ✅ VERIFIED (2026-10-09)
 
-- **Estado**: Spec escrita e validada (`validate_spec` 0/0); implementação feita (service + UI + probes) com gate verde: `lint`/`typecheck`/`build` exit 0 e probes `scripts/probes-admin-usuarios.sh` → **51 ok / 0 falhas** (USRREV-01..06 cobertos, incluindo round-trip revogar→403→restaurar→200).
-- **Próximo passo**: Verifier independente (autor ≠ verificador) sobre o range da feature; se PASS, commitar `validation.md` e fechar.
-- **Feature**: `.specs/features/admin-usuarios-matriz-revogar/spec.md` — 6 ACs `USRREV-01..06`.
+- **Estado**: Spec → Execute → **Verifier PASS**. Feature fechada. `validation.md` (PASS) em `.specs/features/admin-usuarios-matriz-revogar/`. Probes `scripts/probes-admin-usuarios.sh` → **51 ok / 0 falhas**.
+- **Verificação**: Verifier independente (autor ≠ verificador), range `159a526..0df16ee`; 6/6 ACs `USRREV-01..06` com asserção discriminante; sensor **4/4 mutantes mortos** (delete no-op, `removed` fixo 0, `=== " "` reintroduz o bug, nível inválido aceito). Matriz restaurada (`SECRETARIA:igrejas = ler`).
+- **Commits**: `1b13d7c` (feat service+UI+spec), `0df16ee` (probes) + commit de validação/coverage/STATE/LESSONS. Nada pushed.
+- **Gaps residuais (não-bloqueantes, em `validation.md` e LESSONS L-014..L-017)**: corpo completo de USRREV-01 (`ok:true`), corpo `nao_autorizado` de USRREV-05 e rótulo "—" de USRREV-06 não assertados; 3 edge cases (no-op `removed=0`, payload misto, enum inválido role/módulo) sem probe.
+- **Feature**: `.specs/features/admin-usuarios-matriz-revogar/spec.md` — 6 ACs Verified.
 - **Decisão**: AD-027 (revogar = delete da linha; sem guarda anti-lockout).
 - **Sintoma original**: usuário não conseguia zerar células da matriz — salvamento retornava `nivel_invalido`.
+- **Incidente operacional**: durante a limpeza do sensor, um `pkill` derrubou o servidor `:3000`; foi reiniciado (`next start`) e revalidado.
 
 ## Handoff — feature admin-usuarios-exclusao — ✅ VERIFIED (2026-10-09)
 

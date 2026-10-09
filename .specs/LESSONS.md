@@ -26,6 +26,18 @@ Corroborated across multiple features. Safe to apply as guidance.
 - evidence: spec.md ADMINMEM-11 / ADMINMEM-38 (probes) (+1 more)
 - last seen: 2026-09-14T15:42:29Z
 
+### L-014 - Asserte o corpo de erro (nao_autenticado/nao_autorizado) dos guards, nao apenas o status 401/403.
+- signal: `spec_precision_gap` · recurrence: 2 feature(s) · scope: `probes` · harmful: 0
+- features: admin-usuarios-exclusao, admin-usuarios-matriz-revogar
+- evidence: spec.md USREX-08/09 (probes) (+1 more)
+- last seen: 2026-10-09T21:02:47Z
+
+### L-015 - Assert de render deve afirmar classe/cor/rotulo do controle, nao apenas a presenca do payload no HTML; e assertar por API JSON e mais imune a cache do que o HTML renderizado.
+- signal: `spec_precision_gap` · recurrence: 2 feature(s) · harmful: 0
+- features: admin-usuarios-exclusao, admin-usuarios-matriz-revogar
+- evidence: spec.md USREX-13 (+1 more)
+- last seen: 2026-10-09T21:02:47Z
+
 ## Candidates (under observation - do NOT load as guidance yet)
 
 Seen once or not yet corroborated. Tracked, not trusted.
@@ -90,17 +102,17 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - evidence: AUD-19 (spec)
 - last seen: 2026-09-17T05:13:55Z
 
-### L-014 - Asserte o corpo de erro (nao_autenticado/nao_autorizado) dos guards, nao apenas o status 401/403.
+### L-016 - Asserte o contrato completo da resposta definido na spec (ok:true + updated + removed), nao apenas o campo discriminante.
 - signal: `spec_precision_gap` · recurrence: 1 feature(s) · scope: `probes` · harmful: 0
-- features: admin-usuarios-exclusao
-- evidence: spec.md USREX-08/09 (probes)
-- last seen: 2026-10-09T16:09:56Z
+- features: admin-usuarios-matriz-revogar
+- evidence: spec.md USRREV-01:50 (probes)
+- last seen: 2026-10-09T21:02:47Z
 
-### L-015 - Assert de render deve afirmar classe/cor/rotulo do controle, nao apenas a presenca do payload no HTML; e assertar por API JSON e mais imune a cache do que o HTML renderizado.
-- signal: `spec_precision_gap` · recurrence: 1 feature(s) · harmful: 0
-- features: admin-usuarios-exclusao
-- evidence: spec.md USREX-13
-- last seen: 2026-10-09T16:09:56Z
+### L-017 - Probe os edge cases de payload: revogar par inexistente (200 com removed=0) e payload misto (revogacoes + upserts) reportando updated/removed correspondentes.
+- signal: `ac_gap` · recurrence: 1 feature(s) · scope: `probes` · harmful: 0
+- features: admin-usuarios-matriz-revogar
+- evidence: spec.md Edge cases (linhas 63-64) (probes)
+- last seen: 2026-10-09T21:02:47Z
 
 ## Quarantined (failed when applied - ignore)
 
