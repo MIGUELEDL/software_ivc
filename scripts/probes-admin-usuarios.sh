@@ -28,6 +28,7 @@ ROUTE_PERM="$ROOT/src/app/api/admin/usuarios/permissoes/route.ts"
 PAGE_LIST="$ROOT/src/app/admin/usuarios/page.tsx"
 PAGE_PERM="$ROOT/src/app/admin/usuarios/permissoes/page.tsx"
 CREATE_FORM="$ROOT/src/app/admin/usuarios/create-user-form.tsx"
+DELETE_BUTTON="$ROOT/src/app/admin/usuarios/delete-user-button.tsx"
 MATRIX_EDITOR="$ROOT/src/app/admin/usuarios/permissoes/matrix-editor.tsx"
 DASHBOARD="$ROOT/src/app/admin/page.tsx"
 
@@ -167,10 +168,53 @@ fi
 
 printf '%s\n' '-- Dashboard card'
 if grep -q 'admin/usuarios' "$DASHBOARD" \
-  && grep -q 'Usuários' "$DASHBOARD"; then
+  && grep -qE 'Usu[áa]rios' "$DASHBOARD"; then
   ok "card 'Usuarios' no dashboard (USR-29)"
 else
   ko "card 'Usuarios' ausente no dashboard (USR-29)"
+fi
+
+printf '%s\n' '-- Exclusao de usuarios (USREX)'
+if grep -q 'criado_por_admin: true' "$SERVICE_USR" \
+  && grep -q 'criadoPorAdmin' "$SERVICE_USR" \
+  && grep -q 'deletable' "$SERVICE_USR" \
+  && grep -q 'excluirUsuario' "$SERVICE_USR" \
+  && grep -q 'UsuarioProtegidoError' "$SERVICE_USR" \
+  && grep -q 'UsuarioComVinculosError' "$SERVICE_USR"; then
+  ok "servico marca origem, expoe deletable e excluirUsuario (USREX-10/12)"
+else
+  ko "servico sem marcador/deletable/excluirUsuario (USREX-10/12)"
+fi
+
+if grep -F -q 'app_metadata: { ...existing.user.app_metadata, role }' "$SERVICE_USR"; then
+  ok "editarPapel preserva app_metadata/criado_por_admin (USREX-11)"
+else
+  ko "editarPapel nao preserva app_metadata (USREX-11)"
+fi
+
+if grep -q 'export async function DELETE' "$ROUTE_ID" \
+  && grep -q 'excluirUsuario' "$ROUTE_ID" \
+  && grep -q 'usuario_protegido' "$ROUTE_ID" \
+  && grep -q 'usuario_com_vinculos' "$ROUTE_ID"; then
+  ok "route DELETE com excluirUsuario e mapa de erros (USREX-01/06/07)"
+else
+  ko "route DELETE incompleta (USREX-01/06/07)"
+fi
+
+if [ -f "$DELETE_BUTTON" ] \
+  && grep -q 'window.confirm' "$DELETE_BUTTON" \
+  && grep -q 'method: "DELETE"' "$DELETE_BUTTON" \
+  && grep -q 'router.refresh' "$DELETE_BUTTON"; then
+  ok "DeleteUserButton com confirm+DELETE+refresh (USREX-16/17)"
+else
+  ko "DeleteUserButton ausente/incompleto (USREX-16/17)"
+fi
+
+if grep -q 'DeleteUserButton' "$PAGE_LIST" \
+  && grep -q 'deletable' "$PAGE_LIST"; then
+  ok "listagem renderiza DeleteUserButton por deletable (USREX-13/14/15)"
+else
+  ko "listagem sem DeleteUserButton/deletable (USREX-13/14/15)"
 fi
 
 printf '%s\n' '-- RBAC guards'
@@ -211,20 +255,31 @@ else
   ko "GET permissoes sem auth -> $HTTP_401_PERM esperado 401 (USR-31)"
 fi
 
+HTTP_401_DELETE=$(curl -s -o /dev/null -w '%{http_code}' -X DELETE "$BASE_URL/api/admin/usuarios/00000000-0000-4000-8000-000000000004" 2>/dev/null || echo "000")
+if [ "$HTTP_401_DELETE" = "401" ]; then
+  ok "DELETE /api/admin/usuarios/[id] sem auth -> 401 (USREX-08)"
+else
+  ko "DELETE usuarios sem auth -> $HTTP_401_DELETE esperado 401 (USREX-08)"
+fi
+
 # =====================================================================
 # RUNTIME — RBAC discriminacao (requer cookies de sessao)
 # =====================================================================
 printf '%s\n' '-- Runtime: RBAC discriminacao (L-009..L-014)'
 
-# Login como ADMIN (admin.teste@ivc.local / senha-teste)
-ADMIN_COOKIE=$(curl -s -c - -X POST "$BASE_URL/api/auth/login" \
-  -H 'Content-Type: application/json' \
-  -d '{"email":"admin.teste@ivc.local","password":"senha-teste","tipo":"admin"}' 2>/dev/null \
-  | grep -o 'sb-[a-z]*-auth-token[^	]*	[^	]*' | head -1 | awk '{print $NF}' || echo "")
+JAR_ADMIN=$(mktemp)
+JAR_SEC=$(mktemp)
+JAR_MEMBRO=$(mktemp)
+trap 'rm -f "$JAR_ADMIN" "$JAR_SEC" "$JAR_MEMBRO"' EXIT
 
-if [ -n "$ADMIN_COOKIE" ]; then
+# Login como ADMIN (admin.teste@ivc.local / senha-teste)
+curl -s -c "$JAR_ADMIN" -o /dev/null -X POST "$BASE_URL/api/auth/login/admin" \
+  --data-urlencode 'email=admin.teste@ivc.local' \
+  --data-urlencode 'password=senha-teste' 2>/dev/null || true
+
+if grep -q 'auth-token' "$JAR_ADMIN" 2>/dev/null; then
   # L-009: ADMIN lista usuarios -> 200
-  HTTP_ADMIN_LIST=$(curl -s -o /dev/null -w '%{http_code}' -b "sb-gchatpflwvpoxxcmhnjwp-auth-token=$ADMIN_COOKIE" "$BASE_URL/api/admin/usuarios" 2>/dev/null || echo "000")
+  HTTP_ADMIN_LIST=$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR_ADMIN" "$BASE_URL/api/admin/usuarios" 2>/dev/null || echo "000")
   if [ "$HTTP_ADMIN_LIST" = "200" ]; then
     ok "ADMIN lista usuarios -> 200 (L-009)"
   else
@@ -232,7 +287,7 @@ if [ -n "$ADMIN_COOKIE" ]; then
   fi
 
   # L-010: ADMIN cria usuario -> 201
-  HTTP_ADMIN_CREATE=$(curl -s -o /dev/null -w '%{http_code}' -b "sb-gchatpflwvpoxxcmhnjwp-auth-token=$ADMIN_COOKIE" \
+  HTTP_ADMIN_CREATE=$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR_ADMIN" \
     -X POST "$BASE_URL/api/admin/usuarios" \
     -H 'Content-Type: application/json' \
     -d '{"email":"probe.teste.usuarios'$RANDOM'@ivc.local","role":"SECRETARIA"}' 2>/dev/null || echo "000")
@@ -243,25 +298,68 @@ if [ -n "$ADMIN_COOKIE" ]; then
   fi
 
   # L-013: ADMIN le matriz -> 200
-  HTTP_ADMIN_PERM=$(curl -s -o /dev/null -w '%{http_code}' -b "sb-gchatpflwvpoxxcmhnjwp-auth-token=$ADMIN_COOKIE" "$BASE_URL/api/admin/usuarios/permissoes" 2>/dev/null || echo "000")
+  HTTP_ADMIN_PERM=$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR_ADMIN" "$BASE_URL/api/admin/usuarios/permissoes" 2>/dev/null || echo "000")
   if [ "$HTTP_ADMIN_PERM" = "200" ]; then
     ok "ADMIN le matriz permissoes -> 200 (L-013)"
   else
     ko "ADMIN le matriz -> $HTTP_ADMIN_PERM esperado 200 (L-013)"
+  fi
+  # USREX-04: ADMIN exclui a si mesmo -> 403 auto_modificacao_nao_permitida
+  RESP_SELF=$(curl -s -w '\n%{http_code}' -X DELETE -b "$JAR_ADMIN" "$BASE_URL/api/admin/usuarios/00000000-0000-4000-8000-000000000004" 2>/dev/null || printf '\n000')
+  HTTP_SELF=$(printf '%s' "$RESP_SELF" | tail -n1)
+  BODY_SELF=$(printf '%s' "$RESP_SELF" | sed '$d')
+  if [ "$HTTP_SELF" = "403" ] && printf '%s' "$BODY_SELF" | grep -q 'auto_modificacao_nao_permitida'; then
+    ok "ADMIN auto-exclusao -> 403 auto_modificacao (USREX-04)"
+  else
+    ko "ADMIN auto-exclusao -> $HTTP_SELF $BODY_SELF (USREX-04)"
+  fi
+
+  # USREX-06: ADMIN exclui conta de sistema (sem marcador) -> 403 usuario_protegido
+  RESP_PROT=$(curl -s -w '\n%{http_code}' -X DELETE -b "$JAR_ADMIN" "$BASE_URL/api/admin/usuarios/00000000-0000-4000-8000-000000000005" 2>/dev/null || printf '\n000')
+  HTTP_PROT=$(printf '%s' "$RESP_PROT" | tail -n1)
+  BODY_PROT=$(printf '%s' "$RESP_PROT" | sed '$d')
+  if [ "$HTTP_PROT" = "403" ] && printf '%s' "$BODY_PROT" | grep -q 'usuario_protegido'; then
+    ok "ADMIN exclui conta de sistema -> 403 usuario_protegido (USREX-06)"
+  else
+    ko "ADMIN exclui conta de sistema -> $HTTP_PROT $BODY_PROT (USREX-06)"
+  fi
+
+  # USREX-01: ADMIN cria e exclui usuario do painel -> 204 e some da lista
+  PROBE_EXCL_EMAIL="probe.exclusao.$RANDOM@ivc.local"
+  RESP_CREATE=$(curl -s -w '\n%{http_code}' -b "$JAR_ADMIN" \
+    -X POST "$BASE_URL/api/admin/usuarios" \
+    -H 'Content-Type: application/json' \
+    -d "{\"email\":\"$PROBE_EXCL_EMAIL\",\"role\":\"SECRETARIA\"}" 2>/dev/null || printf '\n000')
+  HTTP_CREATE=$(printf '%s' "$RESP_CREATE" | tail -n1)
+  BODY_CREATE=$(printf '%s' "$RESP_CREATE" | sed '$d')
+  CREATE_ID=$(printf '%s' "$BODY_CREATE" | grep -o '"id":"[^"]*"' | head -1 | sed 's/"id":"//;s/"$//' || echo "")
+  if [ "$HTTP_CREATE" = "201" ] && [ -n "$CREATE_ID" ]; then
+    HTTP_DEL=$(curl -s -o /dev/null -w '%{http_code}' -X DELETE -b "$JAR_ADMIN" "$BASE_URL/api/admin/usuarios/$CREATE_ID" 2>/dev/null || echo "000")
+    if [ "$HTTP_DEL" = "204" ]; then
+      ok "ADMIN exclui usuario do painel -> 204 (USREX-01)"
+    else
+      ko "ADMIN exclui usuario do painel -> $HTTP_DEL esperado 204 (USREX-01)"
+    fi
+    if curl -s -b "$JAR_ADMIN" "$BASE_URL/api/admin/usuarios" 2>/dev/null | grep -q "$PROBE_EXCL_EMAIL"; then
+      ko "usuario excluido ainda aparece na lista (USREX-01)"
+    else
+      ok "usuario excluido some da lista (USREX-01)"
+    fi
+  else
+    ko "criacao para probe de exclusao falhou ($HTTP_CREATE $BODY_CREATE)"
   fi
 else
   ko "Login ADMIN falhou — probes RBAC puladas"
 fi
 
 # Login como SECRETARIA (secretaria.teste@ivc.local / senha-teste)
-SEC_COOKIE=$(curl -s -c - -X POST "$BASE_URL/api/auth/login" \
-  -H 'Content-Type: application/json' \
-  -d '{"email":"secretaria.teste@ivc.local","password":"senha-teste","tipo":"admin"}' 2>/dev/null \
-  | grep -o 'sb-[a-z]*-auth-token[^	]*	[^	]*' | head -1 | awk '{print $NF}' || echo "")
+curl -s -c "$JAR_SEC" -o /dev/null -X POST "$BASE_URL/api/auth/login/admin" \
+  --data-urlencode 'email=secretaria.teste@ivc.local' \
+  --data-urlencode 'password=senha-teste' 2>/dev/null || true
 
-if [ -n "$SEC_COOKIE" ]; then
+if grep -q 'auth-token' "$JAR_SEC" 2>/dev/null; then
   # L-010: SECRETARIA sem usuarios:administrar -> 403 no POST
-  HTTP_SEC_CREATE=$(curl -s -o /dev/null -w '%{http_code}' -b "sb-gchatpflwvpoxxcmhnjwp-auth-token=$SEC_COOKIE" \
+  HTTP_SEC_CREATE=$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR_SEC" \
     -X POST "$BASE_URL/api/admin/usuarios" \
     -H 'Content-Type: application/json' \
     -d '{"email":"should.fail@ivc.local","role":"SECRETARIA"}' 2>/dev/null || echo "000")
@@ -272,24 +370,31 @@ if [ -n "$SEC_COOKIE" ]; then
   fi
 
   # L-013: SECRETARIA sem usuarios:administrar -> 403 no GET permissoes
-  HTTP_SEC_PERM=$(curl -s -o /dev/null -w '%{http_code}' -b "sb-gchatpflwvpoxxcmhnjwp-auth-token=$SEC_COOKIE" "$BASE_URL/api/admin/usuarios/permissoes" 2>/dev/null || echo "000")
+  HTTP_SEC_PERM=$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR_SEC" "$BASE_URL/api/admin/usuarios/permissoes" 2>/dev/null || echo "000")
   if [ "$HTTP_SEC_PERM" = "403" ]; then
     ok "SECRETARIA le matriz -> 403 (L-013)"
   else
     ko "SECRETARIA le matriz -> $HTTP_SEC_PERM esperado 403 (L-013)"
+  fi
+  # USREX-09: SECRETARIA sem usuarios:administrar -> 403 no DELETE
+  HTTP_SEC_DELETE=$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR_SEC" \
+    -X DELETE "$BASE_URL/api/admin/usuarios/00000000-0000-4000-8000-000000000005" 2>/dev/null || echo "000")
+  if [ "$HTTP_SEC_DELETE" = "403" ]; then
+    ok "SECRETARIA exclui usuario -> 403 (USREX-09)"
+  else
+    ko "SECRETARIA exclui usuario -> $HTTP_SEC_DELETE esperado 403 (USREX-09)"
   fi
 else
   ko "Login SECRETARIA falhou — probes RBAC SECRETARIA puladas"
 fi
 
 # Login como MEMBRO (membro.teste@ivc.local / senha-teste)
-MEMBRO_COOKIE=$(curl -s -c - -X POST "$BASE_URL/api/auth/login" \
-  -H 'Content-Type: application/json' \
-  -d '{"email":"membro.teste@ivc.local","password":"senha-teste","tipo":"membro"}' 2>/dev/null \
-  | grep -o 'sb-[a-z]*-auth-token[^	]*	[^	]*' | head -1 | awk '{print $NF}' || echo "")
+curl -s -c "$JAR_MEMBRO" -o /dev/null -X POST "$BASE_URL/api/auth/login" \
+  --data-urlencode 'email=membro.teste@ivc.local' \
+  --data-urlencode 'password=senha-teste' 2>/dev/null || true
 
-if [ -n "$MEMBRO_COOKIE" ]; then
-  HTTP_MEMBRO=$(curl -s -o /dev/null -w '%{http_code}' -b "sb-gchatpflwvpoxxcmhnjwp-auth-token=$MEMBRO_COOKIE" "$BASE_URL/api/admin/usuarios" 2>/dev/null || echo "000")
+if grep -q 'auth-token' "$JAR_MEMBRO" 2>/dev/null; then
+  HTTP_MEMBRO=$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR_MEMBRO" "$BASE_URL/api/admin/usuarios" 2>/dev/null || echo "000")
   if [ "$HTTP_MEMBRO" = "403" ] || [ "$HTTP_MEMBRO" = "307" ] || [ "$HTTP_MEMBRO" = "302" ]; then
     ok "MEMBRO lista usuarios -> $HTTP_MEMBRO (403/redirect) (USR-30)"
   else

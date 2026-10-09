@@ -233,11 +233,11 @@ T6 → T7
 
 **Done when**:
 
-- [ ] Estático: `criado_por_admin` no `criarUsuario`, `deletable` na listagem, `excluirUsuario` + erros no serviço, `DELETE` no route, `delete-user-button.tsx` presente
-- [ ] Runtime: `DELETE` sem auth → 401; ADMIN excluindo conta de seed (`admin.teste`) → 403 (sistema/SUPER) ; SECRETARIA excluindo conta nova → 403
-- [ ] Runtime dinâmico: ADMIN cria usuário de teste → exclui → 204, e a conta some; cleanup do resíduo
-- [ ] Total de `ok` documentado; `0` falhas
-- [ ] Gate check passes: `npm run lint && npm run typecheck && npm run build && BASE_URL=http://localhost:3000 bash scripts/probes-admin-usuarios.sh`
+- [x] Estático: `criado_por_admin` no `criarUsuario`, `deletable` na listagem, `excluirUsuario` + erros no serviço, `DELETE` no route, `delete-user-button.tsx` presente
+- [x] Runtime: `DELETE` sem auth → 401; ADMIN excluindo conta de seed (`admin.teste`) → 403 (sistema/SUPER) ; SECRETARIA excluindo conta nova → 403
+- [x] Runtime dinâmico: ADMIN cria usuário de teste → exclui → 204, e a conta some; cleanup do resíduo
+- [x] Total de `ok` documentado; `0` falhas
+- [x] Gate check passes: `npm run lint && npm run typecheck && npm run build && BASE_URL=http://localhost:3000 bash scripts/probes-admin-usuarios.sh`
 
 **Tests**: e2e
 **Gate**: full
@@ -346,3 +346,4 @@ O critério de empacotamento (batching) é contado abaixo.
 - **Total**: 7 tasks → cabe em **um único batch** (≤ ~8). Execute inline, sem sub-agentes `tlc-worker`.
 - **Verifier**: após o último commit (T7), o agente `tlc-verifier` roda automaticamente (autor ≠ verificador): reconciliação dos 17 ACs + sensor de mutação em scratch + `validation.md`.
 - **Ferramentas por task**: nenhum MCP é necessário (Supabase MCP só se um ajuste de dados for pedido — não há migration). Nenhum skill adicional além do `tlc-spec-driven`.
+- **T6 evidência**: `bash scripts/probes-admin-usuarios.sh` → `33 ok / 0 falhas` (gate Full: lint + typecheck + build + probe, exit 0).
