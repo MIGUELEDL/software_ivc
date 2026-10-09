@@ -149,8 +149,8 @@ Cada requisito tem ID único para rastreamento em design, tasks e validation.
 | USREX-13 | P3: botão para linhas excluíveis | Design | Pending |
 | USREX-14 | P3: sem botão para protegidos/próprio | Design | Pending |
 | USREX-15 | P3: sem controle sem administrar | Design | Pending |
-| USREX-16 | P3: confirm + DELETE + refresh | Design | Pending |
-| USREX-17 | P3: mensagem em 403/409 | Design | Pending |
+| USREX-16 | P3: confirm + DELETE + refresh | Done | Done |
+| USREX-17 | P3: mensagem em 403/409 | Done | Done |
 
 **Coverage:** 17 total, 0 mapped to tasks, 17 unmapped ⚠️
 

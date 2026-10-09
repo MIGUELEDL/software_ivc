@@ -177,11 +177,11 @@ T6 → T7
 
 **Done when**:
 
-- [ ] `DeleteUserButton({ userId, email })` com estado `deleting` e `window.confirm` informando o email
-- [ ] Em `204` chama `router.refresh()`; em `403`/`409` mostra a mensagem correspondente ao `error` e não atualiza
-- [ ] Botão vermelho (`text-red-400 hover:text-red-300` ou equivalente do padrão) com ícone `Trash2`
-- [ ] Gate check passes: `npm run lint && npm run typecheck && npm run build`
-- [ ] No TypeScript errors
+- [x] `DeleteUserButton({ userId, email })` com estado `deleting` e `window.confirm` informando o email
+- [x] Em `204` chama `router.refresh()`; em `403`/`409` mostra a mensagem correspondente ao `error` e não atualiza
+- [x] Botão vermelho (`text-red-400 hover:text-red-300` ou equivalente do padrão) com ícone `Trash2`
+- [x] Gate check passes: `npm run lint && npm run typecheck && npm run build`
+- [x] No TypeScript errors
 
 **Tests**: none
 **Gate**: build
