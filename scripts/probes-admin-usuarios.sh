@@ -298,7 +298,15 @@ printf '%s\n' '-- Runtime: RBAC discriminacao (L-009..L-014)'
 JAR_ADMIN=$(mktemp)
 JAR_SEC=$(mktemp)
 JAR_MEMBRO=$(mktemp)
-trap 'rm -f "$JAR_ADMIN" "$JAR_SEC" "$JAR_MEMBRO"' EXIT
+# Restaura a matriz caso o probe de revogacao seja interrompido no meio (USRREV).
+MATRIX_RESTORE_JSON=""
+restore_matrix() {
+  if [ -n "$MATRIX_RESTORE_JSON" ] && [ -n "${JAR_ADMIN:-}" ]; then
+    curl -s -o /dev/null -X PUT -b "$JAR_ADMIN" -H 'Content-Type: application/json' \
+      -d "$MATRIX_RESTORE_JSON" "$BASE_URL/api/admin/usuarios/permissoes" 2>/dev/null || true
+  fi
+}
+trap 'restore_matrix; rm -f "$JAR_ADMIN" "$JAR_SEC" "$JAR_MEMBRO"' EXIT
 
 # Login como ADMIN (admin.teste@ivc.local / senha-teste)
 curl -s -c "$JAR_ADMIN" -o /dev/null -X POST "$BASE_URL/api/auth/login/admin" \
@@ -639,6 +647,115 @@ except Exception:
   fi
 else
   ko "Login ADMIN ausente — probe de 409 pulada (USREX-07)"
+fi
+
+# =====================================================================
+# MATRIZ — Revogar permissao (USRREV-01..06)
+# =====================================================================
+printf '%s\n' '-- Matriz: revogar acesso (USRREV)'
+
+# USRREV-06 (estatico): o editor oferece "" (—) e envia "" para celula vazia
+if grep -q 'NIVEIS = \["ler", "escrever", "administrar", ""\]' "$MATRIX_EDITOR" \
+  && grep -F -q 'cells[`${role}:${module}`] || ""' "$MATRIX_EDITOR"; then
+  ok "MatrixEditor trata '' (—) como revogacao (USRREV-06)"
+else
+  ko "MatrixEditor nao envia '' para celula vazia (USRREV-06)"
+fi
+
+# Servico: o ramo de revogacao usa DELETE em permissions
+if grep -q 'u.nivel === ""' "$SERVICE_PERM" \
+  && grep -q '\.delete(' "$SERVICE_PERM" \
+  && grep -q 'removed' "$SERVICE_PERM"; then
+  ok "atualizarMatriz deleta a linha quando nivel=='' (USRREV-01)"
+else
+  ko "atualizarMatriz sem ramo de revogacao (USRREV-01)"
+fi
+
+if grep -q 'auth-token' "$JAR_ADMIN" 2>/dev/null && grep -q 'auth-token' "$JAR_SEC" 2>/dev/null; then
+  MATRIX_JSON=$(curl -s -b "$JAR_ADMIN" "$BASE_URL/api/admin/usuarios/permissoes" 2>/dev/null || echo '{}')
+  ORIG=$(printf '%s' "$MATRIX_JSON" | python3 -c 'import sys, json
+try:
+    m = json.load(sys.stdin).get("matrix", [])
+except Exception:
+    m = []
+print(next((r["nivel"] for r in m if r.get("role") == "SECRETARIA" and r.get("module") == "igrejas"), ""))' 2>/dev/null || echo "")
+
+  if [ -n "$ORIG" ]; then
+    MATRIX_RESTORE_JSON="{\"updates\":[{\"role\":\"SECRETARIA\",\"module\":\"igrejas\",\"nivel\":\"$ORIG\"}]}"
+
+    # Baseline: SECRETARIA le o modulo igrejas -> 200
+    HTTP_IG_BEFORE=$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR_SEC" "$BASE_URL/api/admin/igrejas" 2>/dev/null || echo "000")
+
+    # USRREV-01: revogar SECRETARIA:igrejas (nivel "") -> 200 com removed>=1
+    RESP_REV=$(curl -s -w '\n%{http_code}' -b "$JAR_ADMIN" -X PUT "$BASE_URL/api/admin/usuarios/permissoes" \
+      -H 'Content-Type: application/json' \
+      -d '{"updates":[{"role":"SECRETARIA","module":"igrejas","nivel":""}]}' 2>/dev/null || printf '\n000')
+    HTTP_REV=$(printf '%s' "$RESP_REV" | tail -n1)
+    BODY_REV=$(printf '%s' "$RESP_REV" | sed '$d')
+    if [ "$HTTP_REV" = "200" ] && printf '%s' "$BODY_REV" | grep -qE '"removed":([1-9][0-9]*)'; then
+      ok "revogar nivel '' -> 200 removed>=1 (USRREV-01)"
+    else
+      ko "revogar nivel '' -> $HTTP_REV $BODY_REV (USRREV-01)"
+    fi
+
+    # USRREV-02: GET nao retorna mais o par revogado
+    if curl -s -b "$JAR_ADMIN" "$BASE_URL/api/admin/usuarios/permissoes" 2>/dev/null | python3 -c 'import sys, json
+try:
+    m = json.load(sys.stdin).get("matrix", [])
+except Exception:
+    m = []
+print("yes" if not any(r.get("role") == "SECRETARIA" and r.get("module") == "igrejas" for r in m) else "no")' 2>/dev/null | grep -q yes; then
+      ok "GET nao retorna par revogado (USRREV-02)"
+    else
+      ko "GET ainda retorna par revogado (USRREV-02)"
+    fi
+
+    # USRREV-05: SECRETARIA perde acesso ao modulo igrejas -> 403
+    HTTP_IG_AFTER=$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR_SEC" "$BASE_URL/api/admin/igrejas" 2>/dev/null || echo "000")
+    if [ "$HTTP_IG_BEFORE" = "200" ] && [ "$HTTP_IG_AFTER" = "403" ]; then
+      ok "revogar nega acesso ao modulo -> 403 (USRREV-05)"
+    else
+      ko "revogar: antes=$HTTP_IG_BEFORE depois=$HTTP_IG_AFTER (USRREV-05)"
+    fi
+
+    # USRREV-03: restaurar nivel valido -> 200 updated>=1 e acesso volta
+    RESP_RES=$(curl -s -w '\n%{http_code}' -b "$JAR_ADMIN" -X PUT "$BASE_URL/api/admin/usuarios/permissoes" \
+      -H 'Content-Type: application/json' -d "$MATRIX_RESTORE_JSON" 2>/dev/null || printf '\n000')
+    HTTP_RES=$(printf '%s' "$RESP_RES" | tail -n1)
+    BODY_RES=$(printf '%s' "$RESP_RES" | sed '$d')
+    MATRIX_RESTORE_JSON=""
+    if [ "$HTTP_RES" = "200" ] && printf '%s' "$BODY_RES" | grep -qE '"updated":([1-9][0-9]*)'; then
+      ok "nivel valido segue upsert -> 200 updated>=1 (USRREV-03)"
+    else
+      ko "restaurar nivel valido -> $HTTP_RES $BODY_RES (USRREV-03)"
+    fi
+    HTTP_IG_RESTORED=$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR_SEC" "$BASE_URL/api/admin/igrejas" 2>/dev/null || echo "000")
+    if [ "$HTTP_IG_RESTORED" = "200" ]; then
+      ok "acesso restaurado apos re-upsert -> 200 (USRREV-03)"
+    else
+      ko "acesso nao restaurado -> $HTTP_IG_RESTORED (USRREV-03)"
+    fi
+  else
+    ko "nao foi possivel ler SECRETARIA:igrejas da matriz (USRREV-01/02/03/05)"
+  fi
+else
+  ko "Login ADMIN/SECRETARIA ausente — probes de revogacao puladas (USRREV-01/02/03/05)"
+fi
+
+# USRREV-04: nivel invalido (nao vazio, fora do enum) -> 400 nivel_invalido
+if grep -q 'auth-token' "$JAR_ADMIN" 2>/dev/null; then
+  RESP_BAD=$(curl -s -w '\n%{http_code}' -b "$JAR_ADMIN" -X PUT "$BASE_URL/api/admin/usuarios/permissoes" \
+    -H 'Content-Type: application/json' \
+    -d '{"updates":[{"role":"SECRETARIA","module":"igrejas","nivel":"xpto"}]}' 2>/dev/null || printf '\n000')
+  HTTP_BAD=$(printf '%s' "$RESP_BAD" | tail -n1)
+  BODY_BAD=$(printf '%s' "$RESP_BAD" | sed '$d')
+  if [ "$HTTP_BAD" = "400" ] && printf '%s' "$BODY_BAD" | grep -q 'nivel_invalido'; then
+    ok "nivel invalido 'xpto' -> 400 nivel_invalido (USRREV-04)"
+  else
+    ko "nivel invalido -> $HTTP_BAD $BODY_BAD (USRREV-04)"
+  fi
+else
+  ko "Login ADMIN ausente — probe de nivel invalido pulada (USRREV-04)"
 fi
 
 # =====================================================================

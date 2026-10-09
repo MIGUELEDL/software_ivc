@@ -216,6 +216,22 @@
 - **Date**: 2026-10-08
 - **Status**: active
 
+### AD-027
+- **Decisão**: Na matriz de permissões, `nivel: ""` (rótulo "—" do editor) significa **revogar**: `atualizarMatriz` faz `DELETE` da linha `(role, module)` em `permissions` e a resposta passa a ser `{ ok, updated, removed }`. Níveis válidos (`ler`/`escrever`/`administrar`) seguem upsert; valor não-vazio fora do enum segue 400 `nivel_invalido`. **Sem guarda anti-lockout** (o super admin pode revogar `usuarios:administrar` de todos os papéis) — decisão do usuário.
+- **Reason**: A UI já oferecia "—" (`matrix-editor.tsx`), mas o backend rejeitava `""` com `nivel_invalido`, porque o editor envia todas as células a cada save; uma célula vazia derrubava o salvamento inteiro. `can()` já trata linha ausente como negação (`rbac.ts:101`), então deletar é a semântica correta e mínima.
+- **Trade-off**: Revogar é destrutivo no backend (a linha some); a restauração usa re-upsert do nível anterior. Não há auditoria das mudanças da matriz (fica para feature futura). Risco de auto-lockout aceito conscientemente.
+- **Scope**: `src/lib/admin/permissoes.ts` (ramo de delete + `removed`), `src/app/admin/usuarios/permissoes/matrix-editor.tsx` (feedback), `scripts/probes-admin-usuarios.sh` (USRREV-01..06). Sem migration.
+- **Date**: 2026-10-09
+- **Status**: active
+
+## Handoff — feature admin-usuarios-matriz-revogar — Execute concluída, aguardando Verifier (2026-10-09)
+
+- **Estado**: Spec escrita e validada (`validate_spec` 0/0); implementação feita (service + UI + probes) com gate verde: `lint`/`typecheck`/`build` exit 0 e probes `scripts/probes-admin-usuarios.sh` → **51 ok / 0 falhas** (USRREV-01..06 cobertos, incluindo round-trip revogar→403→restaurar→200).
+- **Próximo passo**: Verifier independente (autor ≠ verificador) sobre o range da feature; se PASS, commitar `validation.md` e fechar.
+- **Feature**: `.specs/features/admin-usuarios-matriz-revogar/spec.md` — 6 ACs `USRREV-01..06`.
+- **Decisão**: AD-027 (revogar = delete da linha; sem guarda anti-lockout).
+- **Sintoma original**: usuário não conseguia zerar células da matriz — salvamento retornava `nivel_invalido`.
+
 ## Handoff — feature admin-usuarios-exclusao — ✅ VERIFIED (2026-10-09)
 
 - **Estado**: Spec → Design → Tasks → Execute (T1–T7) → hardening pós-Verifier (T8–T11) → **re-verificação PASS**. Feature **fechada**. `validation.md` (PASS) em `.specs/features/admin-usuarios-exclusao/`. Probes: `scripts/probes-admin-usuarios.sh` → **43 ok / 0 falhas**.
