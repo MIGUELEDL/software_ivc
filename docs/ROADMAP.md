@@ -15,8 +15,8 @@ Roadmap em fases dirigido por especificação (processo `tlc-spec-driven`, ver `
 | 6 | Stack | ✅ concluída |
 | 7 | Infra / Custos | ✅ concluída |
 | **8** | **Fundação (concluída)** | ✅ kit SDD + piloto + requisitos aprovados + docs detalhadas;
-| 9 | MVP | 🟡 próxima (frentes do MVP: ver abaixo) |
-| 10 | Testes (framework entra aqui) | ⏳ |
+| 9 | MVP | ✅ concluída em 2026-10-10 — todas as frentes verificadas (ver `docs/coverage-matrix.md`, linhas ✅ verified)
+| 10 | Testes (framework entra aqui) | 🟡 próxima |
 | 11 | Observabilidade (Sentry free) | ⏳ |
 | 12 | Deploy (Vercel Hobby) | ⏳ |
 | 13 | Hardening | ⏳ |
@@ -36,13 +36,19 @@ Roadmap em fases dirigido por especificação (processo `tlc-spec-driven`, ver `
 - **Docs detalhadas** escritas: PROJECT_OVERVIEW, ARCHITECTURE, DATABASE, SECURITY, LGPD, API, TESTING, OBSERVABILITY, DEPLOYMENT, COSTS
 
 **Próximo (Fase 9 — MVP):**
-- Registrar ADRs pendentes (WhatsApp D4, MVV final)
+- ADRs de produto registrados (WhatsApp D4 = ADR-010; CNPJ MP = ADR-011; MVV aprovado nos textos do `constants.ts`)
 - **Blocker:** CNPJ/credenciais Mercado Pago antes do financeiro da F9 (AD-009: MVP é PIX apenas)
 - Spec das features do MVP (portal, painel membro, painel admin) com escopo priorizado
 
 ## Fase 9 — MVP (visão)
 
 FRENTES do MVP: portal público multirrota (Sobre/História/MV, Liderança, Localização, Cultos, Redes, Eventos→WhatsApp, Doação QR PIX), portal do membro (login+ID, avisos, QR dízimo, cartão de membro, perfil/foto 4x4), painel administrativo (dashboard, membros, igrejas/liderança, eventos, patrimônio, financeiro PIX+cartão/webhook, relatórios, RBAC, configurações, auditoria). Escopo priorizado quando a Fase 8 encerrar.
+
+## Fase 9 — MVP (concluída)
+
+**Concluída em 2026-10-10.** Todas as frentes do MVP foram especificadas, implementadas e **verificadas** (23 features ✅ verified em `docs/coverage-matrix.md`, incluindo `auth`, `painel-membro`, portal, `admin-*`, `barcode-membro`, `admin-auditoria` e `cartao-valididade-anual`; `landing-visual-hero` cancelada por decisão do usuário — AD-028). Handoffs e decisões em `.specs/STATE.md` (AD-001..029).
+
+**Próxima (Fase 10 — Testes):** framework de testes entra aqui (AD-023); base atual é probes/harness por AC com sensor de mutação.
 
 ## Decisões & pendências transversais
 
