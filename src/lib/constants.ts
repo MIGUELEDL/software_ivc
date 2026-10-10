@@ -79,5 +79,8 @@ export type Evento = {
 export const EVENTS: readonly Evento[] = [] as const;
 
 export const PIX = {
-  key: CHURCH.cnpj,
+  // AD-012 (correção bb3a62f): o Manual de Padrões do PIX/BCB exige CNPJ sem
+  // formatação no BR Code — somente os 14 dígitos. A restyle 9257b47
+  // sobrescreveu a derivação; a suíte pix (FWT-07) a re-pina.
+  key: CHURCH.cnpj.replace(/\D/g, ""),
 } as const;

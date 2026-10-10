@@ -223,10 +223,10 @@ T7 → T8 → T9
 
 **Done when**:
 
-- [ ] Payload do `buildBrCode` assertado campo a campo (não só "contém BR.GOV.BCB")
-- [ ] key CNPJ assertada sem máscara (`68683917000171`)
-- [ ] `buildBrCodePessoal` com txid=matrícula
-- [ ] Gate quick passa
+- [x] Payload do `buildBrCode` assertado campo a campo (não só "contém BR.GOV.BCB")
+- [x] key CNPJ assertada sem máscara (`68683917000171`)
+- [x] `buildBrCodePessoal` com txid=matrícula
+- [x] Gate quick passa
 
 **Tests**: unit
 **Gate**: quick
