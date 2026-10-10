@@ -113,7 +113,7 @@ manutenção do projeto.
 | FWT-01 | P1: config | Execute | Implemented |
 | FWT-02 | P1: runner CI | Spec | Pending |
 | FWT-03 | P1: code128 | Execute | Implemented |
-| FWT-04 | P1: validade | Spec | Pending |
+| FWT-04 | P1: validade | Execute | Implemented |
 | FWT-05 | P1: cartao | Spec | Pending |
 | FWT-06 | P1: documento | Spec | Pending |
 | FWT-07 | P1: pix | Spec | Pending |

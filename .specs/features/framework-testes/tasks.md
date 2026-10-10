@@ -145,10 +145,10 @@ T7 → T8 → T9
 
 **Done when**:
 
-- [ ] Todos os `hoje`/instantes injetados com offset explícito `-03:00` ou UTC (zero `new Date()` cru)
-- [ ] Fronteira `00:30:00Z` testada dos dois lados (witness) — não só o valor esperado
-- [ ] assert de 5 dígitos `10000-12-31` e NHO teto `275760` sem NaN presentes
-- [ ] Gate quick passa
+- [x] Todos os `hoje`/instantes injetados com offset explícito `-03:00` ou UTC (zero `new Date()` cru)
+- [x] Fronteira `00:30:00Z` testada dos dois lados (witness) — não só o valor esperado
+- [x] assert de 5 dígitos `10000-12-31` e NHO teto `275760` sem NaN presentes
+- [x] Gate quick passa
 
 **Tests**: unit
 **Gate**: quick
