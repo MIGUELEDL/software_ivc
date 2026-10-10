@@ -77,13 +77,13 @@ number (matrícula) so security at the door can scan it to identify me.
 
 | Requirement ID | Story | Phase | Status |
 |---------------|-------|-------|--------|
-| BRC-01 | P1: Barcode no MemberCard | Design | Pending |
-| BRC-02 | P1: Sequência Code 128 (checksum mod 103) | Design | Pending |
-| BRC-03 | P1: Invariantes estruturais dos símbolos | Design | Pending |
-| BRC-04 | P1: Matrícula legível sob as barras | Design | Pending |
-| BRC-05 | P1: Determinismo + render proporcional | Design | Pending |
+| BRC-01 | P1: Barcode no MemberCard | Execute | Verified |
+| BRC-02 | P1: Sequência Code 128 (checksum mod 103) | Execute | Verified |
+| BRC-03 | P1: Invariantes estruturais dos símbolos | Execute | Verified |
+| BRC-04 | P1: Matrícula legível sob as barras | Execute | Verified |
+| BRC-05 | P1: Determinismo + render proporcional | Execute | Verified |
 
-**Coverage:** 5 total, 0 mapped to tasks, 5 unmapped ⚠️
+**Coverage:** 5 total, 5 mapped to `scripts/probe-barcode.sh`, 0 unmapped
 
 ---
 
