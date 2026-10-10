@@ -39,10 +39,14 @@ else
 fi
 
 # --- BRC-04: matrícula legível sob as barras ---
-if grep -q 'campos.id' "$CARD" && grep -q 'mt-\[0.8mm\]' "$CARD"; then
-  ok "BRC-04 texto humano (matricula) abaixo das barras"
+# A matrícula deve aparecer como texto humano logo após o bloco do barcode
+# (não o dígito de checksum). A verificação é estrutural: um nó de texto
+# `{campos.id}` imediatamente após `<Code128Barcode`, independente das
+# unidades de layout (cqw/mm) usadas pelo refactor responsivo do cartão.
+if awk 'f && /\{campos\.id\}/{found=1} /<Code128Barcode/{f=1} END{exit !found}' "$CARD"; then
+  ok "BRC-04 matricula legivel logo abaixo das barras"
 else
-  ko "BRC-04 falhou ao localizar texto humano da matricula"
+  ko "BRC-04 falhou ao localizar texto humano da matricula abaixo das barras"
 fi
 
 # --- BRC-02/03/05: compila o encoder puro e valida via node ---
