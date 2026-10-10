@@ -50,13 +50,13 @@ check "page.tsx importa AuditoriaFiltros" grep -q "AuditoriaFiltros" src/app/adm
 check "page.tsx tem tabela" grep -q "<table" src/app/admin/auditoria/page.tsx
 check "page.tsx tem coluna Data/Hora" grep -q "Data/Hora" src/app/admin/auditoria/page.tsx
 check "page.tsx tem coluna Autor" grep -q "Autor" src/app/admin/auditoria/page.tsx
-check "page.tsx tem coluna Acao" grep -q "Acao" src/app/admin/auditoria/page.tsx
+check "page.tsx tem coluna Ação" grep -q "Ação" src/app/admin/auditoria/page.tsx
 check "page.tsx tem coluna Entidade" grep -q "Entidade" src/app/admin/auditoria/page.tsx
 check "page.tsx tem coluna ID" grep -q "ID" src/app/admin/auditoria/page.tsx
 check "page.tsx tem coluna IP" grep -q "IP" src/app/admin/auditoria/page.tsx
 check "page.tsx tem empty state" grep -q "Nenhum log de auditoria encontrado" src/app/admin/auditoria/page.tsx
 check "page.tsx tem paginacao" grep -q "Anterior" src/app/admin/auditoria/page.tsx
-check "page.tsx tem paginacao Proximo" grep -q "Proximo" src/app/admin/auditoria/page.tsx
+check "page.tsx tem paginacao Próximo" grep -q "Próximo" src/app/admin/auditoria/page.tsx
 
 # Filtros
 check "filtros tem campo data_inicio" grep -q "Data Inicio" src/app/admin/auditoria/auditoria-filtros.tsx
