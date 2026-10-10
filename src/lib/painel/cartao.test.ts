@@ -90,13 +90,23 @@ describe("camposCartao — validade exibida é o ciclo corrente (CART-09/10)", (
 });
 
 describe("camposCartao — criado_em ausente/inválido vira — (CART-15)", () => {
-  it.each([
-    ["vazio", ""],
-    ["inválido", "lixo"],
-    ["null", null],
-    ["undefined", undefined],
-  ] as const)("criado_em %s -> —", (_rotulo, criadoEm) => {
-    expect(camposCartao({ ...base, criado_em: criadoEm }, d(2026, 10, 1)).validity).toBe("—");
+  // A coluna é nullable no schema: `null` e `undefined` são estados reais do
+  // row, não valores que o tipo proíbe. Cada caso é um assert individual,
+  // como no probe (CART-15, não CART-12).
+  it("criado_em vazio -> —", () => {
+    expect(camposCartao({ ...base, criado_em: "" }, d(2026, 10, 1)).validity).toBe("—");
+  });
+
+  it("criado_em inválido -> —", () => {
+    expect(camposCartao({ ...base, criado_em: "lixo" }, d(2026, 10, 1)).validity).toBe("—");
+  });
+
+  it("criado_em null -> —", () => {
+    expect(camposCartao({ ...base, criado_em: null }, d(2026, 10, 1)).validity).toBe("—");
+  });
+
+  it("criado_em undefined -> —", () => {
+    expect(camposCartao({ ...base, criado_em: undefined }, d(2026, 10, 1)).validity).toBe("—");
   });
 
   it("criado_em ausente não derruba os outros campos", () => {
@@ -116,6 +126,10 @@ describe("fmtData — formato pt-BR e inválidos (CART-08)", () => {
 
   it("formato errado -> —", () => {
     expect(fmtData("13/09/2026")).toBe("—");
+  });
+
+  it("espaço na frente -> — (a âncora ^ exige a data no início)", () => {
+    expect(fmtData(" 2026-09-13")).toBe("—");
   });
 
   it("data inexistente 02-30 -> —", () => {

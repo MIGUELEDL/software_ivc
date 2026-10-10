@@ -589,3 +589,105 @@ describe("objetos exatos de insert/update — CART-01/02/03", () => {
     expect(pPerfil.data_batismo).toBe("2020-05-10");
   });
 });
+
+/**
+ * Fortalecimento p/ cobertura de mutação: os testes acima afirmam apenas
+ * `.ok === false` nos ramos de erro (um mutante que esvazia a MENSAGEM
+ * sobrevive). Aqui o retorno inteiro é comparado — mensagem literal final,
+ * que é a string exata exibida ao usuário.
+ */
+describe("mensagens de erro literais e ramos — fortalecimento (CART-05/06/07)", () => {
+  it("CPF com controle devolve a mensagem de 11 dígitos", () => {
+    expect(normalizarCpf("123\n45678909")).toEqual({
+      ok: false,
+      erro: "Informe um CPF com 11 dígitos.",
+    });
+  });
+
+  it("RG com controle devolve a mensagem de RG válido", () => {
+    expect(normalizarRg("123\n456")).toEqual({
+      ok: false,
+      erro: "Informe um RG válido.",
+    });
+  });
+
+  it("RG acima de 20 devolve a mensagem de limite", () => {
+    expect(normalizarRg("x".repeat(21))).toEqual({
+      ok: false,
+      erro: "Informe um RG com no máximo 20 caracteres.",
+    });
+  });
+
+  it("batismo com controle devolve a mensagem de data válida", () => {
+    expect(normalizarDataBatismo("2020-05-10\n", HOJE)).toEqual({
+      ok: false,
+      erro: "Informe uma data de batismo válida.",
+    });
+  });
+
+  it("batismo com espaços em volta preserva o valor trimado", () => {
+    expect(normalizarDataBatismo(" 2020-05-10 ", HOJE)).toEqual({
+      ok: true,
+      valor: "2020-05-10",
+    });
+  });
+
+  it("batismo com lixo após a data é rejeitado (âncora $)", () => {
+    expect(normalizarDataBatismo("2020-05-10 12", HOJE)).toEqual({
+      ok: false,
+      erro: "Informe uma data de batismo válida.",
+    });
+  });
+
+  it("batismo em DD/MM/YYYY devolve a mensagem de formato", () => {
+    expect(normalizarDataBatismo("13/09/2020", HOJE)).toEqual({
+      ok: false,
+      erro: "Informe uma data de batismo válida.",
+    });
+  });
+
+  it("batismo 02-30 devolve a mensagem de calendário", () => {
+    expect(normalizarDataBatismo("2026-02-30", HOJE)).toEqual({
+      ok: false,
+      erro: "Informe uma data de batismo válida.",
+    });
+  });
+
+  it("batismo futuro devolve a mensagem de futuro", () => {
+    expect(normalizarDataBatismo("2030-01-01", HOJE)).toEqual({
+      ok: false,
+      erro: "A data de batismo não pode ser futura.",
+    });
+  });
+
+  it("agregado inválido devolve campos com mensagem e 3 NULLs (não undefined)", () => {
+    const agg = dadosDocumento(
+      { rg: "x".repeat(21), cpf: "123", dataBatismo: "2030-01-01" },
+      HOJE
+    );
+    expect(agg.campos).toEqual({
+      rg: "Informe um RG com no máximo 20 caracteres.",
+      cpf: "Informe um CPF com 11 dígitos.",
+      data_batismo: "A data de batismo não pode ser futura.",
+    });
+    expect(agg.dados).toEqual({ rg: null, cpf: null, data_batismo: null });
+  });
+
+  it("endereço: numero/bairro/uf não nulos chegam ao insert (?? e não &&)", () => {
+    const row = colunasCriarMembro(
+      {
+        nome: "Miguel Ernandes",
+        nascimento: "2004-12-28",
+        whatsapp: "84999766852",
+        numero: "12",
+        bairro: "Centro",
+        uf: "PB",
+      },
+      "uuid-1",
+      "IVC-0001"
+    );
+    expect(row.numero).toBe("12");
+    expect(row.bairro).toBe("Centro");
+    expect(row.uf).toBe("PB");
+  });
+});

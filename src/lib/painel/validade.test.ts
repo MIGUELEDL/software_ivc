@@ -256,3 +256,18 @@ describe("calcularValidadeCartao — entrada inválida ou ausente (CART-15)", ()
     expect(aniversario("nao-data", 1)).toBeNull();
   });
 });
+
+/**
+ * Fortalecimento p/ cobertura de mutação: a guarda de formato de `aniversario`
+ * (`if (!FORMATO_DATA.test(...))`) e o zero à esquerda do ano em `formatar`
+ * não tinham teste que distinguisse o mutante.
+ */
+describe("fortalecimento — guarda de formato e padding do ano", () => {
+  it("aniversario com lixo após a data devolve null (guarda de formato)", () => {
+    expect(aniversario("2026-09-13 12:00", 1)).toBeNull();
+  });
+
+  it("ano de 1 dígito é re-preenchido a 4 (padStart do ano)", () => {
+    expect(aniversario("0001-01-01", 1)).toBe("0002-01-01");
+  });
+});

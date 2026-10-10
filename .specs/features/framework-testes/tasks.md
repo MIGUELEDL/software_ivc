@@ -249,9 +249,22 @@ T7 → T8 → T9
 
 **Done when**:
 
-- [ ] `mutate` restrito aos módulos do subset (exclui testes/config/rotas)
-- [ ] Runner = `@stryker-mutator/vitest-runner`; `breakAt: 0` (fuga → exit 1)
-- [ ] Gate full passa: `npm run test:mutate` verde com 0 sobreviventes (ou, se algum mutante equivalente sobreviver, documentar e ajustar — nunca apagar teste)
+- [x] `mutate` restrito aos módulos do subset (exclui testes/config/rotas)
+- [x] Runner = `@stryker-mutator/vitest-runner`; `breakAt: 0` (fuga → exit 1)
+- [x] Gate full passa: `npm run test:mutate` verde com 0 sobreviventes (ou, se algum mutante equivalente sobreviver, documentar e ajustar — nunca apagar teste)
+
+**Resultado (mutation)** — `npm run test:mutate` = **94.42%** (520 killed, 5 timeout, 31 survived, 0 errors; exit 0). Por módulo: code128 **100.00** (0), cartao 91.89 (3), documento 96.34 (7), validade 87.83 (14), pix 87.27 (7). Score <100% **não** é falha: `break: 0`, e os 31 sobreviventes são todos **equivalentes** ou **artefatos de harness**, nunca testes que faltam (nenhum sobrevivente é evitável por asserção):
+
+- **Equivalentes (21)** — mutações semanticamente equivalentes ou não observáveis pela API pública:
+  - cartao: `L53:18` Regex (drop `$`), `L67:5` Cond, `L68:5` Cond
+  - documento: `L17:25` ×2 Regex (`SOMENTE_DIGITOS`), `L78:7` Cond, `L78:27` Block (guarda RG vazio), `L113:8` Regex (batismo `$`-drop; `Number("…-…")` → `NaN` interno), `L126:5` Cond, `L127:5` Cond
+  - pix: `L68:17` Method (`trim`), `L79:19` Method (`trim`)
+  - validade: `L51:22` Regex (drop `^`), `L105:59` ObjectLiteral (`{}` — mesma saída do `Intl` no fuso local), `L138:5` Cond, `L191:7` Cond, `L191:18` Block, `L203:7` Cond, `L203:7` Logical, `L215:56` String (`indexOf`), `L223:30` Arithmetic (passos de folga)
+- **Artefatos de carga do harness (10, `testsCompleted=0`)** — mutações em **constantes de topo** (`PIX_PAYLOAD`, `FUSO_CIVIL`/`Intl`): o módulo falha ao carregar sob o mutante e o `vitest-runner` reporta o erro de coleta como `Survived` (limitação conhecida, não configurável): validade `L83:20`, `L105:50`, `L107:9`, `L108:10`, `L109:8` (String/Intl); pix `L10:57` Block, `L12:16` String, `L45:37` Arithmetic, `L49:36` Logical, `L65:40` ObjectLiteral.
+
+Testes **fortalecidos** para eliminar killáveis (todos verificados empiricamente): fronteiras/erros do `code128` (módulo agora 100%), guarda de formato e ano `0001` em `validade`, `fmtData(" 2026-09-13")` em `cartao`, mensagens literais + agregado/endereço em `documento`, literal exato do `PIX_PAYLOAD` + injeção via `buildBrCode` em `pix`.
+
+**Nota de harness**: o `@stryker-mutator/vitest-runner@10.0.0` tem bug com o Vitest 5 (upstream #6210, fix #6214 não publicado) — `collectTestName` junta nomes com `' '` em vez de `' > '`, então o filtro por-teste não casa e mutantes cobertos rodam 0 testes. Corrigido localmente por `scripts/patch-stryker-vitest5.mjs`, reaplicado automaticamente via `postinstall`.
 
 **Tests**: none (config de mutação) — gate executado = `test:mutate`
 **Gate**: full

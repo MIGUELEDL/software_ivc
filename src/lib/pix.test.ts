@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { PIX } from "./constants";
-import { PIX_PAYLOAD, buildBrCodePessoal } from "./pix";
+import { PIX_PAYLOAD, buildBrCode, buildBrCodePessoal } from "./pix";
 
 /**
  * Suíte ad-hoc do payload BR Code estático (FWT-07, AD-012). Os valores
@@ -21,6 +21,11 @@ const PAIS_BR = "5802BR";
 const CHAVE_CNPJ_DIGITOS = "68683917000171";
 // Campo 01 do EMV: id 01 + len 14 + os 14 dígitos do CNPJ.
 const CAMPO_CHAVE_DIGITOS = `0114${CHAVE_CNPJ_DIGITOS}`;
+
+// Payload final verificado no app bancário (doacao-pix/validation.md, commit
+// bb3a62f): literal transcrito, CRC `20BF` e nada derivado do encoder.
+const PAYLOAD_OFICIAL =
+  "00020126360014BR.GOV.BCB.PIX0114686839170001715204000053039865802BR5921IGREJA VIRTUDE CRISTA6011SANTA LUZIA62070503***630420BF";
 
 describe("PIX.key — chave institucional sem máscara (AD-012)", () => {
   it("deriva de CHURCH.cnpj com só dígitos", () => {
@@ -64,6 +69,39 @@ describe("buildBrCode — payload estático PIX_PAYLOAD (AD-012)", () => {
 
   it("CRC16 duplo byte em 6304, 4 hex maiúsculo no fim", () => {
     expect(PIX_PAYLOAD).toMatch(/6304[0-9A-F]{4}$/);
+  });
+
+  it("é o literal final do payload oficial (CRC 20BF embutido)", () => {
+    expect(PIX_PAYLOAD).toBe(PAYLOAD_OFICIAL);
+  });
+});
+
+describe("buildBrCode — projeção de nome/cidade e CRC a partir de entrada crua", () => {
+  it("acento composto adjacente a letra vira a base, sem inserir espaço", () => {
+    // NFD + strip de marca: "aãb" -> "aab". Sem a decomposição, o "ã" cairia
+    // no replace de não-alfanuméricos e viraria espaço ("a b").
+    const p = buildBrCode({ key: "1", receiverName: "Igreja aãb c", receiverCity: "X" });
+    expect(p).toContain("5912IGREJA AAB C");
+  });
+
+  it("espaços múltiplos colapsam em um só", () => {
+    const p = buildBrCode({ key: "1", receiverName: "A  B", receiverCity: "C" });
+    expect(p).toContain("5903A B");
+  });
+
+  it("caractere inválido entre letras vira espaço (não some)", () => {
+    const p = buildBrCode({ key: "1", receiverName: "Dr.Jose", receiverCity: "C" });
+    expect(p).toContain("5907DR JOSE");
+  });
+
+  it("trim remove espaço nas pontas do nome", () => {
+    const p = buildBrCode({ key: "1", receiverName: "Igreja ", receiverCity: "C" });
+    expect(p).toContain("5906IGREJA");
+  });
+
+  it("nome acima de 25 chars é cortado no limite do campo 59", () => {
+    const p = buildBrCode({ key: "1", receiverName: "A".repeat(30), receiverCity: "C" });
+    expect(p).toContain("5925" + "A".repeat(25));
   });
 });
 

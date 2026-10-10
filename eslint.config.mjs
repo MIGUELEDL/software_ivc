@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Artefatos do Stryker (sandbox copia o repo e reports em JSON).
+    ".stryker-tmp/**",
+    "reports/**",
   ]),
 ]);
 

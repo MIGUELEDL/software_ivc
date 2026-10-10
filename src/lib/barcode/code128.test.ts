@@ -95,19 +95,24 @@ describe("code128 — sequência, determinismo e distinção (BRC-02/05)", () =>
 });
 
 describe("code128Runs — quiet zone, total e orientação (BRC-03/05)", () => {
-  const runs = code128Runs(IVC_0001, 8);
-
+  // `code128Runs` é chamado DENTRO de cada `it` (não na coleta do describe):
+  // um mutante que quebre a conversão crasharia a coleta do arquivo inteiro e
+  // o runner o reportaria como "sobrevivente" com 0 testes — a chamada viva em
+  // cada teste torna o crash um teste falhando.
   it("começa e termina com quiet zone (espaço)", () => {
+    const runs = code128Runs(IVC_0001, 8);
     expect(runs[0].bar).toBe(false);
     expect(runs[runs.length - 1].bar).toBe(false);
   });
 
   it("preserva o total de módulos (sequência + 2 quiet zones de 8)", () => {
+    const runs = code128Runs(IVC_0001, 8);
     const total = runs.reduce((s, r) => s + r.modules, 0);
     expect(total).toBe(IVC_0001.length + 16);
   });
 
   it("reconstrói a sequência original a partir dos runs (orientação preservada)", () => {
+    const runs = code128Runs(IVC_0001, 8);
     let rebuilt = "";
     for (let i = 1; i < runs.length - 1; i += 1) {
       rebuilt += (runs[i].bar ? "1" : "0").repeat(runs[i].modules);
@@ -116,7 +121,14 @@ describe("code128Runs — quiet zone, total e orientação (BRC-03/05)", () => {
   });
 
   it("o primeiro segmento após a quiet zone é barra", () => {
+    const runs = code128Runs(IVC_0001, 8);
     expect(runs[1].bar).toBe(true);
+  });
+
+  it("RLE: agrupa runs consecutivos da mesma cor (IVC-0001 abre com barra dupla)", () => {
+    const runs = code128Runs(IVC_0001, 8);
+    expect(runs[1].modules).toBe(2);
+    expect(runs.some((r) => r.modules > 1)).toBe(true);
   });
 });
 
@@ -145,5 +157,19 @@ describe("mapper do cartão alimenta o barcode (BRC-01)", () => {
 describe("code128 — intervalo ASCII 32-126", () => {
   it("lança RangeError para byte fora do intervalo", () => {
     expect(() => code128("IVC-\u00e7")).toThrow(RangeError);
+  });
+
+  it("mensagem do RangeError aponta a posição do caractere", () => {
+    expect(() => code128("IVC-\u00e7")).toThrow(/na posição 4/);
+  });
+
+  it("aceita EXATAMENTE os limites 32 (espaço) e 126 (~)", () => {
+    expect(() => code128("A B")).not.toThrow();
+    expect(() => code128("~")).not.toThrow();
+  });
+
+  it("rejeita logo abaixo de 32 (controle) e acima de 126 (DEL)", () => {
+    expect(() => code128("IVC-\u001f")).toThrow(RangeError);
+    expect(() => code128("IVC-\u007f")).toThrow(RangeError);
   });
 });
