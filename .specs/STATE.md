@@ -240,6 +240,22 @@
 - **Date**: 2026-10-10
 - **Status**: active
 
+### AD-030
+- **Decisão**: A partir da F10 (QA-001), o **framework de testes automatizados do projeto é Vitest** (`vitest@^5`, ambiente `node` para módulos puros, alias `@/*` via `vite-tsconfig-paths`), com scripts `test` (watch), `test:ci` (`vitest run`, usado no CI) e `test:mutate` (Stryker). **Stryker** (`@stryker-mutator/core` + `vitest-runner`, threshold high/low/break = 100 → 0 mutantes sobreviventes no subset) é o PIT contínuo da F10.
+- **Reason**: QA-001 marcava o framework para a F10; decisões do usuário em 2026-10-10 (Vitest; piloto de domínio puro; Stryker no subconjunto migrado). Os ~16 probes bash (integração/SSR/DB) permanecem como estão; Vitest é a camada nova.
+- **Trade-off**: Duplicação transitória bash+Vitest no domínio no início; fases seguintes migram o restante por camada. Vitest 5 exige Node ^22.12 (temos 22.23.2).
+- **Scope**: `.specs/features/framework-testes/`, `vitest.config.ts`, `stryker.config.json`, suítes em `src/**/*.test.ts`, scripts `package.json`, step no CI job `tests`.
+- **Date**: 2026-10-10
+- **Status**: active
+
+### AD-031
+- **Decisão**: Os **probes bash permanecem no CI** (jobs `tests`/`cartao` intactos) mesmo após a migração do domínio para Vitest; o Vitest é camada **aditiva** de domínio, não substitutiva nesta fase. A remoção das tiers duplicadas (ex.: tier `node -e` do `probe-barcode.sh`, tier `--domain` do `probe-cartao-validade.sh`) fica para fase futura, quando a equivalência for atestada por rodadas.
+- **Reason**: As tiers de integração/SSR/DB dos probes não têm equivalente no piloto — removê-las do CI perderia cobertura real. A duplicação custa ~4s de `npx tsc` por execução, custo aceito.
+- **Trade-off**: Contagem de asserções do probe original permanece como gate (fonte histórica do Verifier); suíte Vitest precisa igualar/exceder por módulo (FWT-08). Divergência pontual da linha "CI não roda duplicado" do spec (registrada no design).
+- **Scope**: CI `.github/workflows/ci.yml`; não altera probes nesse commit.
+- **Date**: 2026-10-10
+- **Status**: active
+
 ## Handoff — feature admin-auditoria — ✅ VERIFIED (2026-10-10)
 
 - **Estado**: Execute → hardening pós-Verifier (2 voltas) → **re-verificação PASS**. Feature **fechada**. `validation.md` (PASS, substitui o relatório obsoleto de 2026-09-17) em `.specs/features/admin-auditoria/`. Probes `scripts/probes-admin-auditoria.sh` → **74 ok / 0 falhas** (`npm run probe:admin-auditoria`, ligado ao CI).
