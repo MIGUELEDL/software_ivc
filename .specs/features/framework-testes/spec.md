@@ -112,13 +112,13 @@ manutenção do projeto.
 |----------------|-------|-------|--------|
 | FWT-01 | P1: config | Execute | Implemented |
 | FWT-02 | P1: runner CI | Spec | Pending |
-| FWT-03 | P1: code128 | Spec | Pending |
+| FWT-03 | P1: code128 | Execute | Implemented |
 | FWT-04 | P1: validade | Spec | Pending |
 | FWT-05 | P1: cartao | Spec | Pending |
 | FWT-06 | P1: documento | Spec | Pending |
 | FWT-07 | P1: pix | Spec | Pending |
-| FWT-08 | P1: no lossy (contagem) | Spec | Pending |
-| FWT-09 | P1: fail-loud | Spec | Pending |
+| FWT-08 | P1: no lossy (contagem) | Execute | Implemented (code128) |
+| FWT-09 | P1: fail-loud | Execute | Implemented |
 | FWT-10 | P2: stryker escopo | Spec | Pending |
 | FWT-11 | P2: exit code | Spec | Pending |
 | FWT-12 | P2: 100% kill | Spec | Pending |

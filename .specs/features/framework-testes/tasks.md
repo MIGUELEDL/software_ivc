@@ -119,10 +119,10 @@ T7 → T8 → T9
 
 **Done when**:
 
-- [ ] Cada assert do bloco runtime de `probe-barcode.sh:91-162` representado como `expect` (sem lossy rewrite)
-- [ ] Suíte em `src/lib/barcode/code128.test.ts` colocated
-- [ ] contagem de `expect` ≥ contagem de asserts do bloco migrado (target: 30; Verifier reconta)
-- [ ] Gate quick passa; teste do mapper usa `hoje` injetado (sem `new Date()` cru)
+- [x] Cada assert do bloco runtime de `probe-barcode.sh:91-162` representado como `expect` (sem lossy rewrite)
+- [x] Suíte em `src/lib/barcode/code128.test.ts` colocated
+- [x] contagem de `expect` ≥ contagem de asserts do bloco migrado (target: 30; Verifier reconta)
+- [x] Gate quick passa; teste do mapper usa `hoje` injetado (sem `new Date()` cru)
 
 **Tests**: unit
 **Gate**: quick
