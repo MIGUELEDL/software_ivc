@@ -109,24 +109,24 @@ A igreja precisa de uma trilha de auditoria para rastrear ações administrativa
 
 | Requirement ID | Story | Phase | Status |
 |---------------|-------|-------|--------|
-| AUD-01 | P1: Registro | Design | Pending |
-| AUD-02 | P1: Registro | Design | Pending |
-| AUD-03 | P1: Registro | Design | Pending |
-| AUD-04 | P1: Registro | Design | Pending |
-| AUD-05 | P1: Registro | Design | Pending |
-| AUD-06 | P1: Registro | Design | Pending |
-| AUD-07 | P2: Filtros | Design | Pending |
-| AUD-08 | P2: Filtros | Design | Pending |
-| AUD-09 | P2: Filtros | Design | Pending |
-| AUD-10 | P2: Filtros | Design | Pending |
-| AUD-11 | P2: Filtros | Design | Pending |
-| AUD-12 | P2: Filtros | Design | Pending |
-| AUD-13 | P3: Página | Design | Pending |
-| AUD-14 | P3: Página | Design | Pending |
-| AUD-15 | P3: Página | Design | Pending |
-| AUD-16 | P3: Página | Design | Pending |
-| AUD-17 | P3: Página | Design | Pending |
-| AUD-18 | P1: Instrumentação | Design | Pending |
+| AUD-01 | P1: Registro | Execute | Verified |
+| AUD-02 | P1: Registro | Execute | Verified |
+| AUD-03 | P1: Registro | Execute | Verified |
+| AUD-04 | P1: Registro | Execute | Verified |
+| AUD-05 | P1: Registro | Execute | Verified |
+| AUD-06 | P1: Registro | Execute | Verified |
+| AUD-07 | P2: Filtros | Execute | Verified |
+| AUD-08 | P2: Filtros | Execute | Verified |
+| AUD-09 | P2: Filtros | Execute | Verified |
+| AUD-10 | P2: Filtros | Execute | Verified |
+| AUD-11 | P2: Filtros | Execute | Verified |
+| AUD-12 | P2: Filtros | Execute | Verified |
+| AUD-13 | P3: Página | Execute | Verified |
+| AUD-14 | P3: Página | Execute | Verified |
+| AUD-15 | P3: Página | Execute | Verified |
+| AUD-16 | P3: Página | Execute | Verified |
+| AUD-17 | P3: Página | Execute | Verified |
+| AUD-18 | P1: Instrumentação | Execute | Verified |
 
 ---
 
