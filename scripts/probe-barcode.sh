@@ -167,5 +167,70 @@ console.log("ok");
   fi
 fi
 
+# --- BRC-EDGE (render): degradação só é verificável EXECUTANDO o componente ---
+# A checagem estática greva tokens (catch/runs.length/rótulo): um mutante que faz
+# `catch (e) { throw e; }` os mantém todos e passa. Aqui o MemberCard é compilado
+# (tsx -> commonjs) e renderizado via react-dom/server com stubs para next/image
+# e constants. Com matrícula inválida (RangeError) ou ausente o SSR NÃO pode
+# lançar e deve emitir o rótulo "indisponível"; com matrícula válida emite o
+# rótulo do barcode. Um re-throw no catch derruba o SSR -> teste falha.
+TMP_R="$(mktemp -d)"
+trap 'rm -rf "$TMP_R"' EXIT
+cat > "$TMP_R/stub-constants.js" <<'JS'
+module.exports = { CHURCH: { name: "Teste" } };
+JS
+cat > "$TMP_R/stub-next-image.js" <<'JS'
+module.exports = { default: function ImageStub() { return null; } };
+JS
+npx tsc "$CARD" "$LIB" "$CART" "$VAL" \
+  --outDir "$TMP_R/out" --module commonjs --target es2020 --jsx react-jsx \
+  --moduleResolution node --esModuleInterop --skipLibCheck >/dev/null 2>&1 || true
+CARD_JS="$(find "$TMP_R/out" -name 'MemberCard.js' -print -quit 2>/dev/null || true)"
+C128_JS="$(find "$TMP_R/out" -name 'code128.js' -print -quit 2>/dev/null || true)"
+CART_JS2="$(find "$TMP_R/out" -name 'cartao.js' -print -quit 2>/dev/null || true)"
+VAL_JS2="$(find "$TMP_R/out" -name 'validade.js' -print -quit 2>/dev/null || true)"
+if [ ! -f "$CARD_JS" ] || [ ! -f "$C128_JS" ]; then
+  ko "BRC-EDGE render: compilacao do MemberCard falhou"
+else
+  if TMP_R="$TMP_R" NODE_PATH="$ROOT/node_modules" CARD_J="$CARD_JS" \
+     C128_J="$C128_JS" CART_J2="$CART_JS2" VAL_J2="$VAL_JS2" node -e '
+const Module = require("module");
+const path = require("path");
+const assert = require("assert");
+const React = require("react");
+const { renderToStaticMarkup } = require("react-dom/server");
+const TMP = process.env.TMP_R;
+const orig = Module._resolveFilename;
+Module._resolveFilename = function (request, parent, ...rest) {
+  const map = {
+    "@/lib/constants": path.join(TMP, "stub-constants.js"),
+    "next/image": path.join(TMP, "stub-next-image.js"),
+    "@/lib/barcode/code128": process.env.C128_J,
+    "@/lib/painel/cartao": process.env.CART_J2,
+    "@/lib/painel/validade": process.env.VAL_J2,
+  };
+  if (request in map) return map[request];
+  return orig.call(this, request, parent, ...rest);
+};
+const { MemberCardBack } = require(process.env.CARD_J);
+const base = {
+  matricula: "IVC-0001", nome: "Maria", nascimento: "1990-01-01", whatsapp: "83",
+  rg: null, cpf: null, data_batismo: null, criado_em: "2026-01-01T12:00:00Z", foto_url: null,
+};
+const htmlOk = renderToStaticMarkup(React.createElement(MemberCardBack, { member: base }));
+assert.ok(htmlOk.includes("Código de barras da matrícula IVC-0001"), "render: matricula valida emite barcode");
+const htmlBad = renderToStaticMarkup(React.createElement(MemberCardBack, { member: { ...base, matricula: "IVC-\u00e7" } }));
+assert.ok(htmlBad.includes("Código de barras indisponível"), "render: RangeError degrada sem crashar");
+assert.ok(!htmlBad.includes("da matrícula"), "render: sem barras quando degrada");
+const htmlMiss = renderToStaticMarkup(React.createElement(MemberCardBack, { member: { ...base, matricula: undefined } }));
+assert.ok(htmlMiss.includes("Código de barras indisponível"), "render: matricula ausente degrada sem crashar");
+console.log("ok");
+'; then
+    ok "BRC-EDGE render: degradacao via SSR (RangeError e matricula ausente)"
+  else
+    ko "BRC-EDGE render: SSR falhou (detalhes acima)"
+  fi
+fi
+
 printf '== Resumo: %s ok / %s falhas ==\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]
