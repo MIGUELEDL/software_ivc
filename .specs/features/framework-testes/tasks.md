@@ -197,10 +197,10 @@ T7 → T8 → T9
 
 **Done when**:
 
-- [ ] Nenhum `expect` substitui a fonte por valor "derivado do mesmo código" — literais finais (ex.: cpf `12345678909`, rg com máscara preservada `12.345.678-9`)
-- [ ] freeze testado em runtime (`Object.isFrozen` + escrita não altera) e key-set exato de `colunasPerfil` presente
-- [ ] contagem total `documento`+`validade`+`cartao` ≥ 199 asserts do probe (Verifier reconta por módulo)
-- [ ] Gate quick passa
+- [x] Nenhum `expect` substitui a fonte por valor "derivado do mesmo código" — literais finais (ex.: cpf `12345678909`, rg com máscara preservada `12.345.678-9`)
+- [x] freeze testado em runtime (`Object.isFrozen` + escrita não altera) e key-set exato de `colunasPerfil` presente
+- [x] contagem total `documento`+`validade`+`cartao` ≥ 199 asserts do probe (Verifier reconta por módulo)
+- [x] Gate quick passa
 
 **Tests**: unit
 **Gate**: quick

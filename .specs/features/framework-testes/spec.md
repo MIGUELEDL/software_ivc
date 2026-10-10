@@ -115,7 +115,7 @@ manutenção do projeto.
 | FWT-03 | P1: code128 | Execute | Implemented |
 | FWT-04 | P1: validade | Execute | Implemented |
 | FWT-05 | P1: cartao | Execute | Implemented |
-| FWT-06 | P1: documento | Spec | Pending |
+| FWT-06 | P1: documento | Execute | Implemented |
 | FWT-07 | P1: pix | Spec | Pending |
 | FWT-08 | P1: no lossy (contagem) | Execute | Implemented (code128) |
 | FWT-09 | P1: fail-loud | Execute | Implemented |
