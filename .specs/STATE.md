@@ -224,6 +224,14 @@
 - **Date**: 2026-10-09
 - **Status**: active
 
+### AD-028
+- **Decisão**: A feature `landing-visual-hero` está **cancelada**. As specs (`spec.md`, `design.md`, `tasks.md`) permanecem no repositório apenas como registro histórico e **não serão executadas nem verificadas**. A estilização da landing/hero e do painel foi resolvida manualmente pelo usuário, fora do fluxo SDD.
+- **Reason**: O escopo da feature era a remodelagem visual da landing/hero; o usuário concluiu os ajustes por conta própria (2026-10-10), tornando-a sem trabalho pendente.
+- **Trade-off**: O ajuste visual passa a viver no histórico de commits de estilo, sem spec/verificação associada (fora da rastreabilidade RF→spec→teste). Aceito pelo usuário.
+- **Scope**: `.specs/features/landing-visual-hero/` (congelado, sem código novo); `docs/ROADMAP.md` e `docs/coverage-matrix.md` não ganham linha.
+- **Date**: 2026-10-10
+- **Status**: active
+
 ## Handoff — feature admin-usuarios-matriz-revogar — ✅ VERIFIED (2026-10-09)
 
 - **Estado**: Spec → Execute → **Verifier PASS**. Feature fechada. `validation.md` (PASS) em `.specs/features/admin-usuarios-matriz-revogar/`. Probes `scripts/probes-admin-usuarios.sh` → **51 ok / 0 falhas**.
