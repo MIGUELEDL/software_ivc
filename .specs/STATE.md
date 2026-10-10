@@ -232,6 +232,14 @@
 - **Date**: 2026-10-10
 - **Status**: active
 
+### AD-029
+- **Decisão**: Os probes **sem dependência externa** (`scripts/probe-barcode.sh` e `scripts/probes-admin-auditoria.sh` — compilam módulos puros e os executam em Node com stubs, sem servidor/Docker/DB) entram no **CI**, como passos do job `tests` depois do `build` (`npm run probe:barcode`, `npm run probe:admin-auditoria`). Os probes com Docker/DB (cartao `--com-db`, `probe:cartao:db`) e os de servidor autenticado permanecem **locais**, pela regra do AD-018 (evitar CI dependente de Docker e ordem de merge).
+- **Reason**: Ref. AD-018, pendência (a) — probes de uma feature fora do CI apodreciam em silêncio; a aplicação da regra dos sem-Docker adiciona evidência executável ao pipeline sem puxar Docker para dentro do CI.
+- **Trade-off**: CI passa a depender de `npx tsc` compilar os módulos com alias `@/` não resolvido (emite apesar do TS2307) — aceito; a cobertura com Docker/DB e o e2e autenticado continuam só locais.
+- **Scope**: `.github/workflows/ci.yml`, `package.json` (scripts `probe:barcode`, `probe:admin-auditoria`).
+- **Date**: 2026-10-10
+- **Status**: active
+
 ## Handoff — feature admin-auditoria — ✅ VERIFIED (2026-10-10)
 
 - **Estado**: Execute → hardening pós-Verifier (2 voltas) → **re-verificação PASS**. Feature **fechada**. `validation.md` (PASS, substitui o relatório obsoleto de 2026-09-17) em `.specs/features/admin-auditoria/`. Probes `scripts/probes-admin-auditoria.sh` → **74 ok / 0 falhas** (`npm run probe:admin-auditoria`, ligado ao CI).
@@ -282,41 +290,10 @@
 - **Pendência de superfície**: política de git push.
 
 
-## Handoff â PAUSA a pedido do usuario â cartao-valididade-anual (2026-10-04)
 
-**Trabalho pausado por ordem do usuario. Retomar dqui.**
-
-- **Estado**: as quatro lacunas da R11 estao **corrigidas e commitadas**, gates
-  locais verdes, **ainda sem veredito PASS**. A proxima acao e a **R12**.
-- **HEAD** = `bffe6c8`. Branch `main`, **nada pushed**. Commits desta sessao:
-  - `fbd319a` â remove a asseveracao duplicada do ano zero
-  - `7c0c566` â fecha as quatro lacunas da R11 (barreiras 1 e 2, fronteira do
-    dia civil, guard de apostrofo)
-  - `bffe6c8` â CI: `permissions`, fuso da igreja na matriz, `validate_tasks`
-- **O que falta, em ordem**:
-  1. **R12** â o Verifier independente reconcilia os 16 ACs e roda o sensor de
-     mutacao contra `7c0c566`/`bffe6c8`. **Precisa de autorizacao explicita do
-     usuario** (as R5..R11 ja sao excecoes do limite de 3 ciclos).
-  2. Se PASS: `docs/coverage-matrix.md` ganha a linha da feature, junto com
-     `barcode-membro` e `admin-auditoria` (lacuna pre-existente).
-  3. So depois: `landing-visual-hero`, cujas specs existem e nunca comecaram.
-- **Como retomar a R12**: despachar `tlc-verifier` com o estado acima. Medir
-  de novo, sem confiar em numero nenhum deste arquivo: typecheck, lint (0 erros
-  / 5 warnings), build, `probe:cartao` (37/0), `--domain` (4/0), `--com-db`
-  (38/0, Postgres 24/0), os **6** fusos (4/0 cada), `validate_spec`,
-  `validate_tasks`, 0 volumes dangling. Sensor com numeros concretos e a
-  divisao probe/compilador/equivalente; nenhum "N" no lugar de contagem. E o
-  veredito tem de estar **na primeira linha do `validation.md`** — a R11 gastou uma sessao inteira anunciando PASS no chat sem nunca gravar o arquivo,
- Wasteu uma sessao inteira anunciando PASS no chat sem nunca gravar o arquivo,
-  e so o `validate_state.py` pegou.
-- **Lacuna de escopo, declarada e nao bloqueante** (a R11 confirmou): o caminho
-  de producao **sem `deps` injetado** nunca e executado pelo probe â
-  `createServerClient`, `createAdminClient` e `auth.admin.createUser` reais, e
-  o comportamento sob falha de rede do Supabase. Pertence a ADMINMEM-07..12,
-  fora de CART-01..16. Fechar exigiria Supabase real em container.
-- **DB**: migration `0024_validade_cartao.sql` aplicada no dev
-  `[REDACTED_PROJECT_REF]`. **Nao reaplicar nem escrever remotamente.**
-- **Pendencia de superficie, nao AC**: politica de `git push`.
+> **NOTA (2026-10-10)**: o bloco `PAUSA` de `cartao-valididade-anual` abaixo foi **superado**
+> em 2026-10-04 pela R12 — a feature esta VERIFIED (handoff acima). Removido no housekeeping;
+> historico completo preservado em `git log`.
 
 ---
 
