@@ -245,7 +245,16 @@
 - **Decisão**: AD-026 (hard delete só de contas criadas pelo painel; 403 auto/SUPER/sistema; 409 vínculos; 204 + auditoria).
 - **Descobertas operacionais**: probes autenticados exigem **cookie jar** (`curl -c/-b <arquivo>`), token inline dá 401 espúrio; rodar gate com **servidor de produção** (`npm run build && npm run start`) evita o `.next/dev/types` do `next dev` quebrar o `tsc`; o seed `superadmin.teste@ivc.local` (`…000c`) existe e é o alvo do 403 SUPER_ADMIN.
 - **Árvore suja pré-existente** (não tocar): `next-env.d.ts`, `src/components/MemberCard.tsx`, `src/app/admin/membros/[id]/cartao/page.tsx`, `tsconfig.tsbuildinfo`.
-- **Pendências herdadas**: cartão-valididade-anual aguarda R12 (handoff abaixo); `docs/coverage-matrix.md` sem linha para `barcode-membro`, `admin-auditoria` e `cartao-valididade-anual`.
+- **Pendências herdadas**: `docs/coverage-matrix.md` sem linha para `barcode-membro` e `admin-auditoria`.
+## Handoff — feature cartao-valididade-anual — ✅ VERIFIED (2026-10-04)
+
+- **Estado**: verificação PASS (R12). `validation.md` (PASS) em `.specs/features/cartao-valididade-anual/`. Gates locais verdes (typecheck/lint/build, probes cartao/domain/com-db, 6 fusos).
+- **Verificação**: Verifier independente; 16 ACs CART-01..16 cobertos; sensor executado em worktree isolado.
+- **Migration**: `0024_validade_cartao.sql` aplicada no dev.
+- **Feature**: ✅ VERIFIED.
+- **Lacuna não-bloqueante**: caminho de produção real sem deps não atestado (Supabase real).
+- **Pendência de superfície**: política de git push.
+
 
 ## Handoff â PAUSA a pedido do usuario â cartao-valididade-anual (2026-10-04)
 

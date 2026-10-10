@@ -56,3 +56,4 @@ status `verified`, respaldada por `validation.md` no respectivo `.specs/features
 1. Consolidar o inventário RF-001..0NN / RNF-001..0NN aprovado (a Construção acima reflete a revisão de 2026-09-08).
 2. Associar o inventário aos IDs desta matriz (preencher coluna Requisito(s) das próximas features com referências reais, sem fabricar IDs).
 3. Preencher linhas conforme cada feature da Fase 9 (MVP) for spec'd e verificada.
+| RF-031 (validade anual do cartão: ciclo-base 1 ano a partir de batismo/nascimento conforme regra, recalculo por trigger, visual corrente no cartão) | `cartao-valididade-anual` | CART-01..16 | unit+integration+probes (probes 37/0, --domain 4/0, --com-db 38/0, 6 fusos) + gates | ✅ verified |
