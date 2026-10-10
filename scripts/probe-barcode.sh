@@ -1,18 +1,22 @@
 #!/usr/bin/env bash
 #
-# Probes por AC da feature barcode-membro (BRC-01..05).
+# Probes por AC da feature barcode-membro (BRC-01..05 + edge cases).
 # Uso: bash scripts/probe-barcode.sh   (node + npx via nvm — PATH ativado)
 #
-# Estático: MemberCard usa o encoder real e não mais o gradiente decorativo;
-# texto humano sob as barras = matrícula.
+# Estático: MemberCard monta as barras a partir do encoder real (não um
+# gradiente decorativo), o payload do barcode é a matrícula, e o componente
+# degrada sem barras (RangeError / matrícula ausente).
 # Runtime (node): valida a tabela Code 128 (107 símbolos) por invariantes
 # estruturais, amostras da fonte, sequência exata hardcoded para "IVC-0001"
-# (checksum 10), determinismo e RangeError.
+# (checksum 10), determinismo, orientação barra/espaço, o mapper do cartão
+# (campos.id <- matrícula) e RangeError.
 #
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 LIB="$ROOT/src/lib/barcode/code128.ts"
+CART="$ROOT/src/lib/painel/cartao.ts"
+VAL="$ROOT/src/lib/painel/validade.ts"
 CARD="$ROOT/src/components/MemberCard.tsx"
 
 if ! command -v node >/dev/null 2>&1; then
@@ -26,16 +30,29 @@ ko() { FAIL=$((FAIL + 1)); printf '  FAIL %s\n' "$1"; }
 
 printf '== Probes barcode-membro (BRC) ==\n'
 
-# --- BRC-01: render usa o encoder real ---
-if grep -q 'code128(\|code128Runs(' "$CARD" && grep -q 'barcode/code128' "$CARD"; then
-  ok "BRC-01 MemberCard usa o encoder Code 128"
+# --- BRC-01: render usa o encoder real e o payload é a matrícula ---
+# O componente do código de barras tem de montar as barras a partir do encoder
+# real (code128Runs sobre code128) e NÃO ser um gradiente decorativo. A checagem
+# anterior grevava um literal de layout que nunca existiu no componente, então um
+# gradiente reintroduzido passava. Aqui o alvo é o corpo de Code128Barcode.
+BC_BODY="$(awk '/^function Code128Barcode/{f=1} f{print} f && /^}/{exit}' "$CARD")"
+if grep -q 'code128Runs(code128(value)' "$CARD" && grep -q 'r.bar' "$CARD"; then
+  ok "BRC-01 MemberCard monta as barras via code128Runs(code128(value))"
 else
-  ko "BRC-01 MemberCard nao importa/usa o encoder"
+  ko "BRC-01 MemberCard nao monta as barras a partir do encoder"
 fi
-if grep -q '#111 0px' "$CARD"; then
-  ko "BRC-01 gradiente decorativo do barcode ainda presente no MemberCard"
+if printf '%s' "$BC_BODY" | grep -qi 'gradient'; then
+  ko "BRC-01 gradiente decorativo no componente do barcode"
 else
-  ok "BRC-01 gradiente decorativo do barcode removido do MemberCard"
+  ok "BRC-01 componente do barcode sem gradiente decorativo"
+fi
+# Conjunção de payload: o barcode consome `campos.id` e `campos.id` projeta a
+# matrícula do membro. Sem os dois, um valor fixo (ou o nome) passaria.
+if grep -qF 'Code128Barcode value={campos.id}' "$CARD" \
+   && grep -qE 'id:[[:space:]]*member\.matricula' "$CART"; then
+  ok "BRC-01 payload do barcode e a matricula (campos.id <- member.matricula)"
+else
+  ko "BRC-01 payload do barcode nao esta amarrado a matricula"
 fi
 
 # --- BRC-04: matrícula legível sob as barras ---
@@ -49,18 +66,32 @@ else
   ko "BRC-04 falhou ao localizar texto humano da matricula abaixo das barras"
 fi
 
+# --- Edge cases (spec): erro/ausência degrada sem barras, sem crashar ---
+# RangeError (caractere fora de ASCII) e matrícula ausente caem no mesmo
+# caminho: o componente captura e renderiza um placeholder sem barras mantendo o
+# texto humano. Falha se o try/catch, o ramo vazio ou o rótulo sumirem.
+if printf '%s' "$BC_BODY" | grep -q 'catch' \
+   && printf '%s' "$BC_BODY" | grep -qF 'runs.length === 0' \
+   && printf '%s' "$BC_BODY" | grep -qF 'Código de barras indisponível'; then
+  ok "BRC-EDGE encoder protegido: erro/matricula ausente degrada sem barras"
+else
+  ko "BRC-EDGE componente do barcode nao trata erro (RangeError / matricula ausente)"
+fi
+
 # --- BRC-02/03/05: compila o encoder puro e valida via node ---
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
-npx tsc "$LIB" --outDir "$TMP" --module commonjs --target es2020 --moduleResolution node --esModuleInterop --skipLibCheck >/dev/null 2>&1 || ko "compilacao do encoder p/ teste falhou"
+npx tsc "$LIB" "$CART" "$VAL" --outDir "$TMP" --module commonjs --target es2020 --moduleResolution node --esModuleInterop --skipLibCheck >/dev/null 2>&1 || ko "compilacao dos modulos p/ teste falhou"
 JS="$(find "$TMP" -name 'code128.js' -print -quit)"
+CART_JS="$(find "$TMP" -name 'cartao.js' -print -quit)"
 
-if [ ! -f "$JS" ]; then
-  ko "encoder compilado não encontrado"
+if [ ! -f "$JS" ] || [ ! -f "$CART_JS" ]; then
+  ko "modulos compilados nao encontrados"
 else
-  if LIB_J="$JS" node -e '
+  if LIB_J="$JS" CART_J="$CART_JS" node -e '
 const assert = require("assert");
-const T = require(process.env.LIB_J).CODE128_TABLE;
+const P = require(process.env.LIB_J);
+const T = P.CODE128_TABLE;
 
 // BRC-03: invariantes estruturais de TODA a tabela (107 símbolos)
 let bad = 0;
@@ -91,26 +122,48 @@ const expected =
   "10011101100" + "10011101100" + "10011101100" + "10011100110" + // 0001
   "11001000100" + // checksum 10
   "11000111010" + "11"; // STOP + terminação
-assert.strictEqual(require(process.env.LIB_J).code128("IVC-0001"), expected, "BRC-02 IVC-0001");
+assert.strictEqual(P.code128("IVC-0001"), expected, "BRC-02 IVC-0001");
 
 // BRC-05: determinismo + distinção entre matrículas
-assert.strictEqual(require(process.env.LIB_J).code128("IVC-0001"), require(process.env.LIB_J).code128("IVC-0001"));
-assert.notStrictEqual(require(process.env.LIB_J).code128("IVC-0001"), require(process.env.LIB_J).code128("IVC-0002"));
+assert.strictEqual(P.code128("IVC-0001"), P.code128("IVC-0001"));
+assert.notStrictEqual(P.code128("IVC-0001"), P.code128("IVC-0002"));
 
 // BRC-03: code128Runs — quiet zone nas bordas e total de módulos preservado
-const runs = require(process.env.LIB_J).code128Runs(expected, 8);
+const runs = P.code128Runs(expected, 8);
 const total = runs.reduce((s, r) => s + r.modules, 0);
 assert.strictEqual(runs[0].bar, false);
 assert.strictEqual(runs[runs.length - 1].bar, false);
 assert.strictEqual(total, expected.length + 16);
 
+// BRC-05: reconstruir os módulos a partir dos runs preserva a orientação
+// barra/espaço. Inverter o teste de bit (bar = bit === "1" -> "0") gera um
+// código de barras ilegível e aqui é detectado.
+let rebuilt = "";
+for (let i = 1; i < runs.length - 1; i += 1) {
+  rebuilt += (runs[i].bar ? "1" : "0").repeat(runs[i].modules);
+}
+assert.strictEqual(rebuilt, expected, "BRC-05 orientacao barra/espaco preservada");
+assert.strictEqual(runs[1].bar, true, "BRC-05 primeiro segmento apos a quiet zone e barra");
+
+// BRC-01: o payload renderizado é a MATRÍCULA. Executa o mapper do cartão e
+// exige que ele projete a matrícula e que o barcode a codifique. Um payload
+// fixo ou o nome do membro morrem aqui.
+const CART = require(process.env.CART_J);
+const campos = CART.camposCartao({
+  matricula: "IVC-0001", nome: "Maria", nascimento: "1990-01-01",
+  whatsapp: "83", rg: null, cpf: null, data_batismo: null,
+  criado_em: "2026-01-01T12:00:00Z", foto_url: null,
+}, new Date("2026-06-01T12:00:00-03:00"));
+assert.strictEqual(campos.id, "IVC-0001", "BRC-01 campos.id projeta a matricula");
+assert.strictEqual(P.code128(campos.id), expected, "BRC-01 o barcode codifica a matricula do membro");
+
 // RangeError fora do intervalo ASCII 32-126
-assert.throws(() => require(process.env.LIB_J).code128("IVC-\u00e7"), RangeError);
+assert.throws(() => P.code128("IVC-\u00e7"), RangeError);
 console.log("ok");
 '; then
-    ok "BRC-02/03/05 runtime node: tabela, checksum 10 de IVC-0001, determinismo, invariantes"
+    ok "BRC-01/02/03/05 runtime node: tabela, checksum, matricula, orientacao, determinismo"
   else
-    ko "BRC-02/03/05 runtime node falhou (detalhes acima)"
+    ko "BRC-01/02/03/05 runtime node falhou (detalhes acima)"
   fi
 fi
 
