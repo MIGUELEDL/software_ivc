@@ -111,6 +111,8 @@ check "migration policy SELECT exige can_access(auditoria, ler)" grep -qF "using
 check "migration tem policy insert" grep -q "audit_logs_insert_authenticated" supabase/migrations/0017_audit_logs.sql
 check_not "migration sem policy UPDATE/DELETE (imutavel)" grep -Eqi "for[[:space:]]+(update|delete)" supabase/migrations/0017_audit_logs.sql
 check "migration tem index timestamp" grep -q "idx_audit_logs_timestamp" supabase/migrations/0017_audit_logs.sql
+check "migration index timestamp desc" grep -qF "on public.audit_logs (timestamp desc)" supabase/migrations/0017_audit_logs.sql
+check "migration timestamp default now()" grep -qF "timestamp timestamptz not null default now()" supabase/migrations/0017_audit_logs.sql
 check "migration tem index entidade" grep -q "idx_audit_logs_entidade" supabase/migrations/0017_audit_logs.sql
 check "migration tem index acao" grep -q "idx_audit_logs_acao" supabase/migrations/0017_audit_logs.sql
 
@@ -290,6 +292,138 @@ else
     OK=$((OK + 1))
   else
     echo "falha runtime AUD-01/02/03/08/09/10/11 (rodar node manualmente para ver o assert)"
+    FALHA=$((FALHA + 1))
+  fi
+fi
+
+# ------------------------------------------- runtime (route.ts GET/POST) ------
+# O route handler nunca era executado: o sensor mostrou que inverter a comparacao
+# data_inicio>data_fim, trocar o status 400->200 ou remover o clamp de limit
+# sobrevivia ao probe. Aqui o route.ts e compilado e EXECUTADO com stubs para
+# next/server, @/lib/admin/http e @/lib/admin/auditoria (que registra os args).
+echo ""
+echo "--- runtime: route /api/admin/auditoria (stubs) ---"
+
+cat > "$TMPDIR_AUD/stub-next-server.js" <<'JS'
+class NextResponse {
+  constructor(body, init) {
+    this.status = (init && init.status) || 200;
+    this._body = body;
+  }
+  static json(body, init) { return new NextResponse(body, init); }
+}
+module.exports = { NextResponse };
+JS
+
+cat > "$TMPDIR_AUD/stub-http.js" <<'JS'
+const { NextResponse } = require("./stub-next-server.js");
+module.exports = {
+  authAdmin: async () => ({}),
+  requireAdministrar: async () => ({ sub: "u1" }),
+  erroCampos: (campos) => ({ status: 422, _body: { campos } }),
+};
+JS
+
+cat > "$TMPDIR_AUD/stub-auditoria.js" <<'JS'
+const state = { listArgs: null, regArgs: [] };
+module.exports = {
+  listarAuditoria: async (args) => {
+    state.listArgs = args;
+    return { logs: [{ id: "l1" }], total: 7 };
+  },
+  registrarAuditoria: async (args) => { state.regArgs.push(args); },
+  extrairInfoRequest: (request) => ({
+    ip: request.headers.get("x-forwarded-for") || null,
+    user_agent: request.headers.get("user-agent") || null,
+  }),
+  __state: state,
+};
+JS
+
+npx tsc src/app/api/admin/auditoria/route.ts \
+  --outDir "$TMPDIR_AUD/route" --module commonjs --target es2020 \
+  --moduleResolution node --esModuleInterop --skipLibCheck >/dev/null 2>&1 || true
+
+ROUTE_JS="$(find "$TMPDIR_AUD/route" -name 'route.js' -print -quit 2>/dev/null || true)"
+if [ -z "$ROUTE_JS" ]; then
+  echo "falha runtime: route.ts nao compilou"
+  FALHA=$((FALHA + 1))
+else
+  if TMPDIR_AUD="$TMPDIR_AUD" ROUTE_J="$ROUTE_JS" node -e '
+    const Module = require("module");
+    const path = require("path");
+    const assert = require("assert");
+    const TMP = process.env.TMPDIR_AUD;
+    const orig = Module._resolveFilename;
+    Module._resolveFilename = function (request, parent, ...rest) {
+      if (request === "next/server") return path.join(TMP, "stub-next-server.js");
+      if (request === "@/lib/admin/http") return path.join(TMP, "stub-http.js");
+      if (request === "@/lib/admin/auditoria") return path.join(TMP, "stub-auditoria.js");
+      return orig.call(this, request, parent, ...rest);
+    };
+    const { GET, POST } = require(process.env.ROUTE_J);
+    const svc = require(path.join(TMP, "stub-auditoria.js")).__state;
+    const resp = (r) => ({ status: r.status, body: r._body });
+    const req = (url, opts) => new Request(url, opts);
+
+    (async () => {
+      // datas_invalidas: data_inicio > data_fim => 400 { error }
+      let r = await GET(req("http://x/api/admin/auditoria?data_inicio=2026-02-01&data_fim=2026-01-01"));
+      assert.deepStrictEqual(resp(r), { status: 400, body: { error: "datas_invalidas" } });
+
+      // datas iguais sao validas; default limit 20
+      await GET(req("http://x/api/admin/auditoria?data_inicio=2026-01-01&data_fim=2026-01-01"));
+      assert.strictEqual(svc.listArgs.limit, 20);
+
+      // clamp de limit (>=100) e offset (>=0); filtros repassados por valor
+      svc.listArgs = null;
+      r = await GET(req("http://x/api/admin/auditoria?limit=150&offset=-5&acao=criar&entidade=membros&data_inicio=2026-01-01&data_fim=2026-01-31"));
+      assert.strictEqual(r.status, 200);
+      assert.strictEqual(svc.listArgs.limit, 100, "limit clampado em 100");
+      assert.strictEqual(svc.listArgs.offset, 0, "offset clampado em 0");
+      assert.deepStrictEqual(
+        [svc.listArgs.acao, svc.listArgs.entidade, svc.listArgs.data_inicio, svc.listArgs.data_fim],
+        ["criar", "membros", "2026-01-01", "2026-01-31"]
+      );
+      assert.deepStrictEqual(r._body, { logs: [{ id: "l1" }], total: 7 });
+
+      // limit invalido => default 20; limite inferior 1
+      svc.listArgs = null;
+      await GET(req("http://x/api/admin/auditoria?limit=abc"));
+      assert.strictEqual(svc.listArgs.limit, 20);
+      await GET(req("http://x/api/admin/auditoria?limit=-5"));
+      assert.strictEqual(svc.listArgs.limit, 1);
+
+      // POST valido => 201 e registrarAuditoria por valor (autor do token)
+      svc.regArgs.length = 0;
+      r = await POST(req("http://x/api/admin/auditoria", {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-forwarded-for": "6.6.6.6" },
+        body: JSON.stringify({ acao: "criar", entidade: "membros", entidade_id: "m1", payload: { a: 1 } }),
+      }));
+      assert.strictEqual(r.status, 201);
+      assert.deepStrictEqual(svc.regArgs[0], {
+        autor: "u1", acao: "criar", entidade: "membros", entidade_id: "m1",
+        ip: "6.6.6.6", user_agent: null, payload: { a: 1 },
+      });
+
+      // POST sem acao => 422 erroCampos
+      r = await POST(req("http://x/api/admin/auditoria", {
+        method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ entidade: "membros" }),
+      }));
+      assert.deepStrictEqual(resp(r), { status: 422, body: { campos: { acao: "Informe a acao." } } });
+
+      // POST corpo JSON invalido => 422 form
+      r = await POST(req("http://x/api/admin/auditoria", { method: "POST", body: "not-json" }));
+      assert.strictEqual(r.status, 422);
+      assert.strictEqual(r._body.campos.form, "Corpo JSON invalido.");
+    })().catch((e) => { console.error(e); process.exit(1); });
+  ' >/dev/null 2>&1; then
+    echo "ok   runtime route GET/POST: datas_invalidas, clamp limit/offset, POST, 201/422"
+    OK=$((OK + 1))
+  else
+    echo "falha runtime route GET/POST (rodar node manualmente para ver o assert)"
     FALHA=$((FALHA + 1))
   fi
 fi
