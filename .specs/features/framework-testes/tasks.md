@@ -171,10 +171,10 @@ T7 → T8 → T9
 
 **Done when**:
 
-- [ ] `hoje` sempre injetado via helper `d(...)` (offset `-03:00`)
-- [ ] fixture `base` com `criado_em` `2026-09-13T02:01:52.560567+00:00` → validity `12/09/2027` (dia civil da igreja, não UTC)
-- [ ] `fmtData` 4–6 dígitos aceitos, inválidos→`—`, round-trip recusa 02-30
-- [ ] Gate quick passa
+- [x] `hoje` sempre injetado via helper `d(...)` (offset `-03:00`)
+- [x] fixture `base` com `criado_em` `2026-09-13T02:01:52.560567+00:00` → validity `12/09/2027` (dia civil da igreja, não UTC)
+- [x] `fmtData` 4–6 dígitos aceitos, inválidos→`—`, round-trip recusa 02-30
+- [x] Gate quick passa
 
 **Tests**: unit
 **Gate**: quick
