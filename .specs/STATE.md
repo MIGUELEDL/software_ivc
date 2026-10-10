@@ -232,6 +232,24 @@
 - **Date**: 2026-10-10
 - **Status**: active
 
+## Handoff — feature admin-auditoria — ✅ VERIFIED (2026-10-10)
+
+- **Estado**: Execute → hardening pós-Verifier (2 voltas) → **re-verificação PASS**. Feature **fechada**. `validation.md` (PASS, substitui o relatório obsoleto de 2026-09-17) em `.specs/features/admin-auditoria/`. Probes `scripts/probes-admin-auditoria.sh` → **74 ok / 0 falhas** (`npm run probe:admin-auditoria`, ligado ao CI).
+- **Verificação**: Verifier independente (autor ≠ verificador), range `661824f..HEAD`; **18/18 ACs (AUD-01..18) + 4 edge cases** com asserção discriminante; sensor **17/17 mutantes mortos** (service: insert removido, NULLs fixados, gte→gt, data_fim não-inclusiva, filtros swap/drop, limit 20→50, range off-by-one, guard RBAC desligado, instrumentação import-only; route: comparação de datas invertida, status 400→200, clamps de limit/offset removidos).
+- **Rodadas**: 1ª verificação FAIL (12 gaps, 2/12 mortos) → 2ª verificação FAIL (3 sobreviventes na route layer) → harness route GET/POST com stubs → **PASS**. Dentro do limite de 3 ciclos.
+- **Commits**: `661824f`..`4a5c37f` (feature) + hardening `ed2c626`, `cb2ac27` (harness service c/ stub Supabase), `c82b26c` (harness route GET/POST), `a518f1b` (aresta T14→T15 no grafo), `a16daf3` (CI). Nada pushed.
+- **Descoberta técnica**: `extrairInfoRequest`/`registrarAuditoria`/`listarAuditoria` usam `createServerClient()` direto (não injetável) → o probe patcha `Module._resolveFilename` para um stub que grava as ops do builder e executa o service e o route handler compilados (`tsc` emite apesar do TS2307 do alias).
+- **Feature**: `.specs/features/admin-auditoria/spec.md` — 18 ACs `AUD-01..18` Verified. `validate_tasks.py` 0 erros.
+
+## Handoff — feature barcode-membro — ✅ VERIFIED (2026-10-10)
+
+- **Estado**: Execute → hardening pós-Verifier (2 voltas) → **Verifier PASS**. Feature **fechada**. `validation.md` (PASS) em `.specs/features/barcode-membro/`. Probe `scripts/probe-barcode.sh` → **7 ok / 0 falhas** (`npm run probe:barcode`, ligado ao CI).
+- **Verificação**: Verifier independente (autor ≠ verificador), range `88e3b11~1..HEAD`; **5/5 ACs (BRC-01..05) + 2/2 edge cases** com asserção discriminante; sensor **5/5 mutantes mortos** (re-throw no catch, orientação barra/espaço invertida, payload fixo, gradiente reintroduzido, texto humano removido). Checksum de `IVC-0001` re-computado independentemente (=10).
+- **Rodadas**: 1ª verificação FAIL (4 mutantes sobreviventes: payload M8/M9, orientação M7, gradiente M10; edge 1/2; probe fora do CI) → endurecimento → 2ª verificação FAIL (1 sobrevivente: degradação token-only) → tier SSR de render → **PASS**. Dentro do limite de 3 ciclos.
+- **Commits**: `88e3b11` (feat), `65dda82` (probe BRC-04), `39d45bc` (hardening), `54fdaa5` (tier SSR), `a16daf3` (CI). Nada pushed.
+- **Descoberta técnica**: `CardBackground` usa `linear-gradient`/`repeating-linear-gradient` legitimamente → anti-gradiente escopado ao corpo de `Code128Barcode` (linhas 8–35 do `MemberCard.tsx`). O componente agora é compilado tsx→commonjs e renderizado via `react-dom/server` com stubs (next/image, constants) para atestar a degradação (RangeError/matrícula ausente → rótulo "indisponível" sem crash).
+- **Feature**: `.specs/features/barcode-membro/spec.md` — 5 ACs `BRC-01..05` Verified.
+
 ## Handoff — feature admin-usuarios-matriz-revogar — ✅ VERIFIED (2026-10-09)
 
 - **Estado**: Spec → Execute → **Verifier PASS**. Feature fechada. `validation.md` (PASS) em `.specs/features/admin-usuarios-matriz-revogar/`. Probes `scripts/probes-admin-usuarios.sh` → **51 ok / 0 falhas**.
