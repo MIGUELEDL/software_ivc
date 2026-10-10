@@ -25,6 +25,13 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run build
+      # Probes de dominio sem servidor/DB: compilam os modulos puros e os
+      # EXECUTAM com stubs (barcode: code128+cartao+validade; auditoria:
+      # service layer com stub de @/lib/supabase/server). Sem isto, os gaps
+      # apontados pelos verifiers (AUD-01/02/03/08..11, BRC-04) so existiam
+      # em scripts que ninguem rodava.
+      - run: npm run probe:barcode
+      - run: npm run probe:admin-auditoria
 
   # AD-023 (parcial): a barreira de valor do cartao de validade era a UNICA
   # evidencia executavel da feature, e ela vivia FORA do CI. A R10 mediu o

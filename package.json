@@ -12,6 +12,8 @@
     "probe:auth": "bash scripts/probes-auth.sh",
     "probe:painel": "bash scripts/probes-painel.sh",
     "probe:admin-membros": "bash scripts/probes-admin-membros.sh",
+    "probe:barcode": "bash scripts/probe-barcode.sh",
+    "probe:admin-auditoria": "bash scripts/probes-admin-auditoria.sh",
     "probe:cartao": "bash scripts/probe-cartao-validade.sh",
     "probe:cartao:db": "bash scripts/probe-cartao-validade.sh --com-db"
   },
