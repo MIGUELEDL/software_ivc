@@ -290,10 +290,10 @@ Zero sobreviventes obtido em duas frentes (nunca enfraquecendo teste):
 
 **Done when**:
 
-- [ ] `npm run test:ci` no job `tests` sem alterar gates/probes existentes (diff do workflow é aditivo)
-- [ ] `docs/TESTING.md` marca o framework como ativo (F10 concluída)
-- [ ] `coverage-matrix.md` ganha linha F10
-- [ ] Gate full passa; `npm run probe:barcode` e `npm run probe:cartao` ainda verdes (AD-031)
+- [x] `npm run test:ci` no job `tests` sem alterar gates/probes existentes (diff do workflow é aditivo)
+- [x] `docs/TESTING.md` marca o framework como ativo (F10 concluída)
+- [x] `coverage-matrix.md` ganha linha F10
+- [x] Gate full passa; `npm run probe:barcode` e `npm run probe:cartao` ainda verdes (AD-031)
 
 **Tests**: none (integração CI)
 **Gate**: full
@@ -316,10 +316,10 @@ Zero sobreviventes obtido em duas frentes (nunca enfraquecendo teste):
 
 **Done when**:
 
-- [ ] Verifier (independente, autor ≠ verificador) rodou e PASSou — evidência `file:line` por AC, sensor de discriminação em scratch isolado sem tocar a árvore
-- [ ] FWT-01..12 → Verified no spec
-- [ ] `validate_state.py` e `validate_spec.py` verdes; `git status --porcelain` limpo; nada pushed
-- [ ] Commit do fechamento (nada em aberto — regra do repo)
+- [x] Verifier (independente, autor ≠ verificador) rodou e PASSou — evidência `file:line` por AC, sensor de discriminação em scratch isolado sem tocar a árvore
+- [x] FWT-01..12 → Verified no spec
+- [x] `validate_state.py` e `validate_spec.py` verdes; `git status --porcelain` limpo; nada pushed
+- [x] Commit do fechamento (nada em aberto — regra do repo)
 
 **Tests**: none
 **Gate**: build

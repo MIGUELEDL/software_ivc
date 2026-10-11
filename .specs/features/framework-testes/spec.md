@@ -16,12 +16,12 @@ Supabase), que hoje são os que mais pagam a migração (o `node -e` gasta ~4s d
 
 ## Goals
 
-- [ ] Vitest instalado e configurado (ambiente `node`, alias `@/*` resolvido por `vite-tsconfig-paths`), com script `test` e `test:ci` (run, sem watch)
-- [ ] Suíte de testes Vitest cobrindo os **módulos de domínio puros**: `code128`, `validade`, `cartao`, `documento`, `pix` — assertando os MESMOS valores que o sensor de mutação dos probes discriminou (evidence-or-zero preservado)
-- [ ] Probes bash de domínio puro migrados → Vitest, sem perda de asserção discriminante (contagens originais preservadas/verificadas)
-- [ ] `npm test` no CI (job `tests`), ao lado de lint/typecheck/build e dos demais probes
-- [ ] StrykerJS configurado e rodando no subconjunto migrado (gate de fuga de mutante > 0 falha)
-- [ ] `docs/TESTING.md` e `docs/coverage-matrix.md` refletem a F10 concluída (linha framework)
+- [x] Vitest instalado e configurado (ambiente `node`, alias `@/*` resolvido por `vite-tsconfig-paths`), com script `test` e `test:ci` (run, sem watch)
+- [x] Suíte de testes Vitest cobrindo os **módulos de domínio puros**: `code128`, `validade`, `cartao`, `documento`, `pix` — assertando os MESMOS valores que o sensor de mutação dos probes discriminou (evidence-or-zero preservado)
+- [x] Probes bash de domínio puro migrados → Vitest, sem perda de asserção discriminante (contagens originais preservadas/verificadas)
+- [x] `npm test` no CI (job `tests`), ao lado de lint/typecheck/build e dos demais probes
+- [x] StrykerJS configurado e rodando no subconjunto migrado (gate de fuga de mutante > 0 falha)
+- [x] `docs/TESTING.md` e `docs/coverage-matrix.md` refletem a F10 concluída (linha framework)
 
 ## Out of Scope
 
@@ -110,18 +110,18 @@ manutenção do projeto.
 
 | Requirement ID | Story | Phase | Status |
 |----------------|-------|-------|--------|
-| FWT-01 | P1: config | Execute | Implemented |
-| FWT-02 | P1: runner CI | Spec | Pending |
-| FWT-03 | P1: code128 | Execute | Implemented |
-| FWT-04 | P1: validade | Execute | Implemented |
-| FWT-05 | P1: cartao | Execute | Implemented |
-| FWT-06 | P1: documento | Execute | Implemented |
-| FWT-07 | P1: pix | Execute | Implemented |
-| FWT-08 | P1: no lossy (contagem) | Execute | Implemented (code128 + validade + cartao + documento + pix) |
-| FWT-09 | P1: fail-loud | Execute | Implemented |
-| FWT-10 | P2: stryker escopo | Execute | Implemented (mutate = 5 módulos do subset, exclui testes/config) |
-| FWT-11 | P2: exit code | Execute | Implemented (break:100, high/low:100; score <100 → exit 1) |
-| FWT-12 | P2: 100% kill | Execute | Implemented (100.00% real: 3 killables mortos por asserção + 28 anotados inline com `// Stryker disable` — 18 equivalentes e 10 artefatos de carga, documentados em tasks.md T7) |
+| FWT-01 | P1: config | Execute | Verified |
+| FWT-02 | P1: runner CI | Execute | Verified |
+| FWT-03 | P1: code128 | Execute | Verified |
+| FWT-04 | P1: validade | Execute | Verified |
+| FWT-05 | P1: cartao | Execute | Verified |
+| FWT-06 | P1: documento | Execute | Verified |
+| FWT-07 | P1: pix | Execute | Verified |
+| FWT-08 | P1: no lossy (contagem) | Execute | Verified (code128 + validade + cartao + documento + pix) |
+| FWT-09 | P1: fail-loud | Execute | Verified |
+| FWT-10 | P2: stryker escopo | Execute | Verified (mutate = 5 módulos do subset, exclui testes/config) |
+| FWT-11 | P2: exit code | Execute | Verified (break:100, high/low:100; score <100 → exit 1) |
+| FWT-12 | P2: 100% kill | Execute | Verified (100.00% real: 3 killables mortos por asserção + 28 anotados inline com `// Stryker disable` — 18 equivalentes e 10 artefatos de carga, documentados em tasks.md T7; sensor 5/5) |
 
 **Coverage:** 12 total, 0 mapped to tasks, 12 unmapped ⚠️
 
@@ -129,7 +129,7 @@ manutenção do projeto.
 
 ## Success Criteria
 
-- [ ] `npm run test:ci` verde e `npm run test:mutate` com **0 sobreviventes** no subset (100% real com `break:100`; equivalentes/artefatos de carga anotados inline — ver tasks.md T7)
-- [ ] Contagem de asserções migradas ≥ contagem original dos probes de domínio (por módulo)
-- [ ] CI `tests` roda `npm run test:ci` sem regressão dos gates existentes (lint/typecheck/build/probes)
-- [ ] `docs/TESTING.md` documenta o framework como ativo a partir da F10 e a `coverage-matrix.md` ganha linha
+- [x] `npm run test:ci` verde e `npm run test:mutate` com **0 sobreviventes** no subset (100% real com `break:100`; equivalentes/artefatos de carga anotados inline — ver tasks.md T7)
+- [x] Contagem de asserções migradas ≥ contagem original dos probes de domínio (por módulo)
+- [x] CI `tests` roda `npm run test:ci` sem regressão dos gates existentes (lint/typecheck/build/probes)
+- [x] `docs/TESTING.md` documenta o framework como ativo a partir da F10 e a `coverage-matrix.md` ganha linha

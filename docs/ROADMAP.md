@@ -48,7 +48,11 @@ FRENTES do MVP: portal público multirrota (Sobre/História/MV, Liderança, Loca
 
 **Concluída em 2026-10-10.** Todas as frentes do MVP foram especificadas, implementadas e **verificadas** (23 features ✅ verified em `docs/coverage-matrix.md`, incluindo `auth`, `painel-membro`, portal, `admin-*`, `barcode-membro`, `admin-auditoria` e `cartao-valididade-anual`; `landing-visual-hero` cancelada por decisão do usuário — AD-028). Handoffs e decisões em `.specs/STATE.md` (AD-001..029).
 
-**Próxima (Fase 10 — Testes):** framework de testes entra aqui (AD-023); base atual é probes/harness por AC com sensor de mutação.
+## Fase 10 — Testes (concluída)
+
+**Concluída em 2026-10-10.** Framework de testes automatizados (QA-001): **Vitest 5** cobrindo o domínio puro (`code128`/`validade`/`cartao`/`documento`/`pix`, 220 testes) com runner no CI (`npm run test:ci` no job `tests`) + **PIT contínuo via StrykerJS** (`break:100`, 100.00% / 0 sobreviventes no subset migrado). Probes bash permanecem no CI (AD-031). Feature `framework-testes` ✅ verified; decisões AD-030/031/032 e handoff em `.specs/STATE.md`.
+
+**Próxima (Fase 11 — Observabilidade):** ver `OBSERVABILITY.md`.
 
 ## Decisões & pendências transversais
 

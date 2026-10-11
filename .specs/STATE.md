@@ -264,6 +264,17 @@
 - **Date**: 2026-10-10
 - **Status**: active
 
+## Handoff — feature framework-testes — ✅ VERIFIED (2026-10-10)
+
+- **Estado**: Spec → Execute (7 batches por sub-agente) → hardening do gate de mutação → **Verifier PASS**. Feature **fechada**. `validation.md` (PASS) em `.specs/features/framework-testes/`. F10 (QA-001) concluída.
+- **Entregue**: Vitest 5 + `vite-tsconfig-paths` cobrindo o domínio puro (`code128`, `validade`, `cartao`, `documento`, `pix` + smoke de alias) — `npm run test:ci` → **220 passed / 0 failed**; **StrykerJS** (`@stryker-mutator/vitest-runner`) no subset migrado — `npm run test:mutate` → **100.00% / 0 sobreviventes** com **`break:100`** (falha real em fuga). Step `npm run test:ci` adicionado ao job `tests` do CI (diff aditivo; probes intactos — AD-031).
+- **Verificação**: Verifier independente (autor ≠ verificador), range `5ada1c4..f3bdd90`; **12/12 ACs (FWT-01..12)** com evidência `file:line`; sensor em `git worktree` isolado → **5/5 mutantes mortos** (28/02 clamp, `FUSO_CIVIL`→UTC, CRC poly, `fmtData` drop-`$`, `colunasDocumento` `||`→`??`); real tree intacta. FWT-08 recôntagem independente: validade+cartao+documento = **225 ≥ 199**, code128 = 30 na base executada, pix = 30 (ad-hoc).
+- **Hardening (R desta feature)**: o worker fechou T7 com `break:0` (gate verde por construção, nunca falhava) e 31 sobreviventes — **rejeitado**; exigiu-se **0 sobreviventes por mérito**: 3 killables mortos por asserção nova + 28 mutantes equivalentes/artefatos de carga anotados inline (`// Stryker disable next-line`, motivo em comentário) e `break:100`. O Verifier provou a barreira reabilitando um mutante → score 99.81 e exit 1.
+- **Commits**: `73dc279` (T1 infra) … `ec4da7c` (T7 stryker) → `7119ce6` (T7 hardening: zera sobreviventes + `break:100`) → `f3bdd90` (T8 CI+docs) + este fechamento (T9: validation/traceability/STATE/ROADMAP/LESSONS). Nada pushed.
+- **Descoberta técnica**: `@stryker-mutator/vitest-runner@10.0.0` tem bug com Vitest 5 (upstream #6210; fix #6214 não publicado) — `collectTestName` junta com `' '` em vez de `' > '`, o filtro por-teste não casa e mutantes cobertos rodam 0 testes. Corrigido por `scripts/patch-stryker-vitest5.mjs` reaplicado no `postinstall` (AD-032).
+- **Decisões**: AD-030 (Vitest+Stryker = framework padrão da F10), AD-031 (probes bash permanecem no CI; Vitest aditivo), AD-032 (patch do vitest-runner + `break:100` + anotações inline). Lição **L-018** (threshold que não pode falhar não é gate).
+- **Feature**: `.specs/features/framework-testes/spec.md` — 12 ACs `FWT-01..12` Verified. `validate_spec.py` 0 erros / 0 warnings; `validate_tasks.py` 0 erros / 8 warnings.
+
 ## Handoff — feature admin-auditoria — ✅ VERIFIED (2026-10-10)
 
 - **Estado**: Execute → hardening pós-Verifier (2 voltas) → **re-verificação PASS**. Feature **fechada**. `validation.md` (PASS, substitui o relatório obsoleto de 2026-09-17) em `.specs/features/admin-auditoria/`. Probes `scripts/probes-admin-auditoria.sh` → **74 ok / 0 falhas** (`npm run probe:admin-auditoria`, ligado ao CI).

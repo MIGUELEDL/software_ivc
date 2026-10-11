@@ -114,6 +114,12 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - evidence: spec.md Edge cases (linhas 63-64) (probes)
 - last seen: 2026-10-09T21:02:47Z
 
+### L-018 - Threshold de mutacao que nao pode falhar (break:0) e verde por construcao: a barreira precisa ser break:100 (falha em qualquer sobrevivente) para o gate de PIT ter valor; verificar o break, nao so o score.
+- signal: `spec_deviation` · recurrence: 1 feature(s) · scope: `mutation-gate/stryker` · harmful: 0
+- features: framework-testes
+- evidence: stryker.config.json:14 (break:0) / tasks.md T7 (mutation-gate/stryker)
+- last seen: 2026-10-11T00:21:32Z
+
 ## Quarantined (failed when applied - ignore)
 
 A confirmed lesson that recurred alongside failure. Kept for the maintainer to review.

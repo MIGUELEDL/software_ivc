@@ -86,7 +86,7 @@ falha quando não encontra suíte (nada de "verde por vazio").
 
 - **Purpose**: PIT contínuo do subset migrado (P2 / GA-001).
 - **Location**: raiz.
-- **Interfaces**: `mutate: ["src/lib/barcode/code128.ts","src/lib/painel/{validade,cartao,documento}.ts","src/lib/pix.ts"]`, runner `@stryker-mutator/vitest-runner`, `thresholds: {high:100, low:100, break:0}`, `commandRunner` disabled, falha em fuga.
+- **Interfaces**: `mutate: ["src/lib/barcode/code128.ts","src/lib/painel/{validade,cartao,documento}.ts","src/lib/pix.ts"]`, runner `@stryker-mutator/vitest-runner`, `thresholds: {high:100, low:100, break:100}`, `commandRunner` disabled, falha em fuga.
 - **Dependencies**: `@stryker-mutator/core@^10`, `@stryker-mutator/vitest-runner@^10` (versões pareadas).
 
 ### Scripts `package.json`
@@ -105,7 +105,7 @@ falha quando não encontra suíte (nada de "verde por vazio").
 | -------------- | -------- | ----------- |
 | Suíte falha (1+ teste) | `vitest run` exit 1, nome do caso reportado | CI vermelho; dev vê o caso no relatório |
 | Alias não resolve | `vite-tsconfig-paths` erro de resolução → teste falha | Ruído alto — suíte smoke de alias pega antes |
-| Stryker com mutante sobrevivente | exit 1 (threshold break 0) | CI/locale avisam a fuga |
+| Stryker com mutante sobrevivente | exit 1 (threshold break 100) | CI/locale avisam a fuga |
 | `vitest run` sem suíte | exit 1 (mudança de comportamento baseline) | Impossível "verde por vazio" |
 
 ---

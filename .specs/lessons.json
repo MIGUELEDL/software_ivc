@@ -3,7 +3,7 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 18,
+  "next_id": 19,
   "lessons": [
     {
       "id": "L-001",
@@ -320,6 +320,24 @@
       ],
       "created": "2026-10-09T21:02:47Z",
       "last_seen": "2026-10-09T21:02:47Z"
+    },
+    {
+      "id": "L-018",
+      "key": "spec_deviation::threshold de mutacao que nao pode falhar break 0 e verde por construcao a barreira precisa ser break 100 falha em qualquer sobrevivente para o gate de pit ter valor verificar o break nao so o score",
+      "text": "Threshold de mutacao que nao pode falhar (break:0) e verde por construcao: a barreira precisa ser break:100 (falha em qualquer sobrevivente) para o gate de PIT ter valor; verificar o break, nao so o score.",
+      "signal": "spec_deviation",
+      "scope": "mutation-gate/stryker",
+      "status": "candidate",
+      "features": [
+        "framework-testes"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "stryker.config.json:14 (break:0) / tasks.md T7 (mutation-gate/stryker)"
+      ],
+      "created": "2026-10-11T00:21:32Z",
+      "last_seen": "2026-10-11T00:21:32Z"
     }
   ]
 }

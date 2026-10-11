@@ -58,7 +58,7 @@ status `verified`, respaldada por `validation.md` no respectivo `.specs/features
 
 | Requisito(s) | Feature | Spec ACs | Teste / Gate | Status |
 | ------------ | ------- | -------- | ------------ | ------ |
-| QA-001 (framework de testes automatizados, runner no CI, PIT contínuo) | `framework-testes` | FWT-01..12 | Vitest 5 suítes de domínio (`code128`/`validade`/`cartao`/`documento`/`pix` + smoke de alias; `npm run test:ci`) + StrykerJS `break:100` 0 sobreviventes (`npm run test:mutate`) + step `test:ci` no job `tests` do CI + probes intactos (AD-031) | 🔧 in progress |
+| QA-001 (framework de testes automatizados, runner no CI, PIT contínuo) | `framework-testes` | FWT-01..12 | Vitest 5 suítes de domínio (`code128`/`validade`/`cartao`/`documento`/`pix` + smoke de alias; `npm run test:ci`, 220 ok/0) + StrykerJS `break:100` 100.00% 0 sobreviventes (`npm run test:mutate`) + step `test:ci` no job `tests` do CI + probes intactos (AD-031); Verifier PASS, sensor 5/5 | ✅ verified |
 
 ## Próximos passos
 
