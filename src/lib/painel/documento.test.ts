@@ -639,6 +639,16 @@ describe("mensagens de erro literais e ramos — fortalecimento (CART-05/06/07)"
     });
   });
 
+  it("batismo com sufixo numérico extra é rejeitado (âncora $ inteira)", () => {
+    // "2020-05-10 12" não distingue: o " 12" gruda no dia -> NaN -> round-trip
+    // falha igual ao original. Já "2026-01-01-09" faz o split produzir 4 partes;
+    // sem a âncora $ o mutante lê [2026,1,1] (4ª ignorada) e aceita a data.
+    expect(normalizarDataBatismo("2026-01-01-09", HOJE)).toEqual({
+      ok: false,
+      erro: "Informe uma data de batismo válida.",
+    });
+  });
+
   it("batismo em DD/MM/YYYY devolve a mensagem de formato", () => {
     expect(normalizarDataBatismo("13/09/2020", HOJE)).toEqual({
       ok: false,

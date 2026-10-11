@@ -267,6 +267,10 @@ describe("fortalecimento — guarda de formato e padding do ano", () => {
     expect(aniversario("2026-09-13 12:00", 1)).toBeNull();
   });
 
+  it("aniversario com espaço na frente devolve null (âncora ^ exige o início)", () => {
+    expect(aniversario(" 2026-09-13", 1)).toBeNull();
+  });
+
   it("ano de 1 dígito é re-preenchido a 4 (padStart do ano)", () => {
     expect(aniversario("0001-01-01", 1)).toBe("0002-01-01");
   });

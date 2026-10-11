@@ -80,6 +80,8 @@ function compararDatas(a: string, b: string): number {
  * conforme o deploy e o mesmo membro veria a validade virar de um dia para o
  * outro. O trigger SQL usa o mesmo fuso — as duas fontes não podem divergir.
  */
+// Stryker disable next-line StringLiteral: mutar o fuso ("") faz o Intl lançar
+// RangeError no import → nenhum teste chega a rodar; artefato de load, não buraco.
 const FUSO_CIVIL = "America/Sao_Paulo";
 
 /**
@@ -102,10 +104,17 @@ function formatar(ano: number, mes: number, dia: number): string {
 
 // `en-CA` formata como ISO (YYYY-MM-DD) — evita montar a string à mão e
 // funciona igual em qualquer ICU do runtime.
+// Stryker disable next-line StringLiteral,ObjectLiteral: locale/objeto do Intl
+// são avaliados no import; mutá-los derruba o load (RangeError) ou é equivalente
+// neste fuso (TZ do processo) — artefato, não buraco de teste.
 const FORMATADOR_CIVIL = new Intl.DateTimeFormat("en-CA", {
   timeZone: FUSO_CIVIL,
+  // Stryker disable next-line StringLiteral: opção avaliada no import; mudá-la
+  // derruba o load ou é equivalente no fuso da igreja — artefato.
   year: "numeric",
+  // Stryker disable next-line StringLiteral: idem (artefato de load/fuso).
   month: "2-digit",
+  // Stryker disable next-line StringLiteral: idem (artefato de load/fuso).
   day: "2-digit",
 });
 
@@ -135,6 +144,9 @@ export function aniversario(criadoIso: string, anos: number): string | null {
     mes > 12 ||
     dia < 1 ||
     !Number.isInteger(anoBase) ||
+    // Stryker disable next-line ConditionalExpression: `diasBase === null` só
+    // ocorre com anoBase inrepresentável; anoAlvo=anoBase+anos segue
+    // inrepresentável → mesmo null (equivalente, provado por fuzz diferencial).
     diasBase === null ||
     dia > diasBase
   ) {
@@ -188,6 +200,8 @@ export function calcularValidadeCartao(
   criadoEm: string | null | undefined,
   hoje: Date
 ): string | null {
+  // Stryker disable next-line ConditionalExpression,BlockStatement: criadoEm
+  // ausente/'' resulta em `civil === null` e devolve null do mesmo modo (equivalente).
   if (!criadoEm) {
     return null;
   }
@@ -200,6 +214,9 @@ export function calcularValidadeCartao(
     ? criadoEm
     : dataCivil(criadoEm);
 
+  // Stryker disable next-line ConditionalExpression,LogicalOperator: `civil` é
+  // sempre null ou YYYY-MM-DD válido (invariante de dataCivil/FORMATO_DATA), então
+  // `===null` e `||`→`&&` não alteram o resultado (equivalente).
   if (civil === null || !FORMATO_DATA.test(civil)) {
     return null;
   }
@@ -212,6 +229,9 @@ export function calcularValidadeCartao(
   // registro de 1800. Era divergência sobre dado gravado, do mesmo tipo da do ano
   // de 5 dígitos, e na janela baixa ela é fechável: aqui não há teto de runtime,
   // só aritmética de ano.
+  // Stryker disable next-line StringLiteral: "-"→"" só muda `anoCivil` para 0,
+  // o que apenas AUMENTA o teto `passos`; o 1º candidato vencedor é o mesmo
+  // (folga = equivalente, ver comentário de `passos`).
   const anoCivil = Number(civil.slice(0, civil.indexOf("-")));
   const anoHoje = Number(hojeIso.slice(0, hojeIso.indexOf("-")));
 
@@ -220,6 +240,8 @@ export function calcularValidadeCartao(
   // alcançar o ano de hoje é `anoHoje - anoCivil + 1`. Folga aqui é mutante
   // EQUIVALENTE — o gate não distingue `+1` de `+2`, e um `+9` silencioso
   // seria o mesmo teto arbitrário que o bug corrigido veio tirar.
+  // Stryker disable next-line ArithmeticOperator: `-`→`+` altera só o teto
+  // `passos`; com anoCivil≥0 apenas o aumenta → mesmo 1º candidato (equivalente).
   const passos = Math.max(1, anoHoje - anoCivil + 1);
 
   // Um registro é sempre criado no passado, mas um `criado_em` futuro (dado

@@ -64,7 +64,11 @@ export function fmtData(valor: string | null | undefined): string {
 
   if (
     data.getUTCFullYear() !== anoNum ||
+    // Stryker disable next-line ConditionalExpression: mês fora de 1..12 sempre
+    // muda o ano (checado acima) → nunca é o único termo verdadeiro (equivalente).
     data.getUTCMonth() !== mesNum - 1 ||
+    // Stryker disable next-line ConditionalExpression: dia fora do mês sempre
+    // muda o mês (checado acima) → nunca é o único termo verdadeiro (equivalente).
     data.getUTCDate() !== diaNum
   ) {
     return VAZIO;

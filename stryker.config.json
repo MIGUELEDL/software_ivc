@@ -11,7 +11,7 @@
   "thresholds": {
     "high": 100,
     "low": 100,
-    "break": 0
+    "break": 100
   },
   "reporters": ["clear-text", "progress"],
   "vitest": {

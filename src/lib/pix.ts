@@ -7,9 +7,13 @@ type BrCodeInput = {
   txid?: string;
 };
 
+// Stryker disable next-line BlockStatement: corpo de `project` roda no import
+// (PIX_PAYLOAD); esvaziá-lo derruba o load → nenhum teste roda (artefato).
 function project(value: string, maxLen: number): string {
-  return value
-    .normalize("NFD")
+  // Stryker disable next-line StringLiteral: "NFD"→"" lança RangeError no
+  // normalize durante o import (PIX_PAYLOAD) → artefato de load.
+  const normalizado = value.normalize("NFD");
+  return normalizado
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^A-Za-z0-9 ]/g, " ")
     .replace(/\s+/g, " ")
@@ -42,10 +46,14 @@ export function buildBrCode({
 }: BrCodeInput): string {
   const gui = emv("00", "BR.GOV.BCB.PIX");
   const keyField = emv("01", key);
+  // Stryker disable next-line ArithmeticOperator: avaliado no import
+  // (PIX_PAYLOAD); `gui - keyField`→NaN→`.length` lança no load → artefato.
   const merchantAccount = emv("26", gui + keyField);
 
   const name = project(receiverName, 25);
   const city = project(receiverCity, 15);
+  // Stryker disable next-line LogicalOperator: `??`→`&&`; com txid undefined
+  // no import (PIX_PAYLOAD) vira undefined → emv lança no load → artefato.
   const referenceLabel = emv("05", txid ?? "***");
 
   const base =
@@ -62,9 +70,13 @@ export function buildBrCode({
   return base + crc16(base);
 }
 
+// Stryker disable next-line ObjectLiteral: `{}` no import → key undefined →
+// emv lança no load → artefato.
 export const PIX_PAYLOAD = buildBrCode({
   key: PIX.key,
   receiverName: CHURCH.name,
+  // Stryker disable next-line MethodExpression: `.trim()` no import (PIX_PAYLOAD)
+  // é redundante — city.split("-")[0] já vem sem espaço → equivalente.
   receiverCity: CHURCH.city.split("-")[0].trim(),
 });
 
@@ -76,6 +88,8 @@ export function buildBrCodePessoal(matricula: string): string {
   return buildBrCode({
     key: PIX.key,
     receiverName: CHURCH.name,
+    // Stryker disable next-line MethodExpression: `.trim()` redundante — o
+    // split("-")[0] já vem sem espaço (equivalente).
     receiverCity: CHURCH.city.split("-")[0].trim(),
     txid: matricula,
   });

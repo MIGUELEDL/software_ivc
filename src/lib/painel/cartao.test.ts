@@ -155,6 +155,13 @@ describe("fmtData — formato pt-BR e inválidos (CART-08)", () => {
   it("dia a mais -> —", () => {
     expect(fmtData("2026-12-311")).toBe("—");
   });
+
+  it("sufixo numérico extra -> — (a âncora $ exige a data inteira)", () => {
+    // "2026-12-311" não distingue: o dia 311 estoura o round-trip. Já
+    // "2026-01-01-09" faz o split gerar 4 partes; sem a âncora $ o mutante lê
+    // [2026,1,1] (4ª ignorada) e formata a data em vez de recusar.
+    expect(fmtData("2026-01-01-09")).toBe("—");
+  });
 });
 
 describe("fmtData — round-trip de 4 a 6 dígitos (AD-025)", () => {

@@ -14,6 +14,8 @@ export type Resultado<T> = { ok: true; valor: T } | { ok: false; erro: string };
 
 import { civilDe } from "./validade";
 
+// Stryker disable next-line Regex: `digitos = bruto.replace(/\D/g,"")` é sempre
+// só-dígitos → /^\d+$/, /^\d+/ e /\d+$/ coincidem (equivalente).
 const SOMENTE_DIGITOS = /^\d+$/;
 
 /** RG: texto livre por estado (SSP varia), apenas saneado e limitado. */
@@ -75,6 +77,9 @@ export function normalizarRg(valor: string): Resultado<string> {
 
   const limpo = valor.trim();
 
+  // Stryker disable next-line ConditionalExpression,BlockStatement: RG vazio
+  // (após trim) cai no mesmo `return {ok:true,valor:""}` do fim se o early-return
+  // for pulado (equivalente).
   if (limpo.length === 0) {
     return { ok: true, valor: "" };
   }
@@ -123,7 +128,11 @@ export function normalizarDataBatismo(
 
   if (
     data.getUTCFullYear() !== ano ||
+    // Stryker disable next-line ConditionalExpression: mês fora de 1..12 sempre
+    // muda o ano (checado acima) → nunca é o único termo verdadeiro (equivalente).
     data.getUTCMonth() !== mes - 1 ||
+    // Stryker disable next-line ConditionalExpression: dia fora do mês sempre
+    // muda o mês (checado acima) → nunca é o único termo verdadeiro (equivalente).
     data.getUTCDate() !== dia
   ) {
     return { ok: false, erro: "Informe uma data de batismo válida." };

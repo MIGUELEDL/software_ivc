@@ -120,8 +120,8 @@ manutenção do projeto.
 | FWT-08 | P1: no lossy (contagem) | Execute | Implemented (code128 + validade + cartao + documento + pix) |
 | FWT-09 | P1: fail-loud | Execute | Implemented |
 | FWT-10 | P2: stryker escopo | Execute | Implemented (mutate = 5 módulos do subset, exclui testes/config) |
-| FWT-11 | P2: exit code | Execute | Implemented (break:0, high/low:100; fuga → exit 1) |
-| FWT-12 | P2: 100% kill | Execute | Implemented (0 matáveis; 21 equivalentes + 10 artefatos de carga documentados em tasks.md T7) |
+| FWT-11 | P2: exit code | Execute | Implemented (break:100, high/low:100; score <100 → exit 1) |
+| FWT-12 | P2: 100% kill | Execute | Implemented (100.00% real: 3 killables mortos por asserção + 28 anotados inline com `// Stryker disable` — 18 equivalentes e 10 artefatos de carga, documentados em tasks.md T7) |
 
 **Coverage:** 12 total, 0 mapped to tasks, 12 unmapped ⚠️
 
@@ -129,7 +129,7 @@ manutenção do projeto.
 
 ## Success Criteria
 
-- [ ] `npm run test:ci` verde e `npm run test:mutate` com 0 sobreviventes no subset (ou apenas equivalentes/artefatos de harness documentados — ver tasks.md T7)
+- [ ] `npm run test:ci` verde e `npm run test:mutate` com **0 sobreviventes** no subset (100% real com `break:100`; equivalentes/artefatos de carga anotados inline — ver tasks.md T7)
 - [ ] Contagem de asserções migradas ≥ contagem original dos probes de domínio (por módulo)
 - [ ] CI `tests` roda `npm run test:ci` sem regressão dos gates existentes (lint/typecheck/build/probes)
 - [ ] `docs/TESTING.md` documenta o framework como ativo a partir da F10 e a `coverage-matrix.md` ganha linha

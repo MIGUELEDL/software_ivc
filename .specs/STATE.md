@@ -256,6 +256,14 @@
 - **Date**: 2026-10-10
 - **Status**: active
 
+### AD-032
+- **Decisão**: Manter `scripts/patch-stryker-vitest5.mjs` (invocado por `"postinstall"`) para corrigir o `@stryker-mutator/vitest-runner@10.0.0` sob Vitest 5: `collectTestName` monta o nome com `' '` em vez de `' > '`, então o filtro por-teste não casa e mutantes cobertos rodam 0 testes. O patch reescreve `nameParts.join(' ')` → `join(' > ')` em `dist/src/test-helpers.js` e `dist/src/stryker-setup.js` (idempotente), fazendo o run completo (~40s) e a discriminação por mutante funcionarem. O gate de mutação é **`break: 100`** e os **28 mutantes equivalentes/artefatos de carga** são anotados inline com `// Stryker disable next-line <Mutator>` (motivo em comentário); os **3 killables** são mortos por asserção. Resultado: **100.00% / 0 sobreviventes**, exit 0.
+- **Reason**: Bug upstream (#6210; fix #6214 não publicado). Sem o patch, mutantes cobertos "sobrevivem" por 0 testes executados (score falso). O usuário rejeitou o encerramento com `break:0` (fuga nunca falhava) e exigiu **0 sobreviventes por mérito, sem enfraquecer testes**.
+- **Trade-off**: `postinstall` roda um passo extra (inócuo se o upstream corrigir — o patch é idempotente e sai limpo quando o alvo já está corrigido). Anotações inline acoplam o código às mutações, mas cada uma é justificada em comentário e reversível.
+- **Scope**: `scripts/patch-stryker-vitest5.mjs`, `"postinstall"` em `package.json`, `stryker.config.json` (`break:100`), diretivas inline em `src/lib/{painel,cartao,validade,documento}.ts` + `src/lib/pix.ts`, testes-matadores em `src/lib/painel/*.test.ts`.
+- **Date**: 2026-10-10
+- **Status**: active
+
 ## Handoff — feature admin-auditoria — ✅ VERIFIED (2026-10-10)
 
 - **Estado**: Execute → hardening pós-Verifier (2 voltas) → **re-verificação PASS**. Feature **fechada**. `validation.md` (PASS, substitui o relatório obsoleto de 2026-09-17) em `.specs/features/admin-auditoria/`. Probes `scripts/probes-admin-auditoria.sh` → **74 ok / 0 falhas** (`npm run probe:admin-auditoria`, ligado ao CI).
