@@ -13,7 +13,7 @@ on:
 
 jobs:
   tests:
-    name: Code gates (lint / typecheck / build)
+    name: Code gates (lint / typecheck / build / test)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,6 +25,10 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run build
+      # Framework de testes (F10, QA-001): suites Vitest do dominio puro
+      # (code128/validade/cartao/documento/pix + smoke de alias). Complementa
+      # os probes bash abaixo (AD-031: probes intactos, Vitest aditivo).
+      - run: npm run test:ci
       # Probes de dominio sem servidor/DB: compilam os modulos puros e os
       # EXECUTAM com stubs (barcode: code128+cartao+validade; auditoria:
       # service layer com stub de @/lib/supabase/server). Sem isto, os gaps

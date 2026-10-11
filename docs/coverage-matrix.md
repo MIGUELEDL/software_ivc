@@ -54,6 +54,12 @@ status `verified`, respaldada por `validation.md` no respectivo `.specs/features
 
 > RF-016 (histórico de doações do membro) foi **removido** por decisão do administrador (2026-09-08).
 
+### Fase 10 (framework de testes)
+
+| Requisito(s) | Feature | Spec ACs | Teste / Gate | Status |
+| ------------ | ------- | -------- | ------------ | ------ |
+| QA-001 (framework de testes automatizados, runner no CI, PIT contínuo) | `framework-testes` | FWT-01..12 | Vitest 5 suítes de domínio (`code128`/`validade`/`cartao`/`documento`/`pix` + smoke de alias; `npm run test:ci`) + StrykerJS `break:100` 0 sobreviventes (`npm run test:mutate`) + step `test:ci` no job `tests` do CI + probes intactos (AD-031) | 🔧 in progress |
+
 ## Próximos passos
 
 1. Consolidar o inventário RF-001..0NN / RNF-001..0NN aprovado (a Construção acima reflete a revisão de 2026-09-08).
