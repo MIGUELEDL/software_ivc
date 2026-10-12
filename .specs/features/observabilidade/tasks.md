@@ -127,10 +127,10 @@ T6 → T7
 
 ---
 
-### T3: Init Sentry nos 3 runtimes (errors-only, NOOP sem DSN)
+### T3: Init Sentry nos 3 runtimes (errors-only, NOOP sem DSN) ✅
 
 **What**: Criar os inits server/edge/client + `src/instrumentation.ts` (`register` + `onRequestError`), com `beforeSend` anti-PII compartilhado do logger.
-**Where**: `src/instrumentation.ts`
+**Where**: `src/sentry.server.config.ts`, `src/sentry.edge.config.ts`, `src/instrumentation-client.ts`, `src/instrumentation.ts`, `src/lib/observability/sentry-options.ts`
 **Depends on**: T2
 **Reuses**: `scrubPii`/`getRelease` de T2; formato da doc oficial Sentry + Next 16.3 (pesquisado no Design)
 **Requirement**: OBS-01, OBS-02, OBS-03
