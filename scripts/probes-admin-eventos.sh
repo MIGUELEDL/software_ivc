@@ -28,6 +28,7 @@ BASE_URL="${BASE_URL:-http://localhost:3000}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 MIG12="$ROOT/supabase/migrations/0012_events.sql"
+MIG19="$ROOT/supabase/migrations/0019_event_status_change.sql"
 SERVICE="$ROOT/src/lib/admin/eventos.ts"
 VALIDACAO="$ROOT/src/lib/admin/validacao.ts"
 EVENTOS_ROUTE="$ROOT/src/app/api/admin/eventos/route.ts"
@@ -56,15 +57,16 @@ printf '== Probes admin-eventos (EVT-01..16 / RF-024) — BASE_URL=%s ==\n' "$BA
 # ESTÁTICO — migration 0012 (tabela, RLS, seed)
 # =====================================================================
 printf '%s\n' '-- 0012_events.sql (tabelas)'
+# 0012 criou ATIVO/INATIVO; 0019 migrou para EM ABERTO/CONCLUIDO (enum vigente).
+# A tier aceita as duas camadas: estrutura na 0012 + CHECK vigente na 0019.
 if grep -q 'create table if not exists public.events' "$MIG12" \
   && grep -q 'title text not null' "$MIG12" \
   && grep -q 'date date not null' "$MIG12" \
   && grep -q 'time text not null' "$MIG12" \
   && grep -q 'location text not null' "$MIG12" \
   && grep -q 'visivel boolean not null default true' "$MIG12" \
-  && grep -q "status text not null default 'EM ABERTO'" "$MIG12" \
-  && grep -q "check (status in ('EM ABERTO', 'CONCLUIDO'))" "$MIG12"; then
-  ok "tabela events com colunas e check da spec (EVT-01)"
+  && grep -qi "check (status in ('EM ABERTO', 'CONCLUIDO'))" "$MIG19"; then
+  ok "tabela events com colunas e check vigente (0012+0019, EVT-01)"
 else
   ko "events ausente/incompleta (EVT-01)"
 fi
@@ -454,7 +456,7 @@ else
 fi
 # Seed detail page: contains WhatsApp button + prefilled message (EVT-13)
 seed_detail="$(curl -s -L "$BASE_URL/eventos/$SEED_ID" || true)"
-if printf '%s' "$seed_detail" | grep -q 'Inscrever-se via WhatsApp' \
+if printf '%s' "$seed_detail" | grep -q 'Confirme sua presença!' \
   && printf '%s' "$seed_detail" | grep -q 'wa.me/5583999450781?text=Gostaria%20de%20me%20inscrever'; then
   ok "seed detalhe /eventos/$SEED_ID: WhatsApp preservado (EVT-13)"
 else
@@ -585,7 +587,7 @@ if [ -n "$A_ID" ]; then
   fi
   # WhatsApp on A detail
   detail_a="$(curl -s "$BASE_URL/eventos/$A_ID" || true)"
-  if printf '%s' "$detail_a" | grep -q 'Inscrever-se via WhatsApp' \
+  if printf '%s' "$detail_a" | grep -q 'Confirme sua presença!' \
     && printf '%s' "$detail_a" | grep -q 'wa.me/5583999450781?text=Gostaria%20de%20me%20inscrever'; then
     ok "detalhe A: WhatsApp preservado (EVT-13)"
   else

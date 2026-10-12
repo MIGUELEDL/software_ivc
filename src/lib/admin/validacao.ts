@@ -11,6 +11,7 @@ import {
   METODOS_PAGAMENTO as MetodosPagamentoFixo,
 } from "@/lib/admin/financeiro-types";
 import type { LancamentoDados } from "@/lib/admin/financeiro-types";
+import type { EventoStatus } from "@/lib/admin/eventos";
 
 export function validarNascimento(valor: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
@@ -117,7 +118,7 @@ export type EventoValidado = {
   time?: string;
   location?: string;
   visivel?: boolean;
-  status?: "ATIVO" | "INATIVO";
+  status?: EventoStatus;
 };
 
 export type ValidarEventoResultado =
@@ -129,7 +130,7 @@ export type ValidarEventoResultado =
  * exige os obrigatórios `title`/`date`/`time`/`location`; modo `parcial`
  * (PATCH) valida apenas campos enviados. Regras: `date` `YYYY-MM-DD` real,
  * `time` `HH:MM` (formato visual RF-006), `visivel` booleano quando enviado,
- * `status` `ATIVO`/`INATIVO` quando enviado.
+ * `status` `EM ABERTO`/`CONCLUIDO` quando enviado.
  */
 export function validarEvento(
   body: Record<string, unknown>,
@@ -196,8 +197,8 @@ export function validarEvento(
   }
 
   if (body.status !== undefined) {
-    if (body.status !== "ATIVO" && body.status !== "INATIVO") {
-      campos.status = "Status deve ser ATIVO ou INATIVO.";
+    if (body.status !== "EM ABERTO" && body.status !== "CONCLUIDO") {
+      campos.status = "Status deve ser EM ABERTO ou CONCLUIDO.";
     } else {
       dados.status = body.status;
     }
