@@ -152,7 +152,7 @@ Each requirement gets a unique ID for tracking across design, tasks, and validat
 | OBS-01 | P1: Sentry | Execute | Implementing |
 | OBS-02 | P1: Sentry | Execute | Implementing |
 | OBS-03 | P1: Sentry | Execute | Implementing |
-| OBS-04 | P1: Sentry | Design | Pending |
+| OBS-04 | P1: Sentry | Execute | Implementing |
 | OBS-05 | P1: Health | Design | Pending |
 | OBS-06 | P1: Health | Design | Pending |
 | OBS-07 | P1: Health | Design | Pending |

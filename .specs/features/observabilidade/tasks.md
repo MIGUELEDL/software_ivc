@@ -154,10 +154,10 @@ T6 → T7
 
 ---
 
-### T4: Boundary global-error com captura
+### T4: Boundary global-error com captura ✅
 
 **What**: Criar `global-error.tsx` (fallback sem stack + `captureException`) e a tier SSR no probe da feature.
-**Where**: `src/app/global-error.tsx`
+**Where**: `src/app/global-error.tsx`, `scripts/probe-observabilidade.sh`
 **Depends on**: T3
 **Reuses**: Tier SSR de `scripts/probe-barcode.sh` (compila tsx + `react-dom/server` com stubs) como molde
 **Requirement**: OBS-04
