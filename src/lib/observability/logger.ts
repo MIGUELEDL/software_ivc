@@ -91,7 +91,11 @@ export function reportError(
   const erroInfo =
     erro instanceof Error ? { name: erro.name, message: erro.message } : erro;
   logger.error(contexto.evento, { ...base, erro: erroInfo });
-  Sentry.captureException(erro, {
-    extra: { evento: contexto.evento, meta: sanitize(contexto.meta) },
-  });
+  try {
+    Sentry.captureException(erro, {
+      extra: { evento: contexto.evento, meta: sanitize(contexto.meta) },
+    });
+  } catch {
+    // Falha de envio (rede/quota) nunca propaga: o log acima já registrou.
+  }
 }

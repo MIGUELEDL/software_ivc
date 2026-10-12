@@ -299,7 +299,7 @@ T2 → T9
 
 ---
 
-### T9: reportError não propaga falha de envio (gap R1-2)
+### T9: reportError não propaga falha de envio (gap R1-2) ✅
 
 **What**: Teste unit do edge case "falha de envio ao Sentry nunca propaga".
 **Where**: `src/lib/observability/logger.test.ts`

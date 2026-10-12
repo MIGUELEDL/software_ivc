@@ -145,4 +145,14 @@ describe("reportError", () => {
     expect(options.extra.evento).toBe("webhook.log_erro");
     expect(options.extra.meta.email).toBe("[redacted]");
   });
+
+  it("nao propaga falha do envio ao Sentry (edge: rede/quota)", () => {
+    vi.mocked(captureException).mockImplementationOnce(() => {
+      throw new Error("rede fora");
+    });
+    expect(() =>
+      reportError(new Error("insert falhou"), { evento: "webhook.log_erro" }),
+    ).not.toThrow();
+    expect(console.error).toHaveBeenCalledTimes(1);
+  });
 });
