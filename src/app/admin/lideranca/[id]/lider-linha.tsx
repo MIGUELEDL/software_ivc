@@ -37,7 +37,7 @@ export function LiderLinha({
   const fileRef = useRef<HTMLInputElement>(null);
 
   const inputClass =
-    "w-full rounded-lg border border-gray-300 px-4 py-2.5 font-serif text-text-dark focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors";
+    "w-full rounded-lg border border-white/60 px-4 py-2.5 font-serif text-white/80 focus:border-accent-light focus:ring-1 focus:ring-primary outline-none transition-colors";
 
   async function atualizar(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -167,7 +167,10 @@ export function LiderLinha({
       <div className="flex items-start gap-4">
         {lider.photo_url ? (
           <img
-            src={lider.photo_url}
+            // Cache-buster: o path no bucket é fixo (foto.{ext}), então sem
+            // query a troca JPG→JPG reusava os bytes em cache e a foto
+            // "não mudava". updated_at muda a cada upload e invalida o cache.
+            src={`${lider.photo_url}?v=${lider.updated_at}`}
             alt={lider.name}
             className="h-16 w-16 rounded-full object-cover border border-white/20"
           />
@@ -273,7 +276,7 @@ export function LiderLinha({
                 <button
                   type="submit"
                   disabled={enviando}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-accent hover:bg-accent-light disabled:opacity-60 text-white font-sans text-xs font-bold px-4 py-1.5 transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-accent hover:bg-accent-light disabled:opacity-60 text-white font-sans text-xs font-bold px-4 py-1.5 transition-colors cursor-pointer"
                 >
                   <Check size={14} aria-hidden="true" />
                   {enviando ? "Salvando..." : "Salvar"}
@@ -281,7 +284,7 @@ export function LiderLinha({
                 <button
                   type="button"
                   onClick={() => setEditando(false)}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-primary text-primary hover:bg-primary hover:text-white font-sans text-xs font-bold px-4 py-1.5 transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-red-500/90 text-red-500 hover:bg-red-500 hover:text-white font-sans text-xs font-bold px-4 py-1.5 transition-colors cursor-pointer"
                 >
                   <X size={14} aria-hidden="true" />
                   Cancelar
@@ -338,7 +341,7 @@ export function LiderLinha({
 
       {escritor && (
         <div className="mt-4 border-t border-text-dark/5 pt-4">
-          <label className="inline-flex items-center gap-2 cursor-pointer font-sans text-xs font-bold text-primary hover:text-accent transition-colors">
+          <label className="inline-flex items-center gap-2 cursor-pointer font-sans text-xs font-bold text-white hover:text-accent-light transition-colors">
             <Camera size={15} aria-hidden="true" />
             {fotoEnviando ? "Enviando foto..." : "Trocar foto"}
             <input

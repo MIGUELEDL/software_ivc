@@ -29,9 +29,6 @@ export default function Leadership({
           <h2 className="font-sans text-4xl sm:text-5xl font-bold text-primary mb-4">
             Nossa <span className="text-accent">Liderança</span>
           </h2>
-          <p className="font-serif text-lg text-text-dark/60 max-w-2xl mx-auto">
-            Homens e mulheres chamados por Deus para apascentar o seu rebanho.
-          </p>
         </motion.div>
 
         {leaders.length === 0 ? (
@@ -62,7 +59,8 @@ export default function Leadership({
               >
                 {lider.photo_url ? (
                   <img
-                    src={lider.photo_url}
+                    // Mesmo cache-buster do admin (path fixo no bucket).
+                    src={`${lider.photo_url}?v=${lider.updated_at}`}
                     alt={lider.name}
                     className="w-25 h-25 mx-auto mb-6 rounded-full object-cover border-4 border-white/20 shadow"
                   />
