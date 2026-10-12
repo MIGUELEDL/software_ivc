@@ -99,7 +99,7 @@ T6 → T7
 
 ---
 
-### T2: Lib de log estruturado anti-PII + release
+### T2: Lib de log estruturado anti-PII + release ✅
 
 **What**: Criar `release.ts` (fonte única do release), `logger.ts` (JSON + sanitize PII + `reportError`) e a suíte Vitest co-locada.
 **Where**: `src/lib/observability/`
