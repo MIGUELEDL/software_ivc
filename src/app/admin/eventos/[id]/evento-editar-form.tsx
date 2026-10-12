@@ -7,8 +7,9 @@ import type { Evento, EventoStatus } from "@/lib/admin/eventos";
 /**
  * Form de edição de evento (EVT-08). PATCH parcial em
  * `/api/admin/eventos/[id]` com toggle `visivel` (checkbox) e toggle `status`
- * EM ABERTO/CONCLUIDO (soft-delete — EVT-10/11); sem botão DELETE (EVT-03).
- * Validado por campo → 400; 200 → fecha e refresh; 401 → login.
+ * EM ABERTO/CONCLUIDO (soft-delete — EVT-10/11); botão Excluir conclui o
+ * evento (some do portal, histórico preservado no admin). Sem hard DELETE
+ * (EVT-03). Validado por campo → 400; 200 → fecha e refresh; 401 → login.
  */
 export function EventoEditarForm({ evento }: { evento: Evento }) {
   const router = useRouter();
@@ -33,6 +34,42 @@ export function EventoEditarForm({ evento }: { evento: Evento }) {
         </button>
       </div>
     );
+  }
+
+  async function excluir() {
+    if (
+      !window.confirm(
+        "Excluir este evento do portal? Ele sairá do site, mas o histórico permanece aqui no painel."
+      )
+    ) {
+      return;
+    }
+    setMensagem(null);
+    setEnviando(true);
+    try {
+      const resposta = await fetch(`/api/admin/eventos/${evento.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "CONCLUIDO" }),
+      });
+
+      if (resposta.status === 401) {
+        window.location.assign("/login/admin");
+        return;
+      }
+
+      if (resposta.status === 200) {
+        setAberto(false);
+        router.refresh();
+        return;
+      }
+
+      setMensagem("Não foi possível excluir. Tente novamente.");
+    } catch {
+      setMensagem("Não foi possível excluir. Tente novamente.");
+    } finally {
+      setEnviando(false);
+    }
   }
 
   async function atualizar(event: React.FormEvent<HTMLFormElement>) {
@@ -287,6 +324,14 @@ export function EventoEditarForm({ evento }: { evento: Evento }) {
           className="rounded-lg bg-white/20 border-2 border-white/20 text-white/70 hover:bg-white/10 font-sans text-sm font-bold px-5 py-2.5 transition-colors cursor-pointer"
         >
           Cancelar
+        </button>
+        <button
+          type="button"
+          onClick={excluir}
+          disabled={enviando}
+          className="rounded-lg bg-red-500/15 border-2 border-red-500/60 text-red-400 hover:bg-red-500 hover:text-white disabled:opacity-60 font-sans text-sm font-bold px-5 py-2.5 transition-colors cursor-pointer"
+        >
+          {enviando ? "..." : "Excluir do portal"}
         </button>
       </div>
     </form>

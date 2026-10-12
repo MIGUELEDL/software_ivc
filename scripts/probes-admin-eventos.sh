@@ -689,5 +689,22 @@ else
   ko "seed restaurado: portal NAO contem Clamor 12h"
 fi
 
+# =====================================================================
+# ESTÁTICO — botão Excluir (soft: CONCLUIDO via PATCH, sem hard DELETE)
+# =====================================================================
+printf '%s\n' '-- Excluir do portal (EVTDEL, soft-delete)'
+if grep -q 'Excluir do portal' "$EDITAR_FORM" \
+  && grep -q 'window.confirm' "$EDITAR_FORM" \
+  && grep -q '"CONCLUIDO"' "$EDITAR_FORM"; then
+  ok "excluir: botao com confirm conclui via PATCH status CONCLUIDO"
+else
+  ko "excluir: botao/confirm/CONCLUIDO ausentes no form"
+fi
+if grep -q 'method.*DELETE\|app.delete\|.delete()' "$EVENTO_ID_ROUTE" "$SERVICE"; then
+  ko "excluir: hard DELETE presente (proibido EVT-03)"
+else
+  ok "excluir: sem hard DELETE (soft via PATCH)"
+fi
+
 printf '\nProbes admin-eventos: %d ok, %d falhas\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]
