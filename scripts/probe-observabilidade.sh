@@ -11,6 +11,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 BOUNDARY="$ROOT/src/app/global-error.tsx"
+HEALTH="$ROOT/src/app/api/health/route.ts"
 
 if ! command -v node >/dev/null 2>&1; then
   export PATH="$HOME/.nvm/versions/node/v$(cat "$ROOT/.nvmrc").0/bin:$PATH"
@@ -86,6 +87,67 @@ console.log("ok");
     ko "OBS-04 render: SSR do boundary falhou (detalhes acima)"
   fi
 fi
+
+# --- OBS-05..08: /api/health público, raso e exato ---
+# A rota não pode importar Sentry, Supabase nem ler PII: independência por
+# construção (o NOOP runtime já é provado pelo smoke Vitest da T3).
+if grep -q 'sentry' "$HEALTH"; then
+  ko "OBS-08 rota de health importa sentry (acoplamento proibido)"
+else
+  ok "OBS-08 rota de health sem dependencia do Sentry"
+fi
+if grep -E '^\s*import' "$HEALTH" | grep -qi 'supabase'; then
+  ko "OBS-08 rota de health consulta banco (health deve ser raso)"
+else
+  ok "OBS-08 rota de health rasa (sem banco/Supabase)"
+fi
+if grep -qE 'export (async )?function (POST|PUT|DELETE|PATCH)' "$HEALTH"; then
+  ko "OBS-06 rota exporta metodo alem de GET"
+else
+  ok "OBS-06 rota exporta so GET (demais metodos caem em 405)"
+fi
+
+# --- OBS-05..07 (runtime): corpo exato, 405 e operação sem DSN ---
+# Sobe `next start` efêmero (build uma vez). Env real precede .env.local,
+# então DSN vazio no ambiente simula ausência de DSN (OBS-07).
+PORT=3101
+"$ROOT/node_modules/.bin/next" build "$ROOT" >/dev/null 2>&1 || ko "health: build falhou"
+PORT="$PORT" "$ROOT/node_modules/.bin/next" start "$ROOT" --port "$PORT" >/dev/null 2>&1 &
+SERVER_PID=$!
+trap 'kill $SERVER_PID 2>/dev/null; rm -rf "$TMP_R"' EXIT
+for _ in $(seq 1 30); do
+  curl -sf "http://127.0.0.1:$PORT/api/health" >/dev/null 2>&1 && break
+  sleep 1
+done
+BODY="$(curl -s "http://127.0.0.1:$PORT/api/health" || true)"
+CODE="$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$PORT/api/health" || true)"
+if [ "$CODE" = "200" ] && [ "$BODY" = '{"status":"ok","release":"unknown"}' ]; then
+  ok "OBS-05 GET /api/health sem auth -> 200 corpo exato"
+else
+  ko "OBS-05 GET /api/health retornou $CODE / $BODY"
+fi
+CODE_POST="$(curl -s -o /dev/null -w '%{http_code}' -X POST "http://127.0.0.1:$PORT/api/health" || true)"
+if [ "$CODE_POST" = "405" ]; then
+  ok "OBS-06 POST /api/health -> 405"
+else
+  ko "OBS-06 POST /api/health retornou $CODE_POST (esperado 405)"
+fi
+kill $SERVER_PID 2>/dev/null
+wait $SERVER_PID 2>/dev/null || true
+SENTRY_DSN= NEXT_PUBLIC_SENTRY_DSN= PORT="$PORT" "$ROOT/node_modules/.bin/next" start "$ROOT" --port "$PORT" >/dev/null 2>&1 &
+SERVER_PID=$!
+for _ in $(seq 1 30); do
+  curl -sf "http://127.0.0.1:$PORT/api/health" >/dev/null 2>&1 && break
+  sleep 1
+done
+BODY_NODSN="$(curl -s "http://127.0.0.1:$PORT/api/health" || true)"
+CODE_NODSN="$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$PORT/api/health" || true)"
+if [ "$CODE_NODSN" = "200" ] && [ "$BODY_NODSN" = '{"status":"ok","release":"unknown"}' ]; then
+  ok "OBS-07 health 200 sem DSN (Sentry fora nao derruba o check)"
+else
+  ko "OBS-07 health sem DSN retornou $CODE_NODSN / $BODY_NODSN"
+fi
+kill $SERVER_PID 2>/dev/null || true
 
 printf '== Resumo: %s ok / %s falhas ==\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]

@@ -180,10 +180,10 @@ T6 → T7
 
 ---
 
-### T5: Rota GET /api/health pública e rasa
+### T5: Rota GET /api/health pública e rasa ✅
 
 **What**: Criar a rota de health (só `GET`; demais métodos → 405 por convenção) e as tiers no probe.
-**Where**: `src/app/api/health/route.ts`
+**Where**: `src/app/api/health/route.ts`, `scripts/probe-observabilidade.sh`
 **Depends on**: T2
 **Reuses**: `getRelease()` de T2; shape `{ status }`/`{ error }` das rotas existentes
 **Requirement**: OBS-05, OBS-06, OBS-07, OBS-08
@@ -203,7 +203,7 @@ T6 → T7
 **Tests**: integration
 **Gate**: full
 
-**Commit**: `feat(obs): GET /api/health público e raso`
+**Commit**: `feat(obs): rota de health pública e rasa`
 
 ---
 
