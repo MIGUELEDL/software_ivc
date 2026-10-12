@@ -12,6 +12,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 BOUNDARY="$ROOT/src/app/global-error.tsx"
 HEALTH="$ROOT/src/app/api/health/route.ts"
+WEBHOOK_MP="$ROOT/src/app/api/webhooks/mercadopago/route.ts"
 
 if ! command -v node >/dev/null 2>&1; then
   export PATH="$HOME/.nvm/versions/node/v$(cat "$ROOT/.nvmrc").0/bin:$PATH"
@@ -148,6 +149,26 @@ else
   ko "OBS-07 health sem DSN retornou $CODE_NODSN / $BODY_NODSN"
 fi
 kill $SERVER_PID 2>/dev/null || true
+
+# --- OBS-10: webhook MP usa logger/reportError; zero console.* ---
+# Amarra a adoção: reverter 1 call site para console.* derruba a contagem
+# E o veto. Sem esta tier, o swap morria em silêncio (sensor R1).
+if grep -q 'from "@/lib/observability/logger"' "$WEBHOOK_MP"; then
+  ok "OBS-10 webhook importa o logger"
+else
+  ko "OBS-10 webhook sem import do logger"
+fi
+CALLS="$(grep -cE 'logger\.(warn|error)\(|reportError\(' "$WEBHOOK_MP" || true)"
+if [ "$CALLS" -ge 6 ]; then
+  ok "OBS-10 webhook com 6 call sites no logger ($CALLS encontrados)"
+else
+  ko "OBS-10 webhook com $CALLS call sites no logger (esperado >= 6)"
+fi
+if grep -q 'console\.' "$WEBHOOK_MP"; then
+  ko "OBS-10 webhook ainda usa console.* (regressao da adocao)"
+else
+  ok "OBS-10 webhook sem console.* (adocao completa)"
+fi
 
 printf '== Resumo: %s ok / %s falhas ==\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]

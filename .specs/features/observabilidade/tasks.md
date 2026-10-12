@@ -69,6 +69,16 @@ T4 → T7
 T6 → T7
 ```
 
+### Phase 4: Hardening pós-Verifier (R1)
+
+Gaps do Verifier R1 (FAIL 12/13, sensor 6/7): dente discriminante na adoção
+do webhook + teste do edge de falha de envio.
+
+```
+T6 → T8 → T9
+T2 → T9
+```
+
 ---
 
 ## Task Breakdown
@@ -263,18 +273,72 @@ T6 → T7
 
 ---
 
+### T8: Tier estática da adoção no webhook (gap R1-1) ✅
+
+**What**: Adicionar tier ao probe que amarra os 6 call sites ao logger (revert para `console.*` morre aqui).
+**Where**: `scripts/probe-observabilidade.sh`
+**Depends on**: T6
+**Reuses**: Padrão ok/ko do probe; mutante exato do Verifier (`reportError`→`console.error` na linha 72 da rota)
+**Requirement**: OBS-10
+
+**Tools**:
+
+- MCP: NONE
+- Skill: NONE
+
+**Done when**:
+
+- [ ] Tier asserta: import do logger presente; `grep -c` de `logger.(warn|error)(` + `reportError(` ≥ 6; zero `console.` na rota
+- [ ] Mutante do Verifier (1 call revertido) falha a tier (provado em scratch, descartado)
+- [ ] Gate check passes: `bash scripts/probe-observabilidade.sh` (10+ tiers verdes)
+
+**Tests**: integration
+**Gate**: full
+
+**Commit**: `test(obs): tier amarra webhook ao logger (gap R1)`
+
+---
+
+### T9: reportError não propaga falha de envio (gap R1-2)
+
+**What**: Teste unit do edge case "falha de envio ao Sentry nunca propaga".
+**Where**: `src/lib/observability/logger.test.ts`
+**Depends on**: T2, T8
+**Reuses**: Mock de `captureException` já montado na suíte
+**Requirement**: Edge case da spec (falha de envio)
+
+**Tools**:
+
+- MCP: NONE
+- Skill: NONE
+
+**Done when**:
+
+- [ ] `captureException` mockado para lançar (uma vez) → `reportError` não lança e ainda loga em error
+- [ ] Gate check passes: `npm run test:ci`
+- [ ] Test count: 243 passed (242 + 1, sem perda)
+
+**Tests**: unit
+**Gate**: quick
+
+**Commit**: `test(obs): reportError tolera falha de envio ao Sentry`
+
+---
+
 ## Phase Execution Map
 
 Visual representation of task ordering. Phases run in sequence, and tasks within a phase run in order:
 
 ```
-Phase 1 → Phase 2 → Phase 3
+Phase 1 → Phase 2 → Phase 3 → Phase 4
 
 Phase 1:  T1 ------→ T2 ------→ T3 ------→ T4
 Phase 2:  T2 ------→ T5 ------→ T6
           T2 ------→ T6
 Phase 3:  T4 ------→ T7
           T6 ------→ T7
+Phase 4:  T6 ------→ T8 ------→ T9
+          T2 ------→ T9
 ```
 
 Execution is strictly sequential - there is no intra-phase parallelism. A single agent (or batch worker) works one task at a time, in order.
@@ -318,6 +382,8 @@ Before approving tasks, verify they are granular enough:
 | T5: /api/health + tiers | 1 endpoint + tiers | ✅ Granular |
 | T6: swap de logs no webhook | 1 arquivo, 6 chamadas | ✅ Granular |
 | T7: docs + prova empírica | 1 doc + verificação | ✅ Granular |
+| T8: tier adoção | 1 tier no probe | ✅ Granular |
+| T9: edge envio | 1 caso de teste | ✅ Granular |
 
 **Granularity check:**
 
@@ -342,6 +408,8 @@ For each task, check:
 | T5 | T2 | T2 → T5 (Phase 2) | ✅ Match |
 | T6 | T2, T5 | T2 → T6, T5 → T6 (Phase 2) | ✅ Match |
 | T7 | T4, T6 | T4 → T7, T6 → T7 (Phase 3) | ✅ Match |
+| T8 | T6 | T6 → T8 (Phase 4) | ✅ Match |
+| T9 | T2, T8 | T2 → T9, T8 → T9 (Phase 4) | ✅ Match |
 
 **Rules:**
 
@@ -366,6 +434,8 @@ For each task, check: does the task create or modify a code layer that has a req
 | T5: health | Rota | integration (probe) | integration | ✅ OK |
 | T6: webhook | Rota | integration (probe) | integration | ✅ OK |
 | T7: docs | Docs | none | none | ✅ OK |
+| T8: tier adoção | Rota | integration (probe) | integration | ✅ OK |
+| T9: edge envio | Lib `observability` | unit | unit | ✅ OK |
 
 **Rules:**
 
