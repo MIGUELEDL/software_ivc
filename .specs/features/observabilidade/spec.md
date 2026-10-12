@@ -160,8 +160,8 @@ Each requirement gets a unique ID for tracking across design, tasks, and validat
 | OBS-09 | P2: Logger | Execute | Implementing |
 | OBS-10 | P2: Logger | Execute | Implementing |
 | OBS-11 | P2: Logger | Execute | Implementing |
-| OBS-12 | P2: Docs | Design | Pending |
-| OBS-13 | P2: Docs | Design | Pending |
+| OBS-12 | P2: Docs | Execute | Implementing |
+| OBS-13 | P2: Docs | Execute | Implementing |
 
 **ID format:** `[CATEGORY]-[NUMBER]` (e.g., `AUTH-01`, `CART-03`, `NOTIF-02`)
 

@@ -235,7 +235,7 @@ T6 → T7
 
 ---
 
-### T7: Docs F11 ativa + prova empírica com DSN real
+### T7: Docs F11 ativa + prova empírica com DSN real ✅
 
 **What**: Atualizar `docs/OBSERVABILITY.md` (F11 ativa) + runbook (alerta no dashboard) e provar a captura de ponta a ponta com o DSN real via rota-throw em scratch (nunca commitada).
 **Where**: `docs/OBSERVABILITY.md`
@@ -252,13 +252,14 @@ T6 → T7
 
 - [ ] Tabela Status marca F11 ativa (DSN, release, alerta-dashboard); runbook com passo de criação da regra de alerta para o canal da liderança + fluxo Detecção→Triagem→Resposta→Aprendizado
 - [ ] Prova empírica (scratch local, removido após): throw proposital aparece no dashboard Sentry com `release` e sem PII; sem DSN o app segue NOOP (T3 revalidado)
+- [ ] Evidência T7 (2026-10-12): rota-throw scratch `prova-obs-p11` (pastas `__*` são privadas no App Router — 1ª tentativa deu 404 por isso) → `GET` retornou **500** e `/api/health` seguiu **200**; scratch deletado (`git status` limpo dele). Confirmação da chegada no dashboard (issue `[prova-obs-f11]`) é do usuário (acesso ao Sentry). Boot exibe warning Sentry `diagnostics-channel injection` (só afeta spans/tracing, fora do escopo errors-only; captura manual + `onRequestError` não usam esse canal).
 - [ ] Gate check passes: Build completo (`lint && typecheck && build && test:ci` + `probe-observabilidade.sh` + regressão FIN)
 - [ ] Nenhum segredo commitado (`git status` sem `.env.local`; grep por DSN no tree commitado vazio)
 
 **Tests**: none
 **Gate**: build
 
-**Commit**: `docs(obs): F11 ativa + runbook de incidente`
+**Commit**: `docs(obs): fase 11 ativa + runbook de incidente`
 
 ---
 

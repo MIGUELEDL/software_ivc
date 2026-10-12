@@ -33,9 +33,9 @@ IDs internos e metadados funcionais — conforme `docs/LGPD.md`.
 
 | Fase | Observabilidade |
 | ---- | --------------- |
-| **F8/F9** | Aplicável desde o início: `npm run build` reporta erros de compilação; Sentry pode ser instrumentado a partir da F9 (opcional, "early")
+| **F8/F9** | Aplicável desde o início: `npm run build` reporta erros de compilação; Sentry pode ser instrumentado a partir da F9 (opcional, "early") |
 | **F10** | Testes de erro (framework) cobrem caminhos de falha esperados |
-| **F11** | Sentry free ativado (RNF-008): DSN, `release`, alertas por canal (e-mail institucional) |
+| **F11** | ✅ **Ativa**: Sentry free errors-only (`[REDACTED_PROJECT_NAME]`, DSN só em `.env.local` gitignorado), `release` = SHA Vercel ou `unknown`, `GET /api/health` público e raso, logger JSON anti-PII (`src/lib/observability/`) adotado no webhook MP, alerta por e-mail via regra no dashboard (passo no runbook abaixo) |
 
 ## Runbook de incidente (F11)
 
@@ -44,6 +44,18 @@ IDs internos e metadados funcionais — conforme `docs/LGPD.md`.
 3. **Resposta:** rollback de deploy no Vercel (`verifyDOM`), correção em PR, re-deploy.
 4. **Aprendizado:** feature impactada → antes de fechar o incidente, registrar lição no
    processo spec-driven (aplicável a partir da F11).
+
+### Criar a regra de alerta no dashboard Sentry (passo manual, fora do repo)
+
+1. Em `sentry.io` → projeto `[REDACTED_PROJECT_NAME]` → **Alerts** → **Create Alert** → **Issues**.
+2. Condição sugerida: `event.level = error` com frequência mínima (ex.: mais de
+   10 eventos em 1h) para não esgotar a atenção com ruído.
+3. Ação: enviar para o **canal de e-mail da liderança** (definir o endereço com
+   a liderança; não versionar e-mails no repo).
+4. O que NÃO alertar: `GET /api/health` 200 (tráfego de monitor) e eventos do
+   ambiente local (`release: unknown` vindos de dev — filtrar por
+   `release` quando necessário).
+5. Revisão trimestral: ajustar o limiar conforme o volume real (plano free).
 
 ## Referências
 
