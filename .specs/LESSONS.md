@@ -120,6 +120,18 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - evidence: stryker.config.json:14 (break:0) / tasks.md T7 (mutation-gate/stryker)
 - last seen: 2026-10-11T00:21:32Z
 
+### L-019 - Adocao de helper em rota precisa de tier que amarre os call sites (contagem + veto a alternativa), nao so de testes do helper: o swap revertido passou a suite inteira verde.
+- signal: `surviving_mutant` · recurrence: 1 feature(s) · scope: `probes` · harmful: 0
+- features: observabilidade
+- evidence: OBS-10 (probes)
+- last seen: 2026-10-12T18:17:31Z
+
+### L-020 - Greps de probe que casam comentario geram falso-positivo/negativo: escopar a linhas de codigo (ex. ^\s*import) quando o literal tambem aparece em texto.
+- signal: `gate_fail` · recurrence: 1 feature(s) · scope: `probes` · harmful: 0
+- features: observabilidade
+- evidence: scripts/probe-observabilidade.sh (probes)
+- last seen: 2026-10-12T18:17:32Z
+
 ## Quarantined (failed when applied - ignore)
 
 A confirmed lesson that recurred alongside failure. Kept for the maintainer to review.

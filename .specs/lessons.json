@@ -3,7 +3,7 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 19,
+  "next_id": 21,
   "lessons": [
     {
       "id": "L-001",
@@ -338,6 +338,42 @@
       ],
       "created": "2026-10-11T00:21:32Z",
       "last_seen": "2026-10-11T00:21:32Z"
+    },
+    {
+      "id": "L-019",
+      "key": "surviving_mutant::adocao de helper em rota precisa de tier que amarre os call sites contagem veto a alternativa nao so de testes do helper o swap revertido passou a suite inteira verde",
+      "text": "Adocao de helper em rota precisa de tier que amarre os call sites (contagem + veto a alternativa), nao so de testes do helper: o swap revertido passou a suite inteira verde.",
+      "signal": "surviving_mutant",
+      "scope": "probes",
+      "status": "candidate",
+      "features": [
+        "observabilidade"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "OBS-10 (probes)"
+      ],
+      "created": "2026-10-12T18:17:31Z",
+      "last_seen": "2026-10-12T18:17:31Z"
+    },
+    {
+      "id": "L-020",
+      "key": "gate_fail::greps de probe que casam comentario geram falso positivo negativo escopar a linhas de codigo ex s import quando o literal tambem aparece em texto",
+      "text": "Greps de probe que casam comentario geram falso-positivo/negativo: escopar a linhas de codigo (ex. ^\\s*import) quando o literal tambem aparece em texto.",
+      "signal": "gate_fail",
+      "scope": "probes",
+      "status": "candidate",
+      "features": [
+        "observabilidade"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "scripts/probe-observabilidade.sh (probes)"
+      ],
+      "created": "2026-10-12T18:17:32Z",
+      "last_seen": "2026-10-12T18:17:32Z"
     }
   ]
 }

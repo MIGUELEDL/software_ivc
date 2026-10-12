@@ -60,6 +60,12 @@ status `verified`, respaldada por `validation.md` no respectivo `.specs/features
 | ------------ | ------- | -------- | ------------ | ------ |
 | QA-001 (framework de testes automatizados, runner no CI, PIT contínuo) | `framework-testes` | FWT-01..12 | Vitest 5 suítes de domínio (`code128`/`validade`/`cartao`/`documento`/`pix` + smoke de alias; `npm run test:ci`, 220 ok/0) + StrykerJS `break:100` 100.00% 0 sobreviventes (`npm run test:mutate`) + step `test:ci` no job `tests` do CI + probes intactos (AD-031); Verifier PASS, sensor 5/5 | ✅ verified |
 
+### Fase 11 (observabilidade)
+
+| Requisito(s) | Feature | Spec ACs | Teste / Gate | Status |
+| ------------ | ------- | -------- | ------------ | ------ |
+| RNF-008 (Sentry plano free), RNF-003 (health/uptime) | `observabilidade` | OBS-01..13 | Vitest suítes `observability` (release/logger/sentry-init, `npm run test:ci`, 23 ok/0) + `scripts/probe-observabilidade.sh` (13 ok/0: boundary SSR, health runtime exato/405/sem-DSN, adoção webhook) + regressão FIN AC-13..19 verde + throw→500 com DSN real e issue confirmada no dashboard; Verifier R2 PASS, sensor 2/2 | ✅ verified |
+
 ## Próximos passos
 
 1. Consolidar o inventário RF-001..0NN / RNF-001..0NN aprovado (a Construção acima reflete a revisão de 2026-09-08).

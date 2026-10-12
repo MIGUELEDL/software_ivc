@@ -16,9 +16,9 @@ Roadmap em fases dirigido por especificação (processo `tlc-spec-driven`, ver `
 | 7 | Infra / Custos | ✅ concluída |
 | **8** | **Fundação (concluída)** | ✅ kit SDD + piloto + requisitos aprovados + docs detalhadas;
 | 9 | MVP | ✅ concluída em 2026-10-10 — todas as frentes verificadas (ver `docs/coverage-matrix.md`, linhas ✅ verified)
-| 10 | Testes (framework entra aqui) | 🟡 próxima |
-| 11 | Observabilidade (Sentry free) | ⏳ |
-| 12 | Deploy (Vercel Hobby) | ⏳ |
+| 10 | Testes (framework entra aqui) | ✅ concluída (F10: Vitest 5 + Stryker `break:100`, feature `framework-testes` verified) |
+| 11 | Observabilidade (Sentry free) | ✅ concluída em 2026-10-12 — Sentry errors-only + health + logger + runbook (ver `docs/OBSERVABILITY.md` e `docs/coverage-matrix.md`, linha ✅ verified) |
+| 12 | Deploy (Vercel Hobby) | 🟡 próxima |
 | 13 | Hardening | ⏳ |
 | 14 | Produção (liderança 1 templo) | ⏳ |
 | 15 | Evolução | ⏳ |
@@ -53,6 +53,12 @@ FRENTES do MVP: portal público multirrota (Sobre/História/MV, Liderança, Loca
 **Concluída em 2026-10-10.** Framework de testes automatizados (QA-001): **Vitest 5** cobrindo o domínio puro (`code128`/`validade`/`cartao`/`documento`/`pix`, 220 testes) com runner no CI (`npm run test:ci` no job `tests`) + **PIT contínuo via StrykerJS** (`break:100`, 100.00% / 0 sobreviventes no subset migrado). Probes bash permanecem no CI (AD-031). Feature `framework-testes` ✅ verified; decisões AD-030/031/032 e handoff em `.specs/STATE.md`.
 
 **Próxima (Fase 11 — Observabilidade):** ver `OBSERVABILITY.md`.
+
+## Fase 11 — Observabilidade (concluída)
+
+**Concluída em 2026-10-12.** Sentry free errors-only (`[REDACTED_PROJECT_NAME]`, NOOP sem DSN) nos 3 runtimes + boundary `global-error` + lib `src/lib/observability/` (release/logger anti-PII/reportError) + `GET /api/health` público e raso + webhook MP no logger + runbook com passo de alerta no dashboard. Feature `observabilidade` ✅ verified (OBS-01..13, Verifier R2 PASS 13/13, sensor 2/2); decisões AD-033 e handoff em `.specs/STATE.md`. Pendentes do operador: regra de alerta no dashboard + e-mail da liderança; Analytics entra na F12.
+
+**Próxima (Fase 12 — Deploy):** ver `docs/DEPLOYMENT.md`.
 
 ## Decisões & pendências transversais
 

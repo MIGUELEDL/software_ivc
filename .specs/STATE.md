@@ -264,6 +264,24 @@
 - **Date**: 2026-10-10
 - **Status**: active
 
+### AD-033
+- **Decisão**: Observabilidade (F11) = **Sentry manual errors-only** (`@sentry/nextjs`, inits `sentry.server/edge.config.ts` + `instrumentation-client.ts` + `src/instrumentation.ts` com `onRequestError`, sem wizard e sem `withSentryConfig` nesta fase) + convenção **`src/lib/observability/`** (`release.ts` fonte única do release, `logger.ts` JSON com sanitize PII recursivo + `reportError`, `sentry-options.ts` fábrica errors-only com `beforeSend`) + `GET /api/health` público e raso. DSN só em `.env.local` (gitignorado); sem DSN = NOOP. Tracing/replay desligados (quota free); Analytics na F12.
+- **Reason**: Setup manual é mínimo, auditável e reversível; wrapper de build sem authToken agregava pouco para errors-only. Logger próprio porque `console.*` ad-hoc não garante anti-PII nem formato para os function logs.
+- **Trade-off**: Sem upload de sourcemaps (sem authToken no repo) e sem túnel anti-adblock — reavaliar na F12 com URL de produção.
+- **Scope**: Captura de erros server/client, health, logs; adoção mínima validada no webhook MP; demais rotas adotam o helper como evolução.
+- **Date**: 2026-10-12
+- **Status**: active
+
+## Handoff — feature observabilidade (Fase 11) — ✅ VERIFIED (2026-10-12)
+
+- **Estado**: Spec → Design → Tasks (7 tasks) → Execute → Verifier R1 FAIL (12/13, 1 sobrevivente) → hardening T8/T9 → Verifier R2 **PASS**. Feature **fechada**. `validation.md` (PASS) em `.specs/features/observabilidade/`. F11 (RNF-008) concluída.
+- **Entregue**: `@sentry/nextjs@11.7.0` errors-only nos 3 runtimes (NOOP sem DSN) + `global-error.tsx` + `src/lib/observability/` (release/logger/reportError/sentry-options) + `GET /api/health` público e raso + webhook MP no logger + `docs/OBSERVABILITY.md` F11 ativa com runbook de alerta. Gates: `test:ci` **243/0**, `probe-observabilidade.sh` **13/0**, FIN 94 ok / 5 falhas pré-existentes do dashboard (restyle, não atribuíveis).
+- **Verificação**: Verifier independente (autor ≠ verificador), range `23e99a3..fe60ea9`; **13/13 ACs (OBS-01..13)** com evidência `file:line`; sensor R2 **2/2 mortos**; chegada do evento `[prova-obs-f11]` **confirmada pelo operador no dashboard** em 2026-10-12. R1 honesto: teste novo da T9 pegou bug real (`reportError` propagava falha de envio).
+- **Commits**: `3a5ff34` (T1 dep) → `4aaf79c` (T2 logger) → `b42f7bb` (T3 inits) → `246d317` (T4 boundary) → `9f5bf46` (T5 health) → `785766a` (T6 webhook) → `458088a` (T7 docs+prova) → `06a6b41` (T8 tier) → `fe60ea9` (T9 edge) + este fechamento. Nada pushed.
+- **Decisões**: AD-033 (Sentry manual errors-only + convenção `src/lib/observability/`). Lições **L-019** (amarrar call sites da adoção) e **L-020** (greps de probe fora de comentários) como candidatas.
+- **Feature**: `.specs/features/observabilidade/spec.md` — 13 ACs `OBS-01..13` Verified. `validate_spec.py` 0 erros / 0 warnings; `validate_tasks.py` 0 erros / 5 warnings (confirmados).
+- **Pendente do operador**: criar o projeto já existe; falta a **regra de alerta no dashboard** (passo no runbook) + informar o **e-mail da liderança**; **Analytics** entra na F12 com URL de produção.
+
 ## Handoff — feature framework-testes — ✅ VERIFIED (2026-10-10)
 
 - **Estado**: Spec → Execute (7 batches por sub-agente) → hardening do gate de mutação → **Verifier PASS**. Feature **fechada**. `validation.md` (PASS) em `.specs/features/framework-testes/`. F10 (QA-001) concluída.
