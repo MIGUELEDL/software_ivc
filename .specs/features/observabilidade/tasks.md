@@ -207,7 +207,7 @@ T6 → T7
 
 ---
 
-### T6: Webhook MP adota logger + reportError (contrato intacto)
+### T6: Webhook MP adota logger + reportError (contrato intacto) ✅
 
 **What**: Trocar os 6 `console.error` do webhook MP por `logger.error`/`reportError`, sem alterar um byte de corpo/status.
 **Where**: `src/app/api/webhooks/mercadopago/route.ts`
@@ -226,6 +226,7 @@ T6 → T7
 - [ ] Falha de insert/conciliação gera log error + captura Sentry
 - [ ] Gate check passes: `npm run test:ci` + `scripts/probes-admin-financeiro.sh` (regressão FIN-13..19 verde)
 - [ ] Test count: sem perda (suítes intactas, probes FIN sem falha nova)
+- [ ] Nota (2026-10-12, medida): `probes-admin-financeiro.sh` retorna 94 ok / 5 falhas, todas estáticas do dashboard (`card Financeiro`, `Resumo financeiro`, cards pré-existentes) — `src/app/admin/page.tsx` foi restilizado após o probe (commits `2fb2175`/`bbcc220`/`1b43aca`) e não contém mais esses literais; `git diff` da T6 toca só o webhook. Todas as tiers do webhook (AC-13..19, com escrita real CONCILIADO) verdes. Verifier: não atribuir essas 5 à T6.
 
 **Tests**: integration
 **Gate**: full

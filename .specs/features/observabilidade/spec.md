@@ -158,7 +158,7 @@ Each requirement gets a unique ID for tracking across design, tasks, and validat
 | OBS-07 | P1: Health | Execute | Implementing |
 | OBS-08 | P1: Health | Execute | Implementing |
 | OBS-09 | P2: Logger | Execute | Implementing |
-| OBS-10 | P2: Logger | Design | Pending |
+| OBS-10 | P2: Logger | Execute | Implementing |
 | OBS-11 | P2: Logger | Execute | Implementing |
 | OBS-12 | P2: Docs | Design | Pending |
 | OBS-13 | P2: Docs | Design | Pending |

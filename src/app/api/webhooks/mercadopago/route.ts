@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+
+import { logger, reportError } from "@/lib/observability/logger";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
@@ -46,7 +48,7 @@ export async function POST(request: Request) {
   try {
     admin = createAdminClient();
   } catch {
-    console.error(
+    logger.warn(
       "POST /api/webhooks/mercadopago — service-role indisponivel, stub sem log"
     );
     return NextResponse.json({ ok: true });
@@ -67,7 +69,10 @@ export async function POST(request: Request) {
     if (erroInsert.code === "23505") {
       return NextResponse.json({ ok: true });
     }
-    console.error("POST /api/webhooks/mercadopago — log de evento", erroInsert);
+    reportError(erroInsert, {
+      evento: "POST /api/webhooks/mercadopago — log de evento",
+      meta: { event_id: eventId, event_type: eventType },
+    });
     return NextResponse.json({ error: "erro_interno" }, { status: 500 });
   }
 
@@ -106,10 +111,10 @@ export async function POST(request: Request) {
       .maybeSingle();
 
     if (erroBusca) {
-      console.error(
-        "POST /api/webhooks/mercadopago — busca external_reference",
-        erroBusca
-      );
+      reportError(erroBusca, {
+        evento: "POST /api/webhooks/mercadopago — busca external_reference",
+        meta: { event_id: eventId },
+      });
       return NextResponse.json({ error: "erro_interno" }, { status: 500 });
     }
 
@@ -136,10 +141,10 @@ export async function POST(request: Request) {
         .eq("id", existente.id);
 
       if (erroUpdate) {
-        console.error(
-          "POST /api/webhooks/mercadopago — concilia transacao",
-          erroUpdate
-        );
+        reportError(erroUpdate, {
+          evento: "POST /api/webhooks/mercadopago — concilia transacao",
+          meta: { event_id: eventId },
+        });
         return NextResponse.json({ error: "erro_interno" }, { status: 500 });
       }
     } else {
@@ -155,19 +160,18 @@ export async function POST(request: Request) {
       });
 
       if (erroCreate) {
-        console.error(
-          "POST /api/webhooks/mercadopago — cria transacao",
-          erroCreate
-        );
+        reportError(erroCreate, {
+          evento: "POST /api/webhooks/mercadopago — cria transacao",
+          meta: { event_id: eventId },
+        });
         return NextResponse.json({ error: "erro_interno" }, { status: 500 });
       }
     }
-  } catch (erroAdmin) {
+  } catch {
     // Service-role indisponível (chave pendente, ver STATE.md): evento já foi
     // logado — segue em modo stub sem escrever a transação.
-    console.error(
-      "POST /api/webhooks/mercadopago — service-role indisponivel, transacao pulada",
-      erroAdmin
+    logger.warn(
+      "POST /api/webhooks/mercadopago — service-role indisponivel, transacao pulada"
     );
   }
 
