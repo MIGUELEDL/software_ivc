@@ -272,6 +272,11 @@
 - **Date**: 2026-10-12
 - **Status**: active
 
+## Handoff — responsivo mobile slices pós-F12 (2026-10-13, em lote p/ push)
+
+- **Entregue (commits locais, sem push até aqui)**: landing Parte 1 fechada e VERIFIED (`responsivo-mobile-landing`, RSP-01..12); fixes/bugfixes no caminho: foto do líder (cache-buster), Excluir evento (soft CONCLUIDO) + wipe dos exemplos no dev, validador de status EM ABERTO/CONCLUIDO, rename `church.mission`→`church.proposito` (migration 0025); slices admin: financeiro (filtros/tabela/datas), eventos (scroll-x), membros (busca/tabela), tabelas compactas + scroll estilizado (`tabela-scroll`), upload relatórios, drawer mobile hero-lite-admin.
+- **Pendente de**: push em lote + CI + deploy (aval do operador em 2026-10-13) e frames finais no mobile pós-deploy.
+
 ## Handoff — feature responsivo-mobile-landing (Parte 1) — ✅ VERIFIED (2026-10-13)
 
 - **Estado**: Spec → Tasks (4+1) → Execute → Verifier **PASS**. Feature **fechada**. `validation.md` (PASS) em `.specs/features/responsivo-mobile-landing/`. Slice 1/2 da responsividade (admin vem em slice futura).
