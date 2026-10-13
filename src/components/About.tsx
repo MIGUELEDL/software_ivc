@@ -66,7 +66,7 @@ export default function About() {
               src="/logo.png"
               alt={`Logo ${CHURCH.name}`}
               fill
-              className="object-contain p-30 filter drop-shadow-[0_0_15px_rgba(255,255,255,0.35)]"
+              className="object-contain p-10 sm:p-20 lg:p-30 filter drop-shadow-[0_0_15px_rgba(255,255,255,0.35)]"
             />
           </motion.div>
         </div>
