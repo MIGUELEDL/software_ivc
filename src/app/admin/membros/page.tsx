@@ -99,7 +99,7 @@ export default async function AdminMembrosPage({
           <label className="sr-only" htmlFor="q">
             Buscar membro
           </label>
-          <div className="relative min-w-0 flex-1">
+          <div className="relative min-w-0 basis-full sm:basis-auto sm:flex-1">
             <Search
               size={16}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-white/80"
@@ -122,7 +122,7 @@ export default async function AdminMembrosPage({
             id="status"
             name="status"
             defaultValue={statusOpt}
-            className="bg-white/10 border border-white/10 text-white rounded-lg px-3 py-2 font-sans focus:border-accent-light focus:outline-none transition-colors"
+            className="min-w-0 flex-1 sm:flex-none bg-white/10 border border-white/10 text-white rounded-lg px-3 py-2 font-sans focus:border-accent-light focus:outline-none transition-colors"
           >
             {STATUS_OPCOES.map((opcao) => (
               <option key={opcao.valor} value={opcao.valor}>
@@ -138,7 +138,7 @@ export default async function AdminMembrosPage({
             id="mes"
             name="mes"
             defaultValue={mesAniversario?.toString() ?? ""}
-            className="bg-white/10 border border-white/10 text-white rounded-lg px-3 py-2 font-sans focus:border-accent-light focus:outline-none transition-colors"
+            className="min-w-0 flex-1 sm:flex-none bg-white/10 border border-white/10 text-white rounded-lg px-3 py-2 font-sans focus:border-accent-light focus:outline-none transition-colors"
           >
             <option value="">
               Mês aniversário
@@ -184,8 +184,8 @@ export default async function AdminMembrosPage({
             </p>
           </div>
         ) : (
-          <div className="hero-background-admin border border-white/10 rounded-xl overflow-hidden">
-            <table className="w-full text-left">
+          <div className="hero-background-admin border border-white/10 rounded-xl overflow-x-auto">
+            <table className="w-full min-w-[720px] text-left">
               <thead>
                 <tr className="border-b border-white/10 font-sans text-xs font-semibold uppercase tracking-wider text-white/70">
                   <th className="px-6 py-4">Nome</th>
