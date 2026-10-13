@@ -168,10 +168,10 @@ export function AdminNavbar({ email, role }: { email: string; role: string }) {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden border-t border-white/10 bg-[#0d1f3c]">
+        <div className="md:hidden border-t border-white/10 hero-lite-admin">
           <div className="px-4 py-3 border-b border-white/10">
-            <p className="font-sans text-xs text-white/40 truncate">{email}</p>
-            <p className="font-sans text-xs font-bold text-[#c9a84c] mt-0.5">
+            <p className="font-sans text-xs text-primary/60 truncate">{email}</p>
+            <p className="font-sans text-xs font-bold text-accent mt-0.5">
               {ROLE_LABELS[role] ?? role}
             </p>
           </div>
@@ -188,8 +188,8 @@ export function AdminNavbar({ email, role }: { email: string; role: string }) {
                   onClick={() => setMobileOpen(false)}
                   className={`flex items-center gap-3 px-4 py-2.5 text-sm font-sans transition-colors ${
                     active
-                      ? "bg-white/10 text-white"
-                      : "text-white/60 hover:text-white hover:bg-white/5"
+                      ? "bg-primary/15 text-primary"
+                      : "text-primary/90 hover:text-accent hover:bg-primary/5"
                   }`}
                 >
                   <item.icon size={16} />
@@ -202,7 +202,7 @@ export function AdminNavbar({ email, role }: { email: string; role: string }) {
             <Link
               href="/"
               onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-3 px-4 py-2.5 text-sm font-sans text-white/60 hover:text-white hover:bg-white/5"
+              className="flex items-center gap-3 px-4 py-2.5 text-sm font-sans text-primary/90 hover:text-accent hover:bg-primary/5"
             >
               <LogOut size={16} />
               Sair
