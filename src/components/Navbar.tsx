@@ -100,7 +100,7 @@ export default function Navbar() {
 
         <button
           onClick={() => setOpen(!open)}
-          className={`md:hidden p-2 transition-colors ${
+          className={`md:hidden p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors ${
             scrolled ? "text-primary" : "text-white"
           }`}
           aria-label="Menu"
@@ -123,7 +123,7 @@ export default function Navbar() {
                   key={item.href}
                   href={resolveSectionHref(item.href, pathname)}
                   onClick={() => setOpen(false)}
-                  className="font-sans text-sm font-semibold tracking-wide uppercase text-text-dark"
+                  className="font-sans text-sm font-semibold tracking-wide uppercase text-text-dark py-2.5"
                 >
                   {item.label}
                 </NavLink>
