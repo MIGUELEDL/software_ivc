@@ -40,11 +40,11 @@ export default function Values() {
           className="text-center mb-16"
         >
           <h2 className="font-sans text-4xl sm:text-5xl font-bold text-primary mb-4">
-            Nossa <span className="text-accent">Missão</span> e{" "}
+            Nosso <span className="text-accent">Propósito</span> e{" "}
             <span className="text-accent">Visão</span>
           </h2>
           <p className="font-serif text-lg text-text-dark/60 max-w-2xl mx-auto">
-            Os alicerces que sustentam nosso propósito e nosso futuro.
+            Sempre firmados em nosso alicerce - Jesus Cristo.
           </p>
         </motion.div>
 
@@ -58,10 +58,10 @@ export default function Values() {
           >
             <Cross className="w-10 h-10 mb-4 text-white" />
             <h3 className="font-sans text-2xl font-bold text-landing mb-3">
-              Missão
+              Propósito
             </h3>
             <p className="font-serif text-base leading-relaxed text-white/90">
-              {CHURCH.mission}
+              {CHURCH.proposito}
             </p>
           </motion.div>
           <motion.div

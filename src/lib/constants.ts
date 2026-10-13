@@ -2,18 +2,20 @@ export const CHURCH = {
   name: "Igreja Virtude Cristã",
   shortName: "IVC",
   slogan:
-    "Proclamando o evangelho de Cristo com fé e amor, e ensinando a Palavra que transforma vidas.",
+    "Proclamando o evangelho com fé e amor, aprendendo sempre com as virtudes de Cristo.",
   foundedDate: "07/09/2025",
   cnpj: "68.683.917/0001-71",
   foundedLocation: 
     "Rua Quiezinho Fernandes, 213 - Nossa Senhora de Fátima, Santa Luzia - PB",
   city: "Santa Luzia - PB",
   leader: "Pastor Ernandes Nogueira de Lucena",
-  about: `Fundada com o propósito de levar a mensagem de esperança e salvação a todos os corações, a Igreja Virtude Cristã nasceu do mover de Deus no coração de seus líderes e membros. Localizada na R. Quiezinho Fernandes, próx. ao INSS, nossa comunidade tem se dedicado a proclamar o evangelho com fé, amor e compromisso com a Palavra que transforma vidas. Aqui, você encontra uma família acolhedora, pronta para caminhar junto com você em sua jornada de fé.`,
-  mission:
-    "Proclamar o evangelho de Cristo a toda criatura com fé e ousadia.",
+  about: `Somos uma igreja fundada com o propósito de levar a mensagem de esperança e salvação a todos os corações, a Igreja Virtude Cristã 
+  nasceu do mover de Deus no coração de seus líderes e membros. Localizada no sertão paraibano do nordeste brasileiro, nossa 
+  comunidade tem se dedicado a proclamar o evangelho com fé, amor e compromisso com a Palavra que transforma vidas. Aqui, 
+  você encontra uma família acolhedora, pronta para caminhar junto com você em sua jornada de fé.`,
+  proposito: "Ser uma voz de Deus para essa geração.",
   vision:
-    "Ser uma igreja que transforma vidas através do poder da Palavra e do amor de Deus.",
+    "Ser uma igreja pautada nas virtudes Cristãs.",
   values: [
     {
       title: "Proclamar",
@@ -37,7 +39,7 @@ export const CHURCH = {
   liveTime: "12:00",
   liveLabel: "Clamor do Meio-Dia",
   liveDescription:
-    "Todos os dias ao meio-dia, conecte-se conosco em um momento de clamor e oração.",
+    "Conecte-se conosco em um momento de fé e oração.",
 } as const;
 
 export const SOCIAL = {

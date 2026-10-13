@@ -72,7 +72,7 @@ export default function Schedule({ items }: { items?: ScheduleItem[] }) {
           className="mt-12 text-center inline-flex items-center gap-2 font-sans text-sm font-semibold text-text-dark/60"
         >
           <MapPin size={16} className="text-accent" />
-          Todos os cultos em {CHURCH.foundedLocation}
+          Terças e Domingos em:  {CHURCH.foundedLocation}
         </motion.p>
       </div>
     </section>

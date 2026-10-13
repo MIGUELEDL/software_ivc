@@ -18,7 +18,7 @@ export default function LiveBanner() {
         >
           <div className="inline-flex items-center gap-2 bg-accent/20 text-accent-light font-sans text-sm font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-6">
             <Clock size={16} />
-            Todos os dias às {CHURCH.liveTime}
+            De Segunda a Sexta às {CHURCH.liveTime}
           </div>
 
           <h2 className="font-sans text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-4">

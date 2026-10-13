@@ -16,8 +16,8 @@ export default function About() {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <h2 className="font-sans text-4xl sm:text-5xl font-bold text-primary mb-6">
-              Nossa{" "}
-              <span className="text-accent">História</span>
+              Quem{" "}
+              <span className="text-accent">Somos</span>
             </h2>
             <p className="font-serif text-lg leading-relaxed text-text-dark mb-4">
               {CHURCH.about}
