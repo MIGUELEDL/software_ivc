@@ -61,6 +61,8 @@ jobs:
 
       # Com Postgres: `--com-db` sobe um container efemero e roda a migration
       # 0024 de verdade (trigger, backfill, fuso, atomicidade).
+      - name: Pull da imagem Postgres com pgvector
+        run: docker pull pgvector/pgvector:pg16
       - name: Probe com Postgres efemero
         run: npm run probe:cartao:db
 

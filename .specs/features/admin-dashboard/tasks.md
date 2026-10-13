@@ -59,6 +59,8 @@ T5 -> T6
 
 ### T1: Service layer — dashboard.ts
 
+**Depends on**: None
+
 - [x] `Metricas` interface exported with 6 count fields
 - [x] `AtividadeItem` interface exported with tipo, titulo, subtitulo, criadoEm
 - [x] `ResumoFinanceiro` interface exported with receitas, despesas, saldo, topCategorias
@@ -68,9 +70,14 @@ T5 -> T6
 - [x] `temporizar(iso)` helper returns relative time format
 - [x] No TypeScript errors
 
+**Tests**: none
+**Gate**: build
+
 ---
 
 ### T2: Page refactor — metric cards grid
+
+**Depends on**: T1
 
 - [x] Page calls `obterMetricas()` server-side
 - [x] 6 metric cards displayed in grid with icons, names, counts
@@ -79,9 +86,14 @@ T5 -> T6
 - [x] Container changed from `max-w-2xl` to `max-w-6xl`
 - [x] No TypeScript errors
 
+**Tests**: none
+**Gate**: build
+
 ---
 
 ### T3: Page refactor — activity feed
+
+**Depends on**: T2
 
 - [x] Page calls `obterAtividadeRecente()` server-side
 - [x] "Atividade Recente" section with up to 10 items
@@ -90,9 +102,14 @@ T5 -> T6
 - [x] Empty state: "Nenhuma atividade recente."
 - [x] No TypeScript errors
 
+**Tests**: none
+**Gate**: build
+
 ---
 
 ### T4: Page refactor — financial summary expandido
+
+**Depends on**: T2
 
 - [x] Page calls `obterResumoFinanceiro()` server-side (replaces old listarLancamentos)
 - [x] Receitas, despesas, saldo displayed in distinct sections
@@ -100,18 +117,28 @@ T5 -> T6
 - [x] Uses `formatarMoeda()` for all monetary values
 - [x] No TypeScript errors
 
+**Tests**: none
+**Gate**: build
+
 ---
 
 ### T5: Probes — probes-admin-dashboard.sh
+
+**Depends on**: T4
 
 - [x] `scripts/probes-admin-dashboard.sh` created
 - [x] Static checks: dashboard.ts exists with functions, page.tsx has metric cards, activity feed, financial summary
 - [x] All checks report ok/falha
 - [x] 23 ok / 0 falhas (post-verifier fixes: DASH-07 status badges, DASH-17 access-denied block, 4 new probes)
 
+**Tests**: none
+**Gate**: build
+
 ---
 
 ### T6: Regressões + coverage matrix
+
+**Depends on**: T5
 
 - [x] lint 0 errors, typecheck 0 errors, build success
 - [x] `coverage-matrix.md` updated: RF-021 row → `admin-dashboard`, DASH-01..20, status `verified`
