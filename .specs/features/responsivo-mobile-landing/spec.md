@@ -110,8 +110,8 @@ Explicitly excluded. Documented to prevent scope creep.
 | RSP-02 | P1: Tipografia | Execute | Implementing |
 | RSP-03 | P1: Tipografia | Design | Pending |
 | RSP-04 | P1: Tipografia | Design | Pending |
-| RSP-05 | P2: Cards | Design | Pending |
-| RSP-06 | P2: Cards | Design | Pending |
+| RSP-05 | P2: Cards | Execute | Implementing |
+| RSP-06 | P2: Cards | Execute | Implementing |
 | RSP-07 | P2: Cards | Design | Pending |
 | RSP-08 | P3: Nav/footer | Execute | Implementing |
 | RSP-09 | P3: Nav/footer | Design | Pending |

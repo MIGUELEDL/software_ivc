@@ -75,7 +75,7 @@ T1 → T2 → T3 → T4
 
 ---
 
-### T2: Seções About + Values
+### T2: Seções About + Values ✅
 
 **What**: Títulos `2xl→4xl`, cards `p-5→p-8`, ritmo `py-12→py-20`; atualiza estilos legados divergentes.
 **Where**: `src/components/About.tsx`, `src/components/Values.tsx`
