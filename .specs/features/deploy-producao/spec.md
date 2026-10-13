@@ -142,21 +142,21 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| DEP-01 | P1: Push | Execute | Implementing |
-| DEP-02 | P1: Push | Execute | Implementing |
-| DEP-03 | P1: Push | Execute | Implementing |
-| DEP-04 | P1: Supabase | Execute | Implementing |
-| DEP-05 | P1: Supabase | Execute | Implementing |
-| DEP-06 | P1: Supabase | Execute | Implementing |
-| DEP-07 | P1: Supabase | Execute | Implementing |
+| DEP-01 | P1: Push | Execute | Verified |
+| DEP-02 | P1: Push | Execute | Verified |
+| DEP-03 | P1: Push | Execute | Verified |
+| DEP-04 | P1: Supabase | Execute | Verified |
+| DEP-05 | P1: Supabase | Execute | Verified |
+| DEP-06 | P1: Supabase | Execute | Verified |
+| DEP-07 | P1: Supabase | Execute | Verified |
 | DEP-08 | P1: Vercel | Design | Pending |
 | DEP-09 | P1: Vercel | Design | Pending |
-| DEP-10 | P1: Vercel | Execute | Implementing |
-| DEP-11 | P1: Vercel | Execute | Implementing |
-| DEP-12 | P2: Analytics | Execute | Implementing |
-| DEP-13 | P2: Analytics | Execute | Implementing |
-| DEP-14 | P2: Docs | Execute | Implementing |
-| DEP-15 | P2: Docs | Execute | Implementing |
+| DEP-10 | P1: Vercel | Execute | Verified |
+| DEP-11 | P1: Vercel | Execute | Verified |
+| DEP-12 | P2: Analytics | Execute | Verified |
+| DEP-13 | P2: Analytics | Execute | Verified |
+| DEP-14 | P2: Docs | Execute | Verified |
+| DEP-15 | P2: Docs | Execute | Verified |
 
 **Coverage:** 15 total, 0 mapped to tasks, 15 unmapped ⚠️
 

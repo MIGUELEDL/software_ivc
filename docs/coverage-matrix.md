@@ -66,6 +66,12 @@ status `verified`, respaldada por `validation.md` no respectivo `.specs/features
 | ------------ | ------- | -------- | ------------ | ------ |
 | RNF-008 (Sentry plano free), RNF-003 (health/uptime) | `observabilidade` | OBS-01..13 | Vitest suítes `observability` (release/logger/sentry-init, `npm run test:ci`, 23 ok/0) + `scripts/probe-observabilidade.sh` (13 ok/0: boundary SSR, health runtime exato/405/sem-DSN, adoção webhook) + regressão FIN AC-13..19 verde + throw→500 com DSN real e issue confirmada no dashboard; Verifier R2 PASS, sensor 2/2 | ✅ verified |
 
+### Fase 12 (deploy)
+
+| Requisito(s) | Feature | Spec ACs | Teste / Gate | Status |
+| ------------ | ------- | -------- | ------------ | ------ |
+| RNF-009 (CI verde), RNF-010 (deploy c/ aprovação), RC-003 (`*.vercel.app`), RNF-007 (custo ≈ R$ 0) | `deploy-producao` | DEP-01..15 | Push preservado + CI verde; Supabase prod seletivo (zero demo, counts); `scripts/smoke-prod.sh` (9 ok/0 em `[REDACTED_DEPLOYMENT_URL]`: health SHA==HEAD, login admin, zero eventos, Analytics, empty state) + `test:ci` 243/0; Verifier PASS 15/15, sensor 4/4 | ✅ verified |
+
 ## Próximos passos
 
 1. Consolidar o inventário RF-001..0NN / RNF-001..0NN aprovado (a Construção acima reflete a revisão de 2026-09-08).

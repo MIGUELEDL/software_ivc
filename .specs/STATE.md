@@ -272,6 +272,16 @@
 - **Date**: 2026-10-12
 - **Status**: active
 
+## Handoff — feature deploy-producao (Fase 12) — ✅ VERIFIED (2026-10-13)
+
+- **Estado**: Spec → Design → Tasks (7 tasks) → Execute (com 2 pausas de operador: criar Supabase, importar Vercel) → Verifier **PASS de primeira**. Feature **fechada**. `validation.md` (PASS) em `.specs/features/deploy-producao/`. F12 (RNF-009/010, RC-003) concluída.
+- **Entregue**: push total (história preservada) + CI verde; Supabase prod `[REDACTED_PROJECT_REF]` (19 migrations seletivas, zero demo/teste, textos alinhados); seed `admin@example.com` SUPER_ADMIN; Vercel `software-ivc` → `[REDACTED_DEPLOYMENT_URL]`; Analytics; fumaça 9/9; `DEPLOYMENT.md` fiel.
+- **Verificação**: Verifier independente, range `d424fba..HEAD`; **15/15 ACs (DEP-01..15)**; sensor **4/4 mortos**. CI verde e release Sentry/pageviews confirmados pelo operador.
+- **Commits**: `2c7d91b` (T1) → `b025d65` (mission) → `d435cb4` (landing) → `7ffbc9a`/`4fb6a15` (CI) → `df74970` (status) → `4f4a02f` (fallback) → `0333087` (email) → `558b62b` (smoke-fix) → `2603bff` (T6) → `147db9b` (T7) + este fechamento. Nada pushed após este.
+- **Decisões**: nenhuma AD nova (usa AD-007/009/013/033). Identidade de commits corrigida para `author@example.com` (`AGENTS.md`).
+- **Feature**: `.specs/features/deploy-producao/spec.md` — 15 ACs Verified. Gates: spec 0/0, tasks 0 erros.
+- **Pendente do operador**: regra de alerta Sentry (passo no runbook F11) + trocar a senha temporária do superadmin (exigida no 1º login).
+
 ## Handoff — feature observabilidade (Fase 11) — ✅ VERIFIED (2026-10-12)
 
 - **Estado**: Spec → Design → Tasks (7 tasks) → Execute → Verifier R1 FAIL (12/13, 1 sobrevivente) → hardening T8/T9 → Verifier R2 **PASS**. Feature **fechada**. `validation.md` (PASS) em `.specs/features/observabilidade/`. F11 (RNF-008) concluída.
