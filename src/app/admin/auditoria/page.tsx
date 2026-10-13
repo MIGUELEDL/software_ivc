@@ -91,7 +91,7 @@ export default async function AdminAuditoriaPage({
           entidade={entidade}
         />
 
-        <div className="mt-6 hero-background-admin border border-white/10 rounded-xl overflow-x-auto">
+        <div className="mt-6 hero-background-admin border border-white/10 rounded-xl overflow-x-auto tabela-scroll">
           {logs.length === 0 ? (
             <div className="p-10 text-center">
               <p className="text-white/80">
@@ -100,7 +100,7 @@ export default async function AdminAuditoriaPage({
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto tabela-scroll">
                 <table className="w-full text-left">
                   <thead>
                     <tr className="border-b border-white/10">

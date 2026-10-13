@@ -83,3 +83,19 @@ select option {
     radial-gradient(ellipse at center, #4966921c 0%, transparent 70%),
     linear-gradient(135deg, var(--color-bg-dark), #1d3558 90%, #1d3963);
 }
+/* Scroll das tabelas admin no padrão do site: fino, thumb accent, trilho sutil. */
+.tabela-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-accent) transparent;
+}
+.tabela-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+.tabela-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 9999px;
+}
+.tabela-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-accent);
+  border-radius: 9999px;
+}

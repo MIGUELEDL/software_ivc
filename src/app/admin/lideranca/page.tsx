@@ -89,7 +89,7 @@ export default async function AdminLiderancaPage() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto hero-background-admin border border-white/10 rounded-xl">
+          <div className="overflow-x-auto tabela-scroll hero-background-admin border border-white/10 rounded-xl">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-white/10 font-sans text-xs font-semibold uppercase tracking-wider text-white/90">

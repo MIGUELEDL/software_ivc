@@ -137,7 +137,7 @@ export default async function AdminFinanceiroFechamentoPage() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-2xl bg-white shadow-xl">
+          <div className="overflow-x-auto tabela-scroll rounded-2xl bg-white shadow-xl">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-text-dark/10 font-sans text-xs font-semibold uppercase tracking-wider text-text-dark/50">

@@ -184,7 +184,7 @@ export default async function AdminMembrosPage({
             </p>
           </div>
         ) : (
-          <div className="hero-background-admin border border-white/10 rounded-xl overflow-x-auto">
+          <div className="hero-background-admin border border-white/10 rounded-xl overflow-x-auto tabela-scroll">
             <table className="w-full min-w-[720px] text-left">
               <thead>
                 <tr className="border-b border-white/10 font-sans text-xs font-semibold uppercase tracking-wider text-white/70">

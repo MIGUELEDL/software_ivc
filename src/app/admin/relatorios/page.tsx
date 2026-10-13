@@ -205,7 +205,7 @@ export default async function AdminRelatoriosPage({
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-white/10">
+            <div className="overflow-x-auto tabela-scroll rounded-xl border border-white/10">
               <table className="w-full text-left">
                 <thead>
                   <tr className="border-b border-white/10 font-sans text-xs font-semibold uppercase tracking-wider text-white/80">

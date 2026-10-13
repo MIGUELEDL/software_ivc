@@ -91,7 +91,7 @@ export default async function AdminPatrimonioPage() {
             </p>
           </div>
         ) : (
-          <div className="hero-background-admin border border-white/10 rounded-xl overflow-hidden overflow-x-auto">
+          <div className="hero-background-admin border border-white/10 rounded-xl overflow-hidden overflow-x-auto tabela-scroll">
             <table className="w-full text-left min-w-[800px]">
               <thead>
                 <tr className="border-b border-white/10 font-sans text-sm font-bold text-white/90 uppercase tracking-wider">
