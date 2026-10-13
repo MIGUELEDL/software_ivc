@@ -188,10 +188,10 @@ export default async function AdminMembrosPage({
             <table className="w-full min-w-[720px] text-left">
               <thead>
                 <tr className="border-b border-white/10 font-sans text-xs font-semibold uppercase tracking-wider text-white/70">
-                  <th className="px-6 py-4">Nome</th>
-                  <th className="px-6 py-4">Matrícula</th>
-                  <th className="px-6 py-4">Situação</th>
-                  <th className="px-6 py-4 text-right">Ações</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Nome</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Matrícula</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Situação</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4 text-right">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -200,13 +200,13 @@ export default async function AdminMembrosPage({
                     key={membro.id}
                     className="bg-white/5 border-b border-white/30 last:border-0 hover:bg-white/15 transition-colors"
                   >
-                    <td className="px-6 py-4 font-sans font-semibold text-white">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4 font-sans font-semibold text-white">
                       {membro.nome}
                     </td>
-                    <td className="px-6 py-4 font-sans text-accent-light font-bold">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4 font-sans text-accent-light font-bold">
                       {membro.matricula}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
                       <span
                         className={`inline-block rounded-full px-3 py-1 font-sans text-xs font-bold ${
                           STATUS_CLASS[membro.status] ?? ""
@@ -215,7 +215,7 @@ export default async function AdminMembrosPage({
                         {STATUS_LABEL[membro.status] ?? membro.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
                       <div className="flex items-center justify-end gap-3">
                         <Link
                           href={`/admin/membros/${membro.id}`}

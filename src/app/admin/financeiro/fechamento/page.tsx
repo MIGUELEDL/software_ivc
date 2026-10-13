@@ -137,15 +137,15 @@ export default async function AdminFinanceiroFechamentoPage() {
             </p>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-2xl bg-white shadow-xl">
+          <div className="overflow-x-auto rounded-2xl bg-white shadow-xl">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-text-dark/10 font-sans text-xs font-semibold uppercase tracking-wider text-text-dark/50">
-                  <th className="px-6 py-4">Data</th>
-                  <th className="px-6 py-4">Receitas</th>
-                  <th className="px-6 py-4">Despesas</th>
-                  <th className="px-6 py-4">Saldo</th>
-                  <th className="px-6 py-4 text-right">Transações</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Data</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Receitas</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Despesas</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Saldo</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4 text-right">Transações</th>
                 </tr>
               </thead>
               <tbody>
@@ -154,7 +154,7 @@ export default async function AdminFinanceiroFechamentoPage() {
                     key={fechamento.id}
                     className="border-b border-text-dark/5 last:border-0"
                   >
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
                       <p className="flex items-center gap-1.5 font-serif text-sm text-text-dark/70">
                         <CalendarClock
                           size={14}
@@ -164,13 +164,13 @@ export default async function AdminFinanceiroFechamentoPage() {
                         {formatarData(fechamento.data_fechamento)}
                       </p>
                     </td>
-                    <td className="px-6 py-4 font-serif text-sm text-green-700">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4 font-serif text-sm text-green-700">
                       {formatarValor(fechamento.total_receitas)}
                     </td>
-                    <td className="px-6 py-4 font-serif text-sm text-red-700">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4 font-serif text-sm text-red-700">
                       {formatarValor(fechamento.total_despesas)}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
                       <p className="flex items-center gap-1.5 font-serif text-sm font-semibold text-text-dark">
                         <CircleDollarSign
                           size={14}
@@ -180,7 +180,7 @@ export default async function AdminFinanceiroFechamentoPage() {
                         {formatarValor(fechamento.saldo)}
                       </p>
                     </td>
-                    <td className="px-6 py-4 text-right font-serif text-sm text-text-dark/70">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4 text-right font-serif text-sm text-text-dark/70">
                       {fechamento.qtd_transacoes}
                     </td>
                   </tr>

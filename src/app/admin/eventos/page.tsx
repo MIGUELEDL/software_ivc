@@ -85,11 +85,11 @@ export default async function AdminEventosPage() {
             <table className="w-full min-w-[720px] text-left">
               <thead>
                 <tr className="border-b border-white/10 font-sans text-sm font-bold text-white uppercase tracking-wider">
-                  <th className="px-6 py-4">Evento</th>
-                  <th className="px-6 py-4">Data</th>
-                  <th className="px-6 py-4">Local</th>
-                  <th className="px-6 py-4">Situação</th>
-                  <th className="px-6 py-4 text-right">Ações</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Evento</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Data</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Local</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Situação</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4 text-right">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -98,25 +98,25 @@ export default async function AdminEventosPage() {
                     key={evento.id}
                     className="bg-white/5 border-b border-white/10 last:border-1 hover:bg-white/15 transition-colors"
                   >
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
                       <p className="flex items-center gap-2 font-sans font-semibold text-white">
                         <CalendarDays size={16} className="text-accent-light" aria-hidden="true" />
                         {evento.title}
                       </p>
                     </td>
-                    <td className="px-6 py-4 font-serif text-sm text-white/80">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4 font-serif text-sm text-white/80">
                       {new Date(evento.date + "T00:00:00").toLocaleDateString(
                         "pt-BR"
                       )}{" "}
                       · {evento.time}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
                       <p className="flex items-center gap-1.5 font-serif text-sm text-white/80">
                         <MapPin size={14} className="text-accent-light" aria-hidden="true" />
                         {evento.location}
                       </p>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
                       <div className="flex flex-wrap gap-1.5">
                         <span
                           className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-sans text-xs font-bold ${
@@ -138,7 +138,7 @@ export default async function AdminEventosPage() {
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
                       <div className="flex items-center justify-end gap-3">
                         <Link
                           href={`/admin/eventos/${evento.id}`}

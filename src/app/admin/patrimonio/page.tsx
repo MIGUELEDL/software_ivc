@@ -86,7 +86,7 @@ export default async function AdminPatrimonioPage() {
           </div>
         ) : assets.length === 0 ? (
           <div className="hero-background-admin border border-white/10 rounded-xl p-10 text-center">
-            <p className="font-serif text-base text-primary/60">
+            <p className="font-serif text-base text-white/70">
               Nenhum bem cadastrado.
             </p>
           </div>
@@ -95,12 +95,12 @@ export default async function AdminPatrimonioPage() {
             <table className="w-full text-left min-w-[800px]">
               <thead>
                 <tr className="border-b border-white/10 font-sans text-sm font-bold text-white/90 uppercase tracking-wider">
-                  <th className="px-6 py-4">Bem</th>
-                  <th className="px-6 py-4">ID</th>
-                  <th className="px-6 py-4">Localização</th>
-                  <th className="px-6 py-4">Valor</th>
-                  <th className="px-6 py-4">Situação</th>
-                  <th className="px-6 py-4 text-right">Ações</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Bem</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">ID</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Localização</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Valor</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Situação</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4 text-right">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -109,7 +109,7 @@ export default async function AdminPatrimonioPage() {
                     key={asset.id}
                     className="bg-white/5 border-b border-white/10 last:border-1 hover:bg-white/15 transition-colors"
                   >
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
                       <p className="flex items-center gap-2 font-sans font-semibold text-white">
                         <Package
                           size={16}
@@ -124,10 +124,10 @@ export default async function AdminPatrimonioPage() {
                         </span>
                       </p>
                     </td>
-                    <td className="px-6 py-4 font-serif text-sm text-white/80">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4 font-serif text-sm text-white/80">
                       {asset.numero_patrimonio ?? "—"}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
                       <p className="flex items-center gap-1.5 font-serif text-sm text-white/80">
                         <MapPin
                           size={14}
@@ -137,7 +137,7 @@ export default async function AdminPatrimonioPage() {
                         {asset.location ?? "—"}
                       </p>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
                       <p className="flex items-center gap-1.5 font-serif text-sm text-white/80">
                         <CircleDollarSign
                           size={14}
@@ -152,7 +152,7 @@ export default async function AdminPatrimonioPage() {
                           : "—"}
                       </p>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
                       <span
                         className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-sans text-xs font-bold ${
                           asset.status === "ATIVO"
@@ -163,7 +163,7 @@ export default async function AdminPatrimonioPage() {
                         {asset.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
                       <div className="flex items-center justify-end gap-3">
                         <Link
                           href={`/admin/patrimonio/${asset.id}`}

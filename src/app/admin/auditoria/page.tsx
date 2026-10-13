@@ -91,7 +91,7 @@ export default async function AdminAuditoriaPage({
           entidade={entidade}
         />
 
-        <div className="mt-6 hero-background-admin border border-white/10 rounded-xl overflow-hidden">
+        <div className="mt-6 hero-background-admin border border-white/10 rounded-xl overflow-x-auto">
           {logs.length === 0 ? (
             <div className="p-10 text-center">
               <p className="text-white/80">

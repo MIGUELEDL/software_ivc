@@ -105,7 +105,7 @@ export default async function AdminUsuariosPage({
           </div>
         )}
 
-        <div className="hero-background-admin border border-white/10 rounded-xl overflow-hidden">
+        <div className="hero-background-admin border border-white/10 rounded-xl overflow-x-auto">
           <div className="p-4 border-b border-white/10 flex items-center justify-between">
             <span className="font-sans text-sm text-white/60">
               {result.total} usuário(s)

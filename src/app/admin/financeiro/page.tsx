@@ -344,12 +344,12 @@ export default async function AdminFinanceiroPage({
             <table className="w-full min-w-[720px] text-left">
               <thead>
                 <tr className="border-b border-white/10 font-sans text-xs font-bold uppercase tracking-wider text-white/90">
-                  <th className="px-6 py-4">Descrição</th>
-                  <th className="px-6 py-4">Valor</th>
-                  <th className="px-6 py-4">Tipo</th>
-                  <th className="px-6 py-4">Método</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4">Data</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Descrição</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Valor</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Tipo</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Método</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Status</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Data</th>
                 </tr>
               </thead>
               <tbody>
@@ -358,7 +358,7 @@ export default async function AdminFinanceiroPage({
                     key={lancamento.id}
                     className="bg-white/5 border-b border-white/10 last:border-0 hover:bg-white/15 transition-colors"
                   >
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
                       <Link
                         href={`/admin/financeiro/${lancamento.id}`}
                         className="inline-flex items-center gap-2 font-sans font-semibold text-white hover:text-[#c9a84c] transition-colors"
@@ -371,27 +371,27 @@ export default async function AdminFinanceiroPage({
                         />
                       </Link>
                     </td>
-                    <td className="px-6 py-4 font-serif text-sm text-white/80">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4 font-serif text-sm text-white/80">
                       {formatarValor(lancamento.valor)}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
                       <span
                         className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-sans text-xs font-bold ${classeBadgeTipo(lancamento.tipo)}`}
                       >
                         {labelTipo(lancamento.tipo)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 font-serif text-sm text-white/80">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4 font-serif text-sm text-white/80">
                       {lancamento.metodo}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
                       <span
                         className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-sans text-xs font-bold ${classeBadgeStatus(lancamento.status)}`}
                       >
                         {lancamento.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
                       <p className="flex items-center gap-1.5 font-serif text-sm text-white/80">
                         <CalendarDays
                           size={14}

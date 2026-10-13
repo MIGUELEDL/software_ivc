@@ -71,7 +71,7 @@ export function MatrixEditor({
   }
 
   return (
-    <div className="rounded-2xl hero-background-admin shadow-xl overflow-hidden">
+    <div className="rounded-2xl hero-background-admin shadow-xl overflow-x-auto">
       <div className="p-4 border-b border-white/30 flex items-center justify-between">
         <span className="font-sans text-sm text-white/70">
           {roles.length} papéis × {modules.length} módulos

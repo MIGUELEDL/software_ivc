@@ -89,14 +89,14 @@ export default async function AdminLiderancaPage() {
             </p>
           </div>
         ) : (
-          <div className="overflow-hidden hero-background-admin border border-white/10 rounded-xl">
+          <div className="overflow-x-auto hero-background-admin border border-white/10 rounded-xl">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-white/10 font-sans text-xs font-semibold uppercase tracking-wider text-white/90">
-                  <th className="px-6 py-4">Igreja</th>
-                  <th className="px-6 py-4">Líderes</th>
-                  <th className="px-6 py-4">Cadastrada em</th>
-                  <th className="px-6 py-4 text-right">Ações</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Igreja</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Líderes</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Cadastrada em</th>
+                  <th className="px-3 py-2.5 sm:px-6 sm:py-4 text-right">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -105,7 +105,7 @@ export default async function AdminLiderancaPage() {
                     key={igreja.id}
                     className="bg-white/5 border-b border-white/20 last:border-1 hover:bg-white/15 transition-colors"
                   >
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
                       <p className="flex items-center gap-2 font-sans font-semibold text-white">
                         <Building2 size={16} className="text-accent-light" aria-hidden="true" />
                         {igreja.name}
@@ -114,13 +114,13 @@ export default async function AdminLiderancaPage() {
                         {igreja.short_name} · {igreja.city}
                       </p>
                     </td>
-                    <td className="px-6 py-4 font-serif text-accent-light font-bold">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4 font-serif text-accent-light font-bold">
                       <LideresCount igrejaId={igreja.id} />
                     </td>
-                    <td className="px-6 py-4 font-serif text-sm text-white/80">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4 font-serif text-sm text-white/80">
                       {new Date(igreja.created_at).toLocaleDateString("pt-BR")}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
                       <div className="flex items-center justify-end gap-3">
                         <Link
                           href={`/admin/lideranca/${igreja.id}`}

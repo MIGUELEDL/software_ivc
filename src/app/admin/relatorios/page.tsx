@@ -101,7 +101,7 @@ export default async function AdminRelatoriosPage({
             className="flex flex-wrap items-end gap-3 mb-4"
           >
             <input type="hidden" name="tipo" value="financeiro" />
-            <div>
+            <div className="min-w-0 basis-full sm:basis-auto">
               <label
                 htmlFor="data_inicio"
                 className="block font-sans text-xs font-semibold text-white/90 uppercase tracking-wider mb-1"
@@ -112,10 +112,10 @@ export default async function AdminRelatoriosPage({
                 id="data_inicio"
                 name="data_inicio"
                 type="date"
-                className="bg-white/20 border border-white/10 text-white/75 rounded-lg px-3 py-2 font-sans focus:border-accent-light focus:outline-none transition-colors"
+                className="w-full bg-white/20 border border-white/10 text-white/75 rounded-lg px-3 py-2 font-sans focus:border-accent-light focus:outline-none transition-colors"
               />
             </div>
-            <div>
+            <div className="min-w-0 basis-full sm:basis-auto">
               <label
                 htmlFor="data_fim"
                 className="block font-sans text-xs font-semibold text-white/90 uppercase tracking-wider mb-1"
@@ -126,7 +126,7 @@ export default async function AdminRelatoriosPage({
                 id="data_fim"
                 name="data_fim"
                 type="date"
-                className="bg-white/20 border border-white/10 text-white/75 rounded-lg px-3 py-2 font-sans focus:border-accent-light focus:outline-none transition-colors"
+                className="w-full bg-white/20 border border-white/10 text-white/75 rounded-lg px-3 py-2 font-sans focus:border-accent-light focus:outline-none transition-colors"
               />
             </div>
             <button
@@ -205,7 +205,7 @@ export default async function AdminRelatoriosPage({
               </p>
             </div>
           ) : (
-            <div className="overflow-hidden rounded-xl border border-white/10">
+            <div className="overflow-x-auto rounded-xl border border-white/10">
               <table className="w-full text-left">
                 <thead>
                   <tr className="border-b border-white/10 font-sans text-xs font-semibold uppercase tracking-wider text-white/80">
