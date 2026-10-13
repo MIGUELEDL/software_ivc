@@ -240,8 +240,8 @@ export function MemberCard({ member }: { member: Member }) {
           <p className="m-0 mt-[0.59cqw] text-[2.36cqw] leading-tight">{campos.baptismDate}</p>
         </div>
         <div>
-          <p className="m-0 text-[2.07cqw] font-bold leading-tight">RG</p>
-          <p className="m-0 mt-[0.59cqw] text-[2.36cqw] leading-tight">{campos.rg}</p>
+          <p className="m-0 text-[2.07cqw] font-bold leading-tight">DATA DE NASCIMENTO</p>
+          <p className="m-0 mt-[0.59cqw] text-[2.36cqw] leading-tight">{campos.birthDate}</p>
         </div>
       </div>
 

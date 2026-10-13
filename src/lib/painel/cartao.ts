@@ -30,7 +30,7 @@ export type CartaoCampos = {
   name: string;
   baptismDate: string;
   cpf: string;
-  rg: string;
+  birthDate: string;
   validity: string;
   photo: string | undefined;
 };
@@ -91,12 +91,14 @@ export function camposCartao(
     id: member.matricula,
     name: member.nome,
     baptismDate: fmtData(member.data_batismo),
+    // Nascimento em vez de RG no cartão (decisão do operador): mesma
+    // formatação civil de fmtData; `nascimento` é obrigatório no row.
+    birthDate: fmtData(member.nascimento),
     // `??` basta aqui, diferente de `colunasDocumento`, que grava: ali `""`
     // seria persistido e é um estado distinto de `NULL`, então precisa de `||`.
     // Na leitura, a coluna nunca chega vazia — o caminho de escrita já converteu
     // para `NULL` — e `??` transforma só a ausência no travessão de CART-08.
     cpf: member.cpf ?? VAZIO,
-    rg: member.rg ?? VAZIO,
     // Coluna `validade_cartao` deliberadamente ignorada: ela guarda o
     // ciclo-base e não rola sozinha. O que o membro lê é o próximo aniversário
     // ainda não vencido (CART-09..11).

@@ -28,9 +28,9 @@ const base = {
 };
 
 describe("camposCartao — projeção do row (CART-08/09)", () => {
-  it("lê rg/cpf do row", () => {
+  it("lê nascimento/cpf do row (nascimento no lugar do RG)", () => {
     const c1 = camposCartao(base, d(2026, 10, 1));
-    expect(c1.rg).toBe("12.345.678-9");
+    expect(c1.birthDate).toBe("28/12/2004");
     expect(c1.cpf).toBe("12345678909");
   });
 
@@ -58,9 +58,8 @@ describe("camposCartao — projeção do row (CART-08/09)", () => {
 });
 
 describe("camposCartao — NULL em documento vira — (CART-08)", () => {
-  it("rg/cpf/batismo NULL -> travessão e validade intacta", () => {
-    const c2 = camposCartao({ ...base, rg: null, cpf: null, data_batismo: null }, d(2026, 10, 1));
-    expect(c2.rg).toBe("—");
+  it("cpf/batismo NULL -> travessão e validade intacta", () => {
+    const c2 = camposCartao({ ...base, cpf: null, data_batismo: null }, d(2026, 10, 1));
     expect(c2.cpf).toBe("—");
     expect(c2.baptismDate).toBe("—");
     expect(c2.validity).toBe("12/09/2027");
