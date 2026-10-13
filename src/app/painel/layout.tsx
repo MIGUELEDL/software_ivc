@@ -22,7 +22,7 @@ export default async function PainelLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[#0a1628]">
+    <div className="min-h-screen hero-lite-admin">
       <PainelNavbar
         nome={nome || claims?.email || ""}
         email={claims?.email ?? ""}

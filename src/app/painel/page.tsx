@@ -82,10 +82,10 @@ export default async function PainelPage() {
               <Link
                 key={card.href}
                 href={card.href}
-                className="group rounded-xl bg-[#132744] border border-white/10 p-6 hover:border-[#c9a84c]/40 hover:bg-[#1a3050] transition-all"
+                className="group rounded-xl hero-background-admin border border-white/10 p-6 hover:border-accent/40 hover:bg-white/15 transition-all"
               >
                 <Icon
-                  className="w-8 h-8 text-[#c9a84c] mb-3 group-hover:scale-110 transition-transform"
+                  className="w-8 h-8 text-accent mb-3 group-hover:scale-110 transition-transform"
                   aria-hidden="true"
                 />
                 <h2 className="font-sans text-lg font-bold text-white mb-1">
@@ -99,9 +99,9 @@ export default async function PainelPage() {
           })}
         </nav>
 
-        <div className="rounded-xl bg-[#132744] border border-white/10 p-8 sm:p-10">
+        <div className="rounded-xl hero-background-admin border border-white/10 p-8 sm:p-10">
           <h2 className="font-sans text-sm font-bold text-white/70 uppercase tracking-wider mb-2 flex items-center gap-2">
-            <Megaphone className="w-5 h-5 text-[#c9a84c]" aria-hidden="true" />
+            <Megaphone className="w-5 h-5 text-accent" aria-hidden="true" />
             Avisos da igreja
           </h2>
           <p className="font-serif text-sm text-white/50 mb-6">

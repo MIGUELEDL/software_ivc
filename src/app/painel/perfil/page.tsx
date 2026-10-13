@@ -36,7 +36,7 @@ export default async function PerfilPage({
       <div className="max-w-2xl mx-auto px-4 sm:px-6">
         <Link
           href="/painel"
-          className="inline-flex items-center gap-2 font-sans text-sm font-bold text-white/60 hover:text-[#c9a84c] mb-6 transition-colors"
+          className="inline-flex items-center gap-2 font-sans text-sm font-bold text-white/60 hover:text-accent mb-6 transition-colors"
         >
           <ArrowLeft size={16} aria-hidden="true" />
           Voltar ao painel
@@ -91,7 +91,7 @@ export default async function PerfilPage({
         )}
 
         {primeiro && !member && (
-          <div className="mb-6 rounded-lg bg-[#c9a84c]/10 border border-[#c9a84c]/40 px-4 py-3 text-sm text-[#e0c872] font-serif">
+          <div className="mb-6 rounded-lg hero-background-accent/10 border border-accent/40 px-4 py-3 text-sm text-accent-light font-serif">
             Para acessar o dízimo pessoal e o cartão, complete seu cadastro
             abaixo.
           </div>

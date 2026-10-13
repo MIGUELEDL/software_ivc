@@ -117,7 +117,7 @@ export function PerfilForm({ member }: PerfilFormProps) {
   }
 
   const inputClass =
-    "w-full rounded-lg border border-white/10 bg-[#0d1f3c] px-4 py-2.5 font-serif text-white placeholder:text-white/30 focus:border-[#c9a84c]/60 focus:ring-1 focus:ring-[#c9a84c]/60 outline-none transition-colors";
+    "w-full rounded-lg border border-white/10 hero-background-admin px-4 py-2.5 font-serif text-white placeholder:text-white/40 focus:border-accent/60 focus:ring-1 focus:ring-accent-light outline-none transition-colors";
 
   const labelClass =
     "block font-sans text-sm font-semibold text-white/70 mb-1.5";
@@ -136,7 +136,7 @@ export function PerfilForm({ member }: PerfilFormProps) {
       <form
         ref={dadosFormRef}
         onSubmit={salvarDados}
-        className="rounded-xl bg-[#132744] border border-white/10 p-8 sm:p-10 space-y-5"
+        className="rounded-xl hero-background-admin border border-white/10 p-8 sm:p-10 space-y-5"
       >
         <div>
           <label htmlFor="nome" className={labelClass}>
@@ -274,7 +274,7 @@ export function PerfilForm({ member }: PerfilFormProps) {
         {member && (
           <p className="font-serif text-sm text-white/50">
             Matrícula:{" "}
-            <span className="font-bold text-[#c9a84c]">
+            <span className="font-bold text-accent">
               {member.matricula}
             </span>
           </p>
@@ -283,7 +283,7 @@ export function PerfilForm({ member }: PerfilFormProps) {
         <button
           type="submit"
           disabled={enviando}
-          className="w-full rounded-lg bg-[#c9a84c] hover:bg-[#e0c872] disabled:opacity-60 text-[#0a1628] font-sans font-bold py-2.5 transition-colors"
+          className="w-full rounded-lg hero-background-accent hover:bg-accent-light disabled:opacity-60 text-white font-sans font-bold py-2.5 transition-colors"
         >
           {enviando ? "Salvando..." : member ? "Salvar alterações" : "Criar cadastro"}
         </button>
@@ -291,7 +291,7 @@ export function PerfilForm({ member }: PerfilFormProps) {
 
       <form
         onSubmit={salvarFoto}
-        className="rounded-xl bg-[#132744] border border-white/10 p-8 sm:p-10 space-y-5"
+        className="rounded-xl hero-background-admin border border-white/10 p-8 sm:p-10 space-y-5"
       >
         <div>
           <label htmlFor="foto" className={labelClass}>
@@ -303,7 +303,7 @@ export function PerfilForm({ member }: PerfilFormProps) {
             type="file"
             accept="image/jpeg,image/png,image/webp"
             disabled={!member}
-            className="w-full font-serif text-sm text-white/70 file:mr-4 file:rounded-lg file:border-0 file:bg-[#0d1f3c] file:px-4 file:py-2.5 file:font-sans file:font-bold file:text-[#c9a84c]"
+            className="w-full font-serif text-sm text-white/70 file:mr-4 file:rounded-lg file:border-0 file:hero-background-admin file:px-4 file:py-2.5 file:font-sans file:font-bold file:text-accent"
           />
           {!member && (
             <p className="mt-1 text-sm text-white/40 font-serif">
@@ -323,7 +323,7 @@ export function PerfilForm({ member }: PerfilFormProps) {
         <button
           type="submit"
           disabled={!member || enviando}
-          className="w-full rounded-lg border border-[#c9a84c]/60 text-[#c9a84c] hover:bg-[#c9a84c] hover:text-[#0a1628] disabled:opacity-60 font-sans font-bold py-2.5 transition-colors"
+          className="w-full rounded-lg border border-accent/60 text-accent hover:hero-background-accent hover:text-white disabled:opacity-60 font-sans font-bold py-2.5 transition-colors"
         >
           {enviando ? "Enviando..." : "Enviar foto"}
         </button>

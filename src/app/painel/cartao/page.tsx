@@ -28,7 +28,7 @@ export default async function CartaoPage() {
       <section className="py-8 min-h-[calc(100vh-3.5rem)] print:py-0 print:min-h-0 print:bg-white">
 <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <div
-            className="rounded-xl bg-[#132744] border border-white/10 p-10 text-center"
+            className="rounded-xl hero-background-admin border border-white/10 p-10 text-center"
             role="alert"
           >
             <h1 className="font-sans text-2xl font-bold text-white mb-3">
@@ -39,7 +39,7 @@ export default async function CartaoPage() {
             </p>
             <Link
               href="/painel"
-              className="mt-6 inline-flex items-center gap-2 font-sans text-sm font-bold text-[#c9a84c] hover:text-[#e0c872] transition-colors"
+              className="mt-6 inline-flex items-center gap-2 font-sans text-sm font-bold text-accent hover:text-accent-light transition-colors"
             >
               <ArrowLeft size={16} aria-hidden="true" />
               Voltar ao painel
@@ -61,7 +61,7 @@ export default async function CartaoPage() {
       <div className="max-w-md mx-auto px-4 sm:px-6 print:hidden">
         <Link
           href="/painel"
-          className="inline-flex items-center gap-2 font-sans text-sm font-bold text-white/60 hover:text-[#c9a84c] mb-6 transition-colors print:hidden"
+          className="inline-flex items-center gap-2 font-sans text-sm font-bold text-white/60 hover:text-accent mb-6 transition-colors print:hidden"
         >
           <ArrowLeft size={16} aria-hidden="true" />
           Voltar ao painel

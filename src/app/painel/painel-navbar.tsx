@@ -52,7 +52,7 @@ export function PainelNavbar({
     .toUpperCase();
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0d1f3c]/95 backdrop-blur-sm border-b border-white/10">
+    <nav className="fixed top-0 left-0 right-0 z-50 hero-lite-admin backdrop-blur-sm border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-14">
           <div className="flex items-center gap-3">
@@ -60,7 +60,7 @@ export function PainelNavbar({
               href="/painel"
               className="font-sans text-lg font-bold text-white tracking-tight"
             >
-              <span className="text-[#c9a84c]">IVC</span> Painel
+              <span className="text-accent">IVC</span> Painel
             </Link>
           </div>
 
@@ -115,7 +115,7 @@ export function PainelNavbar({
                   className="w-8 h-8 rounded-full object-cover border border-white/20"
                 />
               ) : (
-                <div className="w-8 h-8 rounded-full bg-[#c9a84c] flex items-center justify-center text-[#0d1f3c] font-sans text-xs font-bold">
+                <div className="w-8 h-8 rounded-full hero-background-accent flex items-center justify-center text-bg-dark font-sans text-xs font-bold">
                   {initials}
                 </div>
               )}
@@ -128,7 +128,7 @@ export function PainelNavbar({
             </button>
 
             {menuOpen && (
-              <div className="absolute right-0 top-full mt-2 w-72 bg-[#132744] rounded-xl shadow-2xl border border-white/10 py-2 overflow-hidden">
+              <div className="absolute right-0 top-full mt-2 w-72 hero-background-admin rounded-xl shadow-2xl border border-white/10 py-2 overflow-hidden">
                 <div className="px-4 py-3 border-b border-white/10 flex items-center gap-3">
                   {fotoUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element -- foto do storage Supabase
@@ -138,7 +138,7 @@ export function PainelNavbar({
                       className="w-11 h-11 rounded-full object-cover border border-white/20"
                     />
                   ) : (
-                    <div className="w-11 h-11 rounded-full bg-[#c9a84c] flex items-center justify-center text-[#0d1f3c] font-sans text-sm font-bold">
+                    <div className="w-11 h-11 rounded-full hero-background-accent flex items-center justify-center text-bg-dark font-sans text-sm font-bold">
                       {initials}
                     </div>
                   )}
@@ -179,7 +179,7 @@ export function PainelNavbar({
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden border-t border-white/10 bg-[#0d1f3c]">
+        <div className="md:hidden border-t border-white/10 hero-background-admin">
           <div className="px-4 py-3 border-b border-white/10 flex items-center gap-3">
             {fotoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element -- foto do storage Supabase
@@ -189,7 +189,7 @@ export function PainelNavbar({
                 className="w-9 h-9 rounded-full object-cover border border-white/20"
               />
             ) : (
-              <div className="w-9 h-9 rounded-full bg-[#c9a84c] flex items-center justify-center text-[#0d1f3c] font-sans text-xs font-bold">
+              <div className="w-9 h-9 rounded-full hero-background-accent flex items-center justify-center text-bg-dark font-sans text-xs font-bold">
                 {initials}
               </div>
             )}
