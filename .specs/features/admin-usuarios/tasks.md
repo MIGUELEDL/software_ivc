@@ -74,6 +74,8 @@ T10, T11, T12
 
 ### T1: Service layer — usuarios.ts
 
+**Depends on**: None
+
 - [x] `EmailEmUsoError`, `NaoEncontradoError`, `AutoModificacaoError`, `SuperAdminProtegidoError`, `PapelInvalidoError` exported
 - [x] `listarUsuarios({ role? })` calls `admin.auth.admin.listUsers()`, filters by `ADMIN_ROLES`, returns `{ users, total }`
 - [x] `criarUsuario({ email, role })` calls `admin.auth.admin.createUser()` with `email_confirm: true`, `app_metadata: { role, force_password_change: true }`, generates temp password via `gerarSenhaId()`
@@ -81,18 +83,30 @@ T10, T11, T12
 - [x] `redefinirSenha(userId)` generates new temp password, calls `admin.auth.admin.updateUserById()` with new password + `force_password_change: true`
 - [x] No TypeScript errors
 
+
+**Tests**: none
+**Gate**: build
+
 ---
 
 ### T2: Service layer — permissoes.ts
+
+**Depends on**: None
 
 - [x] `obterMatriz()` queries `permissions` table via service-role, returns `Array<{ role, module, nivel }>`
 - [x] `atualizarMatriz(updates)` validates each `nivel` in `['ler','escrever','administrar']`, validates each `role` in `ADMIN_ROLES`, validates each `module` in `MODULOS`, upserts via `ON CONFLICT (role, module) DO UPDATE SET nivel = excluded.nivel`
 - [x] Returns `{ ok: true, updated: number }`
 - [x] No TypeScript errors
 
+
+**Tests**: none
+**Gate**: build
+
 ---
 
 ### T3: API route — GET/POST /api/admin/usuarios
+
+**Depends on**: T1
 
 - [x] `GET` uses `authAdmin('usuarios')` guard, calls `listarUsuarios({ role })` from searchParams, returns 200 `{ users, total }`
 - [x] `POST` uses `requireAdministrar('usuarios')` guard, parses JSON `{ email, role }`, validates fields, calls `criarUsuario()`, returns 201 `{ id, email, role, temporaryPassword }`
@@ -103,9 +117,15 @@ T10, T11, T12
 - [x] 500 `erro_interno` fallback with `console.error`
 - [x] No TypeScript errors
 
+
+**Tests**: none
+**Gate**: build
+
 ---
 
 ### T4: API route — PATCH /api/admin/usuarios/[id]
+
+**Depends on**: T1
 
 - [x] Uses `requireAdministrar('usuarios')` guard
 - [x] Parses JSON `{ role }`, validates in `ADMIN_ROLES`
@@ -116,27 +136,45 @@ T10, T11, T12
 - [x] 400 `papel_invalido` for invalid role
 - [x] No TypeScript errors
 
+
+**Tests**: none
+**Gate**: build
+
 ---
 
 ### T5: API route — POST /api/admin/usuarios/[id]/senha
+
+**Depends on**: T1
 
 - [x] Uses `requireAdministrar('usuarios')` guard
 - [x] Calls `redefinirSenha(id)`, returns 200 `{ id, email, temporaryPassword }`
 - [x] 404 `nao_encontrado` when user doesn't exist
 - [x] No TypeScript errors
 
+
+**Tests**: none
+**Gate**: build
+
 ---
 
 ### T6: API route — GET/PUT /api/admin/usuarios/permissoes
+
+**Depends on**: T2
 
 - [x] `GET` uses `requireAdministrar('usuarios')` guard, calls `obterMatriz()`, returns 200 `{ matrix }`
 - [x] `PUT` uses `requireAdministrar('usuarios')` guard, parses JSON `{ updates }`, validates each nivel, calls `atualizarMatriz()`, returns 200 `{ ok: true, updated }`
 - [x] 400 `nivel_invalido` for invalid nivel values
 - [x] No TypeScript errors
 
+
+**Tests**: none
+**Gate**: build
+
 ---
 
 ### T7: Page — /admin/usuarios (user list)
+
+**Depends on**: T3
 
 - [x] RSC fetches users via `listarUsuarios()` (server-side)
 - [x] Shows denied-block when user lacks `usuarios:ler`
@@ -147,9 +185,15 @@ T10, T11, T12
 - [x] Renders `CreateUserForm` client component
 - [x] No TypeScript errors
 
+
+**Tests**: none
+**Gate**: build
+
 ---
 
 ### T8: Component — CreateUserForm
+
+**Depends on**: T3
 
 - [x] Form with email input + role select (options = `ADMIN_ROLES`)
 - [x] Submit calls `POST /api/admin/usuarios` via fetch
@@ -160,9 +204,15 @@ T10, T11, T12
 - [x] Loading state during submission
 - [x] No TypeScript errors
 
+
+**Tests**: none
+**Gate**: build
+
 ---
 
 ### T9: Page — /admin/usuarios/permissoes (matrix editor)
+
+**Depends on**: T6
 
 - [x] RSC page fetches matrix via `obterMatriz()`
 - [x] Shows denied-block for non-SUPER_ADMIN
@@ -172,17 +222,29 @@ T10, T11, T12
 - [x] Success/error feedback after save
 - [x] No TypeScript errors
 
+
+**Tests**: none
+**Gate**: build
+
 ---
 
 ### T10: Dashboard card — "Usuários"
+
+**Depends on**: T7
 
 - [x] "Usuários" card with `Users` icon (lucide-react) linking to `/admin/usuarios`
 - [x] Card placed after Relatórios card
 - [x] No TypeScript errors
 
+
+**Tests**: none
+**Gate**: build
+
 ---
 
 ### T11: Probes — probes-admin-usuarios.sh
+
+**Depends on**: T7, T8, T9
 
 - [x] Static checks: service files exist with functions, routes exist with guards, pages exist with expected patterns, dashboard card exists
 - [x] Runtime checks: RBAC per role with discriminators (L-009 list, L-010 create, L-011 edit role, L-012 reset password, L-013 matrix read, L-014 matrix write)
@@ -190,14 +252,24 @@ T10, T11, T12
 - [x] All static checks report ok (13/13)
 - [x] Total ok count documented
 
+
+**Tests**: none
+**Gate**: build
+
 ---
 
 ### T12: Regressões + coverage matrix
+
+**Depends on**: T11
 
 - [x] Auth probes pass: 19/0
 - [x] `npm run lint && npm run typecheck && npm run build` pass
 - [x] `coverage-matrix.md` updated: RF-028 row → `admin-usuarios`, USR-01..32, status `verified`
 - [x] `STATE.md` Handoff updated
+
+
+**Tests**: none
+**Gate**: build
 
 ---
 
