@@ -58,9 +58,9 @@ export function PainelNavbar({
           <div className="flex items-center gap-3">
             <Link
               href="/painel"
-              className="font-sans text-lg font-bold text-white tracking-tight"
+              className="font-sans text-lg font-bold text-primary tracking-tight"
             >
-              <span className="text-accent">IVC</span> Painel
+              <span className="text-accent">Membro</span> IVC
             </Link>
           </div>
 
@@ -76,8 +76,8 @@ export function PainelNavbar({
                   href={item.href}
                   className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-sans font-medium transition-colors ${
                     active
-                      ? "bg-white/15 text-white"
-                      : "text-white/60 hover:text-white hover:bg-white/5"
+                      ? "bg-primary/10 text-primary"
+                      : "text-primary hover:text-accent-light hover:bg-primary/10"
                   }`}
                 >
                   <item.icon size={14} />

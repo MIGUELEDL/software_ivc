@@ -36,17 +36,17 @@ export default async function PerfilPage({
       <div className="max-w-2xl mx-auto px-4 sm:px-6">
         <Link
           href="/painel"
-          className="inline-flex items-center gap-2 font-sans text-sm font-bold text-white/60 hover:text-accent mb-6 transition-colors"
+          className="inline-flex items-center gap-2 font-sans text-sm font-bold text-primary/80 hover:text-accent mb-6 transition-colors"
         >
           <ArrowLeft size={16} aria-hidden="true" />
           Voltar ao painel
         </Link>
 
         <div className="mb-8">
-          <h1 className="font-sans text-3xl font-bold text-white mb-2">
+          <h1 className="font-sans text-3xl font-bold text-primary mb-2">
             Meus dados
           </h1>
-          <p className="font-serif text-base text-white/50">
+          <p className="font-serif text-base text-primary/60">
             {member
               ? "Mantenha suas informações atualizadas."
               : "Complete seu cadastro para receber seu cartão e QR de dízimo."}

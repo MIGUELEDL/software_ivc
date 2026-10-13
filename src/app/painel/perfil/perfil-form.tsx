@@ -117,7 +117,7 @@ export function PerfilForm({ member }: PerfilFormProps) {
   }
 
   const inputClass =
-    "w-full rounded-lg border border-white/10 hero-background-admin px-4 py-2.5 font-serif text-white placeholder:text-white/40 focus:border-accent/60 focus:ring-1 focus:ring-accent-light outline-none transition-colors";
+    "w-full rounded-lg border border-white/10 bg-white/10 px-4 py-2.5 font-serif text-white placeholder:text-white/40 focus:border-accent-light/60 focus:ring-1 focus:ring-accent-light outline-none transition-colors";
 
   const labelClass =
     "block font-sans text-sm font-semibold text-white/70 mb-1.5";
@@ -283,7 +283,7 @@ export function PerfilForm({ member }: PerfilFormProps) {
         <button
           type="submit"
           disabled={enviando}
-          className="w-full rounded-lg hero-background-accent hover:bg-accent-light disabled:opacity-60 text-white font-sans font-bold py-2.5 transition-colors"
+          className="w-full rounded-lg hero-background-accent hover:bg-accent-light disabled:opacity-60 text-white font-sans font-bold py-2.5 transition-colors cursor-pointer"
         >
           {enviando ? "Salvando..." : member ? "Salvar alterações" : "Criar cadastro"}
         </button>
@@ -323,7 +323,7 @@ export function PerfilForm({ member }: PerfilFormProps) {
         <button
           type="submit"
           disabled={!member || enviando}
-          className="w-full rounded-lg border border-accent/60 text-accent hover:hero-background-accent hover:text-white disabled:opacity-60 font-sans font-bold py-2.5 transition-colors"
+          className="w-full rounded-lg border border-accent-light text-accent-light hover:bg-accent-light/30 hover:text-white disabled:opacity-60 font-sans font-bold py-2.5 transition-colors cursor-pointer"
         >
           {enviando ? "Enviando..." : "Enviar foto"}
         </button>

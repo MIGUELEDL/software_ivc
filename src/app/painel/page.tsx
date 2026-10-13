@@ -64,10 +64,10 @@ export default async function PainelPage() {
     <section className="py-8 min-h-[calc(100vh-3.5rem)]">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-8">
         <div>
-          <h1 className="font-sans text-2xl font-bold text-white mb-1">
+          <h1 className="font-sans text-2xl font-bold text-primary mb-1">
             Painel do Membro
           </h1>
-          <p className="font-serif text-sm text-white/50">
+          <p className="font-serif text-sm text-primary/60">
             Bem-vindo, {claims.email}
           </p>
         </div>
