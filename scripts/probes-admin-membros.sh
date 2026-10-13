@@ -499,13 +499,20 @@ if [ -z "$outras_senha" ] && grep -q 'senha_temporaria: senhaTemporaria' "$CREAT
 else
   ko "senha_temporaria fora do create/form: ${outras_senha:-producao ausente na rota} (AC11)"
 fi
-if grep -q 'action={`/api/admin/membros/${id}/dados`}' "$DETALHE" \
-  && grep -q 'action={`/api/admin/membros/${id}/status`}' "$DETALHE" \
-  && grep -q 'action={`/api/admin/membros/${id}/documentos`}' "$DETALHE"; then
-  ok "detalhe: forms server apontam para dados/status/documentos"
+EDITAR_FORMS="$ROOT/src/app/admin/membros/[id]/membro-editar-forms.tsx"
+if grep -q '<MembroEditarForms' "$DETALHE" \
+  && grep -q 'fetch(`/api/admin/membros/${id}/dados`' "$EDITAR_FORMS" \
+  && grep -q 'fetch(`/api/admin/membros/${id}/status`' "$EDITAR_FORMS" \
+  && grep -q 'fetch(`/api/admin/membros/${id}/documentos`' "$EDITAR_FORMS" \
+  && grep -q 'router.push("/admin/membros")' "$EDITAR_FORMS"; then
+  ok "detalhe: forms client via fetch p/ dados/status/documentos + volta a lista (sem submit nativo)"
 else
-  ko "forms do detalhe incompletos"
+  ko "forms do detalhe incompletos (fetch + volta a lista)"
 fi
+if ! grep -q 'action={`/api' "$DETALHE"; then
+  ok "detalhe: nenhum submit nativo para /api (sem pagina de JSON)"
+else
+  ko "detalhe: submit nativo para /api presente (navega p/ JSON)"
 if grep -q 'const hardDelete = await can(claims?.role ?? "", "membros", "administrar")' "$DETALHE" \
   && grep -q '<HardDeleteButton' "$DETALHE"; then
   ok "detalhe: hard-delete so para quem administra membros na matriz (guard UI)"
