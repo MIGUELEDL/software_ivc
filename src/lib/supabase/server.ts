@@ -4,9 +4,15 @@ import { cookies } from "next/headers";
 export async function createServerClient() {
   const cookieStore = await cookies();
 
+  // Aceita os dois nomes de chave pública (dashboard Vercel × convenção do
+  // repo): PUBLISHABLE_KEY (padrão do código) ou ANON_KEY (rótulo do dashboard).
+  const publishableKey =
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
   return createSsrServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    publishableKey!,
     {
       cookies: {
         getAll() {
