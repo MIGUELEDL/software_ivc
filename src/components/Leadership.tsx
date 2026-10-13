@@ -17,19 +17,19 @@ export default function Leadership({
   leaders: Lider[];
 }) {
   return (
-    <section id="lideranca" className="py-20 sm:py-32 bg-landing">
+    <section id="lideranca" className="py-12 sm:py-20 lg:py-32 bg-landing">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-16"
         >
-          <h2 className="font-sans text-4xl sm:text-5xl font-bold text-primary mb-4">
+          <h2 className="font-sans text-2xl sm:text-4xl lg:text-5xl font-bold text-primary mb-4">
             Nossa <span className="text-accent">Liderança</span>
           </h2>
-          <p className="font-serif text-lg text-text-dark/60 max-w-2xl mx-auto">
+          <p className="font-serif text-base sm:text-lg text-text-dark/60 max-w-2xl mx-auto">
             Obreiros que servem com amor
           </p>
         </motion.div>
@@ -40,9 +40,9 @@ export default function Leadership({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6 }}
-            className="max-w-2xl mx-auto rounded-2xl bg-admin-surface shadow-xl p-10 text-center"
+            className="max-w-2xl mx-auto rounded-2xl bg-admin-surface shadow-xl p-6 sm:p-10 text-center"
           >
-            <p className="font-serif text-lg text-white/70">
+            <p className="font-serif text-base sm:text-lg text-white/70">
               Em breve, a liderança da{" "}
               {church?.name ?? "igreja"} estará disponível aqui.
             </p>
@@ -53,19 +53,19 @@ export default function Leadership({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6 }}
-            className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto"
+            className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto"
           >
             {leaders.map((lider) => (
               <div
                 key={lider.id}
-                className="rounded-2xl hero-background shadow-xl p-8 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+                className="rounded-2xl hero-background shadow-xl p-5 sm:p-8 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
               >
                 {lider.photo_url ? (
                   <img
                     // Mesmo cache-buster do admin (path fixo no bucket).
                     src={`${lider.photo_url}?v=${lider.updated_at}`}
                     alt={lider.name}
-                    className="w-25 h-25 mx-auto mb-6 rounded-full object-cover border-2 border-white/20"
+                    className="w-20 h-20 sm:w-25 sm:h-25 mx-auto mb-4 sm:mb-6 rounded-full object-cover border-2 border-white/20"
                   />
                 ) : (
                   <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary-light via-primary to-accent flex items-center justify-center">
@@ -74,7 +74,7 @@ export default function Leadership({
                     </span>
                   </div>
                 )}
-                <h3 className="font-sans text-1xl font-bold text-white mb-2">
+                <h3 className="font-sans text-lg sm:text-xl font-bold text-white mb-2">
                   {lider.name}
                 </h3>
                 <p className="font-serif text-sm text-white/70">

@@ -101,7 +101,9 @@ T1 → T2 → T3 → T4
 
 ---
 
-### T3: Leadership + Schedule + LiveBanner
+### T3: Leadership + Schedule + LiveBanner ✅
+
+**Nota (2026-10-13)**: `probes-admin-lideranca.sh` 101 ok / 1 falha; a falha é staleness pré-existente (tier grepa `href="/admin/lideranca"` JSX, a página usa sintaxe objeto `href: ...`; arquivo fora do diff desta feature).
 
 **What**: Mesma escala nos blocos restantes de conteúdo; roda o probe que cobre Leadership.
 **Where**: `src/components/Leadership.tsx`, `src/components/Schedule.tsx`, `src/components/LiveBanner.tsx`

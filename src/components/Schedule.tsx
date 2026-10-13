@@ -14,19 +14,19 @@ export default function Schedule({ items }: { items?: ScheduleItem[] }) {
   const schedule = items && items.length > 0 ? items : [];
 
   return (
-    <section id="cultos" className="py-20 sm:py-32 bg-landing">
+    <section id="cultos" className="py-12 sm:py-20 lg:py-32 bg-landing">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-16"
         >
-          <h2 className="font-sans text-4xl sm:text-5xl font-bold text-primary mb-4">
+          <h2 className="font-sans text-2xl sm:text-4xl lg:text-5xl font-bold text-primary mb-4">
             Nossos <span className="text-accent">Cultos</span>
           </h2>
-          <p className="font-serif text-lg text-text-dark/60 max-w-2xl mx-auto">
+          <p className="font-serif text-base sm:text-lg text-text-dark/60 max-w-2xl mx-auto">
             Reuniões semanais para você adorar, aprender e se conectar.
           </p>
         </motion.div>
@@ -38,7 +38,7 @@ export default function Schedule({ items }: { items?: ScheduleItem[] }) {
             </p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-5 sm:gap-8">
             {schedule.map((service, index) => (
               <motion.div
                 key={service.day + service.time}
@@ -46,10 +46,10 @@ export default function Schedule({ items }: { items?: ScheduleItem[] }) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.6, delay: index * 0.15 }}
-                className="rounded-2xl hero-background-lite shadow-xl p-8 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+                className="rounded-2xl hero-background-lite shadow-xl p-5 sm:p-8 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
               >
-                <CalendarDays className="w-10 h-10 mx-auto mb-4 text-accent" />
-                <h3 className="font-sans text-2xl font-bold text-bg-dark/90 mb-2">
+                <CalendarDays className="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-4 text-accent" />
+                <h3 className="font-sans text-xl sm:text-2xl font-bold text-bg-dark/90 mb-2">
                   {service.day}
                 </h3>
                 <p className="inline-flex items-center gap-2 font-sans font-bold text-bg-dark/80 mb-3">
@@ -69,7 +69,7 @@ export default function Schedule({ items }: { items?: ScheduleItem[] }) {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-12 text-center inline-flex items-center gap-2 font-sans text-sm font-semibold text-text-dark/60"
+          className="mt-8 sm:mt-12 text-center inline-flex items-center gap-2 font-sans text-sm font-semibold text-text-dark/60"
         >
           <MapPin size={16} className="text-accent" />
           Terças e Domingos em:  {CHURCH.foundedLocation}
