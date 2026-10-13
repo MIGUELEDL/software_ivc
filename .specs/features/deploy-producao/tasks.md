@@ -91,7 +91,9 @@ T4 → T5 → T6 → T7
 
 ---
 
-### T2: Push total + CI verde (SEM COMMIT — operação remota)
+### T2: Push total + CI verde (SEM COMMIT — operação remota) ✅
+
+**Evidência (2026-10-13)**: push `95e0965..b025d65` (123 commits, 0 à frente); CI vermelha inicial por 3 causas (constants sem commit, pgvector sem pull, tasks dashboard/usuarios) → corrigidas em `d435cb4`/`7ffbc9a`/`4fb6a15`; **CI verde no `4fb6a15` confirmada pelo operador**. Varredura local das 24 features: 0 erros.
 
 **What**: Enviar `main` a `origin` (aval explícito já dado) e confirmar CI verde na HEAD.
 **Where**: `origin/main` (nenhum arquivo muda)
@@ -117,7 +119,7 @@ T4 → T5 → T6 → T7
 
 ---
 
-### T3: Supabase novo + migrations seletivas (AGUARDA OPERADOR)
+### T3: Supabase novo + migrations seletivas (AGUARDA OPERADOR) ✅
 
 **What**: Com o projeto novo criado pelo operador (ref/keys informados), aplicar migrations estruturais e confirmar zero seeds de teste. **Pausa até o operador entregar o projeto.**
 **Where**: Projeto Supabase novo (remoto; nenhum arquivo)
@@ -143,7 +145,9 @@ T4 → T5 → T6 → T7
 
 ---
 
-### T4: Seed do 1º admin no prod
+### T4: Seed do 1º admin no prod ✅
+
+**Evidência (2026-10-13)**: `seed-admin.mjs` com env do prod + `SEED_ADMIN_EMAIL` real; usuário confirmado: role=SUPER_ADMIN, force_password_change=true, e-mail confirmado. Senha temporária padrão do script — troca exigida no 1º login.
 
 **What**: Rodar `seed-admin.mjs` mirando o projeto novo e provar o usuário criado.
 **Where**: Projeto Supabase novo (remoto; script sem mudança)

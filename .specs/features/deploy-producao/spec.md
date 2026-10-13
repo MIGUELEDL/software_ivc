@@ -142,12 +142,12 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| DEP-01 | P1: Push | Design | Pending |
-| DEP-02 | P1: Push | Design | Pending |
-| DEP-03 | P1: Push | Design | Pending |
-| DEP-04 | P1: Supabase | Design | Pending |
-| DEP-05 | P1: Supabase | Design | Pending |
-| DEP-06 | P1: Supabase | Design | Pending |
+| DEP-01 | P1: Push | Execute | Implementing |
+| DEP-02 | P1: Push | Execute | Implementing |
+| DEP-03 | P1: Push | Execute | Implementing |
+| DEP-04 | P1: Supabase | Execute | Implementing |
+| DEP-05 | P1: Supabase | Execute | Implementing |
+| DEP-06 | P1: Supabase | Execute | Implementing |
 | DEP-07 | P1: Supabase | Design | Pending |
 | DEP-08 | P1: Vercel | Design | Pending |
 | DEP-09 | P1: Vercel | Design | Pending |
