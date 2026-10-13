@@ -176,7 +176,7 @@ export default async function AdminFinanceiroPage({
           className="mb-6 space-y-4 hero-background-admin border border-white/10 rounded-xl p-5"
         >
           <div className="flex flex-wrap items-end gap-3">
-            <div className="relative min-w-0 flex-1">
+            <div className="relative min-w-0 basis-full sm:basis-auto sm:flex-1">
               <label className="sr-only" htmlFor="busca">
                 Buscar lançamento
               </label>
@@ -195,7 +195,7 @@ export default async function AdminFinanceiroPage({
               />
             </div>
 
-            <div>
+            <div className="min-w-0 flex-1 sm:flex-none">
               <label
                 htmlFor="data_inicio"
                 className="block font-sans text-xs font-semibold text-white/90 mb-1"
@@ -207,10 +207,10 @@ export default async function AdminFinanceiroPage({
                 name="data_inicio"
                 type="date"
                 defaultValue={dataInicio}
-                className="bg-white/20 border border-white/10 text-white rounded-lg px-3 py-2 font-serif focus:border-accent-light focus:outline-none transition-colors"
+                className="w-full bg-white/20 border border-white/10 text-white rounded-lg px-3 py-2 font-serif focus:border-accent-light focus:outline-none transition-colors"
               />
             </div>
-            <div>
+            <div className="min-w-0 flex-1 sm:flex-none">
               <label
                 htmlFor="data_fim"
                 className="block font-sans text-xs font-semibold text-white/90 mb-1"
@@ -222,7 +222,7 @@ export default async function AdminFinanceiroPage({
                 name="data_fim"
                 type="date"
                 defaultValue={dataFim}
-                className="bg-white/20 border border-white/10 text-white rounded-lg px-3 py-2 font-serif focus:border-accent-light focus:outline-none transition-colors"
+                className="w-full bg-white/20 border border-white/10 text-white rounded-lg px-3 py-2 font-serif focus:border-accent-light focus:outline-none transition-colors"
               />
             </div>
 
@@ -241,53 +241,59 @@ export default async function AdminFinanceiroPage({
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-sans text-xs font-bold uppercase tracking-wider text-white/90">
-              Tipo:
-            </span>
-            <Link href={filtrar({ tipo: "" })} className={tipo === "" ? estiloChipAtivo : estiloChipInativo}>
-              Todos
-            </Link>
-            <Link href={filtrar({ tipo: "RECEITA" })} className={tipo === "RECEITA" ? estiloChipAtivo : estiloChipInativo}>
-              ENTRADA
-            </Link>
-            <Link href={filtrar({ tipo: "DESPESA" })} className={tipo === "DESPESA" ? estiloChipAtivo : estiloChipInativo}>
-              SAÍDA
-            </Link>
+            <div className="flex w-full sm:w-auto flex-wrap items-center gap-2">
+              <span className="font-sans text-xs font-bold uppercase tracking-wider text-white/90">
+                Tipo:
+              </span>
+              <Link href={filtrar({ tipo: "" })} className={tipo === "" ? estiloChipAtivo : estiloChipInativo}>
+                Todos
+              </Link>
+              <Link href={filtrar({ tipo: "RECEITA" })} className={tipo === "RECEITA" ? estiloChipAtivo : estiloChipInativo}>
+                ENTRADA
+              </Link>
+              <Link href={filtrar({ tipo: "DESPESA" })} className={tipo === "DESPESA" ? estiloChipAtivo : estiloChipInativo}>
+                SAÍDA
+              </Link>
+            </div>
 
-            <span className="ml-4 font-sans text-xs font-bold uppercase tracking-wider text-white/90">
-              Status:
-            </span>
-            <Link href={filtrar({ status: "" })} className={status === "" ? estiloChipAtivo : estiloChipInativo}>
-              Todos
-            </Link>
-            <Link href={filtrar({ status: "PENDENTE" })} className={status === "PENDENTE" ? estiloChipAtivo : estiloChipInativo}>
-              PENDENTE
-            </Link>
-            <Link href={filtrar({ status: "CONCILIADO" })} className={status === "CONCILIADO" ? estiloChipAtivo : estiloChipInativo}>
-              CONCILIADO
-            </Link>
-            <Link href={filtrar({ status: "CANCELADO" })} className={status === "CANCELADO" ? estiloChipAtivo : estiloChipInativo}>
-              CANCELADO
-            </Link>
+            <div className="flex w-full sm:w-auto flex-wrap items-center gap-2">
+              <span className="font-sans text-xs font-bold uppercase tracking-wider text-white/90">
+                Status:
+              </span>
+              <Link href={filtrar({ status: "" })} className={status === "" ? estiloChipAtivo : estiloChipInativo}>
+                Todos
+              </Link>
+              <Link href={filtrar({ status: "PENDENTE" })} className={status === "PENDENTE" ? estiloChipAtivo : estiloChipInativo}>
+                PENDENTE
+              </Link>
+              <Link href={filtrar({ status: "CONCILIADO" })} className={status === "CONCILIADO" ? estiloChipAtivo : estiloChipInativo}>
+                CONCILIADO
+              </Link>
+              <Link href={filtrar({ status: "CANCELADO" })} className={status === "CANCELADO" ? estiloChipAtivo : estiloChipInativo}>
+                CANCELADO
+              </Link>
+            </div>
 
-            <span className="ml-4 font-sans text-xs font-bold uppercase tracking-wider text-white/90">
-              Pagamento:
-            </span>
-            <Link href={filtrar({ metodo: "" })} className={metodo === "" ? estiloChipAtivo : estiloChipInativo}>
-              Todos
-            </Link>
-            <Link href={filtrar({ metodo: "PIX" })} className={metodo === "PIX" ? estiloChipAtivo : estiloChipInativo}>
-              PIX
-            </Link>
-            <Link href={filtrar({ metodo: "CARTAO" })} className={metodo === "CARTAO" ? estiloChipAtivo : estiloChipInativo}>
-              CARTÃO
-            </Link>
-            <Link href={filtrar({ metodo: "DINHEIRO" })} className={metodo === "DINHEIRO" ? estiloChipAtivo : estiloChipInativo}>
-              DINHEIRO
-            </Link>
-            <Link href={filtrar({ metodo: "TRANSFERENCIA" })} className={metodo === "TRANSFERENCIA" ? estiloChipAtivo : estiloChipInativo}>
-              TRANSFERÊNCIA
-            </Link>
+            <div className="flex w-full sm:w-auto flex-wrap items-center gap-2">
+              <span className="font-sans text-xs font-bold uppercase tracking-wider text-white/90">
+                Pagamento:
+              </span>
+              <Link href={filtrar({ metodo: "" })} className={metodo === "" ? estiloChipAtivo : estiloChipInativo}>
+                Todos
+              </Link>
+              <Link href={filtrar({ metodo: "PIX" })} className={metodo === "PIX" ? estiloChipAtivo : estiloChipInativo}>
+                PIX
+              </Link>
+              <Link href={filtrar({ metodo: "CARTAO" })} className={metodo === "CARTAO" ? estiloChipAtivo : estiloChipInativo}>
+                CARTÃO
+              </Link>
+              <Link href={filtrar({ metodo: "DINHEIRO" })} className={metodo === "DINHEIRO" ? estiloChipAtivo : estiloChipInativo}>
+                DINHEIRO
+              </Link>
+              <Link href={filtrar({ metodo: "TRANSFERENCIA" })} className={metodo === "TRANSFERENCIA" ? estiloChipAtivo : estiloChipInativo}>
+                TRANSFERÊNCIA
+              </Link>
+            </div>
           </div>
         </form>
 
@@ -334,8 +340,8 @@ export default async function AdminFinanceiroPage({
             </p>
           </div>
         ) : (
-          <div className="hero-background-admin border border-white/10 rounded-xl overflow-hidden">
-            <table className="w-full text-left">
+          <div className="hero-background-admin border border-white/10 rounded-xl overflow-x-auto">
+            <table className="w-full min-w-[720px] text-left">
               <thead>
                 <tr className="border-b border-white/10 font-sans text-xs font-bold uppercase tracking-wider text-white/90">
                   <th className="px-6 py-4">Descrição</th>
