@@ -11,7 +11,7 @@ export type SettingKey =
   | "church.city"
   | "church.leader"
   | "church.about"
-  | "church.mission"
+  | "church.proposito"
   | "church.vision"
   | "church.values"
   | "whatsapp.number"
@@ -33,7 +33,7 @@ const DEFAULTS: Record<SettingKey, SettingValue> = {
   "church.city": CHURCH.city,
   "church.leader": CHURCH.leader,
   "church.about": CHURCH.about,
-  "church.mission": CHURCH.mission,
+  "church.proposito": CHURCH.proposito,
   "church.vision": CHURCH.vision,
   "church.values": CHURCH.values as unknown as Array<{ title: string; description: string; color: string }>,
   "whatsapp.number": "83999450781",

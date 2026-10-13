@@ -227,7 +227,7 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
             <div className="sm:col-span-2">
               <TextField label="Sobre" value={form["church.about"] as string} onChange={(v) => set("church.about", v)} multiline />
             </div>
-            <TextField label="Proposito" value={form["church.mission"] as string} onChange={(v) => set("church.mission", v)} multiline />
+            <TextField label="Proposito" value={form["church.proposito"] as string} onChange={(v) => set("church.proposito", v)} multiline />
             <TextField label="Visao" value={form["church.vision"] as string} onChange={(v) => set("church.vision", v)} multiline />
             <div className="sm:col-span-2">
               <ValoresEditor
@@ -249,7 +249,7 @@ export default function ConfiguracoesForm({ initial, canEdit }: Props) {
             <div className="sm:col-span-2">
               <ReadonlyValue label="Sobre" value={form["church.about"] as string} />
             </div>
-            <ReadonlyValue label="Proposito" value={form["church.mission"] as string} />
+            <ReadonlyValue label="Proposito" value={form["church.proposito"] as string} />
             <ReadonlyValue label="Visao" value={form["church.vision"] as string} />
             <div className="sm:col-span-2">
               <ValoresReadonly values={form["church.values"] as Array<{ title: string; description: string; color: string }>} />
