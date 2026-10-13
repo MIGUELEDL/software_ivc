@@ -25,13 +25,13 @@ export default function PixDonation({ payload }: PixDonationProps) {
   }, [payload]);
 
   return (
-    <div className="grid md:grid-cols-2 gap-10 items-start">
-      <div className="rounded-2xl hero-background-lite shadow-xl p-8 sm:p-10 flex flex-col items-center text-center">
-        <QrCode className="w-12 h-12 text-primary mb-4" aria-hidden="true" />
+    <div className="grid md:grid-cols-2 gap-5 sm:gap-10 items-start">
+      <div className="rounded-2xl hero-background-lite shadow-xl p-5 sm:p-8 lg:p-10 flex flex-col items-center text-center">
+        <QrCode className="w-10 h-10 sm:w-12 sm:h-12 text-primary mb-4" aria-hidden="true" />
         <h2 className="font-sans text-xl font-bold text-primary mb-2">
           Escaneie o QR Code
         </h2>
-        <p className="font-serif text-base text-primary/70 mb-8">
+        <p className="font-serif text-base text-primary/70 mb-6 sm:mb-8">
           Abra o app do seu banco, escaneie o código e faça sua doação.
         </p>
         <QRCodeSVG
@@ -44,11 +44,11 @@ export default function PixDonation({ payload }: PixDonationProps) {
         />
       </div>
 
-      <div className="rounded-2xl hero-background-lite shadow-xl p-8 sm:p-10 flex flex-col">
+      <div className="rounded-2xl hero-background-lite shadow-xl p-5 sm:p-8 lg:p-10 flex flex-col">
         <h2 className="font-sans text-xl font-bold text-primary mb-2">
           Ou use o código PIX
         </h2>
-        <p className="font-serif text-base text-primary/70 mb-8">
+        <p className="font-serif text-base text-primary/70 mb-6 sm:mb-8">
           Copie o código abaixo e cole no campo PIX do seu app bancário.
         </p>
         <div
@@ -58,7 +58,7 @@ export default function PixDonation({ payload }: PixDonationProps) {
           {payload}
         </div>
         {notice ? (
-          <p className="font-serif text-sm text-landing-600" role="alert">
+          <p className="font-serif text-sm text-red-600" role="alert">
             {notice}
           </p>
         ) : null}

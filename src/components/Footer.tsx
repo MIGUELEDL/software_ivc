@@ -36,8 +36,8 @@ function FooterNavLink({
 export default function Footer() {
   return (
     <footer className="bg-bg-dark text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid md:grid-cols-3 gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+        <div className="grid md:grid-cols-3 gap-8 sm:gap-12">
           <div>
             <div className="flex items-center gap-3 mb-4">
               <Image
@@ -92,7 +92,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-white/10 mt-12 pt-8 text-center">
+        <div className="border-t border-white/10 mt-8 sm:mt-12 pt-6 sm:pt-8 text-center">
           <p className="font-serif text-white/40 text-sm">
             &copy; {new Date().getFullYear()} {CHURCH.name}. Todos os direitos
             reservados.

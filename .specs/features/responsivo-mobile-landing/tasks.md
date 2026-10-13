@@ -129,7 +129,7 @@ T1 → T2 → T3 → T4
 
 ---
 
-### T4: PixDonation + SocialLinks + Footer
+### T4: PixDonation + SocialLinks + Footer ✅
 
 **What**: Fecha a landing: QR/doação, redes e rodapé sem overflow em 360px.
 **Where**: `src/components/PixDonation.tsx`, `src/components/SocialLinks.tsx`, `src/components/Footer.tsx`

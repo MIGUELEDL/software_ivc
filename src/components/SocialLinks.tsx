@@ -38,20 +38,20 @@ const SOCIAL_LINKS = [
 
 export default function SocialLinks() {
   return (
-    <section id="redes" className="py-20 sm:py-32 bg-landing">
+    <section id="redes" className="py-12 sm:py-20 lg:py-32 bg-landing">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-16"
         >
-          <h2 className="font-sans text-4xl sm:text-5xl font-bold text-primary mb-4">
+          <h2 className="font-sans text-2xl sm:text-4xl lg:text-5xl font-bold text-primary mb-4">
             Conecte-se{" "}
             <span className="text-accent">Conosco</span>
           </h2>
-          <p className="font-serif text-lg text-text-dark/60 max-w-2xl mx-auto">
+          <p className="font-serif text-base sm:text-lg text-text-dark/60 max-w-2xl mx-auto">
             Acompanhe nossa rotina, cultos e novidades pelas redes sociais.
           </p>
         </motion.div>
@@ -61,13 +61,13 @@ export default function SocialLinks() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex items-center justify-center gap-2 mb-12 text-text-dark/60 font-serif"
+          className="flex items-center justify-center gap-2 mb-8 sm:mb-12 text-text-dark/60 font-serif px-4 text-center"
         >
           <MapPin size={18} className="text-accent" />
           <span>{SOCIAL.address}</span>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto">
           {SOCIAL_LINKS.map((link, index) => {
             const Icon = link.icon;
             return (
@@ -80,14 +80,14 @@ export default function SocialLinks() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className={`group flex flex-col items-center gap-4 p-8 rounded-2xl border border-gray-100 shadow-md ${link.bg} transition-all duration-300 hover:shadow-xl hover:-translate-y-2`}
+                className={`group flex flex-col items-center gap-3 sm:gap-4 p-5 sm:p-8 rounded-2xl border border-gray-100 shadow-md ${link.bg} transition-all duration-300 hover:shadow-xl hover:-translate-y-2`}
               >
                 <div
-                  className={`p-4 rounded-full bg-gray-50 group-hover:scale-110 transition-transform duration-300 ${link.color}`}
+                  className={`p-3 sm:p-4 rounded-full bg-gray-50 group-hover:scale-110 transition-transform duration-300 ${link.color}`}
                 >
-                  <Icon size={32} />
+                  <Icon size={28} className="sm:w-8 sm:h-8" />
                 </div>
-                <span className="font-sans text-lg font-bold text-text-dark group-hover:text-primary transition-colors">
+                <span className="font-sans text-base sm:text-lg font-bold text-text-dark group-hover:text-primary transition-colors">
                   {link.name}
                 </span>
               </motion.a>

@@ -114,7 +114,7 @@ Explicitly excluded. Documented to prevent scope creep.
 | RSP-06 | P2: Cards | Execute | Implementing |
 | RSP-07 | P2: Cards | Design | Pending |
 | RSP-08 | P3: Nav/footer | Execute | Implementing |
-| RSP-09 | P3: Nav/footer | Design | Pending |
+| RSP-09 | P3: Nav/footer | Execute | Implementing |
 | RSP-10 | Edge <360px | Design | Pending |
 | RSP-11 | Edge legado | Design | Pending |
 | RSP-12 | Edge probes | Design | Pending |
