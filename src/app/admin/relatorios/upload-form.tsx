@@ -37,7 +37,7 @@ export function UploadForm() {
         Novo documento
       </h3>
       <div className="flex flex-wrap items-end gap-3">
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 basis-full sm:basis-auto sm:flex-1">
           <label
             htmlFor="doc-title"
             className="block font-sans text-xs font-semibold text-white/70 mb-1"
@@ -52,7 +52,7 @@ export function UploadForm() {
             className="w-full rounded-lg bg-white/20 border border-white/10 px-3 py-2 font-serif text-white focus:border-accent-light outline-none transition-colors"
           />
         </div>
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 basis-full sm:basis-auto sm:flex-1">
           <label
             htmlFor="doc-category"
             className="block font-sans text-xs font-semibold text-white/70 mb-1"
@@ -72,7 +72,7 @@ export function UploadForm() {
             ))}
           </select>
         </div>
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 basis-full sm:basis-auto sm:flex-1">
           <label
             htmlFor="doc-file"
             className="block font-sans text-xs font-semibold text-white/70 mb-1"
@@ -91,7 +91,7 @@ export function UploadForm() {
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex items-center gap-2 rounded-lg hero-background-accent hover:bg-[#e0c872] disabled:opacity-50 text-white/90 font-sans font-bold px-5 py-2 transition-colors cursor-pointer"
+          className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg hero-background-accent hover:bg-[#e0c872] disabled:opacity-50 text-white/90 font-sans font-bold px-5 py-2.5 transition-colors cursor-pointer"
         >
           <Upload size={16} aria-hidden="true" />
           {pending ? "Enviando..." : "Enviar"}
