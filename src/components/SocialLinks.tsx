@@ -67,7 +67,7 @@ export default function SocialLinks() {
           <span>{SOCIAL.address}</span>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto">
           {SOCIAL_LINKS.map((link, index) => {
             const Icon = link.icon;
             return (
@@ -80,7 +80,7 @@ export default function SocialLinks() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className={`group flex flex-col items-center gap-3 sm:gap-4 p-5 sm:p-8 rounded-2xl border border-gray-100 shadow-md ${link.bg} transition-all duration-300 hover:shadow-xl hover:-translate-y-2`}
+                className={`group flex flex-col items-center gap-3 sm:gap-4 p-4 sm:p-8 rounded-2xl border border-gray-100 shadow-md ${link.bg} transition-all duration-300 hover:shadow-xl hover:-translate-y-2`}
               >
                 <div
                   className={`p-3 sm:p-4 rounded-full bg-gray-50 group-hover:scale-110 transition-transform duration-300 ${link.color}`}

@@ -155,10 +155,36 @@ T1 → T2 → T3 → T4
 
 ---
 
+### T5: Cards lado a lado no mobile (calibragem do operador) ✅
+
+**What**: Grids de conteúdo com 2 colunas já na base + compactação interna (p-4, ícones/textos menores); desktop ≥640 intacto.
+**Where**: `src/components/Values.tsx`, `src/components/Schedule.tsx`, `src/components/Leadership.tsx`, `src/components/SocialLinks.tsx`
+**Depends on**: T4
+**Reuses**: Escala T1–T4
+**Requirement**: RSP-05, RSP-06
+
+**Tools**:
+
+- MCP: NONE
+- Skill: NONE
+
+**Done when**:
+
+- [ ] 360px: Propósito/Visão, valores, cultos, líderes e redes em 2 colunas, conteúdo proporcional
+- [ ] ≥640px idêntico ao atual; zero texto alterado
+- [ ] Gate check passes: `test:ci` + Build; frames do operador
+
+**Tests**: integration
+**Gate**: build
+
+**Commit**: `style(landing): cards lado a lado no mobile`
+
+---
+
 ## Phase Execution Map
 
 ```
-Phase 1:  T1 ------→ T2 ------→ T3 ------→ T4
+Phase 1:  T1 ------→ T2 ------→ T3 ------→ T4 ------→ T5
 ```
 
 Single batch (4 tasks ≤ 8) → execução inline, sem sub-agentes.
@@ -173,6 +199,7 @@ Single batch (4 tasks ≤ 8) → execução inline, sem sub-agentes.
 | T2: About + Values | 2 seções institucionais | ✅ Granular |
 | T3: Leadership/Schedule/Live | 3 blocos de conteúdo | ✅ Granular |
 | T4: Pix/Social/Footer | 3 blocos finais | ✅ Granular |
+| T5: 2-col mobile | 4 grids + compactação | ✅ Granular |
 
 ---
 
@@ -184,6 +211,7 @@ Single batch (4 tasks ≤ 8) → execução inline, sem sub-agentes.
 | T2 | T1 | T1 → T2 | ✅ Match |
 | T3 | T2 | T2 → T3 | ✅ Match |
 | T4 | T3 | T3 → T4 | ✅ Match |
+| T5 | T4 | T4 → T5 | ✅ Match |
 
 ---
 
@@ -195,6 +223,7 @@ Single batch (4 tasks ≤ 8) → execução inline, sem sub-agentes.
 | T2 | Componentes landing | integration | integration | ✅ OK |
 | T3 | Leadership (com probe) | integration | integration | ✅ OK |
 | T4 | Componentes landing | integration | integration | ✅ OK |
+| T5 | Componentes landing | integration | integration | ✅ OK |
 
 ---
 

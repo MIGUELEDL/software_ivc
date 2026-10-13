@@ -36,6 +36,7 @@ Explicitly excluded. Documented to prevent scope creep.
 | --------------------- | -------------- | --------- | ---------- |
 | Estratégia | Mobile-first aditivo: base menor + `sm:`/`md:` restaurando o atual | Menor blast radius nos probes (L-015: classes assertadas); desktop intacto por construção | y |
 | Escala de títulos | Hero `text-3xl`→`sm:text-5xl`; seções `text-2xl`→`sm:text-4xl` | Redução ~25–30% no mobile pedida pelo usuário | y |
+| Calibragem T5 (2026-10-13) | Cards lado a lado no mobile (`grid-cols-2` na base, padrão do PC) + conteúdo menor (p-4, ícones e textos um degrau abaixo) | Pedido do operador: empilhado vertical parecia "grande"; 2 cols só mudam <640px (≥640 intacto) salvo Schedule 640–768 (1→2 cols, aceito) | y |
 | Cards/seções | `p-5`→`sm:p-8`, `py-12`→`sm:py-20` (mesma proporção) | Compacta sem reempacotar conteúdo | n |
 | Estilos antigos inconsistentes | Atualizar para o padrão vigente quando divergirem (ex.: arbitrários `w-25` fora da escala) | Pedido explícito do usuário (consistência total) | y |
 | Verificação visual | Screenshots/frames do operador no localhost + probes locais | Sem device farm; viewport 360px como referência | y |

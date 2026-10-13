@@ -53,19 +53,19 @@ export default function Leadership({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6 }}
-            className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto"
+            className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3 max-w-5xl mx-auto"
           >
             {leaders.map((lider) => (
               <div
                 key={lider.id}
-                className="rounded-2xl hero-background shadow-xl p-5 sm:p-8 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+                className="rounded-2xl hero-background shadow-xl p-4 sm:p-8 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
               >
                 {lider.photo_url ? (
                   <img
                     // Mesmo cache-buster do admin (path fixo no bucket).
                     src={`${lider.photo_url}?v=${lider.updated_at}`}
                     alt={lider.name}
-                    className="w-20 h-20 sm:w-25 sm:h-25 mx-auto mb-4 sm:mb-6 rounded-full object-cover border-2 border-white/20"
+                    className="w-16 h-16 sm:w-20 sm:h-20 lg:w-25 lg:h-25 mx-auto mb-3 sm:mb-6 rounded-full object-cover border-2 border-white/20"
                   />
                 ) : (
                   <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary-light via-primary to-accent flex items-center justify-center">
@@ -74,7 +74,7 @@ export default function Leadership({
                     </span>
                   </div>
                 )}
-                <h3 className="font-sans text-lg sm:text-xl font-bold text-white mb-2">
+                <h3 className="font-sans text-base sm:text-lg lg:text-xl font-bold text-white mb-2">
                   {lider.name}
                 </h3>
                 <p className="font-serif text-sm text-white/70">

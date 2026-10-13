@@ -38,7 +38,7 @@ export default function Schedule({ items }: { items?: ScheduleItem[] }) {
             </p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-3 gap-5 sm:gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8">
             {schedule.map((service, index) => (
               <motion.div
                 key={service.day + service.time}
@@ -46,17 +46,17 @@ export default function Schedule({ items }: { items?: ScheduleItem[] }) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.6, delay: index * 0.15 }}
-                className="rounded-2xl hero-background-lite shadow-xl p-5 sm:p-8 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+                className="rounded-2xl hero-background-lite shadow-xl p-4 sm:p-8 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
               >
-                <CalendarDays className="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-4 text-accent" />
-                <h3 className="font-sans text-xl sm:text-2xl font-bold text-bg-dark/90 mb-2">
+                <CalendarDays className="w-7 h-7 sm:w-10 sm:h-10 mx-auto mb-3 sm:mb-4 text-accent" />
+                <h3 className="font-sans text-base sm:text-2xl font-bold text-bg-dark/90 mb-2">
                   {service.day}
                 </h3>
-                <p className="inline-flex items-center gap-2 font-sans font-bold text-bg-dark/80 mb-3">
+                <p className="inline-flex items-center gap-2 font-sans font-bold text-sm sm:text-base text-bg-dark/80 mb-2 sm:mb-3">
                   <Clock size={16} className="text-accent" />
                   {service.time}
                 </p>
-                <p className="font-serif text-base text-bg-dark/80">
+                <p className="font-serif text-sm sm:text-base text-bg-dark/80">
                   {service.title}
                 </p>
               </motion.div>
