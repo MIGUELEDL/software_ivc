@@ -195,7 +195,7 @@ export default async function AdminFinanceiroPage({
               />
             </div>
 
-            <div className="min-w-0 flex-1 sm:flex-none">
+            <div className="min-w-0 basis-full sm:basis-auto sm:flex-none">
               <label
                 htmlFor="data_inicio"
                 className="block font-sans text-xs font-semibold text-white/90 mb-1"
@@ -210,7 +210,7 @@ export default async function AdminFinanceiroPage({
                 className="w-full bg-white/20 border border-white/10 text-white rounded-lg px-3 py-2 font-serif focus:border-accent-light focus:outline-none transition-colors"
               />
             </div>
-            <div className="min-w-0 flex-1 sm:flex-none">
+            <div className="min-w-0 basis-full sm:basis-auto sm:flex-none">
               <label
                 htmlFor="data_fim"
                 className="block font-sans text-xs font-semibold text-white/90 mb-1"
