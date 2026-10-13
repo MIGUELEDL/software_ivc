@@ -148,11 +148,11 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | DEP-04 | P1: Supabase | Execute | Implementing |
 | DEP-05 | P1: Supabase | Execute | Implementing |
 | DEP-06 | P1: Supabase | Execute | Implementing |
-| DEP-07 | P1: Supabase | Design | Pending |
+| DEP-07 | P1: Supabase | Execute | Implementing |
 | DEP-08 | P1: Vercel | Design | Pending |
 | DEP-09 | P1: Vercel | Design | Pending |
-| DEP-10 | P1: Vercel | Design | Pending |
-| DEP-11 | P1: Vercel | Design | Pending |
+| DEP-10 | P1: Vercel | Execute | Implementing |
+| DEP-11 | P1: Vercel | Execute | Implementing |
 | DEP-12 | P2: Analytics | Execute | Implementing |
 | DEP-13 | P2: Analytics | Execute | Implementing |
 | DEP-14 | P2: Docs | Design | Pending |

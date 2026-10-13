@@ -198,7 +198,9 @@ T4 → T5 → T6 → T7
 
 ---
 
-### T6: Fumaça em produção
+### T6: Fumaça em produção ✅
+
+**Evidência (2026-10-13)**: `bash scripts/smoke-prod.sh [REDACTED_DEPLOYMENT_URL]` → **9 ok / 0 falhas** (health SHA `0333087`, login admin, zero eventos via API, Analytics na árvore, empty state). DB: members/events/transactions/assets = 0, auth.users = 1 (superadmin). Sentry release no dashboard: confirmação do operador.
 
 **What**: Acrescentar as tiers runtime ao `smoke-prod.sh` e rodar contra a URL prod.
 **Where**: `scripts/smoke-prod.sh`
