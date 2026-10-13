@@ -227,7 +227,7 @@ T4 → T5 → T6 → T7
 
 ---
 
-### T7: Docs finais fiéis
+### T7: Docs finais fiéis ✅
 
 **What**: Reescrever seção de envs do `DEPLOYMENT.md` (fora Auth.js/Resend; dentro lista exata + 2 projetos + promoção/rollback) com as URLs reais.
 **Where**: `docs/DEPLOYMENT.md`

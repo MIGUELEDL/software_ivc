@@ -30,23 +30,32 @@ Regras:
 | Variáveis de ambiente | Configuradas no dashboard Vercel (nunca no repo) |
 | Rollback | Re-deploy de commit anterior no painel Vercel (Observabilidade: runbook em `OBSERVABILITY.md`) |
 
-## Variáveis de ambiente (Vercel)
+## Variáveis de ambiente (Vercel → Production)
 
-- `DATABASE_URL` / keys Supabase (service-role apenas server-side; anon para client)
-- Auth.js secrets (`NEXTAUTH_SECRET`, session secret)
-- `RESEND_API_KEY`
-- `MERCADOPAGO_*` (access token, webhook secret) — **Fase 9**, quando credenciais existirem
-- `SENTRY_DSN` — quando Sentry for ativado (F11)
-- `NEXT_PUBLIC_*` somente para valores não sensíveis (ex.: APP_URL)
+| Nome | Origem | Tipo Vercel |
+| ---- | ------ | ----------- |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase [REDACTED_PROJECT_NAME]-**prod** → Settings → API | Configuração |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Idem (chave anon; o código também aceita `NEXT_PUBLIC_SUPABASE_ANON_KEY`) | Configuração |
+| `SUPABASE_SERVICE_ROLE_KEY` | Idem (service_role) | **Segredo** |
+| `SENTRY_DSN` | Sentry [REDACTED_PROJECT_NAME] | **Segredo** |
+| `NEXT_PUBLIC_SENTRY_DSN` | Mesmo DSN (ingest pública por desenho) | Configuração |
 
-> Todas listadas como **segredos** (`docs/SECURITY.md`); nenhuma no `git`.
+> Regras: nenhuma no `git` (`docs/SECURITY.md`); env criada depois do build só vale após **Redeploy**; Preview fica sem envs de prod (não apontar teste a dado real).
+
+## Projetos (2026-10-13)
+
+- **Supabase dev**: `[REDACTED_PROJECT_REF]` (testes, seeds, probes locais).
+- **Supabase prod**: `[REDACTED_PROJECT_REF]` (schema via migrations seletivas — sem seeds de teste; textos de `settings` alinhados aos atuais).
+- **Vercel**: `software-ivc` → `[REDACTED_DEPLOYMENT_URL]` (Hobby). Projeto duplicado `[REDACTED_PROJECT_NAME]` excluído.
+- **Sentry**: `[REDACTED_PROJECT_NAME]` (mesmo DSN dev/prod; `release` distingue).
 
 ## Ambientes e promosão
 
-1. **Desenvolvimento:** `npm run dev` local (Node 22 via nvm, AD-006).
-2. **Preview:** cada PR gera deploy preview no Vercel — validação visual/UAT.
-3. **Production:** merge em `main` (CI verde) → deploy aprovado explicitamente pelo
-   operador → produção em `*.vercel.app`.
+1. **Desenvolvimento:** `npm run dev` local (Node 22 via nvm, AD-006) contra o Supabase dev.
+2. **Preview:** cada PR gera deploy preview (protegido por login Vercel); sem envs de prod.
+3. **Production:** push em `main` dispara build; com CI verde, o deploy promove sozinho (a conexão do repo é a aprovação contínua, RNF-010). URL: `[REDACTED_DEPLOYMENT_URL]`.
+4. **Pós-env:** qualquer env criada/alterada exige **Redeploy** (rebuild limpo) para valer.
+5. **Rollback:** Deployments → deploy anterior → ⋯ → **Redeploy** (promove o código antigo na hora); fumaça com `bash scripts/smoke-prod.sh <url>`.
 
 ## Backup e recuperação
 
