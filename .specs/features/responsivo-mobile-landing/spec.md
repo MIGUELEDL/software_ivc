@@ -107,15 +107,15 @@ Explicitly excluded. Documented to prevent scope creep.
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| RSP-01 | P1: Tipografia | Execute | Implementing |
-| RSP-02 | P1: Tipografia | Execute | Implementing |
+| RSP-01 | P1: Tipografia | Execute | Verified |
+| RSP-02 | P1: Tipografia | Execute | Verified |
 | RSP-03 | P1: Tipografia | Design | Pending |
 | RSP-04 | P1: Tipografia | Design | Pending |
-| RSP-05 | P2: Cards | Execute | Implementing |
-| RSP-06 | P2: Cards | Execute | Implementing |
+| RSP-05 | P2: Cards | Execute | Verified |
+| RSP-06 | P2: Cards | Execute | Verified |
 | RSP-07 | P2: Cards | Design | Pending |
-| RSP-08 | P3: Nav/footer | Execute | Implementing |
-| RSP-09 | P3: Nav/footer | Execute | Implementing |
+| RSP-08 | P3: Nav/footer | Execute | Verified |
+| RSP-09 | P3: Nav/footer | Execute | Verified |
 | RSP-10 | Edge <360px | Design | Pending |
 | RSP-11 | Edge legado | Design | Pending |
 | RSP-12 | Edge probes | Design | Pending |

@@ -48,7 +48,7 @@ status `verified`, respaldada por `validation.md` no respectivo `.specs/features
 | RF-012 (cartão do membro: barcode Code 128 real da matrícula em vez do gradiente decorativo fixo; print ID-1) | `barcode-membro` | BRC-01..05 | probes por AC (`scripts/probe-barcode.sh`, 7 ok/0 falhas; tier SSR atesta degradação por RangeError/matrícula ausente) + sensor 5/5 mutantes mortos + gates + CI (`npm run probe:barcode`) | ✅ verified |
 | RF-030 (auditoria: trilha append-only `audit_logs`, registrarAuditoria/listarAuditoria com filtros e paginação, página read-only, RBAC auditoria:ler, instrumentação dos handlers admin) | `admin-auditoria` | AUD-01..18 | probes por AC (`scripts/probes-admin-auditoria.sh`, 74 ok/0 falhas; harness executa service com stub de @/lib/supabase/server e route GET/POST com stubs) + sensor 17/17 mutantes mortos + gates + validate_tasks 0 erros + CI (`npm run probe:admin-auditoria`) | ✅ verified |
 | RF-031 (validade anual do cartão: ciclo-base 1 ano a partir de batismo/nascimento conforme regra, recalculo por trigger, visual corrente no cartão) | `cartao-valididade-anual` | CART-01..16 | unit+integration+probes (probes 37/0, --domain 4/0, --com-db 38/0, 6 fusos) + gates | ✅ verified |
-| RNF-001, RNF-002, RNF-012 | responsividade mobile-first, identidade IVC, WCAG 2.1 AA | — | — | 🔲 pending |
+| RNF-001, RNF-002, RNF-012 | responsividade mobile-first, identidade IVC, WCAG 2.1 AA | — | — | 🔲 pending (slice landing ✅ em `responsivo-mobile-landing` abaixo; admin em slice futura) |
 | RNF-003..RNF-010 | disponibilidade, segurança, LGPD, backup, custo, observabilidade, CI, deploy | — | — | 🔲 pending |
 | RN-001.1, RN-002, RN-004, RN-005 | regras de negócio (webhook PIX+cartão financeiro, 1º acesso, auditoria, 1 templo) | — | — | 🔲 pending |
 
@@ -71,6 +71,12 @@ status `verified`, respaldada por `validation.md` no respectivo `.specs/features
 | Requisito(s) | Feature | Spec ACs | Teste / Gate | Status |
 | ------------ | ------- | -------- | ------------ | ------ |
 | RNF-009 (CI verde), RNF-010 (deploy c/ aprovação), RC-003 (`*.vercel.app`), RNF-007 (custo ≈ R$ 0) | `deploy-producao` | DEP-01..15 | Push preservado + CI verde; Supabase prod seletivo (zero demo, counts); `scripts/smoke-prod.sh` (9 ok/0 em `[REDACTED_DEPLOYMENT_URL]`: health SHA==HEAD, login admin, zero eventos, Analytics, empty state) + `test:ci` 243/0; Verifier PASS 15/15, sensor 4/4 | ✅ verified |
+
+### Responsividade (slices)
+
+| Requisito(s) | Feature | Spec ACs | Teste / Gate | Status |
+| ------------ | ------- | -------- | ------------ | ------ |
+| RNF-001 (parcial: landing) | `responsivo-mobile-landing` | RSP-01..12 | `test:ci` 243/0 + build + probe lideranca (101 ok/1 pré-existente fora do diff) + aceite visual do operador 360px/320px; Verifier PASS, sensor operator-covered | ✅ verified |
 
 ## Próximos passos
 

@@ -9,7 +9,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 ---
 
 **Design**: inline (estratégia mobile-first aditiva aprovada na spec; sem Design formal)
-**Status**: In Progress
+**Status**: Done
 
 ---
 

@@ -272,6 +272,14 @@
 - **Date**: 2026-10-12
 - **Status**: active
 
+## Handoff — feature responsivo-mobile-landing (Parte 1) — ✅ VERIFIED (2026-10-13)
+
+- **Estado**: Spec → Tasks (4+1) → Execute → Verifier **PASS**. Feature **fechada**. `validation.md` (PASS) em `.specs/features/responsivo-mobile-landing/`. Slice 1/2 da responsividade (admin vem em slice futura).
+- **Entregue**: 10 componentes da landing mobile-first aditivos (base menor + `sm:`/`lg:` restaurando ≥1024 idêntico); 2-col base nos grids + compactação (calibragem T5 do operador); 3 stales corrigidos (`text-1xl`, `md:text-1xl`, `text-landing-600`); zero texto/cor/fonte alterados.
+- **Verificação**: Verifier independente, range `0e28cda..HEAD`; **12/12 ACs (RSP-01..12)**; sensor 0 mortos automatizados + 3 operator-covered (estilização pura, sem dente automatizado por construção); aceite visual do operador em 360px/320px.
+- **Commits**: `b7c9dfa` (T1) → `5e950e5` (T2) → `c0f6ce3` (T3) → `d9a2976` (T4) → `3fb56f7` (T5) + este fechamento. Nada pushed.
+- **Feature**: `.specs/features/responsivo-mobile-landing/spec.md` — 12 ACs Verified.
+
 ## Handoff — feature deploy-producao (Fase 12) — ✅ VERIFIED (2026-10-13)
 
 - **Estado**: Spec → Design → Tasks (7 tasks) → Execute (com 2 pausas de operador: criar Supabase, importar Vercel) → Verifier **PASS de primeira**. Feature **fechada**. `validation.md` (PASS) em `.specs/features/deploy-producao/`. F12 (RNF-009/010, RC-003) concluída.
