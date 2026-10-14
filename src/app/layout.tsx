@@ -12,7 +12,7 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "Igreja Virtude Cristã",
   description:
-    "Proclamando o evangelho de Cristo com fé e amor, e ensinando a Palavra que transforma vidas.",
+    "Proclamando o evangelho com fé e amor, aprendendo sempre com as virtudes de Cristo.",
   icons: {
     icon: "/favicon.png",
   },

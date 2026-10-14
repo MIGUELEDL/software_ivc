@@ -5,38 +5,51 @@ import { SOCIAL, CHURCH } from "@/lib/constants";
 import { MessageCircle, Mail, MapPin } from "lucide-react";
 import { FaInstagram, FaYoutube, FaFacebook } from "react-icons/fa";
 
-const SOCIAL_LINKS = [
-  {
-    name: "Instagram",
-    icon: FaInstagram,
-    href: SOCIAL.instagram,
-    color: "hover:text-[#E4405F]",
-    bg: "hover:bg-[#E4405F]/10",
-  },
-  {
-    name: "YouTube",
-    icon: FaYoutube,
-    href: SOCIAL.youtube,
-    color: "hover:text-[#FF0000]",
-    bg: "hover:bg-[#FF0000]/10",
-  },
-  {
-    name: "WhatsApp",
-    icon: MessageCircle,
-    href: SOCIAL.whatsapp,
-    color: "hover:text-[#25D366]",
-    bg: "hover:bg-[#25D366]/10",
-  },
-  {
-    name: "E-mail",
-    icon: Mail,
-    href: `mailto:${SOCIAL.email}`,
-    color: "hover:text-accent",
-    bg: "hover:bg-accent/10",
-  },
-];
-
-export default function SocialLinks() {
+export default function SocialLinks({
+  instagram,
+  youtube,
+  whatsapp,
+  address,
+}: {
+  instagram?: string;
+  youtube?: string;
+  whatsapp?: string;
+  address?: string;
+}) {
+  const instagramUrl = instagram ?? SOCIAL.instagram;
+  const youtubeUrl = youtube ?? SOCIAL.youtube;
+  const whatsappUrl = whatsapp ?? SOCIAL.whatsapp;
+  const endereco = address ?? SOCIAL.address;
+  const SOCIAL_LINKS = [
+    {
+      name: "Instagram",
+      icon: FaInstagram,
+      href: instagramUrl,
+      color: "hover:text-[#E4405F]",
+      bg: "hover:bg-[#E4405F]/10",
+    },
+    {
+      name: "YouTube",
+      icon: FaYoutube,
+      href: youtubeUrl,
+      color: "hover:text-[#FF0000]",
+      bg: "hover:bg-[#FF0000]/10",
+    },
+    {
+      name: "WhatsApp",
+      icon: MessageCircle,
+      href: whatsappUrl,
+      color: "hover:text-[#25D366]",
+      bg: "hover:bg-[#25D366]/10",
+    },
+    {
+      name: "E-mail",
+      icon: Mail,
+      href: `mailto:${SOCIAL.email}`,
+      color: "hover:text-accent",
+      bg: "hover:bg-accent/10",
+    },
+  ];
   return (
     <section id="redes" className="py-12 sm:py-20 lg:py-32 bg-landing">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -64,7 +77,7 @@ export default function SocialLinks() {
           className="flex items-center justify-center gap-2 mb-8 sm:mb-12 text-text-dark/60 font-serif px-4 text-center"
         >
           <MapPin size={18} className="text-accent" />
-          <span>{SOCIAL.address}</span>
+          <span>{endereco}</span>
         </motion.div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto">

@@ -30,10 +30,28 @@ export default async function Home() {
     console.error("portal: falha ao carregar lideranca do banco", erro);
   }
 
+  // Configurações → landing (fallback = constants, saída idêntica sem DB).
+  let about: string | undefined;
+  let proposito: string | undefined;
+  let vision: string | undefined;
+  let valores: Array<{ title: string; description: string; color: string }> | undefined;
+  let instagram: string | undefined;
+  let youtube: string | undefined;
+  let whatsapp: string | undefined;
+  let address: string | undefined;
   try {
     const { settings } = await obterConfiguracoes();
     scheduleItems = (settings["schedule.items"] ?? []) as Array<{ day: string; time: string; title: string }>;
     slogan = (settings["church.slogan"] as string) ?? "";
+    about = settings["church.about"] as string | undefined;
+    proposito = settings["church.proposito"] as string | undefined;
+    vision = settings["church.vision"] as string | undefined;
+    valores = settings["church.values"] as Array<{ title: string; description: string; color: string }> | undefined;
+    instagram = settings["social.instagram"] as string | undefined;
+    youtube = settings["social.youtube"] as string | undefined;
+    const numero = settings["whatsapp.number"] as string | undefined;
+    whatsapp = numero ? `https://wa.me/${numero}` : undefined;
+    address = settings["church.address"] as string | undefined;
   } catch (erro) {
     console.error("portal: falha ao carregar configuracoes do banco", erro);
   }
@@ -44,13 +62,24 @@ export default async function Home() {
     <>
       <Navbar />
       <Hero slogan={slogan} />
-      <About />
+      <About about={about} />
       <Leadership church={igreja} leaders={lideres} />
       <Schedule items={scheduleItems} />
-      <Values />
+      <Values proposito={proposito} vision={vision} values={valores} />
       <LiveBanner />
-      <SocialLinks />
-      <Footer />
+      <SocialLinks
+        instagram={instagram}
+        youtube={youtube}
+        whatsapp={whatsapp}
+        address={address}
+      />
+      <Footer
+        slogan={slogan}
+        address={address}
+        instagram={instagram}
+        youtube={youtube}
+        whatsapp={whatsapp}
+      />
     </>
   );
 }

@@ -28,7 +28,24 @@ const colorMap = {
   },
 };
 
-export default function Values() {
+export type ValorInstitucional = {
+  title: string;
+  description: string;
+  color: string;
+};
+
+export default function Values({
+  proposito,
+  vision,
+  values,
+}: {
+  proposito?: string;
+  vision?: string;
+  values?: ValorInstitucional[];
+}) {
+  const textoProposito = proposito ?? CHURCH.proposito;
+  const textoVisao = vision ?? CHURCH.vision;
+  const itens = values && values.length > 0 ? values : CHURCH.values;
   return (
     <section id="valores" className="py-12 sm:py-20 lg:py-32 bg-landing">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -61,7 +78,7 @@ export default function Values() {
               Propósito
             </h3>
             <p className="font-serif text-sm sm:text-base leading-relaxed text-white/90">
-              {CHURCH.proposito}
+              {textoProposito}
             </p>
           </motion.div>
           <motion.div
@@ -76,7 +93,7 @@ export default function Values() {
               Visão
             </h3>
             <p className="font-serif text-sm sm:text-base leading-relaxed text-white/90">
-              {CHURCH.vision}
+              {textoVisao}
             </p>
           </motion.div>
         </div>
@@ -97,9 +114,9 @@ export default function Values() {
         </motion.div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8">
-          {CHURCH.values.map((value, index) => {
+          {itens.map((value, index) => {
             const Icon = iconMap[index as keyof typeof iconMap];
-            const colors = colorMap[value.color as keyof typeof colorMap];
+            const colors = colorMap[value.color as keyof typeof colorMap] ?? colorMap.primary;
 
             return (
               <motion.div

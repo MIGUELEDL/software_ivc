@@ -6,13 +6,6 @@ import { FaInstagram, FaYoutube } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
 
-const FOOTER_SOCIAL = [
-  { icon: FaInstagram, href: SOCIAL.instagram, label: "Instagram" },
-  { icon: FaYoutube, href: SOCIAL.youtube, label: "YouTube" },
-  { icon: MessageCircle, href: SOCIAL.whatsapp, label: "WhatsApp" },
-  { icon: Mail, href: `mailto:${SOCIAL.email}`, label: "E-mail" },
-];
-
 function FooterNavLink({
   href,
   children,
@@ -33,7 +26,27 @@ function FooterNavLink({
   );
 }
 
-export default function Footer() {
+export default function Footer({
+  slogan,
+  address,
+  instagram,
+  youtube,
+  whatsapp,
+}: {
+  slogan?: string;
+  address?: string;
+  instagram?: string;
+  youtube?: string;
+  whatsapp?: string;
+}) {
+  const sloganTexto = slogan ?? CHURCH.slogan;
+  const endereco = address ?? SOCIAL.address;
+  const FOOTER_SOCIAL = [
+    { icon: FaInstagram, href: instagram ?? SOCIAL.instagram, label: "Instagram" },
+    { icon: FaYoutube, href: youtube ?? SOCIAL.youtube, label: "YouTube" },
+    { icon: MessageCircle, href: whatsapp ?? SOCIAL.whatsapp, label: "WhatsApp" },
+    { icon: Mail, href: `mailto:${SOCIAL.email}`, label: "E-mail" },
+  ];
   return (
     <footer className="bg-bg-dark text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
@@ -51,7 +64,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="font-serif text-white/60 text-sm leading-relaxed">
-              {CHURCH.slogan}
+              {sloganTexto}
             </p>
           </div>
 
@@ -87,7 +100,7 @@ export default function Footer() {
               ))}
             </div>
             <p className="font-serif text-white/40 text-sm mt-4">
-              {SOCIAL.address}
+              {endereco}
             </p>
           </div>
         </div>

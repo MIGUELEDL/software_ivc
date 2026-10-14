@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { CHURCH } from "@/lib/constants";
 import Image from "next/image";
 
-export default function About() {
+export default function About({ about }: { about?: string }) {
+  const texto = about ?? CHURCH.about;
   return (
     <section id="sobre" className="py-12 sm:py-20 lg:py-32 bg-landing">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,7 +21,7 @@ export default function About() {
               <span className="text-accent">Somos</span>
             </h2>
             <p className="font-serif text-base sm:text-lg leading-relaxed text-text-dark mb-4">
-              {CHURCH.about}
+              {texto}
             </p>
             <div className="flex flex-wrap gap-6 text-sm font-sans font-semibold text-text-dark/60">
               <div>
