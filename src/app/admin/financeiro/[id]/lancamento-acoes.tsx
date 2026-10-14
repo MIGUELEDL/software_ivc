@@ -5,6 +5,7 @@ import { useState } from "react";
 import {
   TIPOS_LANCAMENTO,
   METODOS_PAGAMENTO,
+  STATUS_LANCAMENTO,
   type Lancamento,
 } from "@/lib/admin/financeiro-types";
 
@@ -81,6 +82,7 @@ export function LancamentoAcoes({ lancamento }: { lancamento: Lancamento }) {
           valor: Number.parseFloat(valorRaw.replace(",", ".")),
           tipo: String(dados.get("tipo") ?? "").trim(),
           metodo: String(dados.get("metodo") ?? "").trim(),
+          status: String(dados.get("status") ?? "").trim(),
           data: String(dados.get("data") ?? "").trim(),
           categoria: String(dados.get("categoria") ?? "").trim() || null,
           observacoes:
@@ -305,6 +307,36 @@ export function LancamentoAcoes({ lancamento }: { lancamento: Lancamento }) {
                 </p>
               )}
             </div>
+          </div>
+
+          <div>
+            <label
+              htmlFor="status"
+              className="block font-sans text-sm font-semibold text-text-dark mb-1.5"
+            >
+              Status
+            </label>
+            <select
+              id="status"
+              name="status"
+              required
+              defaultValue={lancamento.status}
+              className={inputClass}
+            >
+              {STATUS_LANCAMENTO.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
+            {camposErro.status && (
+              <p
+                className="mt-1 text-sm text-red-600 font-serif"
+                role="alert"
+              >
+                {camposErro.status}
+              </p>
+            )}
           </div>
 
           <div>

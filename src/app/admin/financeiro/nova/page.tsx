@@ -5,6 +5,7 @@ import { useState } from "react";
 import {
   TIPOS_LANCAMENTO,
   METODOS_PAGAMENTO,
+  STATUS_LANCAMENTO,
 } from "@/lib/admin/financeiro-types";
 
 /**
@@ -45,6 +46,7 @@ export default function AdminFinanceiroNovaPage() {
           valor: Number.parseFloat(valorRaw.replace(",", ".")),
           tipo: String(dados.get("tipo") ?? "").trim(),
           metodo: String(dados.get("metodo") ?? "").trim(),
+          status: String(dados.get("status") ?? "").trim() || "PENDENTE",
           data: String(dados.get("data") ?? "").trim(),
           categoria: String(dados.get("categoria") ?? "").trim() || null,
           observacoes:
@@ -226,6 +228,36 @@ export default function AdminFinanceiroNovaPage() {
                 </p>
               )}
             </div>
+          </div>
+
+          <div>
+            <label
+              htmlFor="status"
+              className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
+            >
+              Status
+            </label>
+            <select
+              id="status"
+              name="status"
+              required
+              defaultValue="PENDENTE"
+              className={inputClass}
+            >
+              {STATUS_LANCAMENTO.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
+            {camposErro.status && (
+              <p
+                className="mt-1 text-sm text-red-600 font-serif"
+                role="alert"
+              >
+                {camposErro.status}
+              </p>
+            )}
           </div>
 
           <div>
