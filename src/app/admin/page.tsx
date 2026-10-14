@@ -202,6 +202,9 @@ export default async function AdminPage() {
                 <h2 className="font-sans text-sm font-bold text-white uppercase tracking-wider mb-4">
                   Resumo Financeiro
                 </h2>
+                <p className="font-sans text-[10px] text-white/50 uppercase tracking-wider -mt-3 mb-4">
+                  Este mês · exclui cancelados
+                </p>
                 <div className="space-y-3 mb-4">
                   <div className="flex justify-between items-baseline">
                     <span className="font-sans text-xs text-white/80">Receitas</span>

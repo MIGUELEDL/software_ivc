@@ -123,15 +123,18 @@ export async function obterResumoFinanceiro(): Promise<ResumoFinanceiro> {
     return d.getMonth() === mesAtual && d.getFullYear() === anoAtual;
   });
 
-  const receitas = doMes
+  // Alinhado à tela financeiro: CANCELADO não compõe totais.
+  const validos = doMes.filter((l) => l.status !== "CANCELADO");
+
+  const receitas = validos
     .filter((l) => l.tipo === "RECEITA")
     .reduce((acc, l) => acc + l.valor, 0);
-  const despesas = doMes
+  const despesas = validos
     .filter((l) => l.tipo === "DESPESA")
     .reduce((acc, l) => acc + l.valor, 0);
 
   const porCategoria = new Map<string, number>();
-  for (const l of doMes) {
+  for (const l of validos) {
     const cat = l.categoria ?? "Sem categoria";
     porCategoria.set(cat, (porCategoria.get(cat) ?? 0) + l.valor);
   }
