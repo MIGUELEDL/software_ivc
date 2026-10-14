@@ -11,7 +11,6 @@ import {
 import { RemoverDocumentoButton, HardDeleteButton } from "./membro-detalhe-acoes";
 import { MembroEditarForms } from "./membro-editar-forms";
 import { TIPO_DOCUMENTO_LABEL } from "./membro-form-constantes";
-import { civilDe } from "@/lib/painel/validade";
 
 const STATUS_LABEL: Record<string, string> = {
   ATIVO: "Ativo",
