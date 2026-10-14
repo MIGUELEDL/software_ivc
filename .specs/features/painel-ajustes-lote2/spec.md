@@ -90,5 +90,5 @@ explícito); (3) membros sem foto no cadastro/edição admin; (4) landing ignora
 | AJ-08 | Landing | Execute | Implementing |
 | AJ-09 | Landing | Execute | Implementing |
 
-**Coverage:** 9 total.
+**Coverage:** 10 total.
 | AJ-10 | Mês (filtro em JS; LIKE inválido p/ DATE) | Execute | Implementing |
