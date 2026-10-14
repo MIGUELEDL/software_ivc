@@ -34,6 +34,7 @@ type MembroEditavel = Pick<
   | "cidade"
   | "uf"
   | "cep"
+  | "foto_url"
 >;
 
 export function MembroEditarForms({
@@ -48,6 +49,9 @@ export function MembroEditarForms({
   const router = useRouter();
   const [mensagem, setMensagem] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+  const [fotoMsg, setFotoMsg] = useState<string | null>(null);
+  const [fotoEnviando, setFotoEnviando] = useState(false);
+  const [fotoUrl, setFotoUrl] = useState<string | null>(membro.foto_url);
 
   async function postar(
     caminho: string,
@@ -117,6 +121,54 @@ export function MembroEditarForms({
       [200, 201],
       "Não foi possível registrar o documento. Tente novamente."
     );
+  }
+
+  async function trocarFoto(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setFotoMsg(null);
+    setFotoEnviando(true);
+
+    const formData = new FormData();
+    formData.append("foto", file);
+
+    try {
+      const resposta = await fetch(`/api/admin/membros/${id}/foto`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (resposta.status === 401) {
+        window.location.assign("/login/admin");
+        return;
+      }
+
+      const corpo = await resposta.json().catch(() => null);
+
+      if (resposta.status === 200 && corpo?.foto_url) {
+        setFotoUrl(corpo.foto_url as string);
+        router.refresh();
+        return;
+      }
+
+      if (resposta.status === 400) {
+        setFotoMsg("Tipo de arquivo não permitido (use JPG, PNG ou WebP).");
+        return;
+      }
+
+      if (resposta.status === 413) {
+        setFotoMsg("Arquivo excede 2 MB.");
+        return;
+      }
+
+      setFotoMsg("Não foi possível enviar a foto. Tente novamente.");
+    } catch {
+      setFotoMsg("Não foi possível enviar a foto. Tente novamente.");
+    } finally {
+      setFotoEnviando(false);
+      event.target.value = "";
+    }
   }
 
   return (
@@ -369,6 +421,51 @@ export function MembroEditarForms({
           {enviando ? "Salvando..." : "Salvar alterações"}
         </button>
       </form>
+
+      <div className="rounded-2xl hero-background-admin shadow-xl p-8 sm:p-10 space-y-5 mb-6">
+        <h2 className="font-sans text-lg font-bold text-white">
+          Foto 4x4
+        </h2>
+
+        <div className="flex items-center gap-4">
+          {fotoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element -- foto do storage Supabase (host externo), padrão do cartão
+            <img
+              src={fotoUrl}
+              alt="Foto atual do membro"
+              className="h-20 w-20 rounded-full object-cover border border-white/20"
+            />
+          ) : (
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/10 font-sans text-lg font-bold text-white/60">
+              Sem foto
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <label
+              htmlFor="foto-troca"
+              className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
+            >
+              {fotoUrl ? "Trocar foto" : "Enviar foto"}
+            </label>
+            <input
+              id="foto-troca"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={trocarFoto}
+              disabled={fotoEnviando}
+              className="w-full rounded-lg bg-white/10 border border-white/30 px-3 py-2 font-serif text-sm text-white/80 file:mr-3 file:rounded-full file:border-0 file:bg-accent-light/20 file:px-4 file:py-1.5 file:font-sans file:text-xs file:font-bold file:text-accent-light cursor-pointer"
+            />
+          </div>
+        </div>
+        {fotoEnviando && (
+          <p className="font-serif text-sm text-white/60">Enviando foto...</p>
+        )}
+        {fotoMsg && (
+          <p className="font-serif text-sm text-red-400" role="alert">
+            {fotoMsg}
+          </p>
+        )}
+      </div>
 
       <form
         onSubmit={(e) => e.preventDefault()}

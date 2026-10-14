@@ -24,6 +24,9 @@ export function MembroNovoForm() {
   const [membroCriado, setMembroCriado] = useState<MembroCriado | null>(null);
   const [senhaTemporaria, setSenhaTemporaria] = useState<string | null>(null);
   const [copiado, setCopiado] = useState(false);
+  const [fotoMsg, setFotoMsg] = useState<string | null>(null);
+  const [fotoEnviando, setFotoEnviando] = useState(false);
+  const [fotoOk, setFotoOk] = useState(false);
 
   async function cadastrar(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -104,6 +107,54 @@ export function MembroNovoForm() {
   const inputClass =
     "w-full bg-white/10 rounded-lg border border-white/30 px-4 py-2.5 font-serif text-white/80 focus:border-accent-light focus:ring-1 focus:ring-primary outline-none transition-colors";
 
+  async function enviarFoto(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file || !membroCriado) return;
+
+    setFotoMsg(null);
+    setFotoOk(false);
+    setFotoEnviando(true);
+
+    const formData = new FormData();
+    formData.append("foto", file);
+
+    try {
+      const resposta = await fetch(
+        `/api/admin/membros/${membroCriado.id}/foto`,
+        { method: "POST", body: formData }
+      );
+
+      if (resposta.status === 401) {
+        window.location.assign("/login/admin");
+        return;
+      }
+
+      const corpo = await resposta.json().catch(() => null);
+
+      if (resposta.status === 200 && corpo?.foto_url) {
+        setFotoOk(true);
+        return;
+      }
+
+      if (resposta.status === 400) {
+        setFotoMsg("Tipo de arquivo não permitido (use JPG, PNG ou WebP).");
+        return;
+      }
+
+      if (resposta.status === 413) {
+        setFotoMsg("Arquivo excede 2 MB.");
+        return;
+      }
+
+      setFotoMsg("Não foi possível enviar a foto. Tente novamente.");
+    } catch {
+      setFotoMsg("Não foi possível enviar a foto. Tente novamente.");
+    } finally {
+      setFotoEnviando(false);
+      event.target.value = "";
+    }
+  }
+
   if (membroCriado && senhaTemporaria) {
     return (
       <div className="rounded-2xl hero-lite-admin shadow-xl p-8 sm:p-10 space-y-5 text-center">
@@ -120,6 +171,38 @@ export function MembroNovoForm() {
           className="rounded-lg bg-white/10 border border-white/30 p-4 break-all font-mono text-lg font-bold text-white/80"
         >
           {senhaTemporaria}
+        </div>
+
+        <div>
+          <label
+            htmlFor="foto-pos-cadastro"
+            className="block font-sans text-sm font-semibold text-white/80 mb-1.5"
+          >
+            Foto 4x4 (opcional)
+          </label>
+          <input
+            id="foto-pos-cadastro"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={enviarFoto}
+            disabled={fotoEnviando}
+            className="w-full rounded-lg bg-white/10 border border-white/30 px-3 py-2 font-serif text-sm text-white/80 file:mr-3 file:rounded-full file:border-0 file:bg-accent-light/20 file:px-4 file:py-1.5 file:font-sans file:text-xs file:font-bold file:text-accent-light cursor-pointer"
+          />
+          {fotoEnviando && (
+            <p className="mt-1 font-serif text-sm text-white/60">
+              Enviando foto...
+            </p>
+          )}
+          {fotoOk && (
+            <p className="mt-1 font-serif text-sm text-emerald-400">
+              Foto registrada!
+            </p>
+          )}
+          {fotoMsg && (
+            <p className="mt-1 font-serif text-sm text-red-400" role="alert">
+              {fotoMsg}
+            </p>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-3">

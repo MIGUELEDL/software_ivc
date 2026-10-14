@@ -6,6 +6,11 @@ import { colunasCriarMembro, colunasEditarMembro } from "@/lib/painel/documento"
 import type { DadosProntos } from "@/lib/painel/documento";
 import { comoCliente } from "@/lib/painel/gravacao";
 import type { DepsEscritaAdmin } from "@/lib/painel/gravacao";
+import { validarFoto } from "@/lib/admin/validacao";
+import {
+  FotoTipoInvalidoError,
+  FotoTamanhoInvalidoError,
+} from "@/lib/admin/lideranca";
 
 /**
  * Membro estendido com o schema admin (0006): ciclo de vida + endereço.
@@ -519,4 +524,50 @@ export async function removerDocumento(
   if (error) {
     throw error;
   }
+}
+/**
+ * Faz upload da foto do membro no bucket `fotos-membros` (mesmo path do
+ * auto-upload do painel: `members/{id}/foto-4x4.{ext}`, upsert). Via
+ * service-role (a policy do bucket é por propriedade; admin escreve por outro).
+ * Membro inexistente → MembroNaoEncontradoError; tipo/tamanho → erros de foto.
+ */
+export async function subirFotoMembro(
+  id: string,
+  file: File
+): Promise<{ foto_url: string }> {
+  const existente = await getMembro(id);
+  if (!existente) throw new MembroNaoEncontradoError();
+
+  const resultado = validarFoto(file);
+  if (!resultado.ok) {
+    if (resultado.motivo === "tipo") throw new FotoTipoInvalidoError();
+    throw new FotoTamanhoInvalidoError();
+  }
+
+  const supabase = createAdminClient();
+  const path = `members/${id}/foto-4x4.${resultado.ext}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("fotos-membros")
+    .upload(path, file, { upsert: true, contentType: file.type });
+
+  if (uploadError) {
+    throw uploadError;
+  }
+
+  const { data: urlData } = supabase.storage
+    .from("fotos-membros")
+    .getPublicUrl(path);
+  const foto_url = urlData.publicUrl;
+
+  const { error: updateError } = await supabase
+    .from("members")
+    .update({ foto_url, atualizado_em: new Date().toISOString() })
+    .eq("id", id);
+
+  if (updateError) {
+    throw updateError;
+  }
+
+  return { foto_url };
 }
