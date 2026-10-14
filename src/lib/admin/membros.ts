@@ -59,18 +59,24 @@ export async function listMembros(
     query = query.eq("status", filtros.status);
   }
 
-  if (filtros.mesAniversario) {
-    const month = String(filtros.mesAniversario).padStart(2, "0");
-    query = query.filter("nascimento", "like", `%-${month}-%`);
-  }
-
+  // Mês de aniversário: filtro em JS, não no SQL — Postgres não tem
+  // operador LIKE para DATE (`date ~~ unknown`, provado em prod/dev), e o
+  // volume é baixo sem paginação (AD-001), então a lista já vem cheia.
   const { data, error } = await query;
 
   if (error) {
     throw error;
   }
 
-  return (data ?? []) as MembroAdmin[];
+  const lista = (data ?? []) as MembroAdmin[];
+  if (filtros.mesAniversario) {
+    const mes = filtros.mesAniversario;
+    return lista.filter(
+      (m) => new Date(`${m.nascimento}T00:00:00`).getMonth() + 1 === mes
+    );
+  }
+
+  return lista;
 }
 
 /**
