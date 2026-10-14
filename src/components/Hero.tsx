@@ -26,9 +26,9 @@ export default function Hero({ slogan }: { slogan?: string }) {
           <Image
             src="/logo.png"
             alt={`Logo ${CHURCH.name}`}
-            width={80}
-            height={80}
-            className="mx-auto mb-6 sm:mb-8 shadow-2xl sm:h-[100px] sm:w-[100px]"
+            width={90}
+            height={90}
+            className="mx-auto mb-6 sm:mb-8 shadow-2xl "
             preload
           />
         </motion.div>
@@ -37,7 +37,7 @@ export default function Hero({ slogan }: { slogan?: string }) {
           initial={{ y: 40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="font-sans text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight mb-4"
+          className="font-sans text-3xl sm:text-5xl md:text-5xl font-extrabold text-white tracking-tight mb-4"
         >
           {CHURCH.name}
         </motion.h1>
@@ -46,7 +46,7 @@ export default function Hero({ slogan }: { slogan?: string }) {
           initial={{ y: 40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.5 }}
-          className="font-serif text-base sm:text-xl md:text-2xl text-accent-light max-w-4xl leading-relaxed mb-8"
+          className="font-serif text-base sm:text-xl md:text-1xl text-accent-light max-w-4xl leading-relaxed mb-8"
         >
           {slogan || CHURCH.slogan}
         </motion.p>
