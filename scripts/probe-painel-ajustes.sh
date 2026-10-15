@@ -41,9 +41,12 @@ EDITFORMS="$ROOT/src/app/admin/membros/[id]/membro-editar-forms.tsx"
 if grep -q 'foto_tipo_invalido' "$FOTOROUTE" \
   && grep -q 'foto_tamanho_invalido' "$FOTOROUTE" \
   && grep -q 'membro_nao_encontrado' "$FOTOROUTE" \
+  && grep -q '{ status: 404 }' "$FOTOROUTE" \
+  && grep -q '{ status: 400 }' "$FOTOROUTE" \
+  && grep -q '{ status: 413 }' "$FOTOROUTE" \
    && grep -q '/foto' "$NOVOFORM" \
   && grep -q '/foto' "$EDITFORMS"; then
-  ok "AJ-05/06/07 rota foto (400/413/404) + UIs de cadastro e edição"
+  ok "AJ-05/06/07 rota foto (404/400/413 + códigos) + UIs de cadastro e edição"
 else
   ko "AJ-05/06/07 rota foto ou UIs ausentes"
 fi
