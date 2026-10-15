@@ -272,6 +272,13 @@
 - **Date**: 2026-10-12
 - **Status**: active
 
+## Handoff — feature painel-ajustes-lote2 — ✅ VERIFIED (2026-10-14)
+
+- **Estado**: Spec → Execute (5 itens) → Verifier R1 FAIL (0/5 mortos, sem regressão commitada) → probe `probe-painel-ajustes.sh` → R2 5/6 → tier de literais → R3 **PASS**. Feature **fechada**. `validation.md` (PASS) em `.specs/features/painel-ajustes-lote2/`.
+- **Entregue**: status editável (create/edit); resumo sem CANCELADO + rótulo; foto no cadastro/edição (rota + service); landing lê settings (props + fallback + migration 0026 dev/prod); filtro mês em JS.
+- **Verificação**: Verifier independente; **10/10 ACs (AJ-01..10)**; sensor final 6/6 mortos (R1+R2+R3).
+- **Commits**: `04abec1`, `72b87eb`, `229aa1d`, `f18007b`, `b27f2d9`, `70eaeb8`, `ffa6319`, `31c5830` + este fechamento. Nada pushed.
+
 ## Handoff — responsivo mobile slices pós-F12 (2026-10-13, em lote p/ push)
 
 - **Entregue (commits locais, sem push até aqui)**: landing Parte 1 fechada e VERIFIED (`responsivo-mobile-landing`, RSP-01..12); fixes/bugfixes no caminho: foto do líder (cache-buster), Excluir evento (soft CONCLUIDO) + wipe dos exemplos no dev, validador de status EM ABERTO/CONCLUIDO, rename `church.mission`→`church.proposito` (migration 0025); slices admin: financeiro (filtros/tabela/datas), eventos (scroll-x), membros (busca/tabela), tabelas compactas + scroll estilizado (`tabela-scroll`), upload relatórios, drawer mobile hero-lite-admin.

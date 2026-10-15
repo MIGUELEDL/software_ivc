@@ -80,15 +80,15 @@ explícito); (3) membros sem foto no cadastro/edição admin; (4) landing ignora
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| AJ-01 | Status | Execute | Implementing |
-| AJ-02 | Status | Execute | Implementing |
-| AJ-03 | Resumo | Execute | Implementing |
-| AJ-04 | Resumo | Execute | Implementing |
-| AJ-05 | Foto | Execute | Implementing |
-| AJ-06 | Foto | Execute | Implementing |
-| AJ-07 | Foto | Execute | Implementing |
-| AJ-08 | Landing | Execute | Implementing |
-| AJ-09 | Landing | Execute | Implementing |
+| AJ-01 | Status | Execute | Verified |
+| AJ-02 | Status | Execute | Verified |
+| AJ-03 | Resumo | Execute | Verified |
+| AJ-04 | Resumo | Execute | Verified |
+| AJ-05 | Foto | Execute | Verified |
+| AJ-06 | Foto | Execute | Verified |
+| AJ-07 | Foto | Execute | Verified |
+| AJ-08 | Landing | Execute | Verified |
+| AJ-09 | Landing | Execute | Verified |
 
 **Coverage:** 10 total.
-| AJ-10 | Mês (filtro em JS; LIKE inválido p/ DATE) | Execute | Implementing |
+| AJ-10 | Mês (filtro em JS; LIKE inválido p/ DATE) | Verified | Verified |
