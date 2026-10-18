@@ -1,4 +1,4 @@
-import { ArrowLeft, IdCard, Trash2 } from "lucide-react";
+import { ArrowLeft, IdCard, KeyRound, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getClaims } from "@/lib/auth/claims";
@@ -8,7 +8,11 @@ import {
   listDocumentos,
   TRANSICOES,
 } from "@/lib/admin/membros";
-import { RemoverDocumentoButton, HardDeleteButton } from "./membro-detalhe-acoes";
+import {
+  RemoverDocumentoButton,
+  HardDeleteButton,
+  RedefinirSenhaButton,
+} from "./membro-detalhe-acoes";
 import { MembroEditarForms } from "./membro-editar-forms";
 import { TIPO_DOCUMENTO_LABEL } from "./membro-form-constantes";
 
@@ -225,18 +229,33 @@ export default async function MembroDetalhePage({
         </div>
 
         {hardDelete && (
-          <div className="rounded-2xl hero-background-admin shadow-xl p-8 sm:p-10 flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h2 className="flex items-center gap-2 font-sans text-lg font-bold text-red-400">
-                <Trash2 size={18} aria-hidden="true" />
-                Zona de exclusão
-              </h2>
-              <p className="mt-1 font-serif text-sm text-white/60">
-                Remove o cadastro e a conta de acesso. Só disponível sem
-                documentos registrados.
-              </p>
+          <div className="rounded-2xl hero-background-admin shadow-xl p-8 sm:p-10 space-y-6 mb-6">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h2 className="flex items-center gap-2 font-sans text-lg font-bold text-accent">
+                  <KeyRound size={18} aria-hidden="true" />
+                  Acesso do membro
+                </h2>
+                <p className="mt-1 font-serif text-sm text-white/60">
+                  Gera uma senha temporária e força a troca no próximo login.
+                </p>
+              </div>
+              <RedefinirSenhaButton membroId={id} />
             </div>
-            <HardDeleteButton membroId={id} nome={membro.nome} />
+
+            <div className="flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6">
+              <div>
+                <h2 className="flex items-center gap-2 font-sans text-lg font-bold text-red-400">
+                  <Trash2 size={18} aria-hidden="true" />
+                  Zona de exclusão
+                </h2>
+                <p className="mt-1 font-serif text-sm text-white/60">
+                  Remove o cadastro e a conta de acesso. Só disponível sem
+                  documentos registrados.
+                </p>
+              </div>
+              <HardDeleteButton membroId={id} nome={membro.nome} />
+            </div>
           </div>
         )}
       </div>

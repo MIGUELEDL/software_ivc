@@ -154,9 +154,9 @@ Depends on: T9 ← T1..T8.
 
 **Depends on**: None
 
-- [ ] `POST /api/admin/membros/[id]/redefinir-senha`: requireAdministrar, gera temporária, updateUserById password+force flag, retorna senha 1x, auditoria `redefinir_senha`
-- [ ] Botão no detalhe do membro visível só ADMIN/SUPER_ADMIN
-- [ ] Modal exibe senha + copiar + aviso
+- [x] `POST /api/admin/membros/[id]/redefinir-senha`: requireAdministrar, gera temporária, updateUserById password+force flag, retorna senha 1x, auditoria `redefinir_senha`
+- [x] Botão no detalhe do membro visível só ADMIN/SUPER_ADMIN
+- [x] Modal exibe senha + copiar + aviso
 
 **Tests**: tier estática SEN-04..05
 **Gate**: `npm run test:ci` + typecheck + probe manual em dev
