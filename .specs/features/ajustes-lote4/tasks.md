@@ -91,9 +91,9 @@ T6, T7
 
 **Done when**:
 
-- [ ] `?success=1` → caixa visível, form ausente, link com href conforme papel
-- [ ] sem parâmetro → form renderiza como hoje; erros `error=weak_password`/`auth_required` mantidos
-- [ ] Testes RSC cobrem: sucesso MEMBRO, sucesso admin, ausência do parâmetro
+- [x] `?success=1` → caixa visível, form ausente, link com href conforme papel
+- [x] sem parâmetro → form renderiza como hoje; erros `error=weak_password`/`auth_required` mantidos
+- [x] Testes RSC cobrem: sucesso MEMBRO, sucesso admin, ausência do parâmetro
 
 **Tests**: unit
 **Gate**: quick

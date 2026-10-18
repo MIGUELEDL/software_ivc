@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { getClaims } from "@/lib/auth/claims";
+import { isAdminRole } from "@/lib/auth/rbac";
 import { TrocarSenhaForm } from "./trocar-senha-form";
 
 export default async function TrocarSenhaPage({
@@ -8,6 +11,40 @@ export default async function TrocarSenhaPage({
   const params = await searchParams;
   const error =
     typeof params?.error === "string" ? params.error : null;
+  const sucesso =
+    typeof params?.success === "string" && params.success === "1";
+
+  // AUTH-20/21: rota redireciona para ?success=1 após a troca; aqui a caixa
+  // de sucesso substitui o form e o destino é decidido pelo papel da sessão.
+  if (sucesso) {
+    const claims = await getClaims();
+    const destino =
+      claims && isAdminRole(claims.role ?? "") ? "/admin" : "/painel";
+
+    return (
+      <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
+        <div className="max-w-md mx-auto px-4">
+          <div className="rounded-2xl bg-white shadow-xl p-8 sm:p-12">
+            <div className="text-center">
+              <h1 className="font-sans text-3xl font-bold text-primary mb-2">
+                Troca de senha concluída
+              </h1>
+              <p className="font-serif text-base text-text-dark/60 mb-8">
+                Sua nova senha já está registrada. Você já está logado no
+                sistema.
+              </p>
+              <Link
+                href={destino}
+                className="inline-block w-full rounded-lg bg-accent hover:bg-accent-light text-bg-dark font-sans font-bold py-2.5 transition-colors"
+              >
+                Ir para o painel
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-bg-gray min-h-screen">
