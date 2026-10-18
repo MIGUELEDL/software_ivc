@@ -142,10 +142,10 @@ Depends on: T9 ← T1..T8.
 
 **Depends on**: T6
 
-- [ ] `/alterar-senha`: botão enviar link → resetPasswordForEmail → estado "confira seu e-mail"
-- [ ] `/atualizar-senha`: form nova senha+confirmação, detecção recovery, updateUser + limpa force flag, redirect login; sem session → erro + novo link
-- [ ] Links nos navbars painel e admin
-- [ ] Instruções redirect URL Auth em docs/DEPLOYMENT.md
+- [x] `/alterar-senha`: botão enviar link → resetPasswordForEmail → estado "confira seu e-mail"
+- [x] `/atualizar-senha`: form nova senha+confirmação, detecção recovery, updateUser + limpa force flag, redirect login; sem session → erro + novo link
+- [x] Links nos navbars painel e admin
+- [x] Instruções redirect URL Auth em docs/DEPLOYMENT.md
 
 **Tests**: tier estática SEN-01..03
 **Gate**: `npm run test:ci` + typecheck + build

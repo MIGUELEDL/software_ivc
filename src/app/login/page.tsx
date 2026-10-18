@@ -9,6 +9,7 @@ export default async function LoginPage({
   const params = await searchParams;
   const error =
     typeof params?.error === "string" ? params.error : null;
+  const ok = typeof params?.ok === "string" ? params.ok : null;
 
   return (
     <section className="pt-24 sm:pt-32 pb-20 sm:pb-32 bg-landing min-h-screen">
@@ -29,6 +30,12 @@ export default async function LoginPage({
               Área do membro da IVC
             </p>
           </div>
+
+          {ok === "password" && (
+            <div className="mb-6 rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-center text-emerald-700 font-serif">
+              Senha alterada com sucesso. Entre com a nova senha.
+            </div>
+          )}
 
           {error === "invalid_credentials" && (
             <div className="mb-6 rounded-lg bg-white/20 border border-red-200 px-4 py-3 text-sm text-center text-red-700/60 font-serif">

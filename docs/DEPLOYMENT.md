@@ -57,6 +57,21 @@ Regras:
 4. **Pós-env:** qualquer env criada/alterada exige **Redeploy** (rebuild limpo) para valer.
 5. **Rollback:** Deployments → deploy anterior → ⋯ → **Redeploy** (promove o código antigo na hora); fumaça com `bash scripts/smoke-prod.sh <url>`.
 
+## Auth — URLs de redirect (manual, dashboard Supabase)
+
+O fluxo de troca de senha por e-mail (`/alterar-senha` → link →
+`/atualizar-senha`) depende de o Supabase Auth aceitar o `redirectTo`.
+Configurar em **Supabase Dashboard → Authentication → URL Configuration**:
+
+| Campo | Valores |
+| ----- | ------- |
+| Site URL | `https://[REDACTED_DOMAIN]/` |
+| Redirect URLs | `https://[REDACTED_DOMAIN]/**`, `[REDACTED_DEPLOYMENT_URL]**`, `http://localhost:3000/**` |
+
+Sem isso o link do e-mail cai em erro (`redirect_url_not_allowed`) e o fluxo
+SEN-01..03 não completa. Após alterar, testar de ponta a ponta em prod:
+pedir link em `/alterar-senha` e abrir o e-mail.
+
 ## Backup e recuperação
 
 - **RNF-005/RNF-006:** backups via Supabase (banco) + git (código). RPO ≤ 24h / RTO ≤ 4h.

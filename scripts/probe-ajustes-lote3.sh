@@ -64,11 +64,13 @@ fi
 
 # ── SEN-01..03: fluxo e-mail ────────────────────────────────────────────────
 ALT="$ROOT/src/app/alterar-senha/page.tsx"
-ATUAL="$ROOT/src/app/atualizar-senha/page.tsx"
-if [ -f "$ALT" ] && [ -f "$ATUAL" ] \
+ATUAL="$ROOT/src/app/atualizar-senha/atualizar-senha-form.tsx"
+ATUAL_ROTA="$ROOT/src/app/api/auth/atualizar-senha/route.ts"
+if [ -f "$ALT" ] && [ -f "$ATUAL" ] && [ -f "$ATUAL_ROTA" ] \
   && grep -q "resetPasswordForEmail" "$ALT" \
-  && grep -q "updateUser" "$ATUAL" \
-  && grep -q "atualizar-senha" "$ROOT/src/app/painel/painel-navbar.tsx" 2>/dev/null; then
+  && grep -q "updateUser" "$ATUAL_ROTA" \
+  && grep -q "alterar-senha" "$ROOT/src/app/painel/painel-navbar.tsx" \
+  && grep -q "alterar-senha" "$ROOT/src/app/admin/admin-navbar.tsx"; then
   ok "SEN-01..03 fluxo e-mail (alterar + atualizar) integrado"
 else
   ko "SEN-01..03 fluxo de troca por e-mail ausente"

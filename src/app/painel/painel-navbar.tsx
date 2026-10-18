@@ -11,6 +11,7 @@ import {
   ChevronDown,
   LogOut,
   User,
+  KeyRound,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -160,6 +161,14 @@ export function PainelNavbar({
                     <User size={15} />
                     Alterar meus dados
                   </Link>
+                  <Link
+                    href="/alterar-senha"
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm font-sans text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <KeyRound size={15} />
+                    Alterar senha
+                  </Link>
                 </div>
                 <div className="border-t border-white/10 py-1">
                   <form action="/api/auth/logout" method="POST">
@@ -229,6 +238,14 @@ export function PainelNavbar({
             >
               <User size={16} />
               Alterar meus dados
+            </Link>
+            <Link
+              href="/alterar-senha"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-3 px-4 py-2.5 text-sm font-sans text-white/60 hover:text-white hover:bg-white/5"
+            >
+              <KeyRound size={16} />
+              Alterar senha
             </Link>
           </div>
           <div className="border-t border-white/10 py-2">
