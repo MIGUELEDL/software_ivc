@@ -10,13 +10,13 @@ resolve "esqueci a senha" do membro; (6) campos de senha sem "ver senha".
 
 ## Goals
 
-- [ ] Selecionar 1–4 membros na lista admin e imprimir frente+verso de todos numa única folha A4
-- [ ] Cartão impresso ~2px maior por lado (escala proporcional)
-- [ ] Bug de criação de eventos corrigido em produção
-- [ ] Caixa de parabéns no topo da home para aniversariantes do dia (banco)
-- [ ] Troca de senha por link de e-mail (membro e admin), após a 1ª troca
-- [ ] Botão "Redefinir senha" (ADMIN/SUPER_ADMIN) com senha temporária exibida 1x
-- [ ] Toggle "ver senha" em todos os inputs de senha de autenticação
+- [x] Selecionar 1–4 membros na lista admin e imprimir frente+verso de todos numa única folha A4
+- [x] Cartão impresso ~2px maior por lado (escala proporcional)
+- [x] Bug de criação de eventos corrigido em produção
+- [x] Caixa de parabéns no topo da home para aniversariantes do dia (banco)
+- [x] Troca de senha por link de e-mail (membro e admin), após a 1ª troca
+- [x] Botão "Redefinir senha" (ADMIN/SUPER_ADMIN) com senha temporária exibida 1x
+- [x] Toggle "ver senha" em todos os inputs de senha de autenticação
 
 ## Out of Scope
 
@@ -115,24 +115,24 @@ resolva "esqueci a senha" sem acesso à senha antiga.
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| CART-01 | Impressão | Execute | Implementing |
-| CART-02 | Impressão | Execute | Implementing |
-| CART-03 | Impressão | Execute | Implementing |
-| CART-04 | Impressão | Execute | Implementing |
-| CART-05 | Impressão | Execute | Implementing |
-| EVT-01 | Eventos | Execute | Implementing |
-| EVT-02 | Eventos | Execute | Implementing |
-| ANI-01 | Aniversário | Execute | Implementing |
-| ANI-02 | Aniversário | Execute | Implementing |
-| ANI-03 | Aniversário | Execute | Implementing |
-| ANI-04 | Aniversário | Execute | Implementing |
-| ANI-05 | Aniversário | Execute | Implementing |
-| ANI-06 | Aniversário | Execute | Implementing |
-| SEN-01 | Senhas | Execute | Implementing |
-| SEN-02 | Senhas | Execute | Implementing |
-| SEN-03 | Senhas | Execute | Implementing |
-| SEN-04 | Senhas | Execute | Implementing |
-| SEN-05 | Senhas | Execute | Implementing |
-| SEN-06 | Senhas | Execute | Implementing |
+| CART-01 | Impressão | Execute | Verified |
+| CART-02 | Impressão | Execute | Verified |
+| CART-03 | Impressão | Execute | Verified |
+| CART-04 | Impressão | Execute | Verified |
+| CART-05 | Impressão | Execute | Verified |
+| EVT-01 | Eventos | Execute | Verified |
+| EVT-02 | Eventos | Execute | Verified |
+| ANI-01 | Aniversário | Execute | Verified |
+| ANI-02 | Aniversário | Execute | Verified |
+| ANI-03 | Aniversário | Execute | Verified |
+| ANI-04 | Aniversário | Execute | Verified |
+| ANI-05 | Aniversário | Execute | Verified |
+| ANI-06 | Aniversário | Execute | Verified |
+| SEN-01 | Senhas | Execute | Verified |
+| SEN-02 | Senhas | Execute | Verified |
+| SEN-03 | Senhas | Execute | Verified |
+| SEN-04 | Senhas | Execute | Verified |
+| SEN-05 | Senhas | Execute | Verified |
+| SEN-06 | Senhas | Execute | Verified |
 
 **Coverage:** 19 total.

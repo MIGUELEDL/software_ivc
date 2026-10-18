@@ -78,6 +78,7 @@ status `verified`, respaldada por `validation.md` no respectivo `.specs/features
 | ------------ | ------- | -------- | ------------ | ------ |
 | RNF-001 (parcial: landing) | `responsivo-mobile-landing` | RSP-01..12 | `test:ci` 243/0 + build + probe lideranca (101 ok/1 pré-existente fora do diff) + aceite visual do operador 360px/320px; Verifier PASS, sensor operator-covered | ✅ verified |
 | RF-026/RF-022/RF-028/RF-029/RNF-001 (lote painel 13/out) | `painel-ajustes-lote2` | AJ-01..10 | `scripts/probe-painel-ajustes.sh` 6/0 + `test:ci` 243/0 + prova E2E (filtro mês, landing-settings, login/PATCH); Verifier R3 PASS, sensor 6/6 | ✅ verified |
+| RF-026/RF-028 (lote ajustes 3 17/out: impressão, eventos, aniversário, senhas) | `ajustes-lote3` | CART-01..05, EVT-01..02, ANI-01..06, SEN-01..06 | `scripts/probe-ajustes-lote3.sh` 8/0 + `test:ci` 273/0 (+30 novos) + prova E2E localhost (banner RPC, impressão 6→4, 403, fpc True→False, POST eventos 201 dev+prod); Verifier R4 PASS, sensor 10/10 | ✅ verified |
 
 ## Próximos passos
 

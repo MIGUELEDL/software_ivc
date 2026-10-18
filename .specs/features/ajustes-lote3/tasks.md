@@ -165,9 +165,9 @@ Depends on: T9 ← T1..T8.
 
 **Depends on**: T1..T8
 
-- [ ] STATE.md Handoff lote3
-- [ ] coverage-matrix
-- [ ] Verifier PASS
+- [x] STATE.md Handoff lote3
+- [x] coverage-matrix
+- [x] Verifier PASS (R4)
 
 **Tests**: —
 **Gate**: validate_state + Verifier PASS

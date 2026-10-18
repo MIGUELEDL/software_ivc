@@ -272,6 +272,16 @@
 - **Date**: 2026-10-12
 - **Status**: active
 
+## Handoff — feature ajustes-lote3 — ✅ VERIFIED (2026-10-18)
+
+- **Estado**: Spec (19 ACs) → Design → Tasks (T1..T9) → Execute → Verifier **R1 FAIL (débito: 0 testes comportamentais, sensor 1/12) → R2 FAIL (12/23) → R3 FAIL (18/21, gaps de probe fraco) → R4 PASS (18/19, sensor 10/10)**. Feature **fechada**. `validation.md` (PASS) em `.specs/features/ajustes-lote3/`.
+- **Entregue**: impressão de 1–4 pares frente+verso por folha A4 (lista com checkbox ≤4 + página `imprimir?ids=` com corte e aviso vazio; util `parseIdsImpressao`); parity de eventos `EM ABERTO/CONCLUIDO` (migration 0027 dev+prod; POST → 201 provado); banner de aniversário na home (RPC `aniversariantes_do_dia()` 0028 dev+prod, fetch no RSC `page.tsx`, `BirthdayBanner` client com dismiss); troca de senha por e-mail (`/alterar-senha` → `resetPasswordForEmail`, `/atualizar-senha` com detecção recovery + rota AUTH-11 que limpa `force_password_change`, links nos navbars, docs DEPLOYMENT); redefinir senha de membro no admin (rota guardada `requireAdministrar("membros")`, temporária 16 chars exibida 1× com copiar, auditoria sem senha); `PasswordInput` com olho nos 4 formulários.
+- **Verificação**: Verifier independente; **18/19 ACs (CART/EVT/ANI/SEN)**; gap único ANI-05 (spec-precision: "tema/360px" sem valor assertável — literal no probe); gates: probe 8/0, `test:ci` 273/0 (+30 novos), lint 0 erros, typecheck, build.
+- **Lição do ciclo (R1→R4)**: probe presence-mirroring não é dente — literais satisfazíveis por comentários (SECURITY DEFINER, CHECK, fuso, escala) sobrevivem a mutants; viraram literais discriminantes + tiers vitest. Vitest ganhou `jsdom`/`@testing-library/react`/`@testing-library/user-event` (docblock `@vitest-environment` por arquivo, config node intacta).
+- **Descobertas de ambiente**: GoTrue dev rejeita domínio `.local` no `/recover` e faz **merge raso** de `app_metadata` (flag antiga sobrevive a PUT sem a chave — remover via SQL); `userEvent.setup()` substitui o stub de clipboard do jsdom (reinstalar spy pós-setup).
+- **Commits**: `f5fd736` (T1+spec) → `803d864` (T4) → `dfcd190` (T2) → `61353f3` (T3) → `3c0ca53` (T5) → `0545386` (T6) → `d5e33e6` (T7) → `e6aa14e` (T8) → `4338350` (rastreio) → `76e945f`/`7a4df95`/`730c2a4` (testes R2–R4) + este fechamento. **Nada pushed** (push em lote com aval do operador).
+- **Pendente do operador**: aplicar as URLs de redirect do Auth no dashboard Supabase (já documentado em `docs/DEPLOYMENT.md`); teste visual no navegador após push; conta dev `author@example.com` ficou com senha `[REDACTED]` (usada no teste do fluxo de e-mail).
+
 ## Handoff — feature painel-ajustes-lote2 — ✅ VERIFIED (2026-10-14)
 
 - **Estado**: Spec → Execute (5 itens) → Verifier R1 FAIL (0/5 mortos, sem regressão commitada) → probe `probe-painel-ajustes.sh` → R2 5/6 → tier de literais → R3 **PASS**. Feature **fechada**. `validation.md` (PASS) em `.specs/features/painel-ajustes-lote2/`.
