@@ -80,6 +80,7 @@ status `verified`, respaldada por `validation.md` no respectivo `.specs/features
 | RF-026/RF-022/RF-028/RF-029/RNF-001 (lote painel 13/out) | `painel-ajustes-lote2` | AJ-01..10 | `scripts/probe-painel-ajustes.sh` 6/0 + `test:ci` 243/0 + prova E2E (filtro mês, landing-settings, login/PATCH); Verifier R3 PASS, sensor 6/6 | ✅ verified |
 | RF-026/RF-028 (lote ajustes 3 17/out: impressão, eventos, aniversário, senhas) | `ajustes-lote3` | CART-01..05, EVT-01..02, ANI-01..06, SEN-01..06 | `scripts/probe-ajustes-lote3.sh` 8/0 + `test:ci` 273/0 (+30 novos) + prova E2E localhost (banner RPC, impressão 6→4, 403, fpc True→False, POST eventos 201 dev+prod); Verifier R4 PASS, sensor 10/10 | ✅ verified |
 | RF-026/RF-028 (lote ajustes 4 18/out: cartão barra, TOTAL 9 tabelas, e-mail detalhe, trocar-senha) | `ajustes-lote4` | AUTH-20..25, TAB-01..04, ADMINMEM-36..37, CART-17..19 | `scripts/probe-ajustes-lote4.sh` 17/0 + `test:ci` 309/0 (+36 novos) + build; Verifier PASS 15/15, sensor 13/13 | ✅ verified |
+| RF-026/RF-028 (follow-up 18/out: TOTAL = filtro ativo, faixa padrão usuários nas 9 tabelas; AD-034 reverte decisão B do lote4) | `ajustes-total-filtrado` | TAB-05..07 | `scripts/probe-ajustes-total-filtrado.sh` 19/0 + `test:ci` 309/0 (delta 0) + build; Verifier PASS 7/7, sensor 4/4 | ✅ verified |
 
 ## Próximos passos
 

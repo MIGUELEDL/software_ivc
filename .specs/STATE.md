@@ -272,6 +272,22 @@
 - **Date**: 2026-10-12
 - **Status**: active
 
+### AD-034
+- **Decisão**: **Reversão da decisão B do lote4** (ajustes-lote4): o bloco TOTAL das 5 listagens filtradas (membros, financeiro, auditoria, usuários, relatórios) volta a exibir **a contagem do resultado do filtro ativo** (não mais o total geral `head+count`). Os helpers `contarMembros`/`contarLancamentos`/`contarAuditoria`/`contarDocumentos` + campo `totalGeral` são **removidos** (código morto pós-reversão); auditoria paginada usa o `total` global de `listarAuditoria` (consistente com o rodapé "N registros"). Design alvo = padrão do módulo **usuários**: faixa `p-4 border-b … flex items-center justify-between` embutida como cabeçalho do card da tabela nas 9 listagens (fechamento usa `border-text-dark/10` + `tom="claro"`); vazio = faixa TOTAL 0 + mensagem no mesmo card; falha de consulta = card de erro **sem** strip (preserva TAB-07/TAB-04).
+- **Reason**: Pedido explícito do operador após teste em tela — "tem que se atualizar de acordo com as filtragens" (número global mostrava 7 com busca retornando 1) — e o bloco solto "está estranho"; operador aprovou o layout de usuários ("ficou legal").
+- **Trade-off**: Perde-se a visão do tamanho total da base sob filtro (informativo em "n de N"), ganhando-se o que o filtro retornou (leitura imediata) e um único padrão visual; se a visão "n de N" voltar a ser desejada, deve vir como rótulo secundário, não como revertendo esta decisão.
+- **Scope**: 9 listagens do admin (`TotalBloco` + faixa do card), `src/lib/admin/{membros,financeiro,auditoria,usuarios,relatorios}.ts`, `contar.test.ts` (deletado), probes.
+- **Date**: 2026-10-18
+- **Status**: active
+
+## Handoff — feature ajustes-total-filtrado — ✅ VERIFIED (2026-10-18)
+
+- **Estado**: Spec (3 ACs TAB-05..07 + 5 goals) → Tasks (T1..T3) → Execute (2/2 de código + fecho) → Verifier **PASS (7/7 critérios, sensor 4/4)**. Feature **fechada**. `validation.md` (PASS) em `.specs/features/ajustes-total-filtrado/`.
+- **Entregue**: (1) TOTAL = contagem do filtro ativo nas 5 listagens filtradas (membros `membros.length`, financeiro `lancamentos.length`, auditoria `total` global paginado, usuários `result.total`, relatórios `documentos.length`) com remoção de `contar*`/`totalGeral`/`contar.test.ts` (**AD-034**, reversão da decisão B do lote4); (2) faixa TOTAL embutida no cabeçalho do card das 9 listagens (padrão usuários; fechamento tema claro; vazio = TOTAL 0 + mensagem no mesmo card; relatórios sem h2 "Documentos"; membros via prop `total` no client).
+- **Verificação**: Verifier independente; 7/7 com evidência file:line; gates: lint 0 erros, typecheck, `test:ci` 309/309 (delta 0), build, `probe-ajustes-total-filtrado.sh` 19/0, `probe-ajustes-lote4.sh` 12/0 (tier TAB-02 aposentado); sensor 4/4. 7 descobertas não-bloqueantes (1 corrigida no fecho: doc do `total-bloco.tsx`).
+- **Commits**: `7ac4955` (T1) → `ff0b527` (T2) + este fechamento. **Nada pushed** (push em lote com aval do operador — lote3 + lote4 + total-filtrado juntos).
+- **Pendente do operador**: teste visual no navegador (TOTAL seguindo filtro + faixa no card nas 9 telas); aprovação de push em lote; restaurar nascimento do José (`183f8f98…`: 1978-10-18 → **1978-07-22**) e senha da conta dev (`[REDACTED]`); URLs de redirect Auth no dashboard Supabase (docs/DEPLOYMENT.md).
+
 ## Handoff — feature ajustes-lote4 — ✅ VERIFIED (2026-10-18)
 
 - **Estado**: Spec (15 ACs) → Design (decisões A–E aprovadas) → Tasks (T1..T7) → Execute (7/7) → Verifier **PASS (15/15, sensor 13/13)**. Feature **fechada**. `validation.md` (PASS) em `.specs/features/ajustes-lote4/`.

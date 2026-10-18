@@ -6,11 +6,11 @@ Após o fechamento do lote 4, o operador solicitou duas mudanças no bloco TOTAL
 
 ## Goals
 
-- [ ] Nas 5 listagens filtradas (membros, financeiro, auditoria, usuários, relatórios) o número do TOTAL é a contagem do resultado do filtro ativo.
-- [ ] Nas 9 listagens o bloco TOTAL vive no cabeçalho do card da tabela, no mesmo padrão visual do módulo usuários.
-- [ ] Listas vazias mostram TOTAL 0 no cabeçalho do card, com a mensagem de vazio abaixo (padrão usuários).
-- [ ] Falha de consulta continua omitindo o bloco (card de erro sem TOTAL).
-- [ ] Helpers de contagem global (`contarMembros`, `contarLancamentos`, `contarAuditoria`, `contarDocumentos`, `totalGeral`) removidos — código morto após a reversão.
+- [x] Nas 5 listagens filtradas (membros, financeiro, auditoria, usuários, relatórios) o número do TOTAL é a contagem do resultado do filtro ativo.
+- [x] Nas 9 listagens o bloco TOTAL vive no cabeçalho do card da tabela, no mesmo padrão visual do módulo usuários.
+- [x] Listas vazias mostram TOTAL 0 no cabeçalho do card, com a mensagem de vazio abaixo (padrão usuários).
+- [x] Falha de consulta continua omitindo o bloco (card de erro sem TOTAL).
+- [x] Helpers de contagem global (`contarMembros`, `contarLancamentos`, `contarAuditoria`, `contarDocumentos`, `totalGeral`) removidos — código morto após a reversão.
 
 ## Out of Scope
 
@@ -102,9 +102,9 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| TAB-05 | TOTAL reflete filtro | Design | Pending |
-| TAB-06 | Design padrão usuários | Design | Pending |
-| TAB-07 | Omissão em falha | Design | Pending |
+| TAB-05 | TOTAL reflete filtro | Execute | Verified |
+| TAB-06 | Design padrão usuários | Execute | Verified |
+| TAB-07 | Omissão em falha | Execute | Verified |
 
 **ID format:** `[CATEGORY]-[NUMBER]`
 **Status values:** Pending → In Design → In Tasks → Implementing → Verified
@@ -114,7 +114,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 
 ## Success Criteria
 
-- [ ] Membro com busca retornando N linhas mostra TOTAL N; usuários com papel filtrado mostra a contagem do papel; auditoria mostra o total filtrado paginado.
-- [ ] 9 listagens com faixa TOTAL embutida no card (padrão usuários); vazio = TOTAL 0 + mensagem no mesmo card.
-- [ ] Falha de consulta → card de erro sem TOTAL.
-- [ ] `contar*`/`totalGeral` inexistentes no codebase; `npm run lint`, `npm run typecheck`, `npm run test:ci` e `npm run build` verdes; gates SDD com 0 erros.
+- [x] Membro com busca retornando N linhas mostra TOTAL N; usuários com papel filtrado mostra a contagem do papel; auditoria mostra o total filtrado paginado.
+- [x] 9 listagens com faixa TOTAL embutida no card (padrão usuários); vazio = TOTAL 0 + mensagem no mesmo card.
+- [x] Falha de consulta → card de erro sem TOTAL.
+- [x] `contar*`/`totalGeral` inexistentes no codebase; `npm run lint`, `npm run typecheck`, `npm run test:ci` e `npm run build` verdes; gates SDD com 0 erros.
