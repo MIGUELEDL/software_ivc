@@ -112,7 +112,7 @@ Depends on: T9 ← T1..T8.
 
 **Depends on**: None
 
-- [ ] `supabase/migrations/0028_aniversariantes_rpc.sql`: `aniversariantes_do_dia()` SECURITY DEFINER retorna `text[]`, ATIVO, fuso America/Fortaleza, GRANT EXECUTE anon
+- [x] `supabase/migrations/0028_aniversariantes_rpc.sql`: `aniversariantes_do_dia()` SECURITY DEFINER retorna `text[]`, ATIVO, fuso America/Fortaleza, GRANT EXECUTE anon
 - [ ] Aplicada em dev e prod
 
 **Tests**: tier estática ANI-06
