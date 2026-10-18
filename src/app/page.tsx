@@ -5,10 +5,12 @@ import Leadership from "@/components/Leadership";
 import Schedule from "@/components/Schedule";
 import Values from "@/components/Values";
 import LiveBanner from "@/components/LiveBanner";
+import { BirthdayBanner } from "@/components/BirthdayBanner";
 import SocialLinks from "@/components/SocialLinks";
 import Footer from "@/components/Footer";
 import { listarIgrejas, listarLideresAtivos } from "@/lib/admin/lideranca";
 import { obterConfiguracoes } from "@/lib/admin/configuracoes";
+import { createServerClient } from "@/lib/supabase/server";
 import type { Igreja, Lider } from "@/lib/admin/lideranca";
 
 /**
@@ -58,9 +60,22 @@ export default async function Home() {
 
   const igreja = igrejas[0] ?? null;
 
+  // Aniversariantes do dia (ANI-01): RPC pública aniversariantes_do_dia().
+  // Falha degradada → banner ausente (portal continua no ar).
+  let aniversariantes: string[] = [];
+  try {
+    const supabase = await createServerClient();
+    const { data, error } = await supabase.rpc("aniversariantes_do_dia");
+    if (error) throw error;
+    aniversariantes = Array.isArray(data) ? (data as string[]) : [];
+  } catch (erro) {
+    console.error("portal: falha ao carregar aniversariantes", erro);
+  }
+
   return (
     <>
       <Navbar />
+      <BirthdayBanner aniversariantes={aniversariantes} />
       <Hero slogan={slogan} />
       <About about={about} />
       <Leadership church={igreja} leaders={lideres} />

@@ -28,8 +28,10 @@ fi
 
 # ── CART-01: seleção até 4 na lista ─────────────────────────────────────────
 LISTA="$ROOT/src/app/admin/membros/page.tsx"
-if grep -q "imprimir" "$LISTA" \
-  && grep -qE "MAXIMO|MAX_CARTOES|limite|até 4|<= 4|> 4" "$LISTA"; then
+LISTA_CLIENT="$ROOT/src/app/admin/membros/membros-lista-client.tsx"
+if grep -q "MembrosListaClient" "$LISTA" \
+  && grep -q "imprimir?ids=" "$LISTA_CLIENT" \
+  && grep -q "MAXIMO_CARTOES = 4" "$LISTA_CLIENT"; then
   ok "CART-01 lista admin tem seleção + limite de cartões"
 else
   ko "CART-01 seleção/limite de impressão ausente na lista"
@@ -52,8 +54,9 @@ if [ -f "$MIG28" ] \
   && grep -q "SECURITY DEFINER" "$MIG28" \
   && grep -q "anon" "$MIG28" \
   && [ -f "$BANNER" ] \
-  && grep -q "aniversariantes_do_dia" "$BANNER" \
-  && grep -q "aniversariantes_do_dia" "$ROOT/src/app/page.tsx"; then
+  && grep -q "aniversariantes" "$BANNER" \
+  && grep -q "aniversariantes_do_dia" "$ROOT/src/app/page.tsx" \
+  && grep -q "BirthdayBanner" "$ROOT/src/app/page.tsx"; then
   ok "ANI-01..06 RPC + banner integrado na home"
 else
   ko "ANI-01..06 RPC/banner ausente"

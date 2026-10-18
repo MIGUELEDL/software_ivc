@@ -122,8 +122,8 @@ Depends on: T9 ← T1..T8.
 
 **Depends on**: T4
 
-- [ ] `src/components/BirthdayBanner.tsx` (client): fetch RPC anon, dismiss X em memória, tema landing, ícone Cake, responsivo 360px, animação sutil
-- [ ] Integrado no topo de `src/app/page.tsx` (escondido no print)
+- [x] `src/components/BirthdayBanner.tsx` (client): recebe nomes via prop (fetch RPC anon no RSC `page.tsx`), dismiss X em memória, tema landing, ícone Cake, responsivo 360px, animação sutil
+- [x] Integrado no topo de `src/app/page.tsx` (escondido no print)
 
 **Tests**: tier estática ANI-01..05
 **Gate**: `npm run test:ci` + typecheck + build

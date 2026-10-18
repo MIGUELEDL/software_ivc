@@ -27,8 +27,10 @@
 - **RPC** `aniversariantes_do_dia()` SECURITY DEFINER: nomes de membros
   ATIVO com `EXTRACT(MONTH/DAY FROM nascimento)` = hoje em
   `America/Fortaleza`. Retorna `text[]`. `GRANT EXECUTE` a `anon`.
-- **Componente** `BirthdayBanner` (client): busca via RPC anon na home;
-  `useState` de dismiss (X). Se vazio/erro → renderiza nada.
+- **Componente** `BirthdayBanner` (client): recebe `aniversariantes` como
+  prop; busca via RPC anon feita no RSC da home (`page.tsx`, com try/catch
+  → lista vazia degrada para banner ausente); `useState` de dismiss (X).
+  Se vazio/erro → renderiza nada.
 - **Visual**: card flutuante sob o navbar, gradiente `hero-background-lite`,
   borda dourada `accent`, ícone `Cake` (lucide), título "🎉 Hoje tem
   aniversário!" + nomes em destaque + mensagem de carinho
