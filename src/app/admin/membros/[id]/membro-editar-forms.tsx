@@ -453,7 +453,7 @@ export function MembroEditarForms({
               accept="image/jpeg,image/png,image/webp"
               onChange={trocarFoto}
               disabled={fotoEnviando}
-              className="w-full rounded-lg bg-white/10 border border-white/30 px-3 py-2 font-serif text-sm text-white/80 file:mr-3 file:rounded-full file:border-0 file:bg-accent-light/20 file:px-4 file:py-1.5 file:font-sans file:text-xs file:font-bold file:text-accent-light cursor-pointer"
+              className="w-full rounded-lg bg-white/10 border border-white/30 px-3 py-2 font-serif text-sm text-white/80 file:mr-3 file:rounded-full file:border-0 file:bg-accent-light/20 file:px-4 file:py-1.5 file:font-sans file:text-xs file:font-bold file:text-accent-light file:cursor-pointer"
             />
           </div>
         </div>

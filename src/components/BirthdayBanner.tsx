@@ -42,23 +42,24 @@ export function BirthdayBanner({ aniversariantes }: { aniversariantes: string[] 
         }
       `}</style>
 
-      <div className="relative overflow-hidden rounded-2xl border border-accent/60 bg-gradient-to-r from-[#0d1f3c] via-[#17325a] to-[#0d1f3c] px-5 py-4 shadow-[0_10px_40px_rgba(0,0,0,0.35)] sm:px-6 sm:py-5">
+      <div className="relative overflow-hidden rounded-2xl border border-white/30 bg-gradient-to-r from-primary/80 via-primary/80 to-primary/80 px-5 py-4 shadow-[0_10px_40px_rgba(0,0,0,0.35)] sm:px-6 sm:py-5">
         {/* brilho sutil de fundo */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full bg-accent/20 blur-2xl"
+          className="pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full bg-accent-light/20 blur-2xl"
         />
         {/* confetes decorativos */}
-        <span aria-hidden="true" className="absolute left-4 top-2 text-xs text-accent/70">✦</span>
-        <span aria-hidden="true" className="absolute right-14 bottom-2 text-[10px] text-accent/60">✦</span>
-
+        <span aria-hidden="true" className="absolute left-4 top-2 text-xs text-accent-light/70">✦</span>
+        <span aria-hidden="true" className="absolute right-14 bottom-2 text-[10px] text-accent-light/70">✦</span>
+        <span aria-hidden="true" className="absolute left-58 top-26 text-xs text-accent-light/50">✦</span>
+        <span aria-hidden="true" className="absolute right-64 bottom-24 text-[10px] text-accent-light/60">✦</span>
         <div className="relative flex items-start gap-3 sm:gap-4">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-accent/50 bg-accent/15 sm:h-12 sm:w-12">
-            <Cake size={22} className="text-accent" aria-hidden="true" />
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-accent-light/50 bg-accent-light/15 sm:h-12 sm:w-12">
+            <Cake size={22} className="text-accent-light" aria-hidden="true" />
           </div>
 
           <div className="min-w-0 flex-1">
-            <p className="flex items-center gap-2 font-sans text-sm font-bold uppercase tracking-wider text-accent">
+            <p className="flex items-center gap-2 font-sans text-sm font-bold uppercase tracking-wider text-accent-light">
               <PartyPopper size={14} aria-hidden="true" />
               Hoje tem aniversário!
             </p>
