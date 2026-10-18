@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getClaims } from "@/lib/auth/claims";
 import { can } from "@/lib/auth/rbac";
+import { createAdminClient } from "@/lib/supabase/admin";
 import {
   getMembro,
   listDocumentos,
@@ -48,11 +49,22 @@ export default async function MembroDetalhePage({
 
   let membro: Awaited<ReturnType<typeof getMembro>> = null;
   let documentos: Awaited<ReturnType<typeof listDocumentos>> = [];
+  let email: string | null = null;
   let falhaConsulta = false;
   try {
     membro = await getMembro(id);
     if (membro) {
       documentos = await listDocumentos(id);
+      // ADMINMEM-36: e-mail vive em auth.users; falha → fallback "—" (37).
+      try {
+        const admin = createAdminClient();
+        const { data: authUser } = await admin.auth.admin.getUserById(
+          membro.auth_user_id
+        );
+        email = authUser?.user?.email ?? null;
+      } catch {
+        email = null;
+      }
     }
   } catch {
     falhaConsulta = true;
@@ -146,6 +158,14 @@ export default async function MembroDetalhePage({
               </dt>
               <dd className="mt-1 font-serif text-base text-white">
                 {membro.whatsapp}
+              </dd>
+            </div>
+            <div>
+              <dt className="font-sans text-xs font-semibold uppercase tracking-wider text-white/80">
+                E-mail
+              </dt>
+              <dd className="mt-1 font-serif text-base text-white">
+                {email ?? "—"}
               </dd>
             </div>
             <div>

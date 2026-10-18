@@ -31,6 +31,10 @@ check "TAB-02 contarAuditoria" "grep -q 'contarAuditoria' src/lib/admin/auditori
 check "TAB-02 contarDocumentos" "grep -q 'contarDocumentos' src/lib/admin/relatorios.ts"
 check "TAB-02 totalGeral" "grep -q 'totalGeral' src/lib/admin/usuarios.ts"
 
+# EMAIL-01/02: e-mail no detalhe via getUserById + fallback
+check "EMAIL-01 getUserById" "grep -q 'getUserById' 'src/app/admin/membros/[id]/page.tsx'"
+check "EMAIL-02 fallback" "grep -q 'email ?? \"—\"' 'src/app/admin/membros/[id]/page.tsx'"
+
 echo "---"
 echo "probe-ajustes-lote4: ${ok} ok, ${fail} fail"
 test "${fail}" -eq 0
