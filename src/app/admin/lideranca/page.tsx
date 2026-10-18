@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getClaims } from "@/lib/auth/claims";
 import { can } from "@/lib/auth/rbac";
 import { listarIgrejas, listarLideres } from "@/lib/admin/lideranca";
+import { TotalBloco } from "@/components/admin/total-bloco";
 import { ExcluirIgrejaBotao } from "./excluir-igreja-botao";
 
 /**
@@ -75,6 +76,12 @@ export default async function AdminLiderancaPage() {
             </Link>
           )}
         </div>
+
+        {!falhaConsulta && (
+          <div className="mb-4">
+            <TotalBloco total={igrejas.length} />
+          </div>
+        )}
 
         {falhaConsulta ? (
           <div className="hero-background-admin border border-white/10 rounded-xl p-10 text-center">

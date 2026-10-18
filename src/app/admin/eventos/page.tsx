@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getClaims } from "@/lib/auth/claims";
 import { can } from "@/lib/auth/rbac";
 import { listarEventos } from "@/lib/admin/eventos";
+import { TotalBloco } from "@/components/admin/total-bloco";
 
 /**
  * Lista de eventos (EVT-07): título, data, local e badges de `visivel`/`status`.
@@ -67,6 +68,12 @@ export default async function AdminEventosPage() {
             </Link>
           )}
         </div>
+
+        {!falhaConsulta && (
+          <div className="mb-4">
+            <TotalBloco total={eventos.length} />
+          </div>
+        )}
 
         {falhaConsulta ? (
           <div className="hero-background-admin border border-white/10 rounded-xl p-10 text-center">

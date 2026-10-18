@@ -3,15 +3,30 @@
  * em cima, número de registros embaixo, alinhado à esquerda — exibido acima
  * da tabela. Em listagens filtradas o número é o total geral (TAB-02), não o
  * resultado do filtro; a omissão em falha de consulta é responsabilidade da
- * página (TAB-04).
+ * página (TAB-04). `tom` adapta o texto ao fundo da página (admin escuro ou
+ * cards claros, ex.: fechamento).
  */
-export function TotalBloco({ total }: { total: number }) {
+export function TotalBloco({
+  total,
+  tom = "escuro",
+}: {
+  total: number;
+  tom?: "escuro" | "claro";
+}) {
+  const rotulo =
+    tom === "claro" ? "text-text-dark/60" : "text-white/60";
+  const valor = tom === "claro" ? "text-text-dark" : "text-white";
+
   return (
     <div className="flex flex-col items-start" data-testid="total-bloco">
-      <span className="font-sans text-[11px] font-semibold uppercase tracking-wider text-white/60">
+      <span
+        className={`font-sans text-[11px] font-semibold uppercase tracking-wider ${rotulo}`}
+      >
         TOTAL
       </span>
-      <span className="font-sans text-2xl font-bold leading-tight text-white">
+      <span
+        className={`font-sans text-2xl font-bold leading-tight ${valor}`}
+      >
         {total}
       </span>
     </div>

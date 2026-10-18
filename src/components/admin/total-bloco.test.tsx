@@ -24,4 +24,12 @@ describe("TotalBloco (TAB-01/03)", () => {
     expect(screen.getByText("TOTAL")).toBeTruthy();
     expect(screen.getByText("0")).toBeTruthy();
   });
+
+  it("tom claro usa texto escuro para fundos claros (ex.: fechamento)", () => {
+    const { container } = render(<TotalBloco total={5} tom="claro" />);
+
+    const valor = screen.getByText("5");
+    expect(valor.className).toContain("text-text-dark");
+    expect(container.querySelector('[data-testid="total-bloco"]')).toBeTruthy();
+  });
 });

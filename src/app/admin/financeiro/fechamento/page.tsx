@@ -6,6 +6,7 @@ import {
   listarFechamentos,
   previewFechamentoCaixa,
 } from "@/lib/admin/financeiro";
+import { TotalBloco } from "@/components/admin/total-bloco";
 import { FecharCaixaButton } from "./fechar-caixa-button";
 
 /**
@@ -120,6 +121,12 @@ export default async function AdminFinanceiroFechamentoPage() {
                 </dd>
               </div>
             </dl>
+          </div>
+        )}
+
+        {!falhaConsulta && (
+          <div className="mb-4">
+            <TotalBloco total={fechamentos.length} tom="claro" />
           </div>
         )}
 

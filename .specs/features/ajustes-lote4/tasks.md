@@ -117,36 +117,36 @@ T6, T7
 **Gate**: quick
 **Commit**: `feat(admin): add total block component for listing tables`
 
-### T4: TotalBloco nas 5 listagens sem filtro + probe das 9 páginas
+### T4: TotalBloco nas 4 listagens sem filtro + probe das 9 páginas
 
-**What**: Aplicar `TotalBloco` (total = `array.length`) em eventos, patrimônio, liderança, relatórios e fechamento; ocultar o bloco quando a consulta falhar (padrão `falhaConsulta`); criar `scripts/probe-ajustes-lote4.sh` com tier que grepa `TotalBloco` nas 9 listagens.
-**Where**: `src/app/admin/eventos/page.tsx`, `src/app/admin/patrimonio/page.tsx`, `src/app/admin/lideranca/page.tsx`, `src/app/admin/relatorios/page.tsx`, `src/app/admin/financeiro/fechamento/page.tsx`, `scripts/probe-ajustes-lote4.sh` (tarefa coesa: mesmo componente aplicado a 5 páginas — WARN de granularidade aceito)
+**What**: Aplicar `TotalBloco` (total = `array.length`) em eventos, patrimônio, liderança e fechamento; ocultar o bloco quando a consulta falhar (padrão `falhaConsulta`); criar `scripts/probe-ajustes-lote4.sh` com tier que grepa `TotalBloco` nas 9 listagens. (Relatórios tem filtro `?categoria=` → movido para T5.)
+**Where**: `src/app/admin/eventos/page.tsx`, `src/app/admin/patrimonio/page.tsx`, `src/app/admin/lideranca/page.tsx`, `src/app/admin/financeiro/fechamento/page.tsx`, `scripts/probe-ajustes-lote4.sh` (tarefa coesa: mesmo componente aplicado a 4 páginas — WARN de granularidade aceito)
 **Depends on**: T3
 **Reuses**: T3, padrões de `falhaConsulta` das páginas
 **Requirement**: TAB-01 (+ TAB-04 via omissão em falha)
 
 **Done when**:
 
-- [ ] 5 páginas exibem o bloco com a contagem da listagem
-- [ ] Bloco ausente no ramo `falhaConsulta`
-- [ ] Probe tier 1 (9 greps) verde; testes RSC de 2 páginas representativas (eventos + patrimônio)
+- [x] 4 páginas exibem o bloco com a contagem da listagem
+- [x] Bloco ausente no ramo `falhaConsulta`
+- [x] Probe tier 1 (4 greps das páginas desta task) verde; testes RSC de 2 páginas representativas (eventos + patrimônio). Tier estende para as 9 páginas na T5.
 
 **Tests**: unit + probe estática
 **Gate**: full
 **Commit**: `feat(admin): show total block on unfiltered listing pages`
 
-### T5: Contagens globais + TotalBloco nas 4 listagens com filtro
+### T5: Contagens globais + TotalBloco nas 5 listagens com filtro
 
-**What**: Contagem global independente de filtros: `contarMembros` (lib membros), `contarLancamentos` (lib financeiro), `contarAuditoria` (lib auditoria), `totalGeral` em `listarUsuarios` (antes do filtro de papel); aplicar `TotalBloco` em membros, financeiro, auditoria e usuários (em usuários substituir o texto "N usuário(s)").
-**Where**: `src/lib/admin/membros.ts`, `src/lib/admin/financeiro.ts`, `src/lib/admin/auditoria.ts`, `src/lib/admin/usuarios.ts` + 4 `page.tsx` correspondentes (tarefa coesa: mesmo padrão de contagem global em 4 páginas filtradas — WARN de granularidade aceito)
+**What**: Contagem global independente de filtros: `contarMembros` (lib membros), `contarLancamentos` (lib financeiro), `contarAuditoria` (lib auditoria), `totalGeral` em `listarUsuarios` (antes do filtro de papel), `contarDocumentos` (lib relatorios, antes do filtro de categoria); aplicar `TotalBloco` em membros, financeiro, auditoria, usuários e relatórios (em usuários substituir o texto "N usuário(s)"; em relatorios capturar falha para omitir o bloco).
+**Where**: `src/lib/admin/membros.ts`, `src/lib/admin/financeiro.ts`, `src/lib/admin/auditoria.ts`, `src/lib/admin/usuarios.ts`, `src/lib/admin/relatorios.ts` + 5 `page.tsx` correspondentes (tarefa coesa: mesmo padrão de contagem global em 5 páginas filtradas — WARN de granularidade aceito)
 **Depends on**: T3
 **Reuses**: T3, `select("id", { count: "exact", head: true })`
-**Requirement**: TAB-02 (+ TAB-01, TAB-03)
+**Requirement**: TAB-02 (+ TAB-01, TAB-03, TAB-04)
 
 **Done when**:
 
-- [ ] 4 funções/campos de contagem global testadas (mock do client; query sem filtros)
-- [ ] 4 páginas exibem o bloco; membros com `q` ativo mantém o total geral (testado)
+- [ ] 5 funções/campos de contagem global testadas (mock do client; query sem filtros)
+- [ ] 5 páginas exibem o bloco; membros com `q` ativo mantém o total geral (testado)
 - [ ] Usuários sem duplicar contagem (bloco substitui o texto)
 
 **Tests**: unit

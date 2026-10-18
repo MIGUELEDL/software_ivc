@@ -10,6 +10,7 @@ import Link from "next/link";
 import { getClaims } from "@/lib/auth/claims";
 import { can } from "@/lib/auth/rbac";
 import { listarAssets } from "@/lib/admin/assets";
+import { TotalBloco } from "@/components/admin/total-bloco";
 import { DeleteAssetButton } from "./delete-button";
 
 /**
@@ -76,6 +77,12 @@ export default async function AdminPatrimonioPage() {
             </Link>
           )}
         </div>
+
+        {!falhaConsulta && (
+          <div className="mb-4">
+            <TotalBloco total={assets.length} />
+          </div>
+        )}
 
         {falhaConsulta ? (
           <div className="hero-background-admin border border-white/10 rounded-xl p-10 text-center">
