@@ -163,9 +163,9 @@ T6, T7
 
 **Done when**:
 
-- [ ] E-mail renderizado no bloco (junto a WhatsApp/nascimento)
-- [ ] Falha/ausência → `—`, página renderiza
-- [ ] Testes RSC cobrem happy + fallback
+- [x] E-mail renderizado no bloco (junto a WhatsApp/nascimento)
+- [x] Falha/ausência → `—`, página renderiza
+- [x] Testes RSC cobrem happy + fallback
 
 **Tests**: unit
 **Gate**: quick
@@ -181,10 +181,10 @@ T6, T7
 
 **Done when**:
 
-- [ ] Nome de 80+ caracteres truncado com elipsis dentro da barra (classes discriminantes)
-- [ ] Nome curto exibido integralmente
-- [ ] Aspecto `aspect-[85.6/53.98]` inalterado
-- [ ] Testes RTL cobrem os 3 ACs
+- [x] Nome de 80+ caracteres truncado com elipsis dentro da barra (classes discriminantes)
+- [x] Nome curto exibido integralmente
+- [x] Aspecto `aspect-[85.6/53.98]` inalterado
+- [x] Testes RTL cobrem os 3 ACs
 
 **Tests**: unit
 **Gate**: build

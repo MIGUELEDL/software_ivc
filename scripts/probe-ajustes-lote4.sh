@@ -35,6 +35,9 @@ check "TAB-02 totalGeral" "grep -q 'totalGeral' src/lib/admin/usuarios.ts"
 check "EMAIL-01 getUserById" "grep -q 'getUserById' 'src/app/admin/membros/[id]/page.tsx'"
 check "EMAIL-02 fallback" "grep -q 'email ?? \"—\"' 'src/app/admin/membros/[id]/page.tsx'"
 
+# CART-17: truncate na barra ID/NOME do cartão
+check "CART-17 truncate" "grep -q 'truncate' src/components/MemberCard.tsx"
+
 echo "---"
 echo "probe-ajustes-lote4: ${ok} ok, ${fail} fail"
 test "${fail}" -eq 0

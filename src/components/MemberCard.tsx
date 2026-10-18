@@ -208,15 +208,19 @@ export function MemberCard({ member }: { member: Member }) {
       </div>
 
       {/* ═══════════ BARRA DE IDENTIFICAÇÃO ═══════════ */}
-      <div className="absolute left-[33%] top-[37.5%] z-30 flex h-[10%] w-[80%] items-center bg-[#555555] px-[3%]">
-        <div className="flex w-full items-center gap-[7%] whitespace-nowrap">
-          <div className="flex items-center gap-[1.18cqw]">
-            <span className="text-[1.77cqw] font-bold text-white">ID:</span>
-            <span className="text-[2.36cqw] font-bold text-white">{campos.id}</span>
+      {/* CART-17..19: ID sempre visível; nome longo corta com elipsis
+          (fonte fixa 2.5cqw, decisão E) sem estourar a barra. */}
+      <div className="absolute left-[29%] top-[37.5%] z-30 flex h-[10%] w-[80%] items-center bg-[#555555] px-[3%]">
+        <div className="flex w-full items-center gap-[7%]">
+          <div className="flex shrink-0 items-center gap-[1.18cqw]">
+            <span className="text-[2.5cqw] font-bold text-white">ID:</span>
+            <span className="text-[2.5cqw] font-bold text-white">{campos.id}</span>
           </div>
-          <div className="flex items-center gap-[1.18cqw]">
-            <span className="text-[1.77cqw] font-bold text-white">NOME:</span>
-            <span className="text-[2.36cqw] font-bold text-white">{campos.name}</span>
+          <div className="flex min-w-0 flex-1 items-center gap-[1.18cqw]">
+            <span className="shrink-0 text-[2.5cqw] font-bold text-white">NOME:</span>
+            <span className="min-w-0 truncate text-[2.5cqw] font-bold text-white">
+              {campos.name}
+            </span>
           </div>
         </div>
       </div>
@@ -234,26 +238,26 @@ export function MemberCard({ member }: { member: Member }) {
       </div>
 
       {/* ═══════════ INFORMAÇÕES — COLUNA ESQUERDA ═══════════ */}
-      <div className="absolute left-[36%] top-[54%] z-30">
+      <div className="absolute left-[35%] top-[54%] z-30">
         <div className="mb-[4%]">
-          <p className="m-0 text-[2.07cqw] font-bold leading-tight">DATA DE BATISMO</p>
-          <p className="m-0 mt-[0.59cqw] text-[2.36cqw] leading-tight">{campos.baptismDate}</p>
+          <p className="m-0 text-[3cqw] font-bold leading-tight">DATA DE BATISMO</p>
+          <p className="m-0 mt-[0.60cqw] text-[2.36cqw] leading-tight">{campos.baptismDate}</p>
         </div>
         <div>
-          <p className="m-0 text-[2.07cqw] font-bold leading-tight">DATA DE NASCIMENTO</p>
-          <p className="m-0 mt-[0.59cqw] text-[2.36cqw] leading-tight">{campos.birthDate}</p>
+          <p className="m-0 text-[3cqw] font-bold leading-tight">DATA DE NASCIMENTO</p>
+          <p className="m-0 mt-[0.60cqw] text-[2.36cqw] leading-tight">{campos.birthDate}</p>
         </div>
       </div>
 
       {/* ═══════════ INFORMAÇÕES — COLUNA DIREITA ═══════════ */}
-      <div className="absolute left-[74%] top-[54%] z-30">
+      <div className="absolute left-[75%] top-[54%] z-30">
         <div className="mb-[4%]">
-          <p className="m-0 text-[2.07cqw] font-bold leading-tight">CPF</p>
-          <p className="m-0 mt-[0.59cqw] text-[2.36cqw] leading-tight">{campos.cpf}</p>
+          <p className="m-0 text-[3cqw] font-bold leading-tight">CPF</p>
+          <p className="m-0 mt-[0.60cqw] text-[2.36cqw] leading-tight">{campos.cpf}</p>
         </div>
         <div>
-          <p className="m-0 text-[2.07cqw] font-bold leading-tight">VALIDADE</p>
-          <p className="m-0 mt-[0.59cqw] text-[2.36cqw] leading-tight">{campos.validity}</p>
+          <p className="m-0 text-[3cqw] font-bold leading-tight">VALIDADE</p>
+          <p className="m-0 mt-[0.60cqw] text-[2.36cqw] leading-tight">{campos.validity}</p>
         </div>
       </div>
 
