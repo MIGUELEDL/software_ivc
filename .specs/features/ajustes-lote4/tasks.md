@@ -109,9 +109,9 @@ T6, T7
 
 **Done when**:
 
-- [ ] Renderiza rótulo `TOTAL` e o número passado em `total`
-- [ ] `total={0}` exibe `0`
-- [ ] Testes RTL cobrem ambos
+- [x] Renderiza rótulo `TOTAL` e o número passado em `total`
+- [x] `total={0}` exibe `0`
+- [x] Testes RTL cobrem ambos
 
 **Tests**: unit
 **Gate**: quick
