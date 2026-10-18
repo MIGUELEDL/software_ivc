@@ -90,7 +90,7 @@ Depends on: T9 ← T1..T8.
 
 **Depends on**: None
 
-- [ ] Componente client de seleção com checkbox por linha na página `/admin/membros`
+- [x] Componente client de seleção com checkbox por linha na página `/admin/membros`
 - [ ] Máximo 4 marcações (5ª bloqueada com aviso)
 - [ ] Botão "Imprimir cartões (N)" → `/admin/membros/imprimir?ids=`
 

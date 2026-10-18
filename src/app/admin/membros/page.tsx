@@ -1,20 +1,9 @@
-import { Eye, IdCard, Search, UserPlus } from "lucide-react";
+import { Search, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { getClaims } from "@/lib/auth/claims";
 import { can } from "@/lib/auth/rbac";
 import { listMembros } from "@/lib/admin/membros";
-
-const STATUS_LABEL: Record<string, string> = {
-  ATIVO: "Ativo",
-  INATIVO: "Inativo",
-  TRANSFERIDO: "Transferido",
-};
-
-const STATUS_CLASS: Record<string, string> = {
-  ATIVO: "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30",
-  INATIVO: "bg-white/10 text-white/60 border border-white/10",
-  TRANSFERIDO: "bg-amber-500/20 text-amber-400 border border-amber-500/30",
-};
+import { MembrosListaClient } from "./membros-lista-client";
 
 // Opções de filtro da spec (ADMINMEM-04): todos/ativos/inativos/transferidos.
 // O parâmetro de URL é o nome da opção; o valor enviado ao serviço é o status
@@ -184,60 +173,7 @@ export default async function AdminMembrosPage({
             </p>
           </div>
         ) : (
-          <div className="hero-background-admin border border-white/10 rounded-xl overflow-x-auto tabela-scroll">
-            <table className="w-full min-w-[720px] text-left">
-              <thead>
-                <tr className="border-b border-white/10 font-sans text-xs font-semibold uppercase tracking-wider text-white/70">
-                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Nome</th>
-                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Matrícula</th>
-                  <th className="px-3 py-2.5 sm:px-6 sm:py-4">Situação</th>
-                  <th className="px-3 py-2.5 sm:px-6 sm:py-4 text-right">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {membros.map((membro) => (
-                  <tr
-                    key={membro.id}
-                    className="bg-white/5 border-b border-white/30 last:border-0 hover:bg-white/15 transition-colors"
-                  >
-                    <td className="px-3 py-2.5 sm:px-6 sm:py-4 font-sans font-semibold text-white">
-                      {membro.nome}
-                    </td>
-                    <td className="px-3 py-2.5 sm:px-6 sm:py-4 font-sans text-accent-light font-bold">
-                      {membro.matricula}
-                    </td>
-                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
-                      <span
-                        className={`inline-block rounded-full px-3 py-1 font-sans text-xs font-bold ${
-                          STATUS_CLASS[membro.status] ?? ""
-                        }`}
-                      >
-                        {STATUS_LABEL[membro.status] ?? membro.status}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2.5 sm:px-6 sm:py-4">
-                      <div className="flex items-center justify-end gap-3">
-                        <Link
-                          href={`/admin/membros/${membro.id}`}
-                          className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-white/75 hover:text-white transition-colors"
-                        >
-                          <Eye size={15} aria-hidden="true" />
-                          Detalhes
-                        </Link>
-                        <Link
-                          href={`/admin/membros/${membro.id}/cartao`}
-                          className="inline-flex items-center gap-1.5 font-sans text-sm font-bold text-accent-light hover:text-accent-light/75 transition-colors"
-                        >
-                          <IdCard size={15} aria-hidden="true" />
-                          Cartão
-                        </Link>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <MembrosListaClient membros={membros} />
         )}
       </div>
     </section>
