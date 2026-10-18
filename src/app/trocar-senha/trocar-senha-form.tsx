@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { PasswordInput } from "@/components/PasswordInput";
 
 export function TrocarSenhaForm() {
   const formRef = useRef<HTMLFormElement>(null);
@@ -58,14 +59,13 @@ export function TrocarSenhaForm() {
         >
           Nova senha
         </label>
-        <input
+        <PasswordInput
           id="new_password"
           name="new_password"
-          type="password"
           required
           minLength={8}
           autoComplete="new-password"
-          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 font-serif text-text-dark focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
+          inputClassName="w-full rounded-lg border border-gray-300 px-4 py-2.5 font-serif text-text-dark focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
         />
         {errors.password && (
           <p className="mt-1 text-sm text-red-600 font-serif">
@@ -81,14 +81,13 @@ export function TrocarSenhaForm() {
         >
           Confirmar senha
         </label>
-        <input
+        <PasswordInput
           id="confirm_password"
           name="confirm_password"
-          type="password"
           required
           minLength={8}
           autoComplete="new-password"
-          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 font-serif text-text-dark focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
+          inputClassName="w-full rounded-lg border border-gray-300 px-4 py-2.5 font-serif text-text-dark focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
         />
         {errors.confirm && (
           <p className="mt-1 text-sm text-red-600 font-serif">

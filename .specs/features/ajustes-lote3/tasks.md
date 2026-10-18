@@ -132,8 +132,8 @@ Depends on: T9 ← T1..T8.
 
 **Depends on**: None
 
-- [ ] `src/components/PasswordInput.tsx` (olho Eye/EyeOff, aria-label)
-- [ ] Aplicado em login admin, login membro, trocar-senha
+- [x] `src/components/PasswordInput.tsx` (olho Eye/EyeOff, aria-label)
+- [x] Aplicado em login admin, login membro, trocar-senha
 
 **Tests**: tier estática SEN-06
 **Gate**: `npm run test:ci` + typecheck
