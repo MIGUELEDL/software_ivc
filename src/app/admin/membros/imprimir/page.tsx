@@ -41,17 +41,16 @@ function MultiCardPrintStyles() {
           padding: 0 !important;
         }
 
-        /* coluna de pares, centralizada no topo da A4 */
+        /* coluna de pares, centralizada no topo da A4 — fluxo estático:
+           position:fixed em mídia paginada faz o Chrome omitir/repintar o
+           último par na pré-visualização de impressão (bug do 4º cartão);
+           o equivalente estático dá o mesmo resultado visual sem o glitch. */
         #cartao-print {
-          position: fixed !important;
-          top: 12mm;
-          left: 50%;
-          transform: translateX(-50%);
           display: flex !important;
           flex-direction: column !important;
           gap: 8mm !important;
-          margin: 0 !important;
-          padding: 0 !important;
+          margin: 0 auto !important;
+          padding: 12mm 0 0 !important;
           width: 175.4mm;
         }
         #cartao-print * {
@@ -59,11 +58,13 @@ function MultiCardPrintStyles() {
           -webkit-print-color-adjust: exact !important;
         }
 
-        /* cada par = row frente+verso */
+        /* cada par = row frente+verso (margin-top do space-y-8 some no print
+           — o espaçamento é só o gap de 8mm, uniforme) */
         #cartao-print .card-par {
           display: flex !important;
           flex-direction: row !important;
           gap: 0 !important;
+          margin-top: 0 !important;
           width: 175.4mm;
         }
 
