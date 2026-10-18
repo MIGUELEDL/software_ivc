@@ -18,12 +18,18 @@ check() {
   fi
 }
 
-# TOT-01: TotalBloco referenciado em cada listagem do admin entregue
-# (T4: páginas sem filtro; T5 acrescenta as filtradas → 9 greps)
-for pagina in eventos patrimonio lideranca financeiro/fechamento; do
+# TOT-01: TotalBloco referenciado em cada uma das 9 listagens do admin
+for pagina in eventos patrimonio lideranca relatorios financeiro/fechamento financeiro auditoria usuarios membros; do
   arquivo="src/app/admin/${pagina}/page.tsx"
   check "TOT-01 ${pagina}" "grep -q 'TotalBloco' '${arquivo}'"
 done
+
+# TAB-02: contagens globais (head+count) nas libs filtradas
+check "TAB-02 contarMembros" "grep -q 'contarMembros' src/lib/admin/membros.ts"
+check "TAB-02 contarLancamentos" "grep -q 'contarLancamentos' src/lib/admin/financeiro.ts"
+check "TAB-02 contarAuditoria" "grep -q 'contarAuditoria' src/lib/admin/auditoria.ts"
+check "TAB-02 contarDocumentos" "grep -q 'contarDocumentos' src/lib/admin/relatorios.ts"
+check "TAB-02 totalGeral" "grep -q 'totalGeral' src/lib/admin/usuarios.ts"
 
 echo "---"
 echo "probe-ajustes-lote4: ${ok} ok, ${fail} fail"

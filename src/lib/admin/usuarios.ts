@@ -63,7 +63,10 @@ interface UsuarioAuth {
 
 interface ListarUsuariosResult {
   users: UsuarioAuth[];
+  /** Contagem do resultado filtrado (ex.: papel escolhido). */
   total: number;
+  /** Total geral de usuários admin (TAB-02), antes do filtro de papel. */
+  totalGeral: number;
 }
 
 interface CriarResult {
@@ -99,11 +102,13 @@ export async function listarUsuarios(
   const filtered = (data.users ?? []).filter((u) => {
     const role = u.app_metadata?.role;
     if (!role || !ADMIN_ROLES.has(role)) return false;
-    if (opts?.role && role !== opts.role) return false;
     return true;
   });
+  const porPapel = opts?.role
+    ? filtered.filter((u) => u.app_metadata?.role === opts.role)
+    : filtered;
   return {
-    users: filtered.map((u) => {
+    users: porPapel.map((u) => {
       const role = u.app_metadata?.role ?? null;
       const criadoPorAdmin = u.app_metadata?.criado_por_admin === true;
       return {
@@ -116,7 +121,8 @@ export async function listarUsuarios(
         deletable: role !== "SUPER_ADMIN" && criadoPorAdmin,
       };
     }),
-    total: filtered.length,
+    total: porPapel.length,
+    totalGeral: filtered.length,
   };
 }
 

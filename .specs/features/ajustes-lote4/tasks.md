@@ -145,9 +145,9 @@ T6, T7
 
 **Done when**:
 
-- [ ] 5 funções/campos de contagem global testadas (mock do client; query sem filtros)
-- [ ] 5 páginas exibem o bloco; membros com `q` ativo mantém o total geral (testado)
-- [ ] Usuários sem duplicar contagem (bloco substitui o texto)
+- [x] 5 funções/campos de contagem global testadas (mock do client; query sem filtros)
+- [x] 5 páginas exibem o bloco; membros com `q` ativo mantém o total geral (testado)
+- [x] Usuários sem duplicar contagem (bloco substitui o texto)
 
 **Tests**: unit
 **Gate**: full

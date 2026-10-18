@@ -6,7 +6,8 @@ import {
 import Link from "next/link";
 import { getClaims } from "@/lib/auth/claims";
 import { can } from "@/lib/auth/rbac";
-import { listarDocumentos } from "@/lib/admin/relatorios";
+import { listarDocumentos, contarDocumentos } from "@/lib/admin/relatorios";
+import { TotalBloco } from "@/components/admin/total-bloco";
 import { DOCUMENT_CATEGORIES } from "@/lib/admin/relatorios-constants";
 import type { DocumentoCategoria } from "@/lib/admin/relatorios-constants";
 import { UploadForm } from "./upload-form";
@@ -59,12 +60,15 @@ export default async function AdminRelatoriosPage({
   }
 
   let documentos: Awaited<ReturnType<typeof listarDocumentos>> = [];
+  let totalGeral = 0;
+  let falhaConsulta = false;
   try {
     documentos = await listarDocumentos(
       (categoriaParam as DocumentoCategoria) || undefined
     );
+    totalGeral = await contarDocumentos();
   } catch {
-    // empty on error
+    falhaConsulta = true;
   }
 
   const estiloChipAtivo =
@@ -192,6 +196,12 @@ export default async function AdminRelatoriosPage({
               </Link>
             ))}
           </div>
+
+          {!falhaConsulta && (
+            <div className="mb-4">
+              <TotalBloco total={totalGeral} />
+            </div>
+          )}
 
           {documentos.length === 0 ? (
             <div className="rounded-xl bg-white/20 p-10 text-center">

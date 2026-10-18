@@ -7,6 +7,7 @@ import Link from "next/link";
 import { getClaims } from "@/lib/auth/claims";
 import { can } from "@/lib/auth/rbac";
 import { listarUsuarios } from "@/lib/admin/usuarios";
+import { TotalBloco } from "@/components/admin/total-bloco";
 import { CreateUserForm } from "./create-user-form";
 import { DeleteUserButton } from "./delete-user-button";
 
@@ -107,9 +108,8 @@ export default async function AdminUsuariosPage({
 
         <div className="hero-background-admin border border-white/10 rounded-xl overflow-x-auto tabela-scroll">
           <div className="p-4 border-b border-white/10 flex items-center justify-between">
-            <span className="font-sans text-sm text-white/60">
-              {result.total} usuário(s)
-            </span>
+            {/* TAB-01/02: total geral da listagem (antes do filtro de papel) */}
+            <TotalBloco total={result.totalGeral} />
             {administrador && (
               <Link
                 href="/admin/usuarios/permissoes"

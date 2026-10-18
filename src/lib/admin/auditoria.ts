@@ -143,3 +143,22 @@ export async function listarAuditoria(
     total: count ?? 0,
   };
 }
+
+/**
+ * Contagem global de logs (TAB-02): total registrado, independente dos
+ * filtros de período/ação/entidade da listagem. Lança erro em falha (a
+ * página omite o bloco — TAB-04).
+ */
+export async function contarAuditoria(): Promise<number> {
+  const supabase = await createServerClient();
+
+  const { count, error } = await supabase
+    .from("audit_logs")
+    .select("id", { count: "exact", head: true });
+
+  if (error) {
+    throw error;
+  }
+
+  return count ?? 0;
+}

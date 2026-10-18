@@ -2,7 +2,8 @@ import { Search, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { getClaims } from "@/lib/auth/claims";
 import { can } from "@/lib/auth/rbac";
-import { listMembros } from "@/lib/admin/membros";
+import { listMembros, contarMembros } from "@/lib/admin/membros";
+import { TotalBloco } from "@/components/admin/total-bloco";
 import { MembrosListaClient } from "./membros-lista-client";
 
 // Opções de filtro da spec (ADMINMEM-04): todos/ativos/inativos/transferidos.
@@ -49,9 +50,11 @@ export default async function AdminMembrosPage({
   const escritor = await can(claims?.role ?? "", "membros", "escrever");
 
   let membros: Awaited<ReturnType<typeof listMembros>> = [];
+  let totalGeral = 0;
   let falhaConsulta = false;
   try {
     membros = await listMembros({ q, status, mesAniversario });
+    totalGeral = await contarMembros();
   } catch {
     falhaConsulta = true;
   }
@@ -159,6 +162,12 @@ export default async function AdminMembrosPage({
             Filtrar
           </button>
         </form>
+
+        {!falhaConsulta && (
+          <div className="mb-4">
+            <TotalBloco total={totalGeral} />
+          </div>
+        )}
 
         {falhaConsulta ? (
           <div className="hero-background-admin border border-white/10 rounded-xl p-10 text-center">

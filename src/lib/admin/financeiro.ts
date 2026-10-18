@@ -112,6 +112,24 @@ export async function listarLancamentos(
 }
 
 /**
+ * Contagem global de lançamentos (TAB-02): total registrado, independente dos
+ * filtros de tipo/status/período/busca da listagem.
+ */
+export async function contarLancamentos(): Promise<number> {
+  const supabase = await createServerClient();
+
+  const { count, error } = await supabase
+    .from("transactions")
+    .select("id", { count: "exact", head: true });
+
+  if (error) {
+    throw error;
+  }
+
+  return count ?? 0;
+}
+
+/**
  * Busca um lançamento por id (FIN-01/AC-6). Inexistente →
  * `LancamentoNaoEncontradoError` (404, AC-11).
  */
