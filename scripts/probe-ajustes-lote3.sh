@@ -59,7 +59,7 @@ BANNER="$ROOT/src/components/BirthdayBanner.tsx"
 # Literais do corpo executável da função: fuso na linha do extract (ANI-01)
 # e projeção só de nome (ANI-06, sem CPF/documentos) — comentário não satisfaz.
 if [ -f "$MIG28" ] \
-  && grep -q "SECURITY DEFINER" "$MIG28" \
+  && grep -qE "^security definer$" "$MIG28" \
   && grep -q "array_agg(m.nome" "$MIG28" \
   && grep -qE "extract\(month from m.nascimento\) = extract\(month from \(now\(\) at time zone 'America/Fortaleza'\)\)" "$MIG28" \
   && [ -f "$BANNER" ] \

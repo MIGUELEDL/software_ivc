@@ -80,8 +80,8 @@ Depends on: T9 ← T1..T8.
 **Depends on**: None
 
 - [x] `supabase/migrations/0027_event_status_parity.sql`: UPDATE ATIVO→EM ABERTO, INATIVO→CONCLUIDO; DROP CONSTRAINT events_status_check; ADD CONSTRAINT check `('EM ABERTO','CONCLUIDO')`
-- [ ] Aplicada em dev `[REDACTED_PROJECT_REF]` e prod `[REDACTED_PROJECT_REF]` via MCP
-- [ ] Probe manual: POST /api/admin/eventos em prod → 201
+- [x] Aplicada em dev `[REDACTED_PROJECT_REF]` e prod `[REDACTED_PROJECT_REF]` via MCP
+- [x] Probe manual: POST /api/admin/eventos em prod → 201 (2026-10-17: POST local 201 status EM ABERTO + INSERT SQL aceito e removido em prod e dev)
 
 **Tests**: tier `scripts/probe-ajustes-lote3.sh` (grep constraint + status)
 **Gate**: probe tier + POST 201 em prod
