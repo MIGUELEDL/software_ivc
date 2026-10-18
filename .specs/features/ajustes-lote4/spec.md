@@ -126,21 +126,21 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| AUTH-20 | P1: Trocar senha | Design | Implementing |
-| AUTH-21 | P1: Trocar senha | Design | Implementing |
-| AUTH-22 | P1: Trocar senha | Design | Implementing |
-| AUTH-23 | P1: Trocar senha | Design | Implementing |
-| AUTH-24 | P1: Trocar senha | Design | Implementing |
-| AUTH-25 | P1: Trocar senha | Design | Implementing |
-| TAB-01 | P1: TOTAL tabelas | Design | Implementing |
-| TAB-02 | P1: TOTAL tabelas | Design | Implementing |
-| TAB-03 | P1: TOTAL tabelas | Design | Implementing |
-| TAB-04 | P1: TOTAL tabelas | Design | Implementing |
-| ADMINMEM-36 | P2: E-mail detalhe | Design | Implementing |
-| ADMINMEM-37 | P2: E-mail detalhe | Design | Implementing |
-| CART-17 | P2: Barra cartão | Design | Implementing |
-| CART-18 | P2: Barra cartão | Design | Implementing |
-| CART-19 | P2: Barra cartão | Design | Implementing |
+| AUTH-20 | P1: Trocar senha | Design | Verified |
+| AUTH-21 | P1: Trocar senha | Design | Verified |
+| AUTH-22 | P1: Trocar senha | Design | Verified |
+| AUTH-23 | P1: Trocar senha | Design | Verified |
+| AUTH-24 | P1: Trocar senha | Design | Verified |
+| AUTH-25 | P1: Trocar senha | Design | Verified |
+| TAB-01 | P1: TOTAL tabelas | Design | Verified |
+| TAB-02 | P1: TOTAL tabelas | Design | Verified |
+| TAB-03 | P1: TOTAL tabelas | Design | Verified |
+| TAB-04 | P1: TOTAL tabelas | Design | Verified |
+| ADMINMEM-36 | P2: E-mail detalhe | Design | Verified |
+| ADMINMEM-37 | P2: E-mail detalhe | Design | Verified |
+| CART-17 | P2: Barra cartão | Design | Verified |
+| CART-18 | P2: Barra cartão | Design | Verified |
+| CART-19 | P2: Barra cartão | Design | Verified |
 
 **ID format:** `[CATEGORY]-[NUMBER]`
 **Status values:** Pending → In Design → In Tasks → Implementing → Verified
@@ -150,8 +150,8 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 
 ## Success Criteria
 
-- [ ] Fluxo completo de troca de senha sem retorno ao form (caixa de sucesso → portal), MEMBRO e admin.
-- [ ] 9 listagens com bloco TOTAL coerente com e sem filtros ativos (0 e falha de consulta cobertos).
-- [ ] E-mail visível (ou `—`) no detalhe do membro.
-- [ ] Cartão com nome de 80+ caracteres sem transbordo, dimensões ISO ID-1 intactas.
-- [ ] `npm run lint`, `npm run typecheck`, `npm run test:ci` e `npm run build` verdes; gates SDD com 0 erros.
+- [x] Fluxo completo de troca de senha sem retorno ao form (caixa de sucesso → portal), MEMBRO e admin.
+- [x] 9 listagens com bloco TOTAL coerente com e sem filtros ativos (0 e falha de consulta cobertos).
+- [x] E-mail visível (ou `—`) no detalhe do membro.
+- [x] Cartão com nome de 80+ caracteres sem transbordo, dimensões ISO ID-1 intactas.
+- [x] `npm run lint`, `npm run typecheck`, `npm run test:ci` e `npm run build` verdes; gates SDD com 0 erros.

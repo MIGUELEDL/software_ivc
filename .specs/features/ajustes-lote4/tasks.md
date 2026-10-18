@@ -9,7 +9,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 ---
 
 **Design**: skipped (Medium scope — design inline)
-**Status**: In Progress
+**Status**: Verified
 
 ---
 

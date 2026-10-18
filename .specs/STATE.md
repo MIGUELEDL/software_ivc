@@ -272,6 +272,14 @@
 - **Date**: 2026-10-12
 - **Status**: active
 
+## Handoff — feature ajustes-lote4 — ✅ VERIFIED (2026-10-18)
+
+- **Estado**: Spec (15 ACs) → Design (decisões A–E aprovadas) → Tasks (T1..T7) → Execute (7/7) → Verifier **PASS (15/15, sensor 13/13)**. Feature **fechada**. `validation.md` (PASS) em `.specs/features/ajustes-lote4/`.
+- **Entregue**: (1) barra ID/NOME do cartão responsiva — `min-w-0`+`truncate` com fonte fixa 2.5cqw, nome longo corta com elipsis sem estourar, aspecto ISO ID-1 intacto (decisão E); (2) bloco TOTAL (rótulo em cima, número embaixo, à esquerda) nas **9** listagens do admin — 4 sem filtro (eventos, patrimônio, liderança, fechamento) + 5 filtradas (membros, financeiro, auditoria, usuários, relatórios) com contagens globais `head+count` (`contarMembros/Lancamentos/Auditoria/Documentos` + `totalGeral` em usuários antes do filtro de papel; em usuários o bloco **substitui** o texto "N usuário(s)"; matriz de permissões fora, decisão A); (3) e-mail do membro no detalhe via `getUserById(auth)` com fallback `—` (ADMINMEM-36/37); (4) fluxo trocar-senha: `refreshSession()` após limpeza da flag (corrige o rebote do `proxy.ts:29`) + redirect `?success=1` + caixa de sucesso com botão "Ir para o painel" (MEMBRO→`/painel`, admin→`/admin`).
+- **Verificação**: Verifier independente; **15/15 ACs (AUTH-20..25, TAB-01..04, ADMINMEM-36..37, CART-17..19)**; gates: probe 17/0, `test:ci` 309/309 (+36 novos), lint 0 erros, typecheck, build. 3 descobertas não-bloqueantes (AUTH-25 = preservação sem suite própria; CART-17 fixture 64 chars vs 80+ de nomenclatura; usuarios sem branch falhaConsulta).
+- **Commits**: `462b955` (style base do operador) → `d194f8e` (T1) → `e9e4010` (T2) → `8d71a8a` (T3) → `94cedc7` (T4) → `151a274` (T5) → `9dff0a2` (T6) → `ff52f1c` (T7) + este fechamento. **Nada pushed** (push em lote com aval do operador — lote3 + lote4 juntos).
+- **Pendente do operador**: teste visual no navegador (caixa trocar-senha, blocos TOTAL, e-mail no detalhe, cartão nome longo); aprovação de push em lote; restaurar nascimento do José (`183f8f98…`: 1978-10-18 → **1978-07-22**) e senha da conta dev (`[REDACTED]`); URLs de redirect Auth no dashboard Supabase (docs/DEPLOYMENT.md).
+
 ## Handoff — feature ajustes-lote3 — ✅ VERIFIED (2026-10-18)
 
 - **Estado**: Spec (19 ACs) → Design → Tasks (T1..T9) → Execute → Verifier **R1 FAIL (débito: 0 testes comportamentais, sensor 1/12) → R2 FAIL (12/23) → R3 FAIL (18/21, gaps de probe fraco) → R4 PASS (18/19, sensor 10/10)**. Feature **fechada**. `validation.md` (PASS) em `.specs/features/ajustes-lote3/`.
