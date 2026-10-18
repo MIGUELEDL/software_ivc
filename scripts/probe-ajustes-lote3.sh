@@ -41,8 +41,13 @@ fi
 IMP="$ROOT/src/app/admin/membros/imprimir/page.tsx"
 if [ -f "$IMP" ] \
   && grep -q "cartao-print\|cartao-membro" "$IMP" \
-  && grep -qE "86[.,]7|86mm|face.*mm" "$IMP"; then
-  ok "CART-02..05 página de impressão com faces ampliadas"
+  && grep -qE "86[.,]7|86mm|face.*mm" "$IMP" \
+  && grep -q "card-face" "$IMP" \
+  && grep -q "Frente —" "$IMP" \
+  && grep -q "Verso —" "$IMP" \
+  && grep -q "PrintButton" "$IMP" \
+  && grep -q "parseIdsImpressao" "$IMP"; then
+  ok "CART-02..05 página de impressão com faces ampliadas + corte"
 else
   ko "CART-02..05 página de impressão ausente ou sem escala"
 fi
@@ -53,13 +58,14 @@ BANNER="$ROOT/src/components/BirthdayBanner.tsx"
 if [ -f "$MIG28" ] \
   && grep -q "SECURITY DEFINER" "$MIG28" \
   && grep -q "anon" "$MIG28" \
+  && grep -q "America/Fortaleza" "$MIG28" \
   && [ -f "$BANNER" ] \
   && grep -q "aniversariantes" "$BANNER" \
   && grep -q "aniversariantes_do_dia" "$ROOT/src/app/page.tsx" \
   && grep -q "BirthdayBanner" "$ROOT/src/app/page.tsx"; then
-  ok "ANI-01..06 RPC + banner integrado na home"
+  ok "ANI-01..06 RPC (fuso America/Fortaleza) + banner integrado na home"
 else
-  ko "ANI-01..06 RPC/banner ausente"
+  ko "ANI-01..06 RPC/banner ausente ou fuso errado"
 fi
 
 # ── SEN-01..03: fluxo e-mail ────────────────────────────────────────────────
@@ -95,6 +101,30 @@ if [ -f "$ROOT/src/components/PasswordInput.tsx" ] \
   ok "SEN-06 PasswordInput com olho nos logins/trocar-senha"
 else
   ko "SEN-06 PasswordInput ausente ou não aplicado"
+fi
+
+# ── Tier de testes comportamentais (vitest) ─────────────────────────────────
+# Literais de asserção: se o teste perder o dente (ex.: asserção trocada por
+# presence), a tier cai junto com o mutant no sensor do Verifier.
+T_RD="$ROOT/src/app/api/admin/membros/[id]/redefinir-senha/route.test.ts"
+T_AT="$ROOT/src/app/api/auth/atualizar-senha/route.test.ts"
+T_LISTA="$ROOT/src/app/admin/membros/membros-lista-client.test.tsx"
+T_BANNER="$ROOT/src/components/BirthdayBanner.test.tsx"
+T_SEN="$ROOT/src/components/PasswordInput.test.tsx"
+T_IMP="$ROOT/src/lib/admin/impressao.test.ts"
+if [ -f "$T_RD" ] && [ -f "$T_AT" ] && [ -f "$T_LISTA" ] \
+  && [ -f "$T_BANNER" ] && [ -f "$T_SEN" ] && [ -f "$T_IMP" ] \
+  && grep -q "force_password_change).toBe(true)" "$T_RD" \
+  && grep -q "nao_autorizado" "$T_RD" \
+  && grep -q "login?ok=password" "$T_AT" \
+  && grep -q "force_password_change: false" "$T_AT" \
+  && grep -q "4 de 4 cartões selecionados" "$T_LISTA" \
+  && grep -q "Ana, Bia e Caio" "$T_BANNER" \
+  && grep -q 'input.type).toBe("text")' "$T_SEN" \
+  && grep -q 'toEqual(\["a", "b", "c", "d"\])' "$T_IMP"; then
+  ok "tier vitest: payload SEN-02/04/05, limite CART-01, ANI-02, SEN-06, corte CART-03"
+else
+  ko "tier vitest de comportamento ausente ou enfraquecido"
 fi
 
 printf '== Resumo: %s ok / %s falhas ==\n' "$PASS" "$FAIL"

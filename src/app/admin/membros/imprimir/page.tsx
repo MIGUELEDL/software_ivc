@@ -2,10 +2,8 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { MemberCard, MemberCardBack } from "@/components/MemberCard";
 import { getMembro } from "@/lib/admin/membros";
+import { parseIdsImpressao } from "@/lib/admin/impressao";
 import { PrintButton } from "@/app/painel/cartao/print-button";
-
-/** Máximo de pares frente+verso por folha A4 (CART-03). */
-const MAXIMO_CARTOES = 4;
 
 /**
  * Estilos de impressão multi-cartão (CART-03/04): até 4 pares frente+verso
@@ -101,11 +99,7 @@ export default async function MembrosImprimirPage({
 }) {
   const params = await searchParams;
   const raw = typeof params.ids === "string" ? params.ids : "";
-  const ids = raw
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean)
-    .slice(0, MAXIMO_CARTOES);
+  const ids = parseIdsImpressao(raw);
 
   const membros: NonNullable<Awaited<ReturnType<typeof getMembro>>>[] = [];
   for (const id of ids) {
