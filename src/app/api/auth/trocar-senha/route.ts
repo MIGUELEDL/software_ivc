@@ -1,6 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
-import { isAdminRole } from "@/lib/auth/rbac";
 import { createServerClient } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
@@ -70,12 +69,17 @@ export async function POST(request: Request) {
     );
   }
 
-  const role =
-    typeof existingAppMetadata.role === "string"
-      ? existingAppMetadata.role
-      : "";
+  // AUTH-22: o app_metadata da flag vive no cookie da sessão; sem este
+  // refresh o proxy.ts ainda lê force_password_change=true e devolve o
+  // usuário ao form. Falha de refresh não bloqueia (flag já limpa no banco).
+  try {
+    await supabase.auth.refreshSession();
+  } catch (refreshError) {
+    console.error("trocar-senha: falha ao atualizar sessão", refreshError);
+  }
 
+  // A página de /trocar-senha decide o destino por papel (caixa de sucesso).
   return NextResponse.redirect(
-    new URL(isAdminRole(role) ? "/admin" : "/painel", request.url)
+    new URL("/trocar-senha?success=1", request.url)
   );
 }
