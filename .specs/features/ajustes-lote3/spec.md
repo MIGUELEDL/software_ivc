@@ -115,24 +115,24 @@ resolva "esqueci a senha" sem acesso à senha antiga.
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| CART-01 | Impressão | Design | Pending |
-| CART-02 | Impressão | Design | Pending |
-| CART-03 | Impressão | Design | Pending |
-| CART-04 | Impressão | Design | Pending |
-| CART-05 | Impressão | Design | Pending |
-| EVT-01 | Eventos | Design | Pending |
-| EVT-02 | Eventos | Design | Pending |
-| ANI-01 | Aniversário | Design | Pending |
-| ANI-02 | Aniversário | Design | Pending |
-| ANI-03 | Aniversário | Design | Pending |
-| ANI-04 | Aniversário | Design | Pending |
-| ANI-05 | Aniversário | Design | Pending |
-| ANI-06 | Aniversário | Design | Pending |
-| SEN-01 | Senhas | Design | Pending |
-| SEN-02 | Senhas | Design | Pending |
-| SEN-03 | Senhas | Design | Pending |
-| SEN-04 | Senhas | Design | Pending |
-| SEN-05 | Senhas | Design | Pending |
-| SEN-06 | Senhas | Design | Pending |
+| CART-01 | Impressão | Execute | Implementing |
+| CART-02 | Impressão | Execute | Implementing |
+| CART-03 | Impressão | Execute | Implementing |
+| CART-04 | Impressão | Execute | Implementing |
+| CART-05 | Impressão | Execute | Implementing |
+| EVT-01 | Eventos | Execute | Implementing |
+| EVT-02 | Eventos | Execute | Implementing |
+| ANI-01 | Aniversário | Execute | Implementing |
+| ANI-02 | Aniversário | Execute | Implementing |
+| ANI-03 | Aniversário | Execute | Implementing |
+| ANI-04 | Aniversário | Execute | Implementing |
+| ANI-05 | Aniversário | Execute | Implementing |
+| ANI-06 | Aniversário | Execute | Implementing |
+| SEN-01 | Senhas | Execute | Implementing |
+| SEN-02 | Senhas | Execute | Implementing |
+| SEN-03 | Senhas | Execute | Implementing |
+| SEN-04 | Senhas | Execute | Implementing |
+| SEN-05 | Senhas | Execute | Implementing |
+| SEN-06 | Senhas | Execute | Implementing |
 
 **Coverage:** 19 total.
