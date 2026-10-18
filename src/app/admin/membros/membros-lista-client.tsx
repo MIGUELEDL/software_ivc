@@ -4,6 +4,7 @@ import { Eye, IdCard, Printer } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { TotalBloco } from "@/components/admin/total-bloco";
 
 type MembroLista = {
   id: string;
@@ -32,7 +33,13 @@ const MAXIMO_CARTOES = 4;
  * Checkbox por linha; no máximo 4 marcações — a 5ª é bloqueada com aviso.
  * Botão "Imprimir cartões (N)" navega para /admin/membros/imprimir?ids=...
  */
-export function MembrosListaClient({ membros }: { membros: MembroLista[] }) {
+export function MembrosListaClient({
+  membros,
+  total,
+}: {
+  membros: MembroLista[];
+  total: number;
+}) {
   const router = useRouter();
   const [selecionados, setSelecionados] = useState<Set<string>>(new Set());
   const [avisoLimite, setAvisoLimite] = useState(false);
@@ -90,6 +97,10 @@ export function MembrosListaClient({ membros }: { membros: MembroLista[] }) {
       )}
 
       <div className="hero-background-admin border border-white/10 rounded-xl overflow-x-auto tabela-scroll">
+        {/* TAB-06: faixa TOTAL no cabeçalho do card (padrão usuários) */}
+        <div className="p-4 border-b border-white/10 flex items-center justify-between">
+          <TotalBloco total={total} />
+        </div>
         <table className="w-full min-w-[720px] text-left">
           <thead>
             <tr className="border-b border-white/10 font-sans text-xs font-semibold uppercase tracking-wider text-white/70">

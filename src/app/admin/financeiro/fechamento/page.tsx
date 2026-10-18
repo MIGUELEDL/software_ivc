@@ -124,9 +124,17 @@ export default async function AdminFinanceiroFechamentoPage() {
           </div>
         )}
 
-        {!falhaConsulta && (
-          <div className="mb-4">
-            <TotalBloco total={fechamentos.length} tom="claro" />
+        {!falhaConsulta && fechamentos.length === 0 && (
+          <div className="rounded-2xl bg-white shadow-xl">
+            {/* TAB-06: faixa TOTAL no cabeçalho do card (padrão usuários, tema claro) */}
+            <div className="p-4 border-b border-text-dark/10 flex items-center justify-between">
+              <TotalBloco total={0} tom="claro" />
+            </div>
+            <div className="p-10 text-center">
+              <p className="font-serif text-base text-text-dark/70">
+                Nenhum fechamento realizado.
+              </p>
+            </div>
           </div>
         )}
 
@@ -137,14 +145,12 @@ export default async function AdminFinanceiroFechamentoPage() {
               tarde.
             </p>
           </div>
-        ) : fechamentos.length === 0 ? (
-          <div className="rounded-2xl bg-white shadow-xl p-10 text-center">
-            <p className="font-serif text-base text-text-dark/70">
-              Nenhum fechamento realizado.
-            </p>
-          </div>
-        ) : (
+        ) : fechamentos.length > 0 && (
           <div className="overflow-x-auto tabela-scroll rounded-2xl bg-white shadow-xl">
+            {/* TAB-06: faixa TOTAL no cabeçalho do card (padrão usuários, tema claro) */}
+            <div className="p-4 border-b border-text-dark/10 flex items-center justify-between">
+              <TotalBloco total={fechamentos.length} tom="claro" />
+            </div>
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-text-dark/10 font-sans text-xs font-semibold uppercase tracking-wider text-text-dark/50">

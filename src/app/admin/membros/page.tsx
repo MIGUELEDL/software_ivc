@@ -161,9 +161,17 @@ export default async function AdminMembrosPage({
           </button>
         </form>
 
-        {!falhaConsulta && (
-          <div className="mb-4">
-            <TotalBloco total={membros.length} />
+        {!falhaConsulta && membros.length === 0 && (
+          <div className="hero-background-admin border border-white/10 rounded-xl">
+            {/* TAB-06: faixa TOTAL no cabeçalho do card (padrão usuários) */}
+            <div className="p-4 border-b border-white/10 flex items-center justify-between">
+              <TotalBloco total={0} />
+            </div>
+            <div className="p-10 text-center">
+              <p className="font-serif text-base text-white/60">
+                Nenhum membro encontrado.
+              </p>
+            </div>
           </div>
         )}
 
@@ -173,14 +181,8 @@ export default async function AdminMembrosPage({
               Não foi possível carregar os membros. Tente novamente mais tarde.
             </p>
           </div>
-        ) : membros.length === 0 ? (
-          <div className="hero-background-admin border border-white/10 rounded-xl p-10 text-center">
-            <p className="font-serif text-base text-white/60">
-              Nenhum membro encontrado.
-            </p>
-          </div>
-        ) : (
-          <MembrosListaClient membros={membros} />
+        ) : membros.length > 0 && (
+          <MembrosListaClient membros={membros} total={membros.length} />
         )}
       </div>
     </section>

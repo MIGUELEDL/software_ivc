@@ -166,11 +166,21 @@ export default async function AdminRelatoriosPage({
         </div>
 
         {/* --- Seção Documentos --- */}
-        <div className="hero-background-admin border border-white/10 rounded-xl p-5">
-          <h2 className="font-sans text-lg font-bold text-white/90 mb-4">
-            Documentos
-          </h2>
+        {falhaConsulta ? (
+          <div className="hero-background-admin border border-white/10 rounded-xl p-10 text-center">
+            <p className="font-serif text-white/60">
+              Não foi possível carregar os documentos. Tente novamente mais
+              tarde.
+            </p>
+          </div>
+        ) : (
+        <div className="hero-background-admin border border-white/10 rounded-xl">
+          {/* TAB-06: faixa TOTAL no cabeçalho do card (padrão usuários) */}
+          <div className="p-4 border-b border-white/10 flex items-center justify-between">
+            <TotalBloco total={documentos.length} />
+          </div>
 
+          <div className="p-5">
           {/* Chips de categoria */}
           <div className="flex flex-wrap items-center gap-2 mb-6">
             <span className="font-sans text-xs font-semibold uppercase tracking-wider text-white/90">
@@ -194,12 +204,6 @@ export default async function AdminRelatoriosPage({
               </Link>
             ))}
           </div>
-
-          {!falhaConsulta && (
-            <div className="mb-4">
-              <TotalBloco total={documentos.length} />
-            </div>
-          )}
 
           {documentos.length === 0 ? (
             <div className="rounded-xl bg-white/20 p-10 text-center">
@@ -280,7 +284,9 @@ export default async function AdminRelatoriosPage({
           )}
 
           {escritor && <UploadForm />}
+          </div>
         </div>
+        )}
       </div>
     </section>
   );

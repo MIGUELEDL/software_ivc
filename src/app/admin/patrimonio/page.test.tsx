@@ -31,10 +31,11 @@ beforeEach(() => {
 });
 
 /**
- * TAB-01/04: bloco TOTAL acima do inventário; omitido em falha de consulta.
+ * TAB-06/07: faixa TOTAL embutida no cabeçalho do card da tabela (padrão
+ * usuários); falha = card de erro sem strip.
  */
-describe("/admin/patrimonio — TotalBloco (TAB-01/04)", () => {
-  it("TAB-01: exibe o bloco TOTAL com a contagem de bens", async () => {
+describe("/admin/patrimonio — faixa TOTAL no card (TAB-06/07)", () => {
+  it("TAB-06: a faixa TOTAL fica dentro do card da tabela, no cabeçalho", async () => {
     listarAssets.mockResolvedValue([
       { id: "a1", name: "Arara", category: "Mobiliário", status: "ATIVO", acquisition_value: 100 },
       { id: "a2", name: "Mesa", category: "Mobiliário", status: "ATIVO", acquisition_value: 200 },
@@ -45,14 +46,31 @@ describe("/admin/patrimonio — TotalBloco (TAB-01/04)", () => {
 
     expect(html).toContain('data-testid="total-bloco"');
     expect(html).toContain(">3<");
+    expect(html).toContain(
+      "p-4 border-b border-white/10 flex items-center justify-between"
+    );
+    expect(html.indexOf('data-testid="total-bloco"')).toBeGreaterThan(
+      html.indexOf("tabela-scroll")
+    );
   });
 
-  it("TAB-04: omite o bloco quando a consulta falha", async () => {
+  it("TAB-07: falha de consulta mostra card de erro sem a faixa TOTAL", async () => {
     listarAssets.mockRejectedValue(new Error("boom"));
 
     const html = renderToStaticMarkup(await AdminPatrimonioPage());
 
     expect(html).not.toContain('data-testid="total-bloco"');
     expect(html).toContain("Não foi possível carregar o inventário");
+  });
+
+  it("TAB-06: vazio = TOTAL 0 e mensagem no mesmo card", async () => {
+    listarAssets.mockResolvedValue([]);
+
+    const html = renderToStaticMarkup(await AdminPatrimonioPage());
+
+    expect(html).toContain('data-testid="total-bloco"');
+    expect(html).toContain(">0<");
+    expect(html).toContain("Nenhum bem cadastrado");
+    expect(html).not.toContain("<table");
   });
 });

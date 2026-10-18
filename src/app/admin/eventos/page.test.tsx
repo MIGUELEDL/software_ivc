@@ -30,11 +30,12 @@ beforeEach(() => {
 });
 
 /**
- * TAB-01/03/04: bloco TOTAL acima da listagem com a contagem; omitido em
- * falha de consulta; exibe 0 na listagem vazia.
+ * TAB-06/07: faixa TOTAL embutida no cabeçalho do card da tabela (padrão
+ * usuários); vazio = TOTAL 0 + mensagem no mesmo card; falha = card de erro
+ * sem strip.
  */
-describe("/admin/eventos — TotalBloco (TAB-01/03/04)", () => {
-  it("TAB-01: exibe o bloco TOTAL com a contagem de eventos", async () => {
+describe("/admin/eventos — faixa TOTAL no card (TAB-06/07)", () => {
+  it("TAB-06: a faixa TOTAL fica dentro do card da tabela, no cabeçalho", async () => {
     listarEventos.mockResolvedValue([
       { id: "e1", title: "Culto", date: "2026-01-01", time: "19:00", location: "Templo", visivel: true, status: "EM ABERTO" },
       { id: "e2", title: "Reunião", date: "2026-01-02", time: "20:00", location: "Templo", visivel: false, status: "CONCLUIDO" },
@@ -45,9 +46,18 @@ describe("/admin/eventos — TotalBloco (TAB-01/03/04)", () => {
     expect(html).toContain('data-testid="total-bloco"');
     expect(html).toContain("TOTAL");
     expect(html).toContain(">2<");
+    // Padrão usuários: strip p-4 border-b flex items-center justify-between
+    expect(html).toContain(
+      "p-4 border-b border-white/10 flex items-center justify-between"
+    );
+    // O strip aparece depois da abertura do card (tabela-scroll) — embutido.
+    expect(html.search("tabela-scroll")).toBeGreaterThan(-1);
+    expect(html.indexOf('data-testid="total-bloco"')).toBeGreaterThan(
+      html.indexOf("tabela-scroll")
+    );
   });
 
-  it("TAB-04: omite o bloco quando a consulta falha", async () => {
+  it("TAB-07: falha de consulta mostra card de erro sem a faixa TOTAL", async () => {
     listarEventos.mockRejectedValue(new Error("boom"));
 
     const html = renderToStaticMarkup(await AdminEventosPage());
@@ -56,7 +66,7 @@ describe("/admin/eventos — TotalBloco (TAB-01/03/04)", () => {
     expect(html).toContain("Não foi possível carregar os eventos");
   });
 
-  it("TAB-03: exibe 0 no bloco quando a listagem está vazia", async () => {
+  it("TAB-06: vazio = TOTAL 0 e mensagem no mesmo card", async () => {
     listarEventos.mockResolvedValue([]);
 
     const html = renderToStaticMarkup(await AdminEventosPage());
@@ -64,5 +74,10 @@ describe("/admin/eventos — TotalBloco (TAB-01/03/04)", () => {
     expect(html).toContain('data-testid="total-bloco"');
     expect(html).toContain(">0<");
     expect(html).toContain("Nenhum evento cadastrado");
+    expect(html).toContain(
+      "p-4 border-b border-white/10 flex items-center justify-between"
+    );
+    // Vazio: sem tabela, mas com o card que hospeda a faixa.
+    expect(html).not.toContain("<table");
   });
 });

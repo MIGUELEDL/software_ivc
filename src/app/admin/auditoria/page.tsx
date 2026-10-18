@@ -92,10 +92,11 @@ export default async function AdminAuditoriaPage({
           entidade={entidade}
         />
 
-        <div className="mt-6 mb-4">
-          <TotalBloco total={total} />
-        </div>
         <div className="mt-6 hero-background-admin border border-white/10 rounded-xl overflow-x-auto tabela-scroll">
+          {/* TAB-06: faixa TOTAL no cabeçalho do card (padrão usuários) */}
+          <div className="p-4 border-b border-white/10 flex items-center justify-between">
+            <TotalBloco total={total} />
+          </div>
           {logs.length === 0 ? (
             <div className="p-10 text-center">
               <p className="text-white/80">

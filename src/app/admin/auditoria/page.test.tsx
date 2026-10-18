@@ -53,6 +53,13 @@ describe("/admin/auditoria — TotalBloco do filtro (TAB-05)", () => {
     // Discrimina contra o tamanho da página corrente (20) e contra o total
     // geral sem filtro — o número vem do count com filtros de listarAuditoria.
     expect(html).not.toContain(">20<");
+    // TAB-06: strip embutido no cabeçalho do card (padrão usuários).
+    expect(html).toContain(
+      "p-4 border-b border-white/10 flex items-center justify-between"
+    );
+    expect(html.indexOf('data-testid="total-bloco"')).toBeGreaterThan(
+      html.indexOf("tabela-scroll")
+    );
   });
 
   it("filtro de ação reduz o total exibido", async () => {

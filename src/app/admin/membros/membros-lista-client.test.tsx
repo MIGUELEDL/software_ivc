@@ -26,13 +26,32 @@ beforeEach(() => {
 });
 
 /**
+ * TAB-06: a faixa TOTAL fica embutida no cabeçalho do card da tabela
+ * (padrão usuários), não como bloco flutuante acima.
+ */
+describe("MembrosListaClient — faixa TOTAL no card (TAB-06)", () => {
+  it("renderiza TotalBloco com o total passado como prop", () => {
+    const { container } = render(
+      <MembrosListaClient membros={MEMBROS.slice(0, 3)} total={42} />
+    );
+
+    const strip = screen.getByTestId("total-bloco");
+    expect(strip.textContent).toContain("42");
+    // O strip é descendente do card da tabela (overflow-x-auto + tabela-scroll)
+    expect(
+      container.querySelector(".tabela-scroll [data-testid='total-bloco']")
+    ).not.toBeNull();
+  });
+});
+
+/**
  * Regressão comportamental CART-01: no máximo 4 marcações — a 5ª é bloqueada
  * com aviso; o botão de impressão leva os ids selecionados.
  */
 describe("MembrosListaClient — limite de 4 cartões (CART-01)", () => {
   it("bloqueia a 5ª marcação e mantém 4 de 4 com aviso", async () => {
     const user = userEvent.setup();
-    const { container } = render(<MembrosListaClient membros={MEMBROS} />);
+    const { container } = render(<MembrosListaClient membros={MEMBROS} total={MEMBROS.length} />);
 
     const checkboxes = screen.getAllByRole("checkbox");
     expect(checkboxes).toHaveLength(6);
@@ -52,7 +71,7 @@ describe("MembrosListaClient — limite de 4 cartões (CART-01)", () => {
 
   it("desmarcar libera espaço para outra marcação", async () => {
     const user = userEvent.setup();
-    const { container } = render(<MembrosListaClient membros={MEMBROS} />);
+    const { container } = render(<MembrosListaClient membros={MEMBROS} total={MEMBROS.length} />);
 
     const checkboxes = screen.getAllByRole("checkbox");
     for (const checkbox of checkboxes.slice(0, 4)) {
@@ -68,7 +87,7 @@ describe("MembrosListaClient — limite de 4 cartões (CART-01)", () => {
 
   it("navega para a impressão com os ids selecionados", async () => {
     const user = userEvent.setup();
-    render(<MembrosListaClient membros={MEMBROS} />);
+    render(<MembrosListaClient membros={MEMBROS} total={MEMBROS.length} />);
 
     const checkboxes = screen.getAllByRole("checkbox");
     await user.click(checkboxes[0]);

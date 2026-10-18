@@ -24,12 +24,9 @@ for pagina in eventos patrimonio lideranca relatorios financeiro/fechamento fina
   check "TOT-01 ${pagina}" "grep -q 'TotalBloco' '${arquivo}'"
 done
 
-# TAB-02: contagens globais (head+count) nas libs filtradas
-check "TAB-02 contarMembros" "grep -q 'contarMembros' src/lib/admin/membros.ts"
-check "TAB-02 contarLancamentos" "grep -q 'contarLancamentos' src/lib/admin/financeiro.ts"
-check "TAB-02 contarAuditoria" "grep -q 'contarAuditoria' src/lib/admin/auditoria.ts"
-check "TAB-02 contarDocumentos" "grep -q 'contarDocumentos' src/lib/admin/relatorios.ts"
-check "TAB-02 totalGeral" "grep -q 'totalGeral' src/lib/admin/usuarios.ts"
+# TAB-02 (aposentado): contagens globais head+count foram removidas pela
+# feature seguinte `ajustes-total-filtrado` (D5 — total = contagem do filtro).
+# Ver scripts/probe-ajustes-total-filtrado.sh.
 
 # EMAIL-01/02: e-mail no detalhe via getUserById + fallback
 check "EMAIL-01 getUserById" "grep -q 'getUserById' 'src/app/admin/membros/[id]/page.tsx'"

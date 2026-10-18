@@ -298,12 +298,6 @@ export default async function AdminFinanceiroPage({
           </div>
         </form>
 
-        {!falhaConsulta && (
-          <div className="mb-4">
-            <TotalBloco total={lancamentos.length} />
-          </div>
-        )}
-
         {!falhaConsulta && lancamentos.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             <div className="hero-background-admin border border-white/10 rounded-xl p-4 text-center">
@@ -340,14 +334,19 @@ export default async function AdminFinanceiroPage({
               tarde.
             </p>
           </div>
-        ) : lancamentos.length === 0 ? (
-          <div className="hero-background-admin border border-white/10 rounded-xl p-10 text-center">
-            <p className="font-serif text-base text-white/60">
-              Nenhum lançamento encontrado.
-            </p>
-          </div>
         ) : (
           <div className="hero-background-admin border border-white/10 rounded-xl overflow-x-auto tabela-scroll">
+            {/* TAB-06: faixa TOTAL no cabeçalho do card (padrão usuários) */}
+            <div className="p-4 border-b border-white/10 flex items-center justify-between">
+              <TotalBloco total={lancamentos.length} />
+            </div>
+            {lancamentos.length === 0 ? (
+              <div className="p-10 text-center">
+                <p className="font-serif text-base text-white/60">
+                  Nenhum lançamento encontrado.
+                </p>
+              </div>
+            ) : (
             <table className="w-full min-w-[720px] text-left">
               <thead>
                 <tr className="border-b border-white/10 font-sans text-xs font-bold uppercase tracking-wider text-white/90">
@@ -412,6 +411,7 @@ export default async function AdminFinanceiroPage({
                 ))}
               </tbody>
             </table>
+            )}
           </div>
         )}
       </div>

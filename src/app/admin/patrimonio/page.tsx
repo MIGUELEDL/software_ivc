@@ -78,12 +78,6 @@ export default async function AdminPatrimonioPage() {
           )}
         </div>
 
-        {!falhaConsulta && (
-          <div className="mb-4">
-            <TotalBloco total={assets.length} />
-          </div>
-        )}
-
         {falhaConsulta ? (
           <div className="hero-background-admin border border-white/10 rounded-xl p-10 text-center">
             <p className="font-serif text-white/60">
@@ -91,14 +85,19 @@ export default async function AdminPatrimonioPage() {
               tarde.
             </p>
           </div>
-        ) : assets.length === 0 ? (
-          <div className="hero-background-admin border border-white/10 rounded-xl p-10 text-center">
-            <p className="font-serif text-base text-white/70">
-              Nenhum bem cadastrado.
-            </p>
-          </div>
         ) : (
           <div className="hero-background-admin border border-white/10 rounded-xl overflow-hidden overflow-x-auto tabela-scroll">
+            {/* TAB-06: faixa TOTAL no cabeçalho do card (padrão usuários) */}
+            <div className="p-4 border-b border-white/10 flex items-center justify-between">
+              <TotalBloco total={assets.length} />
+            </div>
+            {assets.length === 0 ? (
+              <div className="p-10 text-center">
+                <p className="font-serif text-base text-white/70">
+                  Nenhum bem cadastrado.
+                </p>
+              </div>
+            ) : (
             <table className="w-full text-left min-w-[800px]">
               <thead>
                 <tr className="border-b border-white/10 font-sans text-sm font-bold text-white/90 uppercase tracking-wider">
@@ -197,6 +196,7 @@ export default async function AdminPatrimonioPage() {
                 ))}
               </tbody>
             </table>
+            )}
           </div>
         )}
       </div>

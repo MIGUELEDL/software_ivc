@@ -69,26 +69,25 @@ export default async function AdminEventosPage() {
           )}
         </div>
 
-        {!falhaConsulta && (
-          <div className="mb-4">
-            <TotalBloco total={eventos.length} />
-          </div>
-        )}
-
         {falhaConsulta ? (
           <div className="hero-background-admin border border-white/10 rounded-xl p-10 text-center">
             <p className="font-serif text-white/60">
               Não foi possível carregar os eventos. Tente novamente mais tarde.
             </p>
           </div>
-        ) : eventos.length === 0 ? (
-          <div className="hero-background-admin border border-white/10 rounded-xl p-10 text-center">
-            <p className="font-serif text-base text-white/60">
-              Nenhum evento cadastrado.
-            </p>
-          </div>
         ) : (
           <div className="hero-background-admin border border-white/10 rounded-xl overflow-x-auto tabela-scroll">
+            {/* TAB-06: faixa TOTAL no cabeçalho do card (padrão usuários) */}
+            <div className="p-4 border-b border-white/10 flex items-center justify-between">
+              <TotalBloco total={eventos.length} />
+            </div>
+            {eventos.length === 0 ? (
+              <div className="p-10 text-center">
+                <p className="font-serif text-base text-white/60">
+                  Nenhum evento cadastrado.
+                </p>
+              </div>
+            ) : (
             <table className="w-full min-w-[720px] text-left">
               <thead>
                 <tr className="border-b border-white/10 font-sans text-sm font-bold text-white uppercase tracking-wider">
@@ -169,6 +168,7 @@ export default async function AdminEventosPage() {
                 ))}
               </tbody>
             </table>
+            )}
           </div>
         )}
       </div>
