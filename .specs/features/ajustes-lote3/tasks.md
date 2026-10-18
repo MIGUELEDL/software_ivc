@@ -101,7 +101,7 @@ Depends on: T9 ← T1..T8.
 
 **Depends on**: T2
 
-- [ ] `/admin/membros/imprimir/page.tsx` (server, ≤4 ids, 404/aviso)
+- [x] `/admin/membros/imprimir/page.tsx` (server, ≤4 ids, 404/aviso)
 - [ ] Pares frente+verso empilhados (flex-column)
 - [ ] `MultiCardPrintStyles`: A4 portrait, faces ~86,7×55,0mm (+2px/lado), labels/botão escondidos no print
 
