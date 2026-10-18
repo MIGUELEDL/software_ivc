@@ -6,7 +6,7 @@ import {
 import Link from "next/link";
 import { getClaims } from "@/lib/auth/claims";
 import { can } from "@/lib/auth/rbac";
-import { listarDocumentos, contarDocumentos } from "@/lib/admin/relatorios";
+import { listarDocumentos } from "@/lib/admin/relatorios";
 import { TotalBloco } from "@/components/admin/total-bloco";
 import { DOCUMENT_CATEGORIES } from "@/lib/admin/relatorios-constants";
 import type { DocumentoCategoria } from "@/lib/admin/relatorios-constants";
@@ -60,13 +60,11 @@ export default async function AdminRelatoriosPage({
   }
 
   let documentos: Awaited<ReturnType<typeof listarDocumentos>> = [];
-  let totalGeral = 0;
   let falhaConsulta = false;
   try {
     documentos = await listarDocumentos(
       (categoriaParam as DocumentoCategoria) || undefined
     );
-    totalGeral = await contarDocumentos();
   } catch {
     falhaConsulta = true;
   }
@@ -199,7 +197,7 @@ export default async function AdminRelatoriosPage({
 
           {!falhaConsulta && (
             <div className="mb-4">
-              <TotalBloco total={totalGeral} />
+              <TotalBloco total={documentos.length} />
             </div>
           )}
 

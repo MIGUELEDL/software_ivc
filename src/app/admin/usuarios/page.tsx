@@ -108,8 +108,8 @@ export default async function AdminUsuariosPage({
 
         <div className="hero-background-admin border border-white/10 rounded-xl overflow-x-auto tabela-scroll">
           <div className="p-4 border-b border-white/10 flex items-center justify-between">
-            {/* TAB-01/02: total geral da listagem (antes do filtro de papel) */}
-            <TotalBloco total={result.totalGeral} />
+            {/* TAB-05: contagem do resultado filtrado por papel */}
+            <TotalBloco total={result.total} />
             {administrador && (
               <Link
                 href="/admin/usuarios/permissoes"

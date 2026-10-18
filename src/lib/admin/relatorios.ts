@@ -474,24 +474,6 @@ export async function listarDocumentos(
   return (data ?? []) as Documento[];
 }
 
-/**
- * Contagem global de documentos (TAB-02): total registrado, independente do
- * filtro de categoria da listagem.
- */
-export async function contarDocumentos(): Promise<number> {
-  const supabase = await createServerClient();
-
-  const { count, error } = await supabase
-    .from("documents")
-    .select("id", { count: "exact", head: true });
-
-  if (error) {
-    throw error;
-  }
-
-  return count ?? 0;
-}
-
 /** Busca um documento por id — null quando inexistente (p/ 404, REL-15). */
 export async function buscarDocumento(id: string): Promise<Documento | null> {
   const supabase = await createServerClient();

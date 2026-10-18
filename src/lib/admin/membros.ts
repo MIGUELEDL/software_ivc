@@ -80,24 +80,6 @@ export async function listMembros(
 }
 
 /**
- * Contagem global de membros (TAB-02): total registrado, independente dos
- * filtros de busca/situação/mês da listagem. head + count exact — sem data.
- */
-export async function contarMembros(): Promise<number> {
-  const supabase = await createServerClient();
-
-  const { count, error } = await supabase
-    .from("members")
-    .select("id", { count: "exact", head: true });
-
-  if (error) {
-    throw error;
-  }
-
-  return count ?? 0;
-}
-
-/**
  * Busca um membro por id. Retorna null quando não existe (sem lançar) para o
  * caller mapear 404 (ADMINMEM-26); erros reais de banco propagam.
  */

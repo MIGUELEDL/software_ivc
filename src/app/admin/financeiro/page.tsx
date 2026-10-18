@@ -4,7 +4,6 @@ import { getClaims } from "@/lib/auth/claims";
 import { can } from "@/lib/auth/rbac";
 import {
   listarLancamentos,
-  contarLancamentos,
   type LancamentoFiltros,
 } from "@/lib/admin/financeiro";
 import { TotalBloco } from "@/components/admin/total-bloco";
@@ -110,11 +109,9 @@ export default async function AdminFinanceiroPage({
   }
 
   let lancamentos: Awaited<ReturnType<typeof listarLancamentos>> = [];
-  let totalGeral = 0;
   let falhaConsulta = false;
   try {
     lancamentos = await listarLancamentos(filtros);
-    totalGeral = await contarLancamentos();
   } catch {
     falhaConsulta = true;
   }
@@ -303,7 +300,7 @@ export default async function AdminFinanceiroPage({
 
         {!falhaConsulta && (
           <div className="mb-4">
-            <TotalBloco total={totalGeral} />
+            <TotalBloco total={lancamentos.length} />
           </div>
         )}
 

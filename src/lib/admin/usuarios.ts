@@ -63,10 +63,8 @@ interface UsuarioAuth {
 
 interface ListarUsuariosResult {
   users: UsuarioAuth[];
-  /** Contagem do resultado filtrado (ex.: papel escolhido). */
+  /** Contagem do resultado filtrado (ex.: papel escolhido) — TAB-05. */
   total: number;
-  /** Total geral de usuários admin (TAB-02), antes do filtro de papel. */
-  totalGeral: number;
 }
 
 interface CriarResult {
@@ -122,7 +120,6 @@ export async function listarUsuarios(
       };
     }),
     total: porPapel.length,
-    totalGeral: filtered.length,
   };
 }
 

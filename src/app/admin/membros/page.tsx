@@ -2,7 +2,7 @@ import { Search, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { getClaims } from "@/lib/auth/claims";
 import { can } from "@/lib/auth/rbac";
-import { listMembros, contarMembros } from "@/lib/admin/membros";
+import { listMembros } from "@/lib/admin/membros";
 import { TotalBloco } from "@/components/admin/total-bloco";
 import { MembrosListaClient } from "./membros-lista-client";
 
@@ -50,11 +50,9 @@ export default async function AdminMembrosPage({
   const escritor = await can(claims?.role ?? "", "membros", "escrever");
 
   let membros: Awaited<ReturnType<typeof listMembros>> = [];
-  let totalGeral = 0;
   let falhaConsulta = false;
   try {
     membros = await listMembros({ q, status, mesAniversario });
-    totalGeral = await contarMembros();
   } catch {
     falhaConsulta = true;
   }
@@ -165,7 +163,7 @@ export default async function AdminMembrosPage({
 
         {!falhaConsulta && (
           <div className="mb-4">
-            <TotalBloco total={totalGeral} />
+            <TotalBloco total={membros.length} />
           </div>
         )}
 

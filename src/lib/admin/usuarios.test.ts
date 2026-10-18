@@ -28,26 +28,24 @@ beforeEach(() => {
 });
 
 /**
- * TAB-02: totalGeral conta os usuários admin antes do filtro de papel; total
- * continua sendo o do resultado filtrado.
+ * TAB-05: `total` é a contagem do resultado filtrado por papel — não o total
+ * geral de usuários admin.
  */
-describe("listarUsuarios — totalGeral (TAB-02)", () => {
-  it("totalGeral independe do filtro de papel", async () => {
+describe("listarUsuarios — total do filtro (TAB-05)", () => {
+  it("total reflete o filtro de papel", async () => {
     montarUsers();
 
     const resultado = await listarUsuarios({ role: "FINANCEIRO" });
 
-    expect(resultado.totalGeral).toBe(3);
     expect(resultado.total).toBe(2);
     expect(resultado.users.map((u) => u.id)).toEqual(["u2", "u3"]);
   });
 
-  it("sem filtro de papel, total e totalGeral coincidem (papéis admin)", async () => {
+  it("sem filtro de papel, total = papéis admin listados", async () => {
     montarUsers();
 
     const resultado = await listarUsuarios();
 
-    expect(resultado.totalGeral).toBe(3);
     expect(resultado.total).toBe(3);
     // MEMBRO não é papel admin da listagem
     expect(resultado.users.some((u) => u.id === "u4")).toBe(false);

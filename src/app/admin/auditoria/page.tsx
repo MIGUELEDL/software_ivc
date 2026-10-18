@@ -1,7 +1,7 @@
 import { FileText } from "lucide-react";
 import { getClaims } from "@/lib/auth/claims";
 import { can } from "@/lib/auth/rbac";
-import { listarAuditoria, contarAuditoria } from "@/lib/admin/auditoria";
+import { listarAuditoria } from "@/lib/admin/auditoria";
 import { TotalBloco } from "@/components/admin/total-bloco";
 import AuditoriaFiltros from "./auditoria-filtros";
 
@@ -52,14 +52,6 @@ export default async function AdminAuditoriaPage({
     limit,
   });
 
-  let totalGeral = 0;
-  let falhaContagem = false;
-  try {
-    totalGeral = await contarAuditoria();
-  } catch {
-    falhaContagem = true;
-  }
-
   const totalPaginas = Math.ceil(total / limit);
   const paginaAtual = Math.floor(offset / limit) + 1;
 
@@ -100,12 +92,9 @@ export default async function AdminAuditoriaPage({
           entidade={entidade}
         />
 
-        {!falhaContagem && (
-          <div className="mt-6 mb-4">
-            <TotalBloco total={totalGeral} />
-          </div>
-        )}
-
+        <div className="mt-6 mb-4">
+          <TotalBloco total={total} />
+        </div>
         <div className="mt-6 hero-background-admin border border-white/10 rounded-xl overflow-x-auto tabela-scroll">
           {logs.length === 0 ? (
             <div className="p-10 text-center">
