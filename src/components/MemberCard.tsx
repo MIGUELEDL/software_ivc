@@ -284,7 +284,7 @@ export function MemberCardBack({ member }: { member: Member }) {
       <CardBackground />
 
       {/* Código de barras — mesma posição e proporção que tinha na frente */}
-      <div className="absolute bottom-[8%] right-[6%] z-30 h-[8%] w-[20%]">
+      <div className="absolute bottom-[8%] right-[6%] z-30 h-[20%] w-[40%]">
         <Code128Barcode value={campos.id} />
         <div className="mt-[0.47cqw] text-center font-mono text-[0.83cqw] leading-none tracking-[0.24cqw] text-[#111]">
           {campos.id}
