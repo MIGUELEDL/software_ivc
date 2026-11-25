@@ -37,9 +37,9 @@ porte (LGPD art. 4º, §1º e princípio da proporcionalidade).
 
 ## Obrigações operacionais
 
-1. **Política de privacidade** publicada no portal (RNF-005) — linguagem simples,
+1. **Política de privacidade** a publicar no portal (RNF-005) — linguagem simples,
    informando: dados coletados, finalidade, base legal, compartilhamento (Supabase,
-   Mercado Pago, Resend, Vercel), direitos do titular e contato do encarregado.
+   Mercado Pago, Vercel e Sentry), direitos do titular e contato do encarregado.
 2. **Consentimento** explícito no cadastro de membro (checkbox) e na captura de foto;
    registrado em log (quem, quando, qual versão da política).
 3. **Encargado (DPO):** indicar um responsável pela resposta aos titulares
@@ -59,9 +59,10 @@ porte (LGPD art. 4º, §1º e princípio da proporcionalidade).
 ## Compartilhamento (operadores)
 
 Os provedores atuam como operadores/subprocessadores: **Supabase** (hospedagem de dados),
-**Vercel** (hospedagem do app), **Mercado Pago** (processamento PIX), **Resend**
-(envio de e-mails), **Sentry** (observabilidade, sem PII). Contratos/termos de cada
-provedor cobrem o papel de operador; minimizar PII enviada a esses serviços.
+**Vercel** (hospedagem do app), **Mercado Pago** (processamento PIX) e **Sentry**
+(observabilidade, sem PII). Contratos/termos de cada provedor cobrem o papel de
+operador; minimizar PII enviada a esses serviços. Não há envio de e-mail
+transacional: a senha-ID do primeiro acesso é entregue manualmente pela liderança.
 
 ## Fluxo para o titular
 

@@ -1,126 +1,118 @@
 # Arquitetura — IVC
 
-> Decisões de arquitetura derivam de **AD-002** (monólito modular, Ports & Adapters) e
-> das demais ADRs em `.specs/STATE.md`. Este documento consolida a forma final.
+> Decisões derivam de **AD-002** (monólito modular), **AD-013** (Supabase Auth),
+> **AD-014** (migrações SQL) e **AD-015** (RBAC no banco). Este documento consolida a
+> forma final da implementação.
 
 ## Visão de alto nível
 
-**Monólito modular** em Next.js 16 (App Router + Route Handlers + Server Actions),
-deploy único, organizado em **camadas por domínio**. Serviços externos são isolados
-atrás de **Ports & Adapters** para que o domínio não dependa de provedores.
+**Monólito modular** em Next.js 16 (App Router + Route Handlers), deploy único,
+organizado por domínio. O portal público, a área do membro e o painel administrativo
+compartilham o mesmo app e o mesmo banco Supabase. As integrações externas ficam
+isoladas em `src/lib`.
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                      NAVEGADOR (visitante / membro / admin)      │
-└───────────────▲───────────────────────────────▲─────────────────┘
-                │ HTTP/HTTPS                    │ HTTP/HTTPS
-┌───────────────┴──────────────┐   ┌────────────┴───────────────┐
-│  PORTAL PÚLCOS (SSG/ISR)     │   │  PAINEL MEMBRO/ADMIN (SSR) │
-│  /  /sobre  /cultos  /eventos│   │  /painel/*  sessão+RABAC   │
-│  /doacao  (QR PIX)           │   │  Route Handlers / Actions  │
-└───────────────▲──────────────┘   └────────────▲───────────────┘
-                │                camada de domínio (apps/features)
-┌───────────────┴────────────────────────────────┴──────────────┐
-│              DOMÍNIO / CASOS DE USO (features)                 │
-│  membros │ eventos │ financeiro │ patrimônio │ conteúdo │ ...  │
-└───────▲───────────────────────────────────────────▲────────────┘
-        │ Ports (interfaces)                         │ Ports
-┌───────┴────────────────┐        ┌──────────────────┴───────────┐
-│ ADAPTER: Supabase       │        │ ADAPTER: Mercado Pago /      │
-│ (Postgres+Auth+Storage) │        │ Resend (e-mail)             │
-└────────────────────────┘        └──────────────────────────────┘
+Navegador (visitante / membro / admin)
+        │ HTTPS
+        ▼
+Next.js 16 (App Router)
+├── Portal público:  /  /eventos  /doacao
+├── Área do membro:  /painel/*
+├── Painel admin:    /admin/*
+└── Route Handlers:  /api/*
+        │
+        ├── Supabase (PostgreSQL + Auth + Storage, com RLS)
+        ├── Mercado Pago (webhook PIX)
+        └── Sentry (captura de erros)
 ```
 
-## Principais decisões (resumo)
+## Decisões principais
 
 | Aspecto | Decisão | ADR |
 | ------- | ------- | --- |
 | Estilo | Monólito modular, deploy único | AD-002 |
-| Banco | PostgreSQL via Supabase (Auth+Storage inclusos) | AD-003 |
-| Persistência | Drizzle ORM (tipagem first-class, migrações SQL) | AD-003 |
-| Autenticação | Auth.js com sessões separadas membro/admin; 1º acesso por senha-ID com troca | AD-004 |
-| Dados institucionais | `src/lib/constants.ts` como fonte única (F9) | AD-008 |
-| Pagamentos | Mercado Pago via webhook; **MVP = PIX apenas** | AD-009 |
-| Processo | Spec-driven (`tlc-spec-driven`), verificação por feature | AD-005 |
+| Banco | PostgreSQL via Supabase (Auth + Storage inclusos) | AD-003 |
+| Persistência | SQL puro versionado em `supabase/migrations/` | AD-014 |
+| Autenticação | Supabase Auth (GoTrue) via `@supabase/ssr`; logins separados de membro e admin; papel em `app_metadata.role` | AD-013 |
+| Autorização | RBAC por módulo na tabela `permissions`, consultado por `can()` e `can_access()` | AD-015 |
+| Dados institucionais | `src/lib/constants.ts` como fonte única | AD-008 |
+| Pagamentos | PIX no MVP; webhook do Mercado Pago | AD-009 |
+| Observabilidade | Sentry errors-only, logger JSON sem PII e `GET /api/health` | AD-033 |
+| Processo | Spec-driven (`tlc-spec-driven`), verificação independente por feature | AD-005 |
 
 ## Estrutura de pastas
 
 ```
 src/
-├── app/                    # Rotas (App Router): portal + painéis
-│   ├── layout.tsx          # Layout raiz
-│   ├── page.tsx            # Home (landing atual)
-│   └── globals.css         # Estilos globais (Tailwind v4)
-├── components/             # Componentes de apresentação (portal)
-│   ├── Navbar/ Hero/ About/ Values/ LiveBanner/ SocialLinks/
-│   ├── Gallery/ Footer/
+├── app/                    # Rotas: portal, área do membro, admin e API
+│   ├── admin/              # Painel administrativo
+│   ├── painel/             # Área do membro
+│   ├── api/                # Route Handlers (auth, admin, painel, webhook, health)
+│   ├── eventos/            # Listagem e detalhe público
+│   ├── doacao/             # QR PIX público
+│   └── login/              # Entradas de membro e de admin
+├── components/             # Componentes de interface (portal e admin)
 ├── lib/
-│   └── constants.ts        # Fonte única de dados institucionais (AD-008)
-└── features/               # (a criar na F9) camada de domínio por feature
-    └── <dominio>/          # casos de uso, Ports, adapters, schemas
+│   ├── admin/              # Serviços do painel administrativo
+│   ├── auth/               # Claims, RBAC e guards
+│   ├── barcode/            # Codificador Code 128
+│   ├── observability/      # Release, logger e Sentry
+│   ├── painel/             # Serviços da área do membro
+│   └── supabase/           # Clients server, browser e admin
+├── proxy.ts                # Gate de rota por área (membro/admin)
+supabase/migrations/        # Schema versionado (28 migrações)
+scripts/                    # Seed, probes e smoke tests
+.specs/                     # Especificações por feature e decisões
+docs/                       # Documentação transversal
 ```
-
-**Evolução esperada na F9:** `app/(portal)`, `app/(membro)`, `app/(admin)` como
-grupos de rotas organizados pela árvore de navegação; `features/*` para o domínio;
-`lib/db` (Drizzle), `lib/auth` (Auth.js), `lib/payments` (adapter Mercado Pago).
 
 ## Modelo de renderização
 
 | Área | Estratégia | Justificativa |
 | ---- | ---------- | ------------- |
-| Portal público (Home, Sobre, Cultos…) | Static (SSG) / ISR | Conteúdo institucional muda pouco (AD-008) |
-| Eventos / doações | ISR com revalidação curta | Atualização sem rebuild manual |
-| Painéis (membro/admin) | SSR + sessão server-side | Dados privados por recioso; RBAC no servidor |
-| Ações mutáveis | Server Actions / Route Handlers | Formulários e CRUD com validação no servidor |
+| Portal público | Renderização sob demanda (dynamic) | Lê configurações, eventos e liderança do banco |
+| Área do membro | SSR com sessão Supabase em cookies httpOnly | Dados privados por membro |
+| Painel administrativo | SSR com RBAC no servidor e RLS | Decisão de acesso centralizada |
+| Mutações | Route Handlers em `src/app/api` | Validação e autorização no servidor |
 | Webhook Mercado Pago | Route Handler dedicado (POST) | Recebe notificações de pagamento |
 
-## Ports & Adapters (contratos)
+## Camadas e isolamento
 
-Cada integração externa tem **Port** (interface no domínio) e **Adapter** (impl
-específica), permitindo trocar provedor sem tocar no domínio:
-
-- **Persistência** → `Port: memberRepository, eventRepository…` → Adapter Drizzle/Supabase.
-- **Auth** → `Port: sessionManager` → Adapter Auth.js + Supabase Auth.
-- **E-mail** → `Port: mailer` → Adapter Resend.
-- **Pagamentos** → `Port: paymentGateway` (criar cobrança, validar webhook) → Adapter Mercado Pago.
-
-> Blast radius: mudanças de provedor ficam restritas ao adapter e aos testes de
-> integração desse adapter (ver `TESTING.md`).
-
-## Topologia do produto (árvore de navegação aprovada)
-
-- **Portal público (visitante):** Home, Sobre/História/MVV, Liderança, Localização,
-  Cultos, Redes sociais, Eventos (listagem + detalhe → inscrever via WhatsApp),
-  Doação/Oferta (QR PIX), Login.
-- **Painel do membro:** avisos de eventos, QR code de dízimo, cartão de membro,
-  minhas informações (editar dados + foto 4x4).
-- **Painel administrativo (RBAC):** dashboard, membros (CRUD), igrejas/liderança,
-  eventos, patrimônio, financeiro (PIX, webhook, conciliação, fechamento),
-  relatórios/documentos, usuários/permissões, configurações, auditoria.
-
-> A árvore é a **fonte de verdade estrutural** (ver `docs/REQUIREMENTS.md`) e determina
-> os grupos de rotas e a granularidade das features da Fase 9.
+- `src/app` é a borda HTTP: páginas e Route Handlers.
+- `src/lib/admin` e `src/lib/painel` concentram regras de negócio e acesso a dados.
+- `src/lib/auth` resolve claims da sessão, o gate de área (`proxy.ts`) e o RBAC fino.
+- `src/lib/supabase` encapsula os clients server, browser e service-role.
+- `src/lib/observability` concentra release, logger anti-PII e captura de erros.
+- `src/lib/barcode` e `src/lib/pix` são domínio puro, cobertos por testes e mutação.
+- `supabase/migrations` é a fonte única do schema; `scripts` contém seed, probes e smoke.
 
 ## Fluxos críticos
 
-1. **Login membro:** e-mail + senha-ID temporária → primeira troca obrigatória (RN-002) →
-   sessão membro isolada da sessão admin (AD-004).
-2. **Login admin:** sessão separada; autorização por papel (RBAC, RF-031/032).
-3. **Doação PIX:** portal mostra QR PIX (RN-001); webhook Mercado Pago atualiza o
-   financeiro; conciliação e fechamento de caixa obrigatórios (RN-001.1).
-4. **Inscrição em evento:** detalhe do evento → "inscrever-se" → WhatsApp (RN-003).
-5. **Auditoria:** ações administrativas sensíveis gravam trilha de auditoria (RN-004).
+1. **Login de membro e de admin:** `/login` e `/login/admin` autenticam no Supabase
+   Auth. O papel vem de `app_metadata.role`, não editável pelo cliente. A flag
+   `force_password_change` redireciona para `/trocar-senha` antes de liberar a área.
+2. **Autorização:** `proxy.ts` faz o gate grosseiro por área; `can(papel, módulo, nível)`
+   e as policies com `can_access()` decidem o acesso fino no servidor e no banco.
+3. **Doação PIX:** o portal exibe QR estático e código copia-e-cola. O webhook do
+   Mercado Pago registra eventos em `webhook_events` e cria a transação quando o
+   pagamento é aprovado (stub até a configuração das credenciais reais).
+4. **Eventos:** listagem e detalhe públicos; a inscrição abre o WhatsApp com mensagem
+   pré-preenchida.
+5. **Auditoria:** ações administrativas sensíveis gravam em `audit_logs`, com leitura
+   pela página `/admin/auditoria`.
 
 ## Limitações aceitas
 
 - Deploy único: mudanças afetam todo o app (AD-002).
-- Escala vertical limitada — suficiente para 1 templo (AD-001).
+- Escala vertical limitada, suficiente para um templo (AD-001).
 - Dependência de provedores gerenciados (lock-in moderado, AD-003).
+- Webhook do Mercado Pago opera em modo stub até as credenciais de produção.
+- Sem envio de e-mail transacional; a senha-ID é entregue manualmente (AD-013).
 
 ## Referências
 
-- `docs/REQUIREMENTS.md` — árvore e requisitos
+- `docs/REQUIREMENTS.md` — requisitos e árvore de navegação
 - `docs/DATABASE.md` — modelo de dados
-- `docs/API.md` — contratos de rotas e integrações
-- `docs/SECURITY.md` — autenticação, RBAC, RLS
+- `docs/API.md` — rotas e contratos
+- `docs/SECURITY.md` — autenticação, RBAC e RLS
 - `.specs/STATE.md` — decisões AD-NNN

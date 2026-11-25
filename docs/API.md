@@ -1,17 +1,16 @@
 # API — IVC
 
 Contratos de **rotas** (App Router Next.js 16) e **integrações externas**. As rotas
-exatas de cada feature são detalhadas nas specs da Fase 9; aqui está a **visão de
-contrato** consolidada (REST/Server Actions).
+exatas de cada feature estão implementadas em `src/app`; aqui está a **visão de
+contrato** consolidada.
 
 ## Princípios de contrato
 
-- Rotas de leitura → **Server-rendered pages + Route Handlers/Server Actions** no servidor.
+- Rotas de leitura → páginas renderizadas no servidor.
 - CRUD administrativo → Route Handlers com verbo REST (`GET/POST/PATCH/DELETE`).
 - **Toda mutação requer sessão + autorização (RBAC)** — ver `SECURITY.md`.
-- Payload em JSON; validação no servidor (schemas); respostas de erro padronizadas:
-  `{ "error": { "code", "message" } }`.
-- Webhook industrioso: segredo/assinatura, idempotência, log (RF-026, AD-009).
+- Payload em JSON; validação no servidor; erros no formato `{ "error": "codigo" }`.
+- Webhook: idempotência e log em `webhook_events` (RF-026, AD-009).
 
 ## Áreas e namespace (organização por grupos de rotas)
 
@@ -48,27 +47,37 @@ contrato** consolidada (REST/Server Actions).
 | `/admin/configuracoes` | CRUD | RF-029 | Portal/CMS, WhatsApp, chave PIX, dados institucionais |
 | `/admin/auditoria` | GET | RF-030, RN-004 | Trilha de auditoria |
 
+### API (Route Handlers)
+
+| Namespace | Rotas | Comportamento |
+| --------- | ----- | ------------- |
+| `/api/auth` | `login`, `login/admin`, `logout`, `trocar-senha`, `atualizar-senha` | Sessão Supabase e troca de senha |
+| `/api/painel` | `perfil`, `perfil/foto` | Dados e foto do próprio membro |
+| `/api/admin` | `membros`, `lideres`, `igrejas`, `eventos`, `patrimonio`, `financeiro`, `relatorios`, `usuarios`, `configuracoes`, `auditoria`, `assets` | CRUD administrativo com RBAC |
+| `/api/health` | `GET` | Health check público e raso |
+| `/api/webhooks/mercadopago` | `POST` | Notificações de pagamento PIX |
+
 ### Webhook
 
 | Rota | Método | Origem | Comportamento |
 | ---- | ------ | ------ | ------------- |
-| `/api/webhooks/mercadopago` | POST | RF-026, AD-009 | Recebe notificações PIX: valida assinatura, idempotenta, grava `webhook_events`, atualiza financeiro |
+| `/api/webhooks/mercadopago` | POST | RF-026, AD-009 | Stub idempotente: grava `webhook_events` e cria a transação quando o pagamento é aprovado. A validação de assinatura entra com as credenciais reais |
 
 ## Integrações externas
 
 | Serviço | Uso | Contrato |
 | ------- | --- | -------- |
-| **Supabase (Postgres+Auth+Storage)** | Persistência, auth, arquivos | Drizzle (SQL) + SDK server-side; service-role só no servidor; RLS | 
-| **Auth.js (NextAuth)** | Sessões membro/admin | Handlers de auth; callbacks de sessão; 1º acesso com troca de senha (RN-002) |
-| **Mercado Pago** | Cobrança PIX + webhook | SDK/API MP; gerar QR/cobrança; webhook com assinatura; conciliação (RN-001.1) |
-| **Resend** | E-mail transacional | SDK Resend; envio de 1º acesso/avisos; template em `mailer` Port |
+| **Supabase (Postgres + Auth + Storage)** | Persistência, autenticação e arquivos | Clients `@supabase/ssr` e SDK server-side; RLS; service-role só no servidor |
+| **Supabase Auth (GoTrue)** | Sessões de membro e admin | `app_metadata.role`, `force_password_change` e cookies httpOnly |
+| **Mercado Pago** | Webhook de pagamentos PIX | Stub idempotente com `webhook_events`; assinatura na integração real |
+| **Sentry** | Observabilidade | Captura de erros sem PII (errors-only) |
 
 ## Padrões de resposta e erro
 
 - Sucesso: `200` (leitura), `201` (criação), `204` (exclusão).
 - Erros comuns: `400` validação · `401` não autenticado · `403` sem permissão ·
   `404` não encontrado · `422` regra de negócio · `500` erro interno.
-- Corpo de erro: `{ "error": { "code": "VALIDATION", "message": "…" } }`.
+- Corpo de erro: `{ "error": "codigo" }` (ex.: `payload_invalido`, `nao_autorizado`).
 
 ## Versionamento
 
@@ -78,9 +87,9 @@ contrato** consolidada (REST/Server Actions).
 
 ## Segurança da camada API
 
-- Sessões separadas membro/admin; middlewares de rota por papel.
-- Rate limiting no login e no webhook (abuso/brute-force).
-- Validação de payload no servidor; CSP/headers; sem segredos em respostas ou logs.
+- Sessões separadas membro/admin; `proxy.ts` faz o gate de área e o RBAC fino é do servidor.
+- Limites de tentativa de login do GoTrue; webhook idempotente por `event_id`.
+- Validação de payload no servidor; sem segredos em respostas ou logs.
 
 ## Referências
 

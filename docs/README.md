@@ -13,7 +13,7 @@ contexto transversal (arquitetura, segurança, custos, roadmap).
 | [REQUIREMENTS.md](REQUIREMENTS.md) | Requisitos RF/RNF/RN/RC/QA/R — **fonte de verdade** (aprovado pelo administrador) |
 | [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) | Visão geral, contexto e contatos institucionais |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Decisões de arquitetura (monólito modular Next.js 16) |
-| [DATABASE.md](DATABASE.md) | Modelo de dados (Supabase/PostgreSQL, Drizzle) |
+| [DATABASE.md](DATABASE.md) | Modelo de dados (Supabase/PostgreSQL, migrações SQL) |
 | [SECURITY.md](SECURITY.md) | Segurança, autenticação, RBAC e auditoria |
 | [LGPD.md](LGPD.md) | Adequação à LGPD (consentimentos, DPIA, direitos do titular) |
 | [API.md](API.md) | Rotas e contratos de integração (F3) |

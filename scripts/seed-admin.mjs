@@ -19,8 +19,16 @@ const adminClient = createClient(supabaseUrl, serviceRoleKey, {
   },
 });
 
-const email = process.env.SEED_ADMIN_EMAIL ?? "admin@ivc.com";
-const password = process.env.SEED_ADMIN_PASSWORD ?? "Temp1234";
+const email = process.env.SEED_ADMIN_EMAIL;
+const password = process.env.SEED_ADMIN_PASSWORD;
+
+if (!email || !password) {
+  console.error(
+    "Erro: SEED_ADMIN_EMAIL e SEED_ADMIN_PASSWORD sao obrigatorios. " +
+      "Exemplo: SEED_ADMIN_EMAIL=admin@exemplo.com SEED_ADMIN_PASSWORD='senha-temporaria' npm run seed:admin"
+  );
+  process.exit(1);
+}
 
 try {
   const { data, error } = await adminClient.auth.admin.createUser({

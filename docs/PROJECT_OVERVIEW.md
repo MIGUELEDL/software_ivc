@@ -29,7 +29,7 @@ Fonte única desses dados em código: `src/lib/constants.ts` (AD-008).
 
 1. Dar presença institucional fidedigna à igreja no mundo digital (portal público).
 2. Registrar e manter o cadastro dos membros (dados pessoais, foto 4x4, aniversário)
-   como base para futuros cartões de membro (AD-009/revisão do administrador).
+   como base para o cartão de membro com código de barras e validade anual.
 3. Facilitar a doação via **QR PIX** (público) e o acompanhamento da vida da igreja
    (eventos, avisos, dízimo).
 4. Dar à liderança um painel administrativo seguro (RBAC) para operar membros,
@@ -43,11 +43,12 @@ Fonte única desses dados em código: `src/lib/constants.ts` (AD-008).
   dízimo; cartão de membro; edição dos próprios dados/foto).
 - **Liderança** — operacionaliza o painel administrativo conforme o papel (RBAC).
 
-## Stack (AD-003, AD-004, AD-006, AD-007)
+## Stack (AD-003, AD-006, AD-007, AD-013, AD-014)
 
 Next.js 16 (App Router, TypeScript) · Tailwind CSS v4 · Supabase (PostgreSQL + Auth +
-Storage) · Drizzle ORM · Auth.js (NextAuth) · Resend · Vercel Hobby · GitHub Actions ·
-Sentry (free) · Mercado Pago (webhook PIX — MVP é PIX apenas, AD-009).
+Storage, com RLS) · migrações SQL versionadas · Vercel Hobby · GitHub Actions ·
+Sentry (errors-only) · Mercado Pago (webhook PIX — MVP é PIX apenas, AD-009) ·
+Vitest 5 e Stryker para testes.
 
 ## Critérios transversais (requisitos aprovados)
 

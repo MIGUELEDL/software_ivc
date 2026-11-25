@@ -1,7 +1,7 @@
 # Observabilidade — IVC
 
-Requisito: **RNF-008** (Sentry plano free). Observabilidade ativa em produção começa
-na **Fase 11**; aqui está o plano e o que já é aplicável nas fases anteriores.
+Requisito: **RNF-008** (Sentry plano free). A observabilidade está ativa em produção
+desde a **Fase 11**; este documento consolida o desenho e o runbook.
 
 ## Pilares
 
@@ -20,7 +20,7 @@ na **Fase 11**; aqui está o plano e o que já é aplicável nas fases anteriore
 | Erros não capturados | Sentry (free) | Zero crítico sem alerta |
 | Performance de rota | Vercel Analytics / Web Vitals | LCP < 2,5s (mobile) |
 | Disponibilidade | RNF-003 ≥ 99% | Vercel + health checks |
-| Falhas em integrações | Sentry + logs (Resend, Mercado Pago, Supabase) | Alertas por exceção |
+| Falhas em integrações | Sentry + logs (Mercado Pago e Supabase) | Alertas por exceção |
 | Webhook Mercado Pago | Log de `webhook_events` + Sentry | Evitar perda/conciliação travada |
 | Auditoria | `audit_logs` (RN-004) | Trilha consultável no painel |
 
@@ -41,7 +41,7 @@ IDs internos e metadados funcionais — conforme `docs/LGPD.md`.
 
 1. **Detecção:** alerta Sentry/uptime para o e-mail institucional.
 2. **Triagem:** papel de monitor via painel admin (RBAC) ou encarregado encaminha.
-3. **Resposta:** rollback de deploy no Vercel (`verifyDOM`), correção em PR, re-deploy.
+3. **Resposta:** rollback de deploy na Vercel, correção em PR e novo deploy.
 4. **Aprendizado:** feature impactada → antes de fechar o incidente, registrar lição no
    processo spec-driven (aplicável a partir da F11).
 

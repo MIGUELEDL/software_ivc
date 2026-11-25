@@ -2,7 +2,7 @@
 
 Requisitos: **RNF-007** (custo fixo mensal ≈ R$ 0), **RC-001** (manutenção ≈ R$ 0,
 evangelização sem custo para a igreja). Decisões: **AD-003/AD-007** e stack aprovada no
-README. Valores de planos free sujeitos a mudança — revisar antes da F9/produção.
+README. Valores de planos free sujeitos a mudança — revisar periodicamente.
 
 ## TCO mensal (fixo ≈ R$ 0)
 
@@ -11,8 +11,7 @@ README. Valores de planos free sujeitos a mudança — revisar antes da F9/produ
 | **Vercel** | Hobby | R$ 0 | Hosting Next.js 16; limite 10 deploys/dia |
 | **Supabase** | Free | R$ 0 | PostgreSQL + Auth + Storage (limites de uso) |
 | **GitHub Actions** | Free (público/IP) | R$ 0 | CI dual-gate (`tests` + `specs`) |
-| **Sentry** | Free | R$ 0 | Observabilidade (F11, RNF-008) |
-| **Resend** | Free | R$ 0 | E-mail transacional (volume baixo) |
+| **Sentry** | Free | R$ 0 | Observabilidade (RNF-008) |
 | **Mercado Pago (PIX)** | — | **R$ 0 fixo** | Taxa **por transação** (variável; ver abaixo) |
 | **Domínio** | — | R$ 0 (AGORA) | `*.vercel.app` (RC-003); próprio ≈ R$ 40–60/ano quando houver |
 
@@ -32,7 +31,6 @@ README. Valores de planos free sujeitos a mudança — revisar antes da F9/produ
 | ------- | ---------------- |
 | Vercel Hobby | 10 deployments/dia; sem licença de equipe |
 | Supabase Free | 500 MB DB, 1 GB storage, projetos pausados após inatividade (90 dias) |
-| Resend Free | ~3k e-mails/mês (volume do projeto ~50 → folga grande) |
 | Sentry Free | 5k eventos/mês (folga para ~20 doações/mês) |
 | GitHub Actions | minutos gratuitos (repo público: ilimitado na prática) |
 
@@ -50,5 +48,5 @@ README. Valores de planos free sujeitos a mudança — revisar antes da F9/produ
 
 - `docs/REQUIREMENTS.md` — RNF-007, RC-001
 - `docs/DEPLOYMENT.md` — Vercel Hobby, envs, limites
-- `docs/OBSERVABILITY.md` — Resend/Sentry (free no TCO)
+- `docs/OBSERVABILITY.md` — Sentry (free no TCO)
 - `.specs/STATE.md` — AD-003/007/009 (stack e decisões financeiras)

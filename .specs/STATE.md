@@ -280,6 +280,14 @@
 - **Date**: 2026-10-18
 - **Status**: active
 
+## Handoff — publicação pública e README (2026-11-25)
+
+- **Estado**: repositório público; histórico reescrito e force-pushed em 2026-11-24.
+- **Higienização executada**: `git filter-repo --invert-paths` removeu `public/img1.jpg`..`img10.jpg`; substituições de senha, refs de projeto, URL de deploy, domínio e e-mails; mailmap aplicado. Validação: `npm run build` OK; `npm run test:ci` 310/310; `git log --all --format='%ae'` apenas `author@example.com`; `public/` contém `favicon.png`, `img_culto.png` e `logo.png`.
+- **Descoberta**: o commit de sanitização `d047c84` era local (não estava no remoto) e foi perdido na reescrita/reset. Seus efeitos não estão no histórico atual: docs ainda citam Drizzle/Auth.js/Resend; `.env.example` e `LICENSE` não existiam; `next-env.d.ts` e `tsconfig.tsbuildinfo` seguem rastreados; `scripts/seed-admin.mjs` mantém credenciais padrão.
+- **Recreado/atualizado nesta sessão**: `README.md` reescrito com a stack real; `.env.example`; `LICENSE` (MIT); docs alinhadas à stack real (Supabase Auth, migrações SQL, sem Drizzle/Auth.js/Resend); `scripts/seed-admin.mjs` exige `SEED_ADMIN_EMAIL`/`SEED_ADMIN_PASSWORD`; `next-env.d.ts` e `tsconfig.tsbuildinfo` removidos do índice e ignorados.
+- **Pendente**: commit único de higienização (este handoff entra nele).
+
 ## Handoff — feature ajustes-total-filtrado — ✅ VERIFIED (2026-10-18)
 
 - **Estado**: Spec (3 ACs TAB-05..07 + 5 goals) → Tasks (T1..T3) → Execute (2/2 de código + fecho) → Verifier **PASS (7/7 critérios, sensor 4/4)**. Feature **fechada**. `validation.md` (PASS) em `.specs/features/ajustes-total-filtrado/`.
