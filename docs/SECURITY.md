@@ -12,7 +12,7 @@ cliente nunca decide o que pode acessar.
 
 ## Autenticação (Supabase Auth, AD-013)
 
-- Supabase Auth (GoTrue) com `@supabase/ssr` e sessão em cookies httpOnly.
+- Supabase Auth (GoTrue) com `@supabase/ssr` e sessão em cookies gerenciados pelo servidor (`SameSite=Lax`).
 - Logins separados: `/login` para membros e `/login/admin` para a liderança.
 - O papel do usuário fica em `app_metadata.role`, não editável pelo cliente e lido
   server-side.
@@ -47,8 +47,8 @@ cliente nunca decide o que pode acessar.
   registro (ex.: membro lê somente o próprio cadastro).
 - O acesso fino usa `can_access(module, nivel)`, uma função `SECURITY DEFINER` que
   consulta `permissions` e falha fechada (sem linha = nega).
-- Storage: buckets privados; a foto do membro é acessível ao próprio e a papéis
-  autorizados; documentos usam URL assinada de curta duração.
+- Storage: buckets de fotos públicos para leitura, com escrita restrita por RLS; o
+  bucket `documentos` é privado e usa URL assinada de curta duração.
 - RLS é camada **defensiva adicional**; a autorização de negócio fica no domínio.
 
 ## Segredos e configuração

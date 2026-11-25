@@ -12,7 +12,7 @@
 | Banco | PostgreSQL (Supabase, plano free) | Integridade financeira |
 | Migrações | SQL puro em `supabase/migrations/` | 28 migrações versionadas |
 | Auth | Supabase Auth (GoTrue) | Tabela `auth.users` gerenciada pelo Supabase |
-| Storage | Supabase Storage | Buckets privados de fotos e documentos |
+| Storage | Supabase Storage | Buckets de fotos públicos e bucket de documentos privado |
 | RLS | Row Level Security | Policies com `auth_role()` e `can_access()` |
 
 ## Princípios
@@ -59,10 +59,12 @@
 
 ## Storage
 
-- **`fotos-membros`** — foto 4x4 do membro; leitura pelo próprio membro e por papéis
-  administrativos.
-- **`fotos-lideranca`** — fotos da liderança exibidas no portal.
-- **`documentos`** — documentos do painel administrativo; download por URL assinada.
+- **`fotos-membros`** — foto 4x4 do membro; bucket público para leitura, com
+  upload/edição restritos ao próprio membro.
+- **`fotos-lideranca`** — fotos da liderança exibidas no portal; bucket público, com
+  upload/edição restritos a quem escreve em `igrejas`.
+- **`documentos`** — documentos do painel administrativo; bucket privado com download
+  por URL assinada.
 
 ## RLS (postura)
 

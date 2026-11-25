@@ -68,7 +68,7 @@ contrato** consolidada.
 | Serviço | Uso | Contrato |
 | ------- | --- | -------- |
 | **Supabase (Postgres + Auth + Storage)** | Persistência, autenticação e arquivos | Clients `@supabase/ssr` e SDK server-side; RLS; service-role só no servidor |
-| **Supabase Auth (GoTrue)** | Sessões de membro e admin | `app_metadata.role`, `force_password_change` e cookies httpOnly |
+| **Supabase Auth (GoTrue)** | Sessões de membro e admin | `app_metadata.role`, `force_password_change` e cookies de sessão gerenciados pelo servidor |
 | **Mercado Pago** | Webhook de pagamentos PIX | Stub idempotente com `webhook_events`; assinatura na integração real |
 | **Sentry** | Observabilidade | Captura de erros sem PII (errors-only) |
 

@@ -118,7 +118,7 @@ cobertura (`docs/coverage-matrix.md`) e nas specs de features (coluna "Requisito
 | RNF-001 | Plataforma web responsiva (mobile-first) | Lighthouse ≥ 90 | ✅ |
 | RNF-002 | Identidade visual IVC | Design system definido | ✅ |
 | RNF-003 | Disponibilidade | ≥ 99% (Vercel Hobby) | ✅ |
-| RNF-004 | Segurança de autenticação | Supabase Auth (GoTrue) + cookies httpOnly | ✅ |
+| RNF-004 | Segurança de autenticação | Supabase Auth (GoTrue) + cookies de sessão gerenciados pelo servidor | ✅ |
 | RNF-005 | LGPD | Política de privacidade + consentimentos + DPIA | ✅ |
 | RNF-006 | Backup | RPO ≤ 24h / RTO ≤ 4h | ✅ |
 | RNF-007 | Custo fixo mensal | ≈ R$ 0 (Vercel Hobby + Supabase free) | ✅ |

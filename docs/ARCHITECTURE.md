@@ -71,7 +71,7 @@ docs/                       # Documentação transversal
 | Área | Estratégia | Justificativa |
 | ---- | ---------- | ------------- |
 | Portal público | Renderização sob demanda (dynamic) | Lê configurações, eventos e liderança do banco |
-| Área do membro | SSR com sessão Supabase em cookies httpOnly | Dados privados por membro |
+| Área do membro | SSR com sessão Supabase em cookies gerenciados pelo servidor | Dados privados por membro |
 | Painel administrativo | SSR com RBAC no servidor e RLS | Decisão de acesso centralizada |
 | Mutações | Route Handlers em `src/app/api` | Validação e autorização no servidor |
 | Webhook Mercado Pago | Route Handler dedicado (POST) | Recebe notificações de pagamento |
@@ -93,9 +93,10 @@ docs/                       # Documentação transversal
    `force_password_change` redireciona para `/trocar-senha` antes de liberar a área.
 2. **Autorização:** `proxy.ts` faz o gate grosseiro por área; `can(papel, módulo, nível)`
    e as policies com `can_access()` decidem o acesso fino no servidor e no banco.
-3. **Doação PIX:** o portal exibe QR estático e código copia-e-cola. O webhook do
-   Mercado Pago registra eventos em `webhook_events` e cria a transação quando o
-   pagamento é aprovado (stub até a configuração das credenciais reais).
+3. **Doação PIX:** o portal gera o QR Code a partir de um BR Code estático (sem valor)
+   e exibe o código copia-e-cola. O webhook do Mercado Pago registra eventos em
+   `webhook_events` e cria a transação quando o pagamento é aprovado (stub até a
+   configuração das credenciais reais).
 4. **Eventos:** listagem e detalhe públicos; a inscrição abre o WhatsApp com mensagem
    pré-preenchida.
 5. **Auditoria:** ações administrativas sensíveis gravam em `audit_logs`, com leitura
